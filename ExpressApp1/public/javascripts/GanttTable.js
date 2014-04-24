@@ -2,9 +2,11 @@
 //(function ($) {
 
     var GanttTable =  GanttTable || {};
+	GanttTable.schedule = null;
 	GanttTable.days = ['日','月','火','水','木','金','土'];
 	GanttTable.days_color = ['red','black','black','black','black','black','blue'];
     GanttTable.Init = function(id, schedule){
+		GanttTable.schedule = schedule;
         $('#' + id).each(function(i){
             // 外枠
             var tbl = $('<div class="gantt_table"></div');
@@ -15,8 +17,8 @@
             var left_top1 = $('<div class="gt_left_top1_div"></div>');
             var left_top2 = $('<div class="gt_left_top2_div"></div>');
             
-            var category1 = $('<div class="gt_category1_div"></div>');
-            var category2 = $('<div class="gt_category2_div"></div>');
+            var category1 = $('<div class="gt_category1_div">' + schedule.name + '</div>');
+            var category2 = $('<div class="gt_category2_div">' + schedule.desc + '</div>');
 
             // 右側（スケジュールのガントチャートを表示するエリア）
             var right_div = $('<div class="gt_right_div"></div>');
@@ -40,7 +42,7 @@
             $(right_top).append(right_top2);
             $(right_top).append(right_top3);
 			// 表示対象日数の取得
-            var dateCount = GanttTable.createCalendar(schedule.from, schedule.to);
+            var dateCount = GanttTable.calcDateCount(schedule.from, schedule.to);
 			// 日付表示行の生成
 			GanttTable.createCalendarHeader(schedule,right_top1,right_top2,right_top3,dateCount);
 			// スケジュール表示行の生成
@@ -49,13 +51,15 @@
         });
     };
 
-    GanttTable.createCalendar = function(from, to) {
+	// 日数計算
+    GanttTable.calcDateCount = function(from, to) {
         var s = GanttTable.dateStringToDate(from);
         var e = GanttTable.dateStringToDate(to);
         var d = GanttTable.getDateCount(s, e);
         return d;
     };
 
+	// カレンダー表示行生成
 	GanttTable.createCalendarHeader = function(schedule,right_top1,right_top2,right_top3,dateCount) {
         if (schedule != null) {
 			var startDate = GanttTable.dateStringToDate(schedule.from);
@@ -132,24 +136,66 @@
             var rows = schedule.data.length;
             var data = schedule.data;
             for(var i = 0;i < rows;i++) {
-				// 左側
+				// 項目名の表示
                 var left_row = $("<div class='gt_left_row_div'></div>");
+				var cate1 = $("<div class='gt_category1_div'>" + data[i].name + "</div>");
+				var cate2 = $("<div class='gt_category2_div'>" + data[i].desc + "</div>");
+				$(cate1).css('height','3em');
+				$(cate2).css('height','3em');
+				if ((i < rows - 1) && (data[i + 1].name === '')) {
+					$(left_row).css('border-bottom','solid 1px #eeeeee');
+					$(cate2).css('border-bottom','solid 1px #777777');
+				}
                 $(left_div).append(left_row);
-                $(left_row).append("<div class='gt_category1_div'>" + data[i].name + "</div>");
-                $(left_row).append("<div class='gt_category2_div'>" + data[i].desc + "</div>");
-				// 右側
+                $(left_row).append(cate1);
+                $(left_row).append(cate2);
+				// ガントチャートの表示
                 var right_row = $("<div class='gt_right_row_div'></div>");
                 $(right_div).append(right_row);
-				for(var j = 0;j < dateCount;j++) {
-					var sch_button = $('<a class="gt_button">テスト</>');
-					var left = j * 100;																															
+				var schedule_count = data[i].values.length;
+				var schedules = data[i].values;
+				for(var j = 0;j < schedule_count;j++) {
+					var sch = schedules[j];
+					// カレンダー上の表示位置を求める
+					var start = GanttTable.calcDateCount(schedule.from,sch.from) - 1;
+					var end = GanttTable.calcDateCount(schedule.to,sch.to) - 1;
+					var dc = GanttTable.calcDateCount(sch.from,sch.to);
+					// IDの生成
+					var id = "schbtn_" + i + "_" + j;
+					var sch_button = $('<a class="gt_button" id=' + id + '>' + sch.label +'</>');
+					var left = (start * 100) + 1;
+					if (end > 0) dc = dc - end;
+					var width = (dc * 100) - 3; 																															
 					$(sch_button).css("left",left + "px");
-					//$(sch_button).css("width","200px");
+					$(sch_button).css("width",width + "px");
+					$(sch_button).css("background",sch.color);
+					// Mouse over時のイベント処理
+					$(sch_button).hover(GanttTable.btnHover_over, GanttTable.btnHover_out);
+					$(sch_button).click(GanttTable.scheduleBtnClick);
 					$(right_row).append(sch_button);
+					
 				}
             }
         }
     };
+
+	// スケジュールボタンにマウスが乗った時のイベント処理
+	GanttTable.btnHover_over = function() {
+		$(this).css("background","#777777");
+	};
+
+	// スケジュールボタンからマウスが出た時のイベント処理
+	GanttTable.btnHover_out = function() {
+		// IDをもとにデータを取得する
+		var id = $(this).attr("id").split("_");
+		var sch = GanttTable.schedule.data[id[1]].values[id[2]];
+		$(this).css("background",sch.color);
+	};
+
+	// スケジュールボタン押下イベント処理
+	GanttTable.scheduleBtnClick = function() {
+		$("#schedule_detail").dialog("open");
+	};
 
     GanttTable.dateStringToDate = function(dateString) {
         var date = new Date(dateString);

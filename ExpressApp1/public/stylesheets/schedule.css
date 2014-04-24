@@ -41,7 +41,7 @@ img.titlebar_logo {
 div.gantt_table {
     position:relative;
     border:1px #777777 solid;
-    width:946px;
+    width:943px;
     height:600px;
     font-size:small;
 }
@@ -98,7 +98,7 @@ div.gt_right_div {
     border-bottom: none;
     border-left: none;
     border-right: none;
-    width: 707px;
+    width: 704px;
     height: 600px;
     //background-color:#00ff90;
 }
@@ -109,7 +109,7 @@ div.gt_right_top_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:707px;
+    width:704px;
     height:6em;
 
 }
@@ -120,7 +120,7 @@ div.gt_right_top1_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:707px;
+    width:704px;
     height:2em;
     
 }
@@ -131,7 +131,7 @@ div.gt_right_top2_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:707px;
+    width:704px;
     height:2em;
 
 }
@@ -142,7 +142,7 @@ div.gt_right_top3_div {
     border-bottom:none;
     border-left:none;
     border-right:none;
-    width:707px;
+    width:704px;
     height:2em;
 
 }
@@ -159,6 +159,8 @@ div.gt_category1_div {
     font-weight:bold;
     padding-left:4px;
     padding-top:0.25em;
+    word-wrap:break-word;
+    overflow:hidden;
 }
 
 div.gt_category2_div {
@@ -172,9 +174,9 @@ div.gt_category2_div {
     width:120px;
     height:2em;
     font-weight:bold;
-    padding-top:0.25em;
     padding-left:4px;
-
+    word-wrap:break-word;
+    overflow:hidden;
 }
 
 div.gt_left_row_div {
@@ -185,7 +187,7 @@ div.gt_left_row_div {
     border-left:none;
     border-right:none;
     width:240px;
-    height:2em;
+    height:3em;
 
 }
 div.gt_right_row_div {
@@ -195,8 +197,8 @@ div.gt_right_row_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:707px;
-    height:2em;
+    width:704px;
+    height:3em;
 
 }
 div.gt_cal_header {

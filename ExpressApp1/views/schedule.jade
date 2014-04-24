@@ -14,63 +14,11 @@ html
 		script(type='text/javascript').
 			$(function() {
 				$( "#tabs" ).tabs();
-				var data1 = {header:['被験者名','検体No','4月1日','4月2日','4月3日','4月4日','4月5日','4月6日','4月7日'],
-					rows:[
-						{name:'被験者A',sample:['1','2','3','4'],schedule:[
-							[{id:'sche1',name:'試験A'},{id:'sche2',name:'試験B'},{id:'sche3',name:'試験C'},{id:'sche4',name:'試験D'},{id:'sche5',name:'試験D'},{id:'sche6',name:'試験D'},{id:'sche7',name:'試験D'}],
-							[{id:'sche1',name:'試験A'},{id:'sche2',name:'試験B'},{id:'sche3',name:'試験C'},{id:'sche4',name:'試験D'},{id:'sche5',name:'試験D'},{id:'sche6',name:'試験D'},{id:'sche7',name:'試験D'}],
-							[{id:'sche1',name:'試験A'},{id:'sche2',name:'試験B'},{id:'sche3',name:'試験C'},{id:'sche4',name:'試験D'},{id:'sche5',name:'試験D'},{id:'sche6',name:'試験D'},{id:'sche7',name:'試験D'}],
-							[{id:'sche1',name:'試験A'},{id:'sche2',name:'試験B'},{id:'sche3',name:'試験C'},{id:'sche4',name:'試験D'},{id:'sche5',name:'試験D'},{id:'sche6',name:'試験D'},{id:'sche7',name:'試験D'}]
-							]
-						},
-						{name:'被験者B',sample:['1','2','3','4'],schedule:[
-							[{id:'sche1',name:'試験A'},{id:'sche2',name:'試験B'},{id:'sche3',name:'試験C'},{id:'sche4',name:'試験D'},{id:'sche5',name:'試験D'},{id:'sche6',name:'試験D'},{id:'sche7',name:'試験D'}],
-							[{id:'sche1',name:'試験A'},{id:'sche2',name:'試験B'},{id:'sche3',name:'試験C'},{id:'sche4',name:'試験D'},{id:'sche5',name:'試験D'},{id:'sche6',name:'試験D'},{id:'sche7',name:'試験D'}],
-							[{id:'sche1',name:'試験A'},{id:'sche2',name:'試験B'},{id:'sche3',name:'試験C'},{id:'sche4',name:'試験D'},{id:'sche5',name:'試験D'},{id:'sche6',name:'試験D'},{id:'sche7',name:'試験D'}],
-							[{id:'sche1',name:'試験A'},{id:'sche2',name:'試験B'},{id:'sche3',name:'試験C'},{id:'sche4',name:'試験D'},{id:'sche5',name:'試験D'},{id:'sche6',name:'試験D'},{id:'sche7',name:'試験D'}]
-							]
-						},
-					]
-				};
-				var data2 = {header:['試験名','被験者名','スケジュール'],
-					rows:[
-						{name:'試験１',sample:['被験者A','被験者B','被験者C','被験者D'],schedule:[
-							[{id:'sche1',name:'検体A'}],
-							[{id:'sche1',name:'検体B'}],
-							[{id:'sche1',name:'検体C'}],
-							[{id:'sche1',name:'検体D'}]
-							]
-						},
-						{name:'試験２',sample:['被験者A','被験者B','被験者C','被験者D'],schedule:[
-							[{id:'sche1',name:'検体A'}],
-							[{id:'sche1',name:'検体B'}],
-							[{id:'sche1',name:'検体C'}],
-							[{id:'sche1',name:'検体D'}]
-							]
-						},
-					]
-				};
-				var data3 = {header:['試験名','被験者名','4月7日～11日','4月14日～18日'],
-					rows:[
-						{name:'試験１',sample:['Aさん','Bさん','Cさん','Dさん'],schedule:[
-							[{id:'sche1',name:'検体A'},{id:'',name:''}],
-							[{id:'sche1',name:'検体B'},{id:'',name:''}],
-							[{id:'',name:''},{id:'sche1',name:'検体C'}],
-							[{id:'',name:''},{id:'sche1',name:'検体D'}]
-							]
-						},
-						{name:'試験２',sample:['Aさん','Bさん','Cさん','Dさん'],schedule:[
-							[{id:'',name:''},{id:'sche1',name:'検体A'}],
-							[{id:'',name:''},{id:'sche1',name:'検体B'}],
-							[{id:'sche1',name:'検体C'},{id:'',name:''}],
-							[{id:'sche1',name:'検体D'},{id:'',name:''}]
-							]
-						},
-					]
-				};
 				var schedule = {
 					from: '2014/05/07',
 					to:   '2014/05/13',
+					name: '被験者名',
+					desc: '検体No.',
 					data :[
 					{
 						name: "被験者A",
@@ -80,7 +28,13 @@ html
 							from: '2014/05/07',
 							to: '2014/05/09',
 							label: "試験001",
-							customClass: "ganttRed",
+							color: "green",
+							},
+							{
+							from: '2014/05/12',
+							to: '2014/05/13',
+							label: "試験002",
+							color: "cyan",
 							}
 						]
 					},
@@ -92,7 +46,7 @@ html
 							from: '2014/05/12',
 							to: '2014/05/14',
 							label: "試験002",
-							customClass: "ganttRed",
+							color: "green",
 							}
 						]
 					},
@@ -104,93 +58,95 @@ html
 							from: '2014/05/07',
 							to: '2014/05/09',
 							label: "試験002",
-							customClass: "ganttRed",
+							color: "green",
+							}
+						]
+					},
+					{
+						name: "",
+						desc: "検体No.4",
+						values: [
+							{
+							from: '2014/05/07',
+							to: '2014/05/13',
+							label: "試験010",
+							color: "red",
+							}
+						]
+					},
+					{
+						name: "被験者B",
+						desc: "検体No.1",
+						values: [
+							{
+							from: '2014/05/07',
+							to: '2014/05/09',
+							label: "試験001",
+							color: "green",
+							},
+							{
+							from: '2014/05/12',
+							to: '2014/05/13',
+							label: "試験002",
+							color: "cyan",
+							}
+						]
+					},
+					{
+						name: "",
+						desc: "検体No.2",
+						values: [
+							{
+							from: '2014/05/12',
+							to: '2014/05/14',
+							label: "試験002",
+							color: "green",
+							}
+						]
+					},
+					{
+						name: "",
+						desc: "検体No.3",
+						values: [
+							{
+							from: '2014/05/07',
+							to: '2014/05/09',
+							label: "試験002",
+							color: "green",
+							}
+						]
+					},
+					{
+						name: "",
+						desc: "検体No.4",
+						values: [
+							{
+							from: '2014/05/07',
+							to: '2014/05/13',
+							label: "試験010",
+							color: "red",
 							}
 						]
 					}
 					]
 				};
 					
-
-				$.scheduleTable("scheduleTable_div1",data1);
-				$.scheduleTable("scheduleTable_div2",data2);
-				$.scheduleTable("scheduleTable_div3",data3);
+				$('#schedule_detail').dialog({
+					autoOpen: false,
+					title: 'スケジュールの詳細',
+					closeOnEscape: false,
+					modal: true,
+						buttons: {
+							"OK": function(){
+								$(this).dialog('close');
+							}
+						}
+				});
 				GanttTable.Init("ganttTable_div1",schedule);
+				GanttTable.Init("ganttTable_div2",schedule);
+				GanttTable.Init("ganttTable_div3",schedule);
 				GanttTable.Init("ganttTable_div4",schedule);
 				
-				/////
-				var gdata1 = [
-					{
-						name: "被験者A",
-						desc: "検体No.1",
-						values: [
-						{
-							from: new Date(2014,3,1,9,0,0),
-							to: new Date(2014,3,4,17,0,0),
-							label: "試験001",
-							customClass: "ganttRed",
-						},
-						{
-							from: new Date(2014,3,7,9,0,0),
-							to: new Date(2014,3,11,17,0,0),
-							label: "試験001",
-							customClass: "ganttRed",
-						}
-						]
-					},
-					{
-						name: " ",
-						desc: "検体No.2",
-						values: [{
-							from: new Date(2014,3,1,9,0,0),
-							to: new Date(2014,3,4,17,0,0),
-							label: "試験002",
-							customClass: "ganttRed"
-						}]
-					}
-					];
-				var gdata2 = [
-					{
-						name: "試験A",
-						desc: "被験者1",
-						values: [
-						{
-							from: new Date(2014,3,7,9,0,0),
-							to: new Date(2014,3,14,17,0,0),
-							label: "検体001",
-							customClass: "ganttRed",
-						},
-						{
-							from: new Date(2014,3,14,9,0,0),
-							to: new Date(2014,3,19,17,0,0),
-							label: "検体002",
-							customClass: "ganttRed",
-						}
-						]
-					},
-					{
-						name: " ",
-						desc: "被験者2",
-						values: [{
-							from: new Date(2014,3,1,9,0,0),
-							to: new Date(2014,3,4,17,0,0),
-							label: "検体003",
-							customClass: "ganttRed"
-						}]
-					}
-					];
-				
-				$("#gantt1").gantt({
-					months: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
-					dow: ["日","月","火","水","木","金","土"],
-					source: gdata1
-					});
-				$("#gantt2").gantt({
-					months: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
-					dow: ["日","月","火","水","木","金","土"],
-					source: gdata1
-					});
-				//////
 			});
 	body
 		div(class="titlebar")
@@ -211,10 +167,12 @@ html
 				div(id="ganttTable_div1")
 			div(id="tabs-2")
 				p in vivo（ヒト臨床試験）による測定
-				div(id="scheduleTable_div2")
+				div(id="ganttTable_div2")
 			div(id="tabs-3")
 				p 抗シワガイドライン対応試験や、化粧品などの使用試験
-				div(id="scheduleTable_div3")
+				div(id="ganttTable_div3")
 			div(id="tabs-4")
 				p 食品の有効性を評価するヒト試験
 				div(id="ganttTable_div4")
+		div(id="schedule_detail")
+			p スケジュール詳細
