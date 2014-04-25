@@ -34,8 +34,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.js" />
+    <Compile Include="public\javascripts\AdminMenu.js" />
     <Compile Include="public\javascripts\GanttTable.js" />
     <Compile Include="public\javascripts\ScheduleTable.js" />
+    <Compile Include="routes\admin.js" />
+    <Compile Include="routes\createTables.js" />
+    <Compile Include="routes\db.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\login.js" />
     <Compile Include="routes\portal.js" />
@@ -47,10 +51,12 @@
     <Content Include="public\stylesheets\style.css" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
+    <Content Include="views\admin.jade" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\portal.jade" />
     <Content Include="views\schedule.jade" />
+    <Content Include="views\tables.jade" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\" />

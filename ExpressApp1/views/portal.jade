@@ -6,7 +6,7 @@ block head
 block content
 	div(class="titlebar")
 		img(class="titlebar_logo" src="images/drc_logo.jpg")
-		span= title
+		span(class="titlebar")= title
 	div(class="main_menu")
 		div(class="main_menu_row") 
 			div(class="menu_title") お知らせ
@@ -19,7 +19,7 @@ block content
 			a(class="menu_button_a" href="schedule#tabs-4") 食品ヒト試験
 		div(class="main_menu_row")
 			div(class="menu_title") 管理メニュー
-			a(class="menu_button_b" href="") 顧客管理
-			a(class="menu_button_b" href="") 被験者管理
-			a(class="menu_button_b" href="") 社員情報
-			a(class="menu_button_b" href="") 試験テンプレート
+			a(class="menu_button_b" href="admin#tabs-1") 顧客管理
+			a(class="menu_button_b" href="admin#tabs-2") 被験者管理
+			a(class="menu_button_b" href="admin#tabs-3") 社員情報
+			a(class="menu_button_b" href="admin#tabs-4") 試験テンプレート

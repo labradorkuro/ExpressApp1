@@ -151,7 +151,7 @@ html
 	body
 		div(class="titlebar")
 			img(class="titlebar_logo" src="images/drc_logo.jpg")
-			span= title
+			span(class="titlebar")= title
 		div(id="tabs")
 			ul
 				li
@@ -164,6 +164,8 @@ html
 					a(href="#tabs-4") 食品ヒト試験
 			div(id="tabs-1")
 				p (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_subject") スケジュール追加
 				div(id="ganttTable_div1")
 			div(id="tabs-2")
 				p in vivo（ヒト臨床試験）による測定
