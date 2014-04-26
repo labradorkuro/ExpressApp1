@@ -13,7 +13,7 @@ $(function() {
 			}
 	});
 	jQuery("#subjects_list").jqGrid({
-		url:'db?q=2',
+		url:'db?q=1',
 		altRows: true,
 		datatype: "json",
 		colNames:['被験者No', '氏名', 'カナ','年齢','性別','所属'],

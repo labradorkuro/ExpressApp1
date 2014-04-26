@@ -13,13 +13,22 @@
 		records:'',
 		rows:[]
 	};
-    connection.query("select * from drc_sch.subjects",[],function(err,rows){
-            if (err)    throw err;
+	var sql = "";
+	switch (req.query.q ) {
+		case 1:
+			sql = "select * from drc_sch.subjects";
+		break;
+		case 2:
+			sql = "select * from drc_sch.tests";
+		break;
+	} 
+	connection.query("select * from drc_sch.tests",[],function(err,rows){
+		if (err)    throw err;
 			result.row = rows;
-            console.log(rows);
-        });
+    });
     //コネクションクローズ
     connection.end();
 	var resultJSON = JSON.stringify(result);
+    console.log("q=" + req.query.q + " " + result);
 	res.send(resultJSON);
 };

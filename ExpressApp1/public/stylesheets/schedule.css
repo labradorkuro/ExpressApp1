@@ -57,12 +57,13 @@ a.titlebar_button:hover{
 span.titlebar {
     position:relative;
     float:left;
-    left:20px;
     top:0px;
     font-size:1em;
     display:block;
     width:400px;
     height:20px;
+    margin-left:auto;
+    margin-right:auto;
 
 }
 
@@ -279,7 +280,6 @@ div.main_menu {
     border-right:none;
     width:760px;
     height:720px;
-
 }
 div.menu_title {
     position:relative;
@@ -292,31 +292,35 @@ div.menu_title {
     background-color:darkolivegreen;
     color:white;
     font-size:1em;
+    margin-left:auto;
+    margin-right:auto;
     padding-top:0.5em;
     padding-left:10px;
 }
 div.main_menu_row {
     position:relative;
     margin-top:20px;
-    left:0px;
     border-top:2px #4cff00 solid;
     border-bottom:2px #4cff00 solid;
     border-left:2px #4cff00 solid;
     border-right:2px #4cff00 solid;
     width:600px;
     height:200px;
+    margin-left:auto;
+    margin-right:auto;
 
 }
 div.main_menu_row_b {
     position:relative;
     margin-top:20px;
-    left:0px;
     border-top:2px #4cff00 solid;
     border-bottom:2px #4cff00 solid;
     border-left:2px #4cff00 solid;
     border-right:2px #4cff00 solid;
     width:600px;
-    height:400px;
+    height:360px;
+    margin-left:auto;
+    margin-right:auto;
 
 }
 
@@ -353,7 +357,7 @@ a.menu_button_a {
     font-size:2em;
     display:block;
     width:260px;
-    height:120px;
+    height:100px;
     padding-top:20px;
     margin-top:20px;
     margin-left:20px;
@@ -373,7 +377,7 @@ a.menu_button_b {
     font-size:1.5em;
     display:block;
     width:120px;
-    height:110px;
+    height:100px;
     padding-top:20px;
     margin-top:20px;
     margin-left:20px;
@@ -387,6 +391,26 @@ a.menu_button_b:hover {
     background: #777777;
 }
 
+a.menu_button_c {
+    float:left;
+    top:0px;
+    font-size:2em;
+    display:block;
+    width:540px;
+    height:100px;
+    padding-top:20px;
+    margin-top:20px;
+    margin-left:20px;
+    text-align:center;
+    border:2px solid;
+    border-color:#aaaaaa #444444 #444444 #aaaaaa;
+    background:#cccccc;
+}
+
+a.menu_button_c:hover{
+    background:#777777;
+}
+
 div.admin_div {
     position:relative;
     margin-top:0px;
@@ -395,6 +419,7 @@ div.admin_div {
     width:900px;
     height:600px;
     font-size:small;
+    overflow:auto;
 }
 div.toolbar {
     position:relative;

@@ -44,6 +44,7 @@
     <Compile Include="routes\login.js" />
     <Compile Include="routes\portal.js" />
     <Compile Include="routes\schedule.js" />
+    <Compile Include="routes\test_management.js" />
     <Compile Include="routes\user.js" />
     <Content Include="package.json" />
     <Content Include="public\images\drc_logo.jpg" />
@@ -57,6 +58,7 @@
     <Content Include="views\portal.jade" />
     <Content Include="views\schedule.jade" />
     <Content Include="views\tables.jade" />
+    <Content Include="views\test_management.jade" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\" />

@@ -1,0 +1,26 @@
+﻿doctype html
+html
+	head
+		meta(charset="utf-8")
+		title= title
+		link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+		script(src="javascripts/TestManagement.js")
+		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
+		link(rel="stylesheet" ,href="stylesheets/schedule.css")
+	body
+		div(class="titlebar")
+			img(class="titlebar_logo" src="images/drc_logo.jpg")
+			span(class="titlebar")= title
+		div(class="toolbar")
+			a(class="tool_button_a" id="add_subject") 追 加
+			a(class="tool_button_a" id="edit_subject") 編 集
+			a(class="tool_button_a" id="del_subject") 削 除
+		div(class="admin_div")
+			table(id="test_list")
+			div(id="test_pager")
+		div(id="test_dialog")
+			p 被験者管理
