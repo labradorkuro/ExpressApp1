@@ -5,9 +5,9 @@
 	GanttTable.schedule = null;
 	GanttTable.days = ['日','月','火','水','木','金','土'];
 	GanttTable.days_color = ['red','black','black','black','black','black','blue'];
-    GanttTable.Init = function(id,sd,ed){
+    GanttTable.Init = function(id,sd,ed,test_type){
 		$.ajax({
-			url: 'db?q=3&sd=' + sd + '&ed=' + ed,
+			url: 'db?q=3&sd=' + sd + '&ed=' + ed + '&test_type=' + test_type,
 			cache: false,
 			dataType:'json',
 			success: function(schedule){
@@ -22,8 +22,8 @@
 					var left_top1 = $('<div class="gt_left_top1_div"></div>');
 					var left_top2 = $('<div class="gt_left_top2_div"></div>');
             
-					var category1 = $('<div class="gt_category1_div">' + schedule.name + '</div>');
-					var category2 = $('<div class="gt_category2_div">' + schedule.desc + '</div>');
+					var category1 = $('<div class="gt_category1_div"><label class="gt_label">' + schedule.name + '</label></div>');
+					var category2 = $('<div class="gt_category2_div"><label class="gt_label">' + schedule.desc + '</label></div>');
 
 					// 右側（スケジュールのガントチャートを表示するエリア）
 					var right_div = $('<div class="gt_right_div"></div>');
@@ -147,8 +147,11 @@
 				var schedule_count = data[i].values.length;
 				// 項目名の表示
                 var left_row = $("<div class='gt_left_row_div'></div>");
-				var cate1 = $("<div class='gt_category1_div'>" + data[i].name + "</div>");
-				var cate2 = $("<div class='gt_category2_div'>" + data[i].desc + "</div>");
+				var cate1 = $("<div class='gt_category1_div'><label class='gt_label'>" + data[i].name + "</lebel></div>");
+				if ((data[i].subject_vol) && (data[i].name !='')) {
+					$(cate1).append("<label class='gt_label'>" + data[i].complete_vol + " / " + data[i].subject_vol + "</label>");
+				}
+				var cate2 = $("<div class='gt_category2_div'><label class='gt_label'>" + data[i].desc + "</label></div>");
 				var height = (schedule_count * 3) + "em";
 				$(left_row).css("height",height);
 				$(cate1).css('height',height);

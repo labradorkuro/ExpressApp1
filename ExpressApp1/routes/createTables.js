@@ -9,7 +9,7 @@ exports.create = function(req, res){
       database : 'drc_sch'
     });
 	var sql = [
-		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,client_id VARCHAR(128) NOT NULL,sales_id VARCHAR(128),test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5),set_subject_vol INT(5),complete_vol INT(5),report_date DATE,report_date_r DATE,money_receive_date DATE,money_receive_date_r DATE,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",
+		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,client_id VARCHAR(128) NOT NULL,sales_id VARCHAR(128),test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,report_date DATE,report_date_r DATE,money_receive_date DATE,money_receive_date_r DATE,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",
 		"CREATE TABLE IF NOT EXISTS drc_sch.subject_schedule (id BIGINT(11) NOT NULL AUTO_INCREMENT,subject_no INT(5) NOT NULL,patch_no INT(3),test_id BIGINT(11) NOT NULL,start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128), INDEX(id,subject_no)); ",
 		"CREATE TABLE IF NOT EXISTS drc_sch.subjects (subject_no INT(5) NOT NULL AUTO_INCREMENT,name VARCHAR(128) NOT NULL,name_kana VARCHAR(128) ,age INT(3),sex INT(1),affiliation VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128),INDEX(subject_no)); "
 	];
@@ -76,6 +76,7 @@ exports.list = function(req, res){
 	var sql = "";
 	var resultJSON = "";
 	var queryno = req.query.q;
+	var test_type = '';
 	//console.log("q=" + req.query.q);
 	if (queryno === '1') {
 		sql = "select * from drc_sch.subjects";
@@ -89,9 +90,10 @@ exports.list = function(req, res){
 	} else if (queryno === '3') {
 		var sd = req.query.sd;
 		var ed = req.query.ed;
-		sql = "SELECT subject_schedule.subject_no, subjects.name, tests.name AS testname, subject_schedule.patch_no, DATE_FORMAT(subject_schedule.start_date,'%Y/%m/%d') AS sd, DATE_FORMAT(subject_schedule.end_date,'%Y/%m/%d') AS ed"
+		test_type = req.query.test_type;
+		sql = "SELECT subject_schedule.subject_no, subjects.name, tests.name AS testname, subject_schedule.patch_no, DATE_FORMAT(subject_schedule.start_date,'%Y/%m/%d') AS sd, DATE_FORMAT(subject_schedule.end_date,'%Y/%m/%d') AS ed,tests.subject_vol,tests.set_subject_vol,tests.complete_vol"
 			+ " FROM subject_schedule JOIN subjects ON (subject_schedule.subject_no=subjects.subject_no) JOIN tests ON (subject_schedule.test_id=tests.test_id)"
-			+ " WHERE (subject_schedule.start_date >= '" + sd + "' AND " + "subject_schedule.start_date <= '" + ed + "')" 
+			+ " WHERE tests.test_type = " + test_type + " AND (subject_schedule.start_date >= '" + sd + "' AND " + "subject_schedule.start_date <= '" + ed + "')" 
 			+ " ORDER BY subject_schedule.subject_no,subject_schedule.patch_no";
 	} 
 	//console.log("sql=" + sql);
@@ -116,35 +118,73 @@ exports.list = function(req, res){
 				desc:'検体No',
 				data:[]
 			};
-			for(var i = 0;i < rows.length;i++) {
-				var v = {name:'',desc:'',values:[]};
-				v.name = rows[i].name;
-				v.desc = rows[i].patch_no;
-				var t = {from:'',to:'',label:'',color:''};
-				t.from = rows[i].sd;
-				t.to = rows[i].ed;
-				t.label = rows[i].testname;
-				t.color = 'limegreen';
-				if (i > 0) {
-					if ((rows[i].subject_no === rows[i - 1].subject_no) && (rows[i].patch_no === rows[i - 1].patch_no)) {
+			if (test_type === '1') {
+				for(var i = 0;i < rows.length;i++) {
+					var v = {name:'',desc:'',subject_vol:0,set_subject_vol:0,complete_vol:0,values:[]};
+					v.name = rows[i].name;
+					v.desc = rows[i].patch_no;
+					
+					var t = {from:'',to:'',label:'',color:''};
+					t.from = rows[i].sd;
+					t.to = rows[i].ed;
+					t.label = rows[i].testname;
+					t.color = 'limegreen';
+					if (i > 0) {
+						if ((rows[i].subject_no === rows[i - 1].subject_no) && (rows[i].patch_no === rows[i - 1].patch_no)) {
 						
-						result.data[result.data.length - 1].values.push(t);
+							result.data[result.data.length - 1].values.push(t);
+						} else {
+							if (rows[i].name === rows[i - 1].name) {
+								// サプレス表示のため
+								v.name = '';
+							}
+							v.values.push(t);
+							result.data.push(v);
+						}		
 					} else {
-						if (rows[i].name === rows[i - 1].name) {
-							// サプレス表示のため
-							v.name = '';
-						}
 						v.values.push(t);
 						result.data.push(v);
-					}		
-				} else {
-					v.values.push(t);
-					result.data.push(v);
+					}
 				}
+				resultJSON = JSON.stringify(result);
+				res.send(resultJSON);
+				console.log(result);
+			} else if (test_type === '2') {
+				result.name = '試験名';
+				result.desc = '被験者名';
+				for(var i = 0;i < rows.length;i++) {
+					var v = {name:'',desc:'',subject_vol:0,set_subject_vol:0,complete_vol:0,values:[]};
+					v.name = rows[i].testname;
+					v.desc = rows[i].name;
+					if (rows[i].subject_vol != null) v.subject_vol = rows[i].subject_vol;
+					if (rows[i].set_subject_vol != null) v.set_subject_vol = rows[i].set_subject_vol;
+					if (rows[i].complete_vol != null) v.complete_vol = rows[i].complete_vol;
+					var t = {from:'',to:'',label:'',color:''};
+					t.from = rows[i].sd;
+					t.to = rows[i].ed;
+					t.label = rows[i].patch_no;
+					t.color = 'limegreen';
+					if (i > 0) {
+						if ((rows[i].testname === rows[i - 1].testname) && (rows[i].name === rows[i - 1].name)) {
+						
+							result.data[result.data.length - 1].values.push(t);
+						} else {
+							if (rows[i].testname === rows[i - 1].testname) {
+								// サプレス表示のため
+								v.name = '';
+							}
+							v.values.push(t);
+							result.data.push(v);
+						}		
+					} else {
+						v.values.push(t);
+						result.data.push(v);
+					}
+				}
+				resultJSON = JSON.stringify(result);
+				res.send(resultJSON);
+				console.log(result);
 			}
-			resultJSON = JSON.stringify(result);
-			res.send(resultJSON);
-			console.log(result);
 		}
     });
     //コネクションクローズ

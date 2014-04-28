@@ -26,10 +26,10 @@ html
 							}
 						}
 				});
-				GanttTable.Init("ganttTable_div1","2014/05/07","2014/05/13");
-				GanttTable.Init("ganttTable_div2","2014/05/07","2014/05/11");
-				GanttTable.Init("ganttTable_div3","2014/05/07","2014/05/11");
-				GanttTable.Init("ganttTable_div4","2014/05/07","2014/05/11");
+				GanttTable.Init("ganttTable_div1","2014/05/07","2014/05/13",1);
+				GanttTable.Init("ganttTable_div2","2014/05/07","2014/05/13",2);
+				GanttTable.Init("ganttTable_div3","2014/05/07","2014/05/13",3);
+				GanttTable.Init("ganttTable_div4","2014/05/07","2014/05/13",4);
 				
 			});
 	body
@@ -51,16 +51,34 @@ html
 			div(id="tabs-1")
 				p(style="font-size:small") (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
 				div(class="toolbar")
-					a(class="tool_button_a" id="add_subject") スケジュール追加
+					a(class="tool_button_a" id="add_subject_1") スケジュール追加
+					a(class="tool_button_b" id="prev_btn_1") 前へ
+					a(class="tool_button_a" id="today_btn_1") 今日
+					a(class="tool_button_a" id="next_btn_1") 次へ
 				div(id="ganttTable_div1")
 			div(id="tabs-2")
-				p in vivo（ヒト臨床試験）による測定
+				p(style="font-size:small") in vivo（ヒト臨床試験）による測定
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_subject_2") スケジュール追加
+					a(class="tool_button_b" id="prev_btn_2") 前へ
+					a(class="tool_button_a" id="today_btn_2") 今日
+					a(class="tool_button_a" id="next_btn_2") 次へ
 				div(id="ganttTable_div2")
 			div(id="tabs-3")
-				p 抗シワガイドライン対応試験や、化粧品などの使用試験
+				p(style="font-size:small") 抗シワガイドライン対応試験や、化粧品などの使用試験
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_subject_3") スケジュール追加
+					a(class="tool_button_b" id="prev_btn_3") 前へ
+					a(class="tool_button_a" id="today_btn_3") 今日
+					a(class="tool_button_a" id="next_btn_3") 次へ
 				div(id="ganttTable_div3")
 			div(id="tabs-4")
-				p 食品の有効性を評価するヒト試験
+				p(style="font-size:small") 食品の有効性を評価するヒト試験
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_subject_4") スケジュール追加
+					a(class="tool_button_b" id="prev_btn_4") 前へ
+					a(class="tool_button_a" id="today_btn_4") 今日
+					a(class="tool_button_a" id="next_btn_4") 次へ
 				div(id="ganttTable_div4")
 		div(id="schedule_detail")
 			p スケジュール詳細

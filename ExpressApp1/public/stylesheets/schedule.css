@@ -71,8 +71,8 @@ span.titlebar {
 
 div.gantt_table {
     position:relative;
-    border:1px #777777 solid;
-    width:943px;
+    border:1px #000000 solid;
+    width:945px;
     font-size:small;
 }
 div.gt_left_div {
@@ -101,7 +101,7 @@ div.gt_left_top1_div {
     border-top:none;
     border-bottom:1px #777777 solid;
     border-left:none;
-    border-right:none;
+    border-right:1px #777777 solid;
     width:240px;
     height:4.1em;
     
@@ -110,11 +110,12 @@ div.gt_left_top2_div {
     position:relative;
     top:0px;
     border-top:none;
-    border-bottom:none;
+    border-bottom:1px #777777 solid;
     border-left:none;
-    border-right:none;
+    border-right:1px #777777 solid;
     width:240px;
     height:2em;
+    background-color:#ecf9d2;
 
 }
 
@@ -126,7 +127,7 @@ div.gt_right_div {
     border-top: none;
     border-bottom: none;
     border-left: none;
-    border-right: none;
+    border-right: 1px #000000 solid;
     width: 704px;
 }
 div.gt_right_top_div {
@@ -135,10 +136,10 @@ div.gt_right_top_div {
     border-top:none;
     border-bottom:1px #777777 solid;
     border-left:none;
-    border-right:none;
+    border-right:  1px #000000 solid;
     width:704px;
     height:6em;
-
+    background-color:#ecf9d2;
 }
 div.gt_right_top1_div {
     position:relative;
@@ -149,6 +150,7 @@ div.gt_right_top1_div {
     border-right:none;
     width:704px;
     height:2em;
+    background-color:#ecf9d2;
     
 }
 div.gt_right_top2_div {
@@ -160,17 +162,19 @@ div.gt_right_top2_div {
     border-right:none;
     width:704px;
     height:2em;
+    background-color:#ecf9d2;
 
 }
 div.gt_right_top3_div {
     position:relative;
     top:0px;
     border-top:none;
-    border-bottom:none;
+    border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
     width:704px;
     height:2em;
+    background-color:#ecf9d2;
 
 }
 
@@ -205,7 +209,11 @@ div.gt_category2_div {
     word-wrap:break-word;
     overflow:hidden;
 }
-
+label.gt_label {
+    display:block;
+    margin-top:0.25em;
+    margin-left:0.25em;
+}
 div.gt_left_row_div {
     position:relative;
     top:0px;
@@ -449,6 +457,25 @@ a.tool_button_a {
 a.tool_button_a:hover{
     background:#777777;
 }
+a.tool_button_b {
+    float:left;
+    top:0px;
+    font-size:1em;
+    display:block;
+    height:22px;
+    padding-top:6px;
+    padding-left:4px;
+    padding-right:4px;
+    margin-top:1px;
+    margin-left:700px;
+    text-align:center;
+    border:1px solid;
+    border-color:#aaaaaa #444444 #444444 #aaaaaa;
+    background:#cccccc;
+}
+
+a.tool_button_b:hover{
+    background:#777777;
 
 
 
