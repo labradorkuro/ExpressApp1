@@ -18,7 +18,7 @@ div.titlebar {
     top: 0px;
     width: 100%;
     height: 40px;
-    padding-top:0.75em;
+    /*padding-top:0.75em;*/
     background-color:white;
     font-size:large;
     font-weight:bold;
@@ -28,10 +28,11 @@ div.titlebar {
 img.titlebar_logo {
     position:relative;
     float:left;
-    left:10px;
+    left:100px;
     top:0px;
     width:150px;
     height:40px;
+    margin-right:50px;
 }
 
 a.titlebar_button {
@@ -57,11 +58,12 @@ a.titlebar_button:hover{
 span.titlebar {
     position:relative;
     float:left;
-    top:0px;
+    top:10px;
+    left:70px;
     font-size:1em;
     display:block;
-    width:400px;
-    height:20px;
+    /*width:400px;*/
+    /*height:20px;*/
     margin-left:auto;
     margin-right:auto;
 
@@ -71,7 +73,6 @@ div.gantt_table {
     position:relative;
     border:1px #777777 solid;
     width:943px;
-    height:600px;
     font-size:small;
 }
 div.gt_left_div {
@@ -82,7 +83,6 @@ div.gt_left_div {
     border-left: none;
     border-right: 1px #777777 solid;
     width: 240px;
-    height: 600px;
 }
 
 div.gt_left_top_div {
@@ -128,8 +128,6 @@ div.gt_right_div {
     border-left: none;
     border-right: none;
     width: 704px;
-    height: 600px;
-    //background-color:#00ff90;
 }
 div.gt_right_top_div {
 
@@ -248,19 +246,20 @@ div.gt_cal_header {
 a.gt_button {
     position:absolute;
     float:left;
-    top:0px;
+    top:4px;
     left:0px;
     font-size:1em;
     display:block;
     width:100px;
-    height:1.25em;
+    height:1.75em;
     padding-top:0.25em;
-    margin-top:2px;
+    margin-top:4px;
     margin-left:0px;
     text-align:center;
     border:2px solid;
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
     background:#cccccc;
+    font-weight:bold;
 }
 
 a.gt_button:hover {

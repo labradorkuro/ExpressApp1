@@ -14,122 +14,6 @@ html
 		script(type='text/javascript').
 			$(function() {
 				$( "#tabs" ).tabs();
-				var schedule = {
-					from: '2014/05/07',
-					to:   '2014/05/13',
-					name: '被験者名',
-					desc: '検体No.',
-					data :[
-					{
-						name: "被験者A",
-						desc: "検体No.1",
-						values: [
-							{
-							from: '2014/05/07',
-							to: '2014/05/09',
-							label: "試験001",
-							color: "green",
-							},
-							{
-							from: '2014/05/12',
-							to: '2014/05/13',
-							label: "試験002",
-							color: "cyan",
-							}
-						]
-					},
-					{
-						name: "",
-						desc: "検体No.2",
-						values: [
-							{
-							from: '2014/05/12',
-							to: '2014/05/14',
-							label: "試験002",
-							color: "green",
-							}
-						]
-					},
-					{
-						name: "",
-						desc: "検体No.3",
-						values: [
-							{
-							from: '2014/05/07',
-							to: '2014/05/09',
-							label: "試験002",
-							color: "green",
-							}
-						]
-					},
-					{
-						name: "",
-						desc: "検体No.4",
-						values: [
-							{
-							from: '2014/05/07',
-							to: '2014/05/13',
-							label: "試験010",
-							color: "red",
-							}
-						]
-					},
-					{
-						name: "被験者B",
-						desc: "検体No.1",
-						values: [
-							{
-							from: '2014/05/07',
-							to: '2014/05/09',
-							label: "試験001",
-							color: "green",
-							},
-							{
-							from: '2014/05/12',
-							to: '2014/05/13',
-							label: "試験002",
-							color: "cyan",
-							}
-						]
-					},
-					{
-						name: "",
-						desc: "検体No.2",
-						values: [
-							{
-							from: '2014/05/12',
-							to: '2014/05/14',
-							label: "試験002",
-							color: "green",
-							}
-						]
-					},
-					{
-						name: "",
-						desc: "検体No.3",
-						values: [
-							{
-							from: '2014/05/07',
-							to: '2014/05/09',
-							label: "試験002",
-							color: "green",
-							}
-						]
-					},
-					{
-						name: "",
-						desc: "検体No.4",
-						values: [
-							{
-							from: '2014/05/07',
-							to: '2014/05/13',
-							label: "試験010",
-							color: "red",
-							}
-						]
-					}
-					]
-				};
 					
 				$('#schedule_detail').dialog({
 					autoOpen: false,
@@ -142,14 +26,16 @@ html
 							}
 						}
 				});
-				GanttTable.Init("ganttTable_div1",schedule);
-				GanttTable.Init("ganttTable_div2",schedule);
-				GanttTable.Init("ganttTable_div3",schedule);
-				GanttTable.Init("ganttTable_div4",schedule);
+				GanttTable.Init("ganttTable_div1","2014/05/07","2014/05/13");
+				GanttTable.Init("ganttTable_div2","2014/05/07","2014/05/11");
+				GanttTable.Init("ganttTable_div3","2014/05/07","2014/05/11");
+				GanttTable.Init("ganttTable_div4","2014/05/07","2014/05/11");
 				
 			});
 	body
 		div(class="titlebar")
+			span(class="titlebar") 
+				a(href="portal") Home
 			img(class="titlebar_logo" src="images/drc_logo.jpg")
 			span(class="titlebar")= title
 		div(id="tabs")
@@ -163,7 +49,7 @@ html
 				li
 					a(href="#tabs-4") 食品ヒト試験
 			div(id="tabs-1")
-				p (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
+				p(style="font-size:small") (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
 				div(class="toolbar")
 					a(class="tool_button_a" id="add_subject") スケジュール追加
 				div(id="ganttTable_div1")

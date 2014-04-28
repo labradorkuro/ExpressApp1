@@ -73,12 +73,6 @@ exports.list = function(req, res){
       password : 'ViVi0504',
       database : 'drc_sch'
     });
-	var result = {
-		page:'1',
-		total:'1',
-		records:'2',
-		rows:[]
-	};
 	var sql = "";
 	var resultJSON = "";
 	var queryno = req.query.q;
@@ -86,25 +80,71 @@ exports.list = function(req, res){
 	if (queryno === '1') {
 		sql = "select * from drc_sch.subjects";
 	} else if (queryno === '2') {
-		sql = "select * from drc_sch.tests";
+		sql = "select test_id,name,description,test_type,client_id,sales_id,test_person_id,"
+			+ "DATE_FORMAT(start_date,'%Y/%m/%d') AS start_date,DATE_FORMAT(end_date,'%y/%m/%d') AS end_date,"
+			+ "DATE_FORMAT(start_date_r,'%Y/%m/%d') AS start_date_r,DATE_FORMAT(end_date_r,'%Y/%m/%d') AS end_date_r,"
+			+ "subject_vol,set_subject_vol,complete_vol,DATE_FORMAT(report_date,'%Y/%m/%d') AS report_date,"
+			+ "DATE_FORMAT(report_date_r,'%Y/%m%d') AS report_date_r,DATE_FORMAT(money_receive_date,'%Y/%m%d') AS money_receive_date,"
+			+ "DATE_FORMAT(money_receive_date_r,'%Y/%m/%d') AS money_receive_date_r from drc_sch.tests";
 	} else if (queryno === '3') {
-		sql = "SELECT subject_schedule.subject_no, subjects.name, tests.name AS testname, subject_schedule.patch_no, subject_schedule.start_date, subject_schedule.end_date"
-		+ " FROM subject_schedule JOIN subjects ON (subject_schedule.subject_no=subjects.subject_no) JOIN tests ON (subject_schedule.test_id=tests.test_id)";
+		var sd = req.query.sd;
+		var ed = req.query.ed;
+		sql = "SELECT subject_schedule.subject_no, subjects.name, tests.name AS testname, subject_schedule.patch_no, DATE_FORMAT(subject_schedule.start_date,'%Y/%m/%d') AS sd, DATE_FORMAT(subject_schedule.end_date,'%Y/%m/%d') AS ed"
+			+ " FROM subject_schedule JOIN subjects ON (subject_schedule.subject_no=subjects.subject_no) JOIN tests ON (subject_schedule.test_id=tests.test_id)"
+			+ " WHERE (subject_schedule.start_date >= '" + sd + "' AND " + "subject_schedule.start_date <= '" + ed + "')" 
+			+ " ORDER BY subject_schedule.subject_no,subject_schedule.patch_no";
 	} 
-	console.log("sql=" + sql);
+	//console.log("sql=" + sql);
     connection.query(sql,[],function(err,rows){
 		if (err)    throw err;
 		if ((queryno === '1') || (queryno === '2')) {
+			var result = {
+				page:'1',
+				total:'1',
+				records:'2',
+				rows:[]
+			};
 			result.rows = rows;
 			console.log(result);
 			resultJSON = JSON.stringify(result);
 			res.send(resultJSON);
 		} else if (queryno === '3') {
-			result = {rows:[]};
-			result.rows = rows;
-			console.log(result);
+			var result = {
+				from:sd,
+				to:ed,
+				name:'被験者名',
+				desc:'検体No',
+				data:[]
+			};
+			for(var i = 0;i < rows.length;i++) {
+				var v = {name:'',desc:'',values:[]};
+				v.name = rows[i].name;
+				v.desc = rows[i].patch_no;
+				var t = {from:'',to:'',label:'',color:''};
+				t.from = rows[i].sd;
+				t.to = rows[i].ed;
+				t.label = rows[i].testname;
+				t.color = 'limegreen';
+				if (i > 0) {
+					if ((rows[i].subject_no === rows[i - 1].subject_no) && (rows[i].patch_no === rows[i - 1].patch_no)) {
+						
+						result.data[result.data.length - 1].values.push(t);
+					} else {
+						if (rows[i].name === rows[i - 1].name) {
+							// サプレス表示のため
+							v.name = '';
+						}
+						v.values.push(t);
+						result.data.push(v);
+					}		
+				} else {
+					v.values.push(t);
+					result.data.push(v);
+				}
+			}
 			resultJSON = JSON.stringify(result);
 			res.send(resultJSON);
+			console.log(result);
 		}
     });
     //コネクションクローズ
