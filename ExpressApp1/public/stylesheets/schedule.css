@@ -135,9 +135,9 @@ div.gt_right_top_div {
     position:relative;
     border-top:none;
     border-bottom:1px #777777 solid;
-    border-left:none;
+    border-left:1px #777777 solid;
     border-right:  1px #000000 solid;
-    width:704px;
+    width:703px;
     height:6em;
     background-color:#ecf9d2;
 }
@@ -148,7 +148,7 @@ div.gt_right_top1_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:704px;
+    width:703px;
     height:2em;
     background-color:#ecf9d2;
     
@@ -160,7 +160,7 @@ div.gt_right_top2_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:704px;
+    width:703px;
     height:2em;
     background-color:#ecf9d2;
 
@@ -172,7 +172,7 @@ div.gt_right_top3_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:704px;
+    width:703px;
     height:2em;
     background-color:#ecf9d2;
 
@@ -184,7 +184,7 @@ div.gt_category1_div {
     top:0px;
     border-top:none;
     border-bottom:none;
-    border-left:none;
+    border-left:1px #777777 solid;
     width:120px;
     height:2em;
     font-weight:bold;
@@ -273,7 +273,50 @@ a.gt_button {
 a.gt_button:hover {
     background: #777777;
 }
+a.gt_mode_button {
+    position:absolute;
+    float:left;
+    top:0px;
+    left:0px;
+    font-size:1em;
+    display:block;
+    width:232px;
+    height:2.25em;
+    padding-top:1em;
+    margin-top:3px;
+    margin-left:2px;
+    margin-right:1px;
+    margin-bottom:1px;
+    text-align:center;
+    border:2px solid;
+    border-color:#aaaaaa #444444 #444444 #aaaaaa;
+    background:#cccccc;
+    font-weight:bold;
+}
 
+a.gt_mode_button:hover {
+    background: #777777;
+}
+
+a.gt_milestone {
+    position:absolute;
+    float:left;
+    top:4px;
+    left:0px;
+    font-size:1em;
+    display:block;
+    width:32px;
+    height:32px;
+    padding-top:0.25em;
+    margin-top:4px;
+    margin-left:0px;
+    text-align:center;
+    border:none;
+}
+
+a.gt_button:hover {
+    background: #777777;
+}
 //
 // for Portal Menu
 div.main_menu {
@@ -423,8 +466,8 @@ div.admin_div {
     margin-top:0px;
     border:solid 1px #000000;
     border:none;
-    width:900px;
-    height:600px;
+    width:100%;
+    height:80%;
     font-size:small;
     overflow:auto;
 }
@@ -499,4 +542,12 @@ div.admin_right_div {
     border-right:1px solid #777777;
     width: 260px;
     height: 600px;
+}
+
+.gt_milestone {
+    position:relative;
+    float:left;
+    height:32px;
+    width:32px;
+    display:block;
 }

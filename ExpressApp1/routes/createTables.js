@@ -36,21 +36,34 @@ exports.samples = function(req, res){
       database : 'drc_sch'
     });
 	var sql = [
-		"insert into drc_sch.tests (name,description,test_type,client_id,sales_id,test_person_id,start_date,end_date,subject_vol) values ('試験名1','試験説明1',1,'顧客ID001','sales-0001','test-0001','2014/05/07 09:00:00','2014/05/09 17:00:00',10);",
+		"insert into drc_sch.tests (name,description,test_type,client_id,sales_id,test_person_id,start_date,end_date,subject_vol) values ('試験名1-1','試験説明1-1',1,'顧客ID001','sales-0001','test-0001','2014/05/07 09:00:00','2014/05/09 17:00:00',10);",
+		"insert into drc_sch.tests (name,description,test_type,client_id,sales_id,test_person_id,start_date,end_date,subject_vol) values ('試験名1-2','試験説明1-2',1,'顧客ID002','sales-0001','test-0001','2014/05/07 09:00:00','2014/05/09 17:00:00',10);",
+		"insert into drc_sch.tests (name,description,test_type,client_id,sales_id,test_person_id,start_date,end_date,subject_vol) values ('試験名1-3','試験説明1-3',1,'顧客ID003','sales-0001','test-0001','2014/05/07 09:00:00','2014/05/09 17:00:00',10);",
+		"insert into drc_sch.tests (name,description,test_type,client_id,sales_id,test_person_id,start_date,end_date,subject_vol) values ('試験名1-4','試験説明1-4',1,'顧客ID004','sales-0001','test-0001','2014/05/07 09:00:00','2014/05/09 17:00:00',10);",
 		"insert into drc_sch.tests (name,description,test_type,client_id,sales_id,test_person_id,start_date,end_date,subject_vol) values ('試験名2','試験説明2',2,'顧客ID002','sales-0002','test-0002','2014/05/12 09:00:00','2014/05/14 17:00:00',10);",
 		"insert into drc_sch.tests (name,description,test_type,client_id,sales_id,test_person_id,start_date,end_date,subject_vol) values ('試験名3','試験説明3',3,'顧客ID003','sales-0003','test-0003','2014/05/12 09:00:00','2014/05/14 17:00:00',10);",
+		"insert into drc_sch.tests (name,description,test_type,client_id,sales_id,test_person_id,start_date,end_date,subject_vol) values ('試験名4','試験説明4',4,'顧客ID004','sales-0004','test-0004','2014/05/12 09:00:00','2014/05/14 17:00:00',10);",
 		"insert into drc_sch.subjects (name,name_kana,age,sex,affiliation) values('山田　太郎','ヤマダ　タロウ',20,1,'社内登録被験者')",
 		"insert into drc_sch.subjects (name,name_kana,age,sex,affiliation) values('山田　花子','ヤマダ　ハナコ',30,2,'社内登録被験者')",
 		"insert into drc_sch.subjects (name,name_kana,age,sex,affiliation) values('鈴木　一郎','スズキ　イチロウ',40,1,'社内登録被験者')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(1,1,1,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(1,2,2,'2014/05/12 09:00:00','2014/05/14 17:00:00')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(1,3,3,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(1,4,4,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(2,1,1,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(2,2,2,'2014/05/12 09:00:00','2014/05/14 17:00:00')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(2,3,3,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(2,4,4,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(3,1,1,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(3,2,2,'2014/05/12 09:00:00','2014/05/14 17:00:00')",
 		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(3,3,3,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(3,4,4,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(1,1,5,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(2,1,5,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(3,1,5,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(1,1,6,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(2,1,6,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
+		"insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date) values(3,1,6,'2014/05/07 09:00:00','2014/05/09 17:00:00')",
 	];
 	for(var i = 0;i < sql.length;i++) {
 		connection.query(sql[i],[],function(err,rows){
@@ -77,12 +90,13 @@ exports.list = function(req, res){
 	var resultJSON = "";
 	var queryno = req.query.q;
 	var test_type = '';
+	var disp_mode = req.query.disp_mode;
 	//console.log("q=" + req.query.q);
 	if (queryno === '1') {
 		sql = "select * from drc_sch.subjects";
 	} else if (queryno === '2') {
 		sql = "select test_id,name,description,test_type,client_id,sales_id,test_person_id,"
-			+ "DATE_FORMAT(start_date,'%Y/%m/%d') AS start_date,DATE_FORMAT(end_date,'%y/%m/%d') AS end_date,"
+			+ "DATE_FORMAT(start_date,'%Y/%m/%d') AS start_date,DATE_FORMAT(end_date,'%Y/%m/%d') AS end_date,"
 			+ "DATE_FORMAT(start_date_r,'%Y/%m/%d') AS start_date_r,DATE_FORMAT(end_date_r,'%Y/%m/%d') AS end_date_r,"
 			+ "subject_vol,set_subject_vol,complete_vol,DATE_FORMAT(report_date,'%Y/%m/%d') AS report_date,"
 			+ "DATE_FORMAT(report_date_r,'%Y/%m%d') AS report_date_r,DATE_FORMAT(money_receive_date,'%Y/%m%d') AS money_receive_date,"
@@ -93,8 +107,12 @@ exports.list = function(req, res){
 		test_type = req.query.test_type;
 		sql = "SELECT subject_schedule.subject_no, subjects.name, tests.name AS testname, subject_schedule.patch_no, DATE_FORMAT(subject_schedule.start_date,'%Y/%m/%d') AS sd, DATE_FORMAT(subject_schedule.end_date,'%Y/%m/%d') AS ed,tests.subject_vol,tests.set_subject_vol,tests.complete_vol"
 			+ " FROM subject_schedule JOIN subjects ON (subject_schedule.subject_no=subjects.subject_no) JOIN tests ON (subject_schedule.test_id=tests.test_id)"
-			+ " WHERE tests.test_type = " + test_type + " AND (subject_schedule.start_date >= '" + sd + "' AND " + "subject_schedule.start_date <= '" + ed + "')" 
-			+ " ORDER BY subject_schedule.subject_no,subject_schedule.patch_no";
+			+ " WHERE tests.test_type = " + test_type + " AND (subject_schedule.start_date >= '" + sd + "' AND " + "subject_schedule.start_date <= '" + ed + "')" ;
+		if (disp_mode === '1') {
+			sql += " ORDER BY subject_schedule.subject_no,subject_schedule.patch_no";
+		} else if (disp_mode === '2') {
+			sql += " ORDER BY subject_schedule.patch_no,subject_schedule.subject_no";
+		}
 	} 
 	//console.log("sql=" + sql);
     connection.query(sql,[],function(err,rows){
@@ -111,6 +129,7 @@ exports.list = function(req, res){
 			resultJSON = JSON.stringify(result);
 			res.send(resultJSON);
 		} else if (queryno === '3') {
+			// スケジュールの検索
 			var result = {
 				from:sd,
 				to:ed,
@@ -119,37 +138,73 @@ exports.list = function(req, res){
 				data:[]
 			};
 			if (test_type === '1') {
-				for(var i = 0;i < rows.length;i++) {
-					var v = {name:'',desc:'',subject_vol:0,set_subject_vol:0,complete_vol:0,values:[]};
-					v.name = rows[i].name;
-					v.desc = rows[i].patch_no;
+				// 安全性試験の検索
+				if (disp_mode === '1') {
+					for(var i = 0;i < rows.length;i++) {
+						var v = {name:'',desc:'',subject_vol:0,set_subject_vol:0,complete_vol:0,values:[]};
+						v.name = rows[i].name;
+						v.desc = rows[i].patch_no;
 					
-					var t = {from:'',to:'',label:'',color:''};
-					t.from = rows[i].sd;
-					t.to = rows[i].ed;
-					t.label = rows[i].testname;
-					t.color = 'limegreen';
-					if (i > 0) {
-						if ((rows[i].subject_no === rows[i - 1].subject_no) && (rows[i].patch_no === rows[i - 1].patch_no)) {
+						var t = {from:'',to:'',label:'',color:''};
+						t.from = rows[i].sd;
+						t.to = rows[i].ed;
+						t.label = rows[i].testname;
+						t.color = 'limegreen';
+						if (i > 0) {
+							if ((rows[i].subject_no === rows[i - 1].subject_no) && (rows[i].patch_no === rows[i - 1].patch_no)) {
 						
-							result.data[result.data.length - 1].values.push(t);
+								result.data[result.data.length - 1].values.push(t);
+							} else {
+								if (rows[i].name === rows[i - 1].name) {
+									// サプレス表示のため
+									v.name = '';
+								}
+								v.values.push(t);
+								result.data.push(v);
+							}		
 						} else {
-							if (rows[i].name === rows[i - 1].name) {
-								// サプレス表示のため
-								v.name = '';
-							}
 							v.values.push(t);
 							result.data.push(v);
-						}		
-					} else {
-						v.values.push(t);
-						result.data.push(v);
+						}
+					}
+				} else if (disp_mode === '2') {
+					result.name = '検体No';
+					result.desc = '被験者名';
+					for(var i = 0;i < rows.length;i++) {
+						var v = {name:'',desc:'',subject_vol:0,set_subject_vol:0,complete_vol:0,values:[]};
+						v.name = rows[i].patch_no;
+						v.desc = rows[i].name;
+						if (rows[i].subject_vol != null) v.subject_vol = rows[i].subject_vol;
+						if (rows[i].set_subject_vol != null) v.set_subject_vol = rows[i].set_subject_vol;
+						if (rows[i].complete_vol != null) v.complete_vol = rows[i].complete_vol;
+						var t = {from:'',to:'',label:'',color:''};
+						t.from = rows[i].sd;
+						t.to = rows[i].ed;
+						t.label = rows[i].testname;
+						t.color = 'limegreen';
+						if (i > 0) {
+							if ((rows[i].patch_no === rows[i - 1].patch_no) && (rows[i].name === rows[i - 1].name)) {
+						
+								result.data[result.data.length - 1].values.push(t);
+							} else {
+								if (rows[i].patch_no === rows[i - 1].patch_no) {
+									// サプレス表示のため
+									v.name = '';
+								}
+								v.values.push(t);
+								result.data.push(v);
+							}		
+						} else {
+							v.values.push(t);
+							result.data.push(v);
+						}
 					}
 				}
 				resultJSON = JSON.stringify(result);
 				res.send(resultJSON);
 				console.log(result);
-			} else if (test_type === '2') {
+			} else if (test_type >= '2') {
+				// SPF試験検索
 				result.name = '試験名';
 				result.desc = '被験者名';
 				for(var i = 0;i < rows.length;i++) {
@@ -184,6 +239,7 @@ exports.list = function(req, res){
 				resultJSON = JSON.stringify(result);
 				res.send(resultJSON);
 				console.log(result);
+			} else if (test_type === '3') {
 			}
 		}
     });

@@ -48,6 +48,7 @@
     <Compile Include="routes\user.js" />
     <Content Include="package.json" />
     <Content Include="public\images\drc_logo.jpg" />
+    <Content Include="public\images\milestone.png" />
     <Content Include="public\stylesheets\schedule.css" />
     <Content Include="public\stylesheets\style.css" />
     <Content Include="public\stylesheets\style.styl" />
