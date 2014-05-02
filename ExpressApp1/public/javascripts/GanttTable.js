@@ -201,13 +201,17 @@
 					$(sch_button).hover(GanttTable.btnHover_over, GanttTable.btnHover_out);
 					$(sch_button).click(GanttTable.scheduleBtnClick);
 					$(right_row).append(sch_button);
-					var ms = $('<a class="gt_milestone"><img  src="images/milestone.png" width="24px" height="24px" title="milestone"/></a>');
-					$(ms).css("top",top	+ "em");																										
-					$(ms).css("left",(left + 440) + "px");
-					$(ms).css("height","32px");
-					$(ms).css("width","32px");
+					// test
+					left = left + 440;
+					if (left <= 700) {
+						var ms = $('<a class="gt_milestone"><img  src="images/milestone.png" width="24px" height="24px" title="milestone"/></a>');
+						$(ms).css("top",top	+ "em");																										
+						$(ms).css("left",left + "px");
+						$(ms).css("height","32px");
+						$(ms).css("width","32px");
 
-					$(right_row).append(ms);
+						$(right_row).append(ms);
+					}
 				}
             }
         }
