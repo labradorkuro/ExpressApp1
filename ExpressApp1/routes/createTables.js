@@ -77,6 +77,34 @@ exports.samples = function(req, res){
     //res.send("respond with a resource");
 };
 
+exports.post = function(req, res){
+    var mysql      = require('mysql');
+    var connection = mysql.createConnection({
+      host     : 'localhost',
+      port     : '3306',
+      user     : 'root',
+      password : 'ViVi0504',
+      database : 'drc_sch'
+    });
+	var sql = "insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date,start_date_r,end_date_r) ";
+    var s = req.body.subjects;
+	var subjects = s.split(",");
+	for(var i = 0;i < subjects.length;i++) {
+		var values = sql + "values(" + subjects[i] + "," + req.body.patch_no + "," + req.body.test_id + ",'" 
+					+ req.body.start_date + "','" + req.body.end_date + "','" + req.body.start_date_r + "','" + req.body.end_date_r + "')";
+		console.log(values);
+		connection.query(values, [], function (err, rows) {
+            if (err)    throw err;
+            console.log(rows);
+        });
+	}
+	
+    //コネクションクローズ
+    connection.end();
+    res.render('schedule', { title: 'DRC 試験スケジュール管理' });
+    //res.send("respond with a resource");
+};
+
 exports.list = function(req, res){
     var mysql      = require('mysql');
     var connection = mysql.createConnection({
@@ -107,7 +135,7 @@ exports.list = function(req, res){
 		test_type = req.query.test_type;
 		sql = "SELECT subject_schedule.subject_no, subjects.name, tests.name AS testname, subject_schedule.patch_no, DATE_FORMAT(subject_schedule.start_date,'%Y/%m/%d') AS sd, DATE_FORMAT(subject_schedule.end_date,'%Y/%m/%d') AS ed,tests.subject_vol,tests.set_subject_vol,tests.complete_vol"
 			+ " FROM subject_schedule JOIN subjects ON (subject_schedule.subject_no=subjects.subject_no) JOIN tests ON (subject_schedule.test_id=tests.test_id)"
-			+ " WHERE tests.test_type = " + test_type + " AND (subject_schedule.start_date >= '" + sd + "' AND " + "subject_schedule.start_date <= '" + ed + "')" ;
+			+ " WHERE tests.test_type = " + test_type + " AND ((subject_schedule.start_date >= '" + sd + "' AND " + "subject_schedule.start_date <= '" + ed + "') OR (subject_schedule.end_date >= '" + sd + "' AND " + "subject_schedule.end_date <= '" + ed + "'))" ;
 		if (disp_mode === '1') {
 			sql += " ORDER BY subject_schedule.subject_no,subject_schedule.patch_no";
 		} else if (disp_mode === '2') {
@@ -239,7 +267,6 @@ exports.list = function(req, res){
 				resultJSON = JSON.stringify(result);
 				res.send(resultJSON);
 				console.log(result);
-			} else if (test_type === '3') {
 			}
 		}
     });

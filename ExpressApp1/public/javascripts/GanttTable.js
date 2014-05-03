@@ -185,10 +185,12 @@
 					var start = GanttTable.calcDateCount(schedule.from,sch.from) - 1;
 					var end = GanttTable.calcDateCount(schedule.to,sch.to) - 1;
 					var dc = GanttTable.calcDateCount(sch.from,sch.to);
+					if (start < 0) dc = dc + start;
 					// IDの生成
 					var id = "schbtn_" + i + "_" + j;
 					var sch_button = $('<a class="gt_button" id=' + id + '>' + sch.label +'</>');
 					var left = (start * 100) + 1;
+					if (left < 0) left = 1;
 					if (end > 0) dc = dc - end;
 					var width = (dc * 100) - 3; 				
 					var top = (j * 2.75);
@@ -232,7 +234,7 @@
 
 	// スケジュールボタン押下イベント処理
 	GanttTable.scheduleBtnClick = function() {
-		$("#schedule_detail").dialog("open");
+		$("#schedule_dialog").dialog("open");
 	};
 
     GanttTable.dateStringToDate = function(dateString) {

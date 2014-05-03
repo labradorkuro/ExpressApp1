@@ -46,6 +46,7 @@ app.get('/portal',portal.portal);
 app.get('/dbinit', db.create);
 app.get('/dbsamples', db.samples);
 app.get('/db', db.list);
+app.post('/dbpost',db.post);
 app.get('/admin',admin.list);
 app.get('/test_management',test_management.list);
 

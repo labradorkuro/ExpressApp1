@@ -36,6 +36,7 @@
     <Compile Include="app.js" />
     <Compile Include="public\javascripts\AdminMenu.js" />
     <Compile Include="public\javascripts\GanttTable.js" />
+    <Compile Include="public\javascripts\Schedule.js" />
     <Compile Include="public\javascripts\ScheduleTable.js" />
     <Compile Include="public\javascripts\TestManagement.js" />
     <Compile Include="routes\admin.js" />
