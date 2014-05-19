@@ -12,6 +12,8 @@ var login = require('./routes/login');
 var portal = require('./routes/portal');
 var db = require('./routes/createTables');
 var admin = require('./routes/admin');
+var sales_management = require('./routes/sales_management');
+var sales_edit = require('./routes/sales_edit');
 var test_management = require('./routes/test_management');
 var http = require('http');
 var path = require('path');
@@ -48,6 +50,8 @@ app.get('/dbsamples', db.samples);
 app.get('/db', db.list);
 app.post('/dbpost',db.post);
 app.get('/admin',admin.list);
+app.get('/sales_management',sales_management.list);
+app.get('/sales_edit',sales_edit.list);
 app.get('/test_management',test_management.list);
 
 http.createServer(app).listen(app.get('port'), function(){

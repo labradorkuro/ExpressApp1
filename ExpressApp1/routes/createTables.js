@@ -9,7 +9,10 @@ exports.create = function(req, res){
       database : 'drc_sch'
     });
 	var sql = [
-		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,client_id VARCHAR(128) NOT NULL,sales_id VARCHAR(128),test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,report_date DATE,report_date_r DATE,money_receive_date DATE,money_receive_date_r DATE,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",
+		"CREATE TABLE IF NOT EXISTS drc_sch.sales_info (sales_id INT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,name VARCHAR(128) NOT NULL,customer_code VARCHAR(128),estimate INT(5),regist_date DATE,order_date DATE,money_receive_date DATE,money_received_date DATE,sales_user_id VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_id,sales_no));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",
+		"CREATE TABLE IF NOT EXISTS drc_sch.estimates (sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,estimate_no VARCHAR(12), order_flag INT(1),description VARCHAR(256),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_no,test_name));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.reports (sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,report_no VARCHAR(12),description VARCHAR(256),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_no,test_name));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.subject_schedule (id BIGINT(11) NOT NULL AUTO_INCREMENT,subject_no INT(5) NOT NULL,patch_no INT(3),test_id BIGINT(11) NOT NULL,start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128), INDEX(id,subject_no)); ",
 		"CREATE TABLE IF NOT EXISTS drc_sch.subjects (subject_no INT(5) NOT NULL AUTO_INCREMENT,name VARCHAR(128) NOT NULL,name_kana VARCHAR(128) ,age INT(3),sex INT(1),affiliation VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128),INDEX(subject_no)); "
 	];
@@ -86,22 +89,57 @@ exports.post = function(req, res){
       password : 'ViVi0504',
       database : 'drc_sch'
     });
-	var sql = "insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date,start_date_r,end_date_r) ";
-    var s = req.body.subjects;
-	var subjects = s.split(",");
-	for(var i = 0;i < subjects.length;i++) {
-		var values = sql + "values(" + subjects[i] + "," + req.body.patch_no + "," + req.body.test_id + ",'" 
-					+ req.body.start_date + "','" + req.body.end_date + "','" + req.body.start_date_r + "','" + req.body.end_date_r + "')";
-		console.log(values);
-		connection.query(values, [], function (err, rows) {
-            if (err)    throw err;
-            console.log(rows);
-        });
+	var queryno = req.body.q;
+	var sql = "";
+	if (queryno === '1') {
+		// 試験スケジュール登録
+		sql = "insert into drc_sch.subject_schedule (subject_no,patch_no,test_id,start_date,end_date,start_date_r,end_date_r) ";
+		var sd = req.body.start_date;
+		var ed = req.body.end_date;
+		var sdr = req.body.start_date_r;
+		var edr = req.body.end_date_r;
+		if (sd === '') sd = null; else sd = "'" + sd + "'";
+		if (sdr === '') sdr = null; else sdr = "'" + sdr + "'";
+		if (ed === '') ed = null; else ed = "'" + ed + "'";
+		if (edr === '') edr = null; else edr = "'" + edr + "'";
+
+		var subjects = req.body.subjects.split(",");
+		for(var i = 0;i < subjects.length;i++) {
+			var values = sql + "values(" + subjects[i] + "," + req.body.patch_no + "," + req.body.test_id + "," 
+						+ sd + "," + ed + "," + sdr + "," + edr + ")";
+			console.log(values);
+			connection.query(values, [], function (err, rows) {
+				if (err)    throw err;
+				console.log(rows);
+			});
+		}
+	} else if (queryno === '2') {
+		// 営業管理登録
+		var rd = req.body.regist_date;
+		var mrd = req.body.money_receive_date;
+		var mrdd = req.body.money_received_date;
+		if (rd === '') rd = null; else rd = "'" + rd + "'";
+		if (mrd === '') mrd = null; else mrd = "'" + mrd + "'";
+		if (mrdd === '') mrdd = null; else mrdd = "'" + mrdd + "'";
+		sql = "INSERT INTO drc_sch.sales_info (sales_no,name,customer_code,regist_date,money_receive_date,money_received_date,sales_user_id) ";
+		values = "VALUES( " 
+					+ "'" + req.body.sales_no + "'," 
+					+ "'" + req.body.name + "'," 
+					+ "'" + req.body.customer_code + "'," 
+					+ rd + "," 
+					+ mrd + "," 
+					+ mrdd + "," 
+					+ "'" + req.body.sales_user_id + "'" 
+				+ ")";
+		console.log(sql + values);
+		connection.query(sql + values, [], function (err, rows) {
+			if (err)    throw err;
+			console.log(rows);
+		});
 	}
-	
     //コネクションクローズ
     connection.end();
-    res.render('schedule', { title: 'DRC 試験スケジュール管理' });
+    res.render('sales_management', { title: 'DRC 営業管理' });
     //res.send("respond with a resource");
 };
 
@@ -141,11 +179,14 @@ exports.list = function(req, res){
 		} else if (disp_mode === '2') {
 			sql += " ORDER BY subject_schedule.patch_no,subject_schedule.subject_no";
 		}
-	} 
+	} else if (queryno === '4') {
+		sql = "SELECT sales_no,name,customer_code,DATE_FORMAT(regist_date,'%Y/%m/%d') AS regist_date,DATE_FORMAT(money_receive_date,'%Y/%m%d') AS money_receive_date,"
+			+ "DATE_FORMAT(money_received_date,'%Y/%m/%d') AS money_received_date,sales_user_id FROM drc_sch.sales_info ";
+	}
 	//console.log("sql=" + sql);
     connection.query(sql,[],function(err,rows){
 		if (err)    throw err;
-		if ((queryno === '1') || (queryno === '2')) {
+		if ((queryno === '1') || (queryno === '2') || (queryno === '4')) {
 			var result = {
 				page:'1',
 				total:'1',

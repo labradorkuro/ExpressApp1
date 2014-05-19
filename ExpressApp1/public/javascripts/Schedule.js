@@ -27,6 +27,9 @@
 	GanttTable.Init("ganttTable_div4","2014/05/07","2014/05/13",4,1);
 	$(".datepicker").datepicker({dateFormat:"yy/mm/dd"});
 	$("#add_schedule_1").click(scheduleManagement.openDialog);
+	$("#add_schedule_2").click(scheduleManagement.openDialog);
+	$("#add_schedule_3").click(scheduleManagement.openDialog);
+	$("#add_schedule_4").click(scheduleManagement.openDialog);
 	$("#dlg_tests").change(scheduleManagement.getSubjects);
 });
 var	scheduleManagement = scheduleManagement || {};
@@ -77,11 +80,15 @@ scheduleManagement.addSchedule = function() {
 	//	$(subject_no).push($(this).val());
 	//});
 	var post_data = "q=1&test_id=" + test_id + "&patch_no=" + patch_no + "&start_date=" + sd +"&end_date=" + ed + "&start_date_r=" + sdr + "&end_date_r=" + edr + "&subjects=";
-	var children = $("#dlg_subjects").children();
+	var children = $("#dlg_subjects").children("option:selected");
+	var count = 0;
 	for(var i = 0;i < children.length;i++) {
-		var v = $(children[i]).val();
-		if (i > 0) post_data += ",";
-		post_data += v;		
+		//if ($(children[i]).attr("selected")) {
+			var v = $(children[i]).val();
+			if (count > 0) post_data += ",";
+			post_data += v;		
+			count++;
+		//}
 	}
 	$.ajax({
 	   type: "POST",

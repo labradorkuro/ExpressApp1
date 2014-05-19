@@ -5,9 +5,9 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>ExpressApp7</Name>
     <RootNamespace>ExpressApp7</RootNamespace>
-    <NodeExeArguments>
-    </NodeExeArguments>
-    <DebuggerPort>5858</DebuggerPort>
+    <NodeExeArguments>c:\source\sample\ExpressApp1\ExpressApp1\app.js</NodeExeArguments>
+    <DebuggerPort>
+    </DebuggerPort>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -24,7 +24,7 @@
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
     <ProjectView>ShowAllFiles</ProjectView>
     <NodejsPort>1337</NodejsPort>
-    <StartWebBrowser>True</StartWebBrowser>
+    <StartWebBrowser>False</StartWebBrowser>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,6 +36,8 @@
     <Compile Include="app.js" />
     <Compile Include="public\javascripts\AdminMenu.js" />
     <Compile Include="public\javascripts\GanttTable.js" />
+    <Compile Include="public\javascripts\SalesEdit.js" />
+    <Compile Include="public\javascripts\SalesManagement.js" />
     <Compile Include="public\javascripts\Schedule.js" />
     <Compile Include="public\javascripts\ScheduleTable.js" />
     <Compile Include="public\javascripts\TestManagement.js" />
@@ -45,6 +47,8 @@
     <Compile Include="routes\index.js" />
     <Compile Include="routes\login.js" />
     <Compile Include="routes\portal.js" />
+    <Compile Include="routes\sales_edit.js" />
+    <Compile Include="routes\sales_management.js" />
     <Compile Include="routes\schedule.js" />
     <Compile Include="routes\test_management.js" />
     <Compile Include="routes\user.js" />
@@ -59,6 +63,8 @@
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\portal.jade" />
+    <Content Include="views\sales_edit.jade" />
+    <Content Include="views\sales_management.jade" />
     <Content Include="views\schedule.jade" />
     <Content Include="views\tables.jade" />
     <Content Include="views\test_management.jade" />
