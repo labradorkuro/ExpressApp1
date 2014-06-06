@@ -1,0 +1,93 @@
+﻿doctype html
+html
+	head
+		meta(charset="utf-8")
+		title= title
+		link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/Entry.js")
+		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
+		link(rel="stylesheet" ,href="stylesheets/schedule.css")
+	body
+		div(class="toolbar")
+			a(class="tool_button_a" id="save_entry") 保　存
+			a(class="tool_button_a" id="cancel_entry") キャンセル
+			a(class="tool_button_a" id="close_entry") 閉じる
+		div(id="tabs1")
+			ul
+				li
+					a(href="#tabs-0") 基本情報
+			div(id="tabs-0")
+				table
+					tr
+						td 案件番号
+						td 
+							input(type="text" id="entry_no")
+						td 問合せ日
+						td 
+							input(type="text" id="inquiry_date" class="datepicker")
+					tr
+						td ステータス
+						td(colspan="3") 
+							select(id="entry_status")
+								option(value="01") 引合
+								option(value="02") 見積
+								option(value="03") 依頼
+								option(value="04") 失注
+					tr
+						td 案件名
+						td
+							input(type="text" id="entry_title")
+						td 契約タイプ
+						td 
+							select(id="contract_type")
+								option(value="01") 一般依頼
+								option(value="02") 個別契約
+								option(value="03") その他契約
+					tr
+						td 受注区分
+						td(colspan="3")
+							input(type="radio" name="order_type" id="order_type_01" value="01")
+							label DRC実施
+							input(type="radio" name="order_type" id="order_type_02" value="02")
+							label 外部委託
+					tr
+						td 外部委託先情報
+						td(colspan="3")
+							textarea(id="outsourcing_info" cols="50" rows="5")
+					tr
+						td 試験課
+						td 
+							select(id="division")
+								option(value="01") SPF/PA試験
+								option(value="02") 安全性評価試験
+								option(value="03") 有用性試験
+								option(value="04") 食品ヒト試験
+						td 担当者
+						td 
+							select(id="person_id")
+
+		div(id="tabs2")
+			ul
+				li
+					a(href="#tabs-1") 見積（試験）情報
+				li
+					a(href="#tabs-2") 見積明細
+			div(id="tabs-1")
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_test") 追加
+					a(class="tool_button_a" id="edit_test") 編集
+					a(class="tool_button_a" id="delete_test") 削除
+				div(class="admin_div")
+					table(id="test_list")
+					div(id="test_list_pager")
+			div(id="tabs-2")
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_estimate") 追加
+					a(class="tool_button_a" id="edit_estimate") 編集
+					a(class="tool_button_a" id="delete_estimate") 削除

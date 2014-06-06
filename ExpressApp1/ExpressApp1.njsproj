@@ -35,15 +35,20 @@
   <ItemGroup>
     <Compile Include="app.js" />
     <Compile Include="public\javascripts\AdminMenu.js" />
+    <Compile Include="public\javascripts\Entry.js" />
+    <Compile Include="public\javascripts\EntryList.js" />
     <Compile Include="public\javascripts\GanttTable.js" />
     <Compile Include="public\javascripts\SalesEdit.js" />
     <Compile Include="public\javascripts\SalesManagement.js" />
     <Compile Include="public\javascripts\Schedule.js" />
+    <Compile Include="public\javascripts\ScheduleCommon.js" />
     <Compile Include="public\javascripts\ScheduleTable.js" />
     <Compile Include="public\javascripts\TestManagement.js" />
     <Compile Include="routes\admin.js" />
     <Compile Include="routes\createTables.js" />
     <Compile Include="routes\db.js" />
+    <Compile Include="routes\entry_list.js" />
+    <Compile Include="routes\entry_management.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\login.js" />
     <Compile Include="routes\portal.js" />
@@ -60,6 +65,8 @@
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
     <Content Include="views\admin.jade" />
+    <Content Include="views\entry_list.jade" />
+    <Content Include="views\entry_management.jade" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\portal.jade" />

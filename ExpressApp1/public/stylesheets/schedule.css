@@ -517,10 +517,9 @@ a.tool_button_b {
     background:#cccccc;
 }
 
-a.tool_button_b:hover{
-    background:#777777;
-
-
+a.tool_button_b:hover {
+        background: #777777;
+}
 
 
 div.admin_left_div {
@@ -551,4 +550,95 @@ div.admin_right_div {
     width:32px;
     display:block;
 }
+#graylayer {
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    height:100%;
+    width:100%;
+    background:black;
+    opacity:0.60;
+    filter:alpha(opacity=60);
+}
+#overlayer {
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    width:90%;
+    height:90%;
+}
+#overlayer img.close {
+    position:absolute;
+    top:-8px;
+    right:-8px;
+    cursor:pointer;
+}
+#entry_modal {
+    width:100%;
+    height:100%;
+}
 
+div.calendar_div {
+    overflow:auto;
+    width:80%;
+    height:500px;
+    border-top: 1px solid #777777;
+    border-bottom:1px solid #777777;
+    border-left: 1px solid #777777;
+    border-right: 1px solid #777777;
+}
+
+div.cal_day_base {
+    position:relative;
+    width:1048px;
+    height:40px;
+    border-bottom:1px solid #777777;
+    background-color:white;
+}
+div.cal_date {
+    position:relative;
+    float:left;
+    left:0;
+    top:0;
+    width:36px;
+    height:38px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+    padding-top:2px;
+    padding-right:4px;
+ 
+}
+div.cal_day {
+    position:relative;
+    float:left;
+    top:0;
+    width:39px;
+    height:38px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+    padding-top:2px;
+    padding-left:2px;
+}
+div.cal_day_times {
+    position:relative;
+    float:left;
+    top:0;
+    width:800px;
+    height:38px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+}
+div.cal_memo {
+    position:relative;
+    float:left;
+    top:0;
+    width:160px;
+    height:38px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+    padding-top:2px;
+    padding-left:2px;
+
+}

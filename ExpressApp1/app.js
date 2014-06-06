@@ -8,12 +8,15 @@ var express = require('express');
 var routes = require('./routes');
 var user = require('./routes/user');
 var schedule = require('./routes/schedule');
+var calendar = require('./routes/calendar');
 var login = require('./routes/login');
 var portal = require('./routes/portal');
 var db = require('./routes/createTables');
 var admin = require('./routes/admin');
 var sales_management = require('./routes/sales_management');
 var sales_edit = require('./routes/sales_edit');
+var entry_management = require('./routes/entry_management');
+var entry_list = require('./routes/entry_list');
 var test_management = require('./routes/test_management');
 var http = require('http');
 var path = require('path');
@@ -42,6 +45,7 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/schedule', schedule.list);
+app.get('/calendar', calendar.list);
 app.post('/login',login.login);
 app.post('/portal',portal.portal);
 app.get('/portal',portal.portal);
@@ -52,6 +56,8 @@ app.post('/dbpost',db.post);
 app.get('/admin',admin.list);
 app.get('/sales_management',sales_management.list);
 app.get('/sales_edit',sales_edit.list);
+app.get('/entry_management',entry_management.list);
+app.get('/entry_list',entry_list.list);
 app.get('/test_management',test_management.list);
 
 http.createServer(app).listen(app.get('port'), function(){
