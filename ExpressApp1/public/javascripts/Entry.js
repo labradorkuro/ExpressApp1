@@ -43,7 +43,27 @@
 	});
 	jQuery("#test_list").jqGrid('navGrid','#test_list_pager',{edit:false,add:false,del:false});
 	scheduleCommon.changeFontSize('1.4em');
-
+	
+	$("#estimate_dialog").dialog({
+		autoOpen: false,
+		width:'800px',
+		title: '見積（試験）項目編集',
+		closeOnEscape: false,
+		modal: true,
+			buttons: {
+				"追加": function(){
+					$(this).dialog('close');
+				},
+				"OK": function(){
+					$(this).dialog('close');
+				},
+				"CANCEL": function(){
+					$(this).dialog('close');
+				}
+			}
+	});
+	$(".dlg_table").find("td").attr("align","right");
+	$("#add_estimate").click(entryManagement.openDialog);
 });
 var	entryManagement = entryManagement || {};
 
@@ -57,4 +77,8 @@ entryManagement.cancelEntry = function() {
 
 entryManagement.closeEntry = function() {
 	scheduleCommon.closeModalWindow();
+};
+
+entryManagement.openDialog = function() {
+	$("#estimate_dialog").dialog("open");
 };

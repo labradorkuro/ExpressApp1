@@ -550,6 +550,8 @@ div.admin_right_div {
     width:32px;
     display:block;
 }
+
+/* オーバーレイでモーダルウィンドウを表示するための定義 */
 #graylayer {
     display:none;
     position:fixed;
@@ -580,9 +582,10 @@ div.admin_right_div {
     height:100%;
 }
 
+/* カレンダー表示用 */
 div.calendar_div {
     overflow:auto;
-    width:80%;
+    width:90%;
     height:500px;
     border-top: 1px solid #777777;
     border-bottom:1px solid #777777;
@@ -592,7 +595,7 @@ div.calendar_div {
 
 div.cal_day_base {
     position:relative;
-    width:1048px;
+    width:1288px;
     height:40px;
     border-bottom:1px solid #777777;
     background-color:white;
@@ -603,10 +606,10 @@ div.cal_date {
     left:0;
     top:0;
     width:36px;
-    height:38px;
+    height:34px;
     margin-top:1px;
     border-right:1px solid #777777;
-    padding-top:2px;
+    padding-top:6px;
     padding-right:4px;
  
 }
@@ -615,30 +618,172 @@ div.cal_day {
     float:left;
     top:0;
     width:39px;
-    height:38px;
+    height:34px;
     margin-top:1px;
     border-right:1px solid #777777;
-    padding-top:2px;
+    padding-top:6px;
     padding-left:2px;
 }
 div.cal_day_times {
     position:relative;
     float:left;
     top:0;
-    width:800px;
+    width:1040px;
     height:38px;
     margin-top:1px;
     border-right:1px solid #777777;
 }
+div.cal_day_times_header_up {
+    position:relative;
+    float:left;
+    top:0;
+    width:79px;
+    height:19px;
+    margin-top:0px;
+    border-right:1px solid #777777;
+    border-bottom:1px solid #777777;
+}
+div.cal_day_times_header_low {
+    position:relative;
+    float:left;
+    top:0px;
+    width:19px;
+    height:18px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+}
+
 div.cal_memo {
     position:relative;
     float:left;
     top:0;
     width:160px;
+    height:34px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+    padding-top:6px;
+    padding-left:2px;
+
+}
+div.cal_patch_base {
+    position:relative;
+    width:1283px;
+    height:40px;
+    border-bottom:1px solid #777777;
+    background-color:white;
+}
+div.cal_patch_no {
+    position: relative;
+    float: left;
+    left: 0;
+    top: 0;
+    width: 36px;
+    height: 34px;
+    margin-top: 1px;
+    border-right: 1px solid #777777;
+    padding-top: 6px;
+    padding-right: 4px;
+}
+div.cal_branch_title {
+    position: relative;
+    float: left;
+    left: 0;
+    top: 0;
+    width: 36px;
+    height: 34px;
+    margin-top: 1px;
+    border-right: 1px solid #777777;
+    padding-top: 1px;
+    padding-right: 4px;
+    font-size:0.7em;
+}
+div.cal_branch_up {
+    position: relative;
+    float: left;
+    left: 0;
+    top: 0;
+    width: 36px;
+    height: 18px;
+    margin-top: 0px;
+    border-right: 1px solid #777777;
+    border-bottom:1px solid #777777;
+    padding-top: 0px;
+    padding-right: 4px;
+    font-size:0.7em;
+}
+div.cal_branch_low {
+    position: relative;
+    float: left;
+    left: 0;
+    top: 0;
+    width: 36px;
+    height: 18px;
+    margin-top: 1px;
+    border-right: 1px solid #777777;
+    padding-top: 0px;
+    padding-right: 4px;
+    font-size:0.7em;
+    background-color:#ecf9d2;
+}
+
+div.cal_patch_week {
+    position:relative;
+    float:left;
+    top:0;
+    width:1200px;
     height:38px;
     margin-top:1px;
     border-right:1px solid #777777;
-    padding-top:2px;
+}
+div.cal_patch_week_header_up {
+    position:relative;
+    float:left;
+    top:0;
+    width:239px;
+    height:19px;
+    margin-top:0px;
+    border-right:1px solid #777777;
+    border-bottom:1px solid #777777;
+}
+div.cal_patch_week_header_low {
+    position:relative;
+    float:left;
+    top:0px;
+    width:119px;
+    height:18px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+}
+div.cal_patch_week_up {
+    position:relative;
+    float:left;
+    top:0px;
+    width:119px;
+    height:18px;
+    margin-top:1px;
+    border-bottom:1px solid #777777;
+    border-right:1px solid #777777;
+}
+div.cal_patch_week_low {
+    position:relative;
+    float:left;
+    top:0px;
+    width:119px;
+    height:18px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+    background-color:#ecf9d2;
+}
+
+div.cal_patch_memo {
+    position:relative;
+    float:left;
+    top:0;
+    width:80px;
+    height:34px;
+    margin-top:1px;
+    border-right:1px solid #777777;
+    padding-top:6px;
     padding-left:2px;
 
 }

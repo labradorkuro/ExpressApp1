@@ -35,6 +35,9 @@
   <ItemGroup>
     <Compile Include="app.js" />
     <Compile Include="public\javascripts\AdminMenu.js" />
+    <Compile Include="public\javascripts\Calendar.js" />
+    <Compile Include="public\javascripts\CalendarTable.js" />
+    <Compile Include="public\javascripts\CalendarTableForPatchTest.js" />
     <Compile Include="public\javascripts\Entry.js" />
     <Compile Include="public\javascripts\EntryList.js" />
     <Compile Include="public\javascripts\GanttTable.js" />
@@ -45,6 +48,7 @@
     <Compile Include="public\javascripts\ScheduleTable.js" />
     <Compile Include="public\javascripts\TestManagement.js" />
     <Compile Include="routes\admin.js" />
+    <Compile Include="routes\calendar.js" />
     <Compile Include="routes\createTables.js" />
     <Compile Include="routes\db.js" />
     <Compile Include="routes\entry_list.js" />
@@ -65,6 +69,7 @@
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
     <Content Include="views\admin.jade" />
+    <Content Include="views\calendar.jade" />
     <Content Include="views\entry_list.jade" />
     <Content Include="views\entry_management.jade" />
     <Content Include="views\index.jade" />

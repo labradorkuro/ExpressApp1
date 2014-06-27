@@ -1,0 +1,122 @@
+﻿doctype html
+html
+	head
+		meta(charset="utf-8")
+		title= title
+		link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/CalendarTable.js")
+		script(src="javascripts/CalendarTableForPatchTest.js")
+		script(src="javascripts/Calendar.js")
+		link(rel="stylesheet" ,href="stylesheets/schedule.css")
+	body
+		div(class="titlebar")
+			span(class="titlebar") 
+				a(href="portal") Home
+			img(class="titlebar_logo" src="images/drc_logo.jpg")
+			span(class="titlebar")= title
+		div(id="tabs")
+			ul
+				li
+					a(href="#tabs-1") 安全性試験
+				li
+					a(href="#tabs-2") SPF・UVAPF測定試験
+				li
+					a(href="#tabs-3") 化粧品有用性試験
+				li
+					a(href="#tabs-4") 食品ヒト試験
+			div(id="tabs-1")
+				p(style="font-size:small") (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_schedule_1") スケジュール追加
+					a(class="tool_button_b" id="prev_btn_1") 前へ
+					a(class="tool_button_a" id="today_btn_1") 今日
+					a(class="tool_button_a" id="next_btn_1") 次へ
+				div(class="calendar_div" id="calendar_div1")
+			div(id="tabs-2")
+				p(style="font-size:small") in vivo（ヒト臨床試験）による測定
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_schedule_2") スケジュール追加
+					a(class="tool_button_b" id="prev_btn_2") 前へ
+					a(class="tool_button_a" id="today_btn_2") 今日
+					a(class="tool_button_a" id="next_btn_2") 次へ
+				div(class="calendar_div" id="calendar_div2")
+			div(id="tabs-3")
+				p(style="font-size:small") 抗シワガイドライン対応試験や、化粧品などの使用試験
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_schedule_3") スケジュール追加
+					a(class="tool_button_b" id="prev_btn_3") 前へ
+					a(class="tool_button_a" id="today_btn_3") 今日
+					a(class="tool_button_a" id="next_btn_3") 次へ
+				div(class="calendar_div" id="calendar_div3")
+			div(id="tabs-4")
+				p(style="font-size:small") 食品の有効性を評価するヒト試験
+				div(class="toolbar")
+					a(class="tool_button_a" id="add_schedule_4") スケジュール追加
+					a(class="tool_button_b" id="prev_btn_4") 前へ
+					a(class="tool_button_a" id="today_btn_4") 今日
+					a(class="tool_button_a" id="next_btn_4") 次へ
+				div(class="calendar_div" id="calendar_div4")
+		div(id="schedule_dialog")
+			p スケジュール詳細
+			div
+				div
+					table
+						tr
+							td 試験名
+							td
+								select(id="dlg_tests")
+						tr
+							td 被験者名
+							td
+								select(multiple="true" id="dlg_subjects")
+						tr
+							td 検体No
+							td
+								select(id="dlg_patch_no")
+									option(value="1") 1
+									option(value="2") 2
+									option(value="3") 3
+									option(value="4") 4
+									option(value="5") 5
+									option(value="6") 6
+									option(value="7") 7
+									option(value="8") 8
+									option(value="9") 9
+									option(value="10") 10
+									option(value="11") 11
+									option(value="12") 12
+									option(value="13") 13
+									option(value="14") 14
+									option(value="15") 15
+									option(value="16") 16
+									option(value="17") 17
+									option(value="18") 18
+									option(value="19") 19
+									option(value="20") 20
+									option(value="21") 21
+									option(value="22") 22
+									option(value="23") 23
+									option(value="24") 24
+									option(value="25") 25
+									option(value="26") 26
+									option(value="27") 27
+						tr
+							td 開始予定日
+							td
+								input(type="text" class="datepicker" id = "dlg_start_date")
+						tr
+							td 終了予定日
+							td
+								input(type="input" class="datepicker" id="dlg_end_date")
+						tr
+							td 開始日
+							td
+								input(type="text" class="datepicker" id = "dlg_start_date_r")
+						tr
+							td 終了日
+							td
+								input(type="input" class="datepicker" id="dlg_end_date_r")

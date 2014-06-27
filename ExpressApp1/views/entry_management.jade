@@ -75,19 +75,82 @@ html
 		div(id="tabs2")
 			ul
 				li
-					a(href="#tabs-1") 見積（試験）情報
+					a(href="#tabs-1") 見積明細
 				li
-					a(href="#tabs-2") 見積明細
+					a(href="#tabs-2") 見積（試験）情報
 			div(id="tabs-1")
 				div(class="toolbar")
 					a(class="tool_button_a" id="add_test") 追加
 					a(class="tool_button_a" id="edit_test") 編集
 					a(class="tool_button_a" id="delete_test") 削除
-				div(class="admin_div")
-					table(id="test_list")
-					div(id="test_list_pager")
 			div(id="tabs-2")
 				div(class="toolbar")
 					a(class="tool_button_a" id="add_estimate") 追加
 					a(class="tool_button_a" id="edit_estimate") 編集
 					a(class="tool_button_a" id="delete_estimate") 削除
+				div(class="admin_div")
+					table(id="test_list")
+					div(id="test_list_pager")
+				div(id="estimate_dialog")
+					table(class="dlg_table")
+						tr
+							td 見積番号
+							td
+								input(type="text" placeholder="見積番号" id="dlg_quote_no")
+							td 見積（試験）項目
+							td
+								input(type="text" placeholder="見積（試験）項目" id="dlg_test_item")
+						tr
+							td 検体数
+							td
+								input(type="text" placeholder="検体数" id="dlg_quantity")
+							td 検体（試料）名
+							td
+								input(type="text" placeholder="検体（試料）名" id="dlg_sample_name")
+						tr
+							td 到着日
+							td
+								input(type="text" placeholder="到着日" id="dlg_arrive_date" class="datepicker")
+							td 計画書番号
+							td
+								input(type="text" placeholder="計画書番号" id="dlg_test_planning_no")
+						tr
+							td 報告書番号
+							td
+								input(type="text" placeholder="報告書番号" id="dlg_final_report_no")
+							td
+							td
+						tr
+							td 報告書提出期限
+							td
+								input(type="text" placeholder="報告書提出期限" id="dlg_final_report_limit" class="datepicker")
+							td 報告書提出日
+							td
+								input(type="text" placeholder="報告書提出日" id="dlg_final_report_date" class="datepicker")
+						tr
+							td 速報提出期限1
+							td
+								input(type="text" placeholder="速報提出期限1" id="dlg_quick_report_limit1" class="datepicker")
+							td 速報提出日1
+							td
+								input(type="text" placeholder="速報提出日1" id="dlg_quick_report_date1" class="datepicker")
+						tr
+							td 速報提出期限2
+							td
+								input(type="text" placeholder="速報提出期限2" id="dlg_quick_report_limit2" class="datepicker")
+							td 速報提出日2
+							td
+								input(type="text" placeholder="速報提出日2" id="dlg_quick_report_date2" class="datepicker")
+						tr
+							td 期待値/設定値
+							td
+								input(type="text" placeholder="期待値/設定値" id="dlg_expect_value")
+							td 単位
+							td
+								input(type="text" placeholder="単位" id="dlg_unit")
+						tr
+							td 備考（試験関連）
+							td
+								input(type="text" placeholder="備考（試験関連）" id="dlg_memo")
+							td
+							td

@@ -19,3 +19,26 @@ scheduleCommon.closeModalWindow = function() {
 	$(window.parent.document.getElementById("overlayer")).hide();
 	$(window.parent.document.getElementById("graylayer")).hide();
 };
+
+// カレンダー
+
+// 月の日数を取得する
+scheduleCommon.getDaysCount = function(year,month) {
+	var d = new Date(year,month ,1 ,0,0,0,0);
+	var dayOfMonth = d.getDate();
+	d.setDate(dayOfMonth - 1);
+	return d.getDate();
+};
+// 曜日を取得する
+scheduleCommon.getDay = function(year,month,date) {
+	var d = new Date(year,month - 1, date ,0,0,0,0);
+	return d.getDay();
+};
+// 特定の日に日数を加算した日を取得する
+scheduleCommon.addDayCount = function(year,month,date,count) {
+	var d = new Date(year,month - 1 ,date ,0,0,0,0);
+	var t = d.getTime();
+	t = t + (count * 86400000);
+	d.setTime(t);
+	return d;
+};
