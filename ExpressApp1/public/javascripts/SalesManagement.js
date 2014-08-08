@@ -49,8 +49,8 @@ $(function() {
 
 var	salesManagement = salesManagement || {};
 salesManagement.openDialog = function() {
-	//$("#sales_dialog").dialog("open");
-	window.open("http://localhost:1337/sales_edit","営業管理","width=600,height=400");
+	$("#sales_dialog").dialog("open");
+	//window.open("http://localhost:1337/sales_edit","営業管理","width=600,height=400");
 };
 
 salesManagement.addSales = function() {
@@ -61,7 +61,7 @@ salesManagement.addSales = function() {
 	var mrd = $("#dlg_money_receive_date").val();
 	var mrdd = $("#dlg_money_received_date").val();
 	var sid = $("#dlg_sales_user_id option:selected").val();
-	var post_data = "q=2&sales_no=" + sales_no + "&name=" + name + "&customer_code=" + customer_code +"&regist_date=" + rd + "&money_receive_date=" + mrd + "&money_received_date=" + mrdd + "&sales_user_id=" + sid;
+	var post_data = "q=3&sales_no=" + sales_no + "&name=" + name + "&customer_code=" + customer_code +"&regist_date=" + rd + "&money_receive_date=" + mrd + "&money_received_date=" + mrdd + "&sales_user_id=" + sid;
 	$.ajax({
 	   type: "POST",
 	   url: "dbpost",

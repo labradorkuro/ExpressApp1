@@ -1,12 +1,26 @@
-﻿$(function() {
+﻿//
+// DRC殿試験案件スケジュール管理
+// 案件登録・編集の処理
+//
+$(function() {
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
+	if ($("#entry_no").val() === "") {
+		// 案件の登録前の場合、明細と履歴は表示しない
+		$("#tabs-1").css("visibility", "hidden");
+		$("#tabs-2").css("visibility", "hidden");
+		$("#tab1").css("display", "none");
+		$("#tab2").css("display", "none");
+	}
 	$( "#tabs1" ).tabs();
-	$( "#tabs2" ).tabs();
-	$(".datepicker").datepicker({dateFormat:"yy/mm/dd"});
-	$("#save_entry").click(entryManagement.saveEntry);
-	$("#cancel_entry").click(entryManagement.cancelEntry);
-	$("#close_entry").click(entryManagement.closeEntry);
+	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
+	// 保存ボタンイベント
+	$("#save_entry").click(entryEdit.saveEntry);
+	// キャンセルボタンイベント
+	$("#cancel_entry").click(entryEdit.cancelEntry);
+	// 閉じるボタンイベント
+	$("#close_entry").click(entryEdit.closeEntry);
 
+	// このグリッドは試験（見積）明細タブの中身になる
 	jQuery("#test_list").jqGrid({
 		//url:'db?q=5',
 		altRows: true,
@@ -43,11 +57,11 @@
 	});
 	jQuery("#test_list").jqGrid('navGrid','#test_list_pager',{edit:false,add:false,del:false});
 	scheduleCommon.changeFontSize('1.4em');
-	
+	// 明細の編集用ダイアログ（ダイアログの中身はentry_edit.jadeの中に記述されている）
 	$("#estimate_dialog").dialog({
 		autoOpen: false,
 		width:'800px',
-		title: '見積（試験）項目編集',
+		title: '試験（見積）項目編集',
 		closeOnEscape: false,
 		modal: true,
 			buttons: {
@@ -62,23 +76,69 @@
 				}
 			}
 	});
-	$(".dlg_table").find("td").attr("align","right");
-	$("#add_estimate").click(entryManagement.openDialog);
+	$(".dlg_table").find("td").attr("align", "right");
+	// 試験（見積）明細追加ボタンイベント
+	$("#add_estimate").click(entryEdit.openDialog);
 });
-var	entryManagement = entryManagement || {};
+var	entryEdit = entryEdit || {};
 
-entryManagement.saveEntry = function() {
 
+// 案件データの保存
+entryEdit.saveEntry = function () {
+	// checkboxのチェック状態確認と値設定
+	entryEdit.checkCheckbox();
+	// formデータの取得
+	var form = entryEdit.getFormData();
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/entry_post', true);
+	xhr.responseType = 'json';
+	xhr.onload = entryEdit.onloadEntryReq;
+	xhr.send(form);
 };
 
-entryManagement.cancelEntry = function() {
+// checkboxのチェック状態確認と値設定
+entryEdit.checkCheckbox = function() {
+	if ($("#delete_check:checked").val()) {
+		$("#delete_check").val('1');
+	}
+	if ($("#input_check:checked").val()) {
+		$("#input_check").val('1');
+	}
+	if ($("#confirm_check:checked").val()) {
+		$("#confirm_check").val('1');
+	}
+};
+// formデータの取得
+entryEdit.getFormData = function () {
+	var form = new FormData(document.querySelector("#entryForm"));
+	// checkboxのチェックがないとFormDataで値が取得されないので値を追加する
+	if (!$("#delete_check:checked").val()) {
+		form.append('delete_check', '0');
+	}
+	if (!$("#input_check:checked").val()) {
+		form.append('input_check', '0');
+	}
+	if (!$("#confirm_check:checked").val()) {
+		form.append('confirm_check', '0');
+	}
+	return form;
+};
+
+entryEdit.onloadEntryReq = function (e) {
+	if (this.status == 200) {
+		var result = this.response;
+		$("#entry_no").val(result.entry_no);
+	}
+};
+
+entryEdit.cancelEntry = function() {
 	scheduleCommon.closeModalWindow();
 };
 
-entryManagement.closeEntry = function() {
+entryEdit.closeEntry = function() {
 	scheduleCommon.closeModalWindow();
 };
 
-entryManagement.openDialog = function() {
+entryEdit.openDialog = function() {
 	$("#estimate_dialog").dialog("open");
 };

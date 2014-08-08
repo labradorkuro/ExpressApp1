@@ -40,7 +40,7 @@ CalendarTable.init = function(id,year,month) {
 		day_div = $("<div class='cal_day_base'></div>");
 		day_date = $("<div class='cal_date' align='right'></div>");
 		day_day  = $("<div class='cal_day' align='center'></div>");
-		day_times = $("<div class='cal_day_times'></div>");
+		day_times = $("<div class='cal_day_times'" + " id='cal_day_times_" + i + "'></div>");
 		day_memo  = $("<div class='cal_memo'></div>");
 		
 		dd = id + "_" + i;
@@ -56,6 +56,12 @@ CalendarTable.init = function(id,year,month) {
 		$("#" + dd).append(day_day);
 		$("#" + dd).append(day_times);
 		$("#" + dd).append(day_memo);
+		$(day_times).click(CalendarTable.showEditDialog);
 		
 	}
+
+};
+CalendarTable.showEditDialog = function() {
+	var id = $(this).attr("id");
+	alert("click:" + id);
 };

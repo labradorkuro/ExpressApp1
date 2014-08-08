@@ -485,6 +485,7 @@ a.tool_button_a {
     top:0px;
     font-size:1em;
     display:block;
+    width: 120px;
     height:22px;
     padding-top:6px;
     padding-left:4px;
@@ -568,7 +569,7 @@ div.admin_right_div {
     position:fixed;
     top:50%;
     left:50%;
-    width:90%;
+    width:80%;
     height:90%;
 }
 #overlayer img.close {
@@ -786,4 +787,34 @@ div.cal_patch_memo {
     padding-top:6px;
     padding-left:2px;
 
+}
+.entry_title {
+    text-align:right;
+    width:200px;
+}
+
+div.tabPanel {
+    overflow:auto;
+    width:90%;
+    height:480px;
+}
+
+a.general_button {
+    float:left;
+    top:0px;
+    font-size:1em;
+    display:block;
+    width:120px;
+    height:60px;
+    padding-top:20px;
+    margin-top:20px;
+    margin-left:20px;
+    text-align:center;
+    border:2px solid;
+    border-color:#aaaaaa #444444 #444444 #aaaaaa;
+    background:#cccccc;
+}
+
+a.general_button:hover{
+    background:#777777;
 }

@@ -13,23 +13,23 @@ html
 		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
 	body
-		div(class="titlebar")
-			span(class="titlebar") 
+		div.titlebar
+			span.titlebar 
 				a(href="portal") Home
-			img(class="titlebar_logo" src="images/drc_logo.jpg")
-			span(class="titlebar")= title
-		div(id="tabs1")
+			img.titlebar_logo(src="images/drc_logo.jpg")
+			span.titlebar= title
+		div#tabs1
 			ul
 				li
 					a(href="#tabs-0") 案件リスト
-			div(id="tabs-0")
-				div(class="toolbar")
-					a(class="tool_button_a" id="add_entry") 追 加
-					a(class="tool_button_a" id="edit_entry") 編 集
-					a(class="tool_button_a" id="del_entry") 削 除
-				div(class="admin_div")
-					table(id="entry_list")
-					div(id="entry_pager")
-				div(id="entry_dialog")
+			div#tabs-0
+				div.toolbar
+					a.tool_button_a#add_entry 追 加
+					a.tool_button_a#edit_entry 編 集
+					a.tool_button_a#del_entry 削 除
+				div.admin_div
+					table#entry_list
+					div#entry_pager
+				div#entry_dialog
 					p 案件情報編集
 					div 

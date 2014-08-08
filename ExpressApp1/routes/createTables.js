@@ -1,6 +1,6 @@
-﻿
+﻿var mysql = require('mysql');
+
 exports.create = function(req, res){
-    var mysql      = require('mysql');
     var connection = mysql.createConnection({
       host     : 'localhost',
       port     : '3306',
@@ -9,6 +9,85 @@ exports.create = function(req, res){
       database : 'drc_sch'
     });
 	var sql = [
+		"CREATE TABLE IF NOT EXISTS drc_sch.entry_info ("	// 案件データ
+			+ "entry_no VARCHAR(10) NOT NULL,"	// 案件No
+			+ "base_cd VARCHAR(2),"				// 拠点CD
+			+ "entry_title VARCHAR(128),"		// 案件名
+			+ "inquiry_date DATE,"				// 問合せ日
+			+ "entry_status VARCHAR(2),"		// 案件ステータス
+			+ "quoto_no VARCHAR(9),"			// 見積番号
+			+ "quoto_issue_date DATE,"			// 見積書発行日
+			+ "order_accepted_date DATE,"			// 受注日付
+			+ "order_accept_check INT(1),"		// 仮受注日チェック
+			+ "acounting_period_no INT(1),"		// 会計期No
+			+ "order_type INT(1),"				// 受託区分
+			+ "contract_type INT(1),"			// 契約区分
+			+ "outsourcing_cd VARCHAR(5),"		// 委託先CD
+			+ "division VARCHAR(2),"			// 事業部ID
+			+ "entry_amount_price DEC(9),"		// 案件合計金額
+			+ "entry_amount_billing DEC(9),"	// 案件請求合計金額
+			+ "entry_amount_deposit DEC(9),"	// 案件入金合計金額
+			+ "monitors_cost_prep_limit DATE,"	// 被験者費用準備期日
+			+ "monitors_cost_prep_comp DATE,"	// 被験者費用準備完了日
+			+ "drc_substituted_amount DEC(9),"	// DRC立替準備金額
+			+ "prior_payment_limit DATE,"		// 事前入金期日
+			+ "prior_payment_accept DATE,"		// 事前入金日
+			+ "person_id VARCHAR(32),"			// 担当者ID
+			+ "delete_check INT(1),"			// 削除フラグ
+			+ "delete_reason VARCHAR(255),"		// 削除理由
+			+ "input_check_date DATE,"			// 入力日
+			+ "input_check INT(1),"				// 入力完了チェック
+			+ "input_operator_id VARCHAR(32),"	// 入力者ID
+			+ "confirm_check_date DATE,"		// 確認日
+			+ "confirm_check INT(1),"			// 確認完了チェック
+			+ "confirm_operator_id VARCHAR(32),"	// 確認者ID
+			+ "created TIMESTAMP,"				// 作成日
+			+ "created_id VARCHAR(32),"			// 作成者ID
+			+ "updated TIMESTAMP,"				// 更新日
+			+ "updated_id VARCHAR(32)"			// 更新者ID
+			+ ", INDEX(entry_no));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.entry_detail_info ("	// 案件明細データ
+			+ "entry_no VARCHAR(10),"			// 案件No
+			+ "quoto_detail_no VARCHAR(7),"		// 明細番号
+			+ "test_item_cd VARCHAR(3),"		// 試験項目CD
+			+ "test_item VARCHAR(255),"			// 試料名または試験項目名
+			+ "arrive_date DATE,"				// 到着日
+			+ "test_planning_no VARCHAR(12),"	// 試験計画書番号
+			+ "monitor_num INT(5),"				// 被験者数
+			+ "sample_volume INT(5),"			// 検体数
+			+ "final_report_limit DATE,"		// 報告書提出期限
+			+ "final_report_date DATE,"			// 報告書提出日
+			+ "quick_report_limit1 DATE,"		// 速報提出期限1
+			+ "quick_report_date1 DATE,"		// 速報提出日1
+			+ "quick_report_limit2 DATE,"		// 速報提出期限2
+			+ "quick_report_date2 DATE,"		// 速報提出日2
+			+ "expetc_value DECIMAL(9,2),"		// 期待値・設定値
+			+ "descript_value VARCHAR(255),"	// 値説明
+			+ "unit VARCHAR(5),"				// 単位
+			+ "unit_price DECIMAL(9,2),"		// 単価
+			+ "qantity INT(11),"				// 数量
+			+ "quoto_price DECIMAL(9,2),"		// 見積金額
+			+ "test_memo VARCHAR(128),"			// 備考
+			+ "delete_check INT(1),"			// 削除フラグ
+			+ "delete_reason VARCHAR(255),"		// 削除理由
+			+ "created TIMESTAMP,"				// 作成日
+			+ "created_id VARCHAR(32),"			// 作成者ID
+			+ "updated TIMESTAMP,"				// 更新日
+			+ "updated_id VARCHAR(32)"			// 更新者ID
+			+ ", INDEX(entry_no,quoto_detail_no));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.base_info ("		// 拠点マスタ
+			+ "base_cd VARCHAR(2),"				// 拠点CD
+			+ "base_name VARCHAR(32)"			// 拠点名
+			+ ", INDEX(base_cd));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.division_info ("	// 事業部マスタ
+			+ "division VARCHAR(2),"			// 事業部ID
+			+ "division_name VARCHAR(32)"		// 事業部名
+			+ ", INDEX(division));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.entry_number ("		// 案件カウント
+			+ "entry_date DATE,"				// 案件登録日付
+			+ "entry_count INT(4)"				// 案件登録カウント
+			+ ", INDEX(entry_date));",
+		
 		"CREATE TABLE IF NOT EXISTS drc_sch.sales_info (sales_id INT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,name VARCHAR(128) NOT NULL,customer_code VARCHAR(128),estimate INT(5),regist_date DATE,order_date DATE,money_receive_date DATE,money_received_date DATE,sales_user_id VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_id,sales_no));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",
 		"CREATE TABLE IF NOT EXISTS drc_sch.estimates (sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,estimate_no VARCHAR(12), order_flag INT(1),description VARCHAR(256),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_no,test_name));",
@@ -136,6 +215,9 @@ exports.post = function(req, res){
 			if (err)    throw err;
 			console.log(rows);
 		});
+	} else if (queryno === '3') {
+		// 案件登録
+		exports.postEntry(req,res);
 	}
     //コネクションクローズ
     connection.end();
@@ -313,4 +395,8 @@ exports.list = function(req, res){
     });
     //コネクションクローズ
     connection.end();
+};
+
+exports.postEntry = function(req, res){
+	console.log("test");
 };

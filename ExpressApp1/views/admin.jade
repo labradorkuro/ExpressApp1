@@ -12,12 +12,12 @@ html
 		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
 	body
-		div(class="titlebar")
-			span(class="titlebar") 
+		div.titlebar
+			span.titlebar 
 				a(href="portal") Home
-			img(class="titlebar_logo" src="images/drc_logo.jpg")
-			span(class="titlebar")= title
-		div(id="tabs")
+			img.titlebar_logo(src="images/drc_logo.jpg")
+			span.titlebar= title
+		div#tabs
 			ul
 				li
 					a(href="#tabs-1") 顧客管理
@@ -27,19 +27,19 @@ html
 					a(href="#tabs-3") 社員情報管理
 				li
 					a(href="#tabs-4") 試験テンプレート管理
-			div(id="tabs-1")
+			div#tabs-1
 				p 顧客管理
-			div(id="tabs-2")
-				div(class="toolbar")
-					a(class="tool_button_a" id="add_subject") 追 加
-					a(class="tool_button_a" id="edit_subject") 編 集
-					a(class="tool_button_a" id="del_subject") 削 除
-				div(class="admin_div")
-					table(id="subjects_list")
-					div(id="subjects_pager")
-				div(id="subject_dialog")
+			div#tabs-2
+				div.toolbar
+					a.tool_button_a#add_subject 追 加
+					a.tool_button_a#edit_subject 編 集
+					a.tool_button_a#del_subject 削 除
+				div.admin_div
+					table#subjects_list
+					div#subjects_pager
+				div#subject_dialog
 					p 被験者管理
-			div(id="tabs-3")
+			div#tabs-3
 				p 社員情報管理
-			div(id="tabs-4")
+			div#tabs-4
 				p 試験テンプレート管理

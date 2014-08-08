@@ -26,4 +26,5 @@
 	CalendarTable.init("calendar_div3",2014,6);
 	CalendarTable.init("calendar_div4",2014.6);
 	$(".datepicker").datepicker({dateFormat:"yy/mm/dd"});
+
 });
