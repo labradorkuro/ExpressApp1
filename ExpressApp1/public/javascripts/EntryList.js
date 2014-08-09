@@ -25,7 +25,7 @@ $(function() {
 		colNames:['案件No','案件名','問合せ日', '案件ステータス', '拠点CD','担当者','見積番号','見積発行日'
 				,'受注日','仮受注チェック','受注区分','試験課','作成日','作成者','更新日','更新者'],
 		colModel:[
-			{name: 'entry_no', index: 'entry_no', width: 110 },
+			{name: 'entry_no', index: 'entry_no', width: 110, align: "center" },
 			{name:'entry_title', index:'entry_title', width:200, align:"center"},
 			{name:'inquiry_date', index:'inquiry_date', width:100},
 			{name:'entry_status', index:'entry_status', width:100},
@@ -51,9 +51,11 @@ $(function() {
 		caption:"案件リスト"
 	});
 	jQuery("#entry_list").jqGrid('navGrid','#entry_pager',{edit:false,add:false,del:false});
-	entryList.changeFontSize('1.6em');
+	entryList.changeFontSize('1.2em');
 	// 追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_entry").click(entryList.openEditWindow);
+	// 編集ボタンイベント（登録・編集用画面の表示）
+	$("#edit_entry").click(entryList.openEditWindow);
 	// オーバーレイ表示する（元の画面全体をグレー表示にする）	
 	$("body").append("<div id='graylayer'></div><div id='overlayer'></div>");
 	//$("#graylayer").css("height","100%");
@@ -66,12 +68,13 @@ var entryList = entryList || {};
 
 // 表示フォントサイズ変更
 entryList.changeFontSize = function(size){
-    $('div.ui-jqgrid').css('font-size', size);
+	$('div.ui-jqgrid').css('font-size', size);
+	$('div.ui-jqgrid-view').css('font-size', size);
     $('table.ui-jqgrid-htable th').css('font-size', size);
     $('table.ui-jqgrid-htable th').css('height', size)
         .children('div').css('height', size);
-    $('div.ui-jqgrid-pager').css('height', size);
-    $('div.ui-jqgrid-pager').css('font-size', '1em');
+    $('div.ui-jqgrid-pager').css('height', '1.6em');
+    $('div.ui-jqgrid-pager').css('font-size', '1.2em');
     $('.ui-pg-input').css('height', '1.3em');
     $('.ui-pg-selbox').css('height', '1.3em');
 };
@@ -79,10 +82,11 @@ entryList.changeFontSize = function(size){
 // 編集用画面の表示
 entryList.openEditWindow = function() {
 	$("#graylayer").show();
+	var no = '140808013';
 	var margin_top = $("#overlayer").height() / 2;
 	var margin_left = $("#overlayer").width() / 2;
 	// 表示する内容を読込む
-	$("#overlayer").show().html("<iframe id='entry_modal' src='entry_edit'></iframe>").css({"margin-top":"-" + margin_top + "px","margin-left":"-" + margin_left + "px"});
+	$("#overlayer").show().html("<iframe id='entry_modal' src='entry_edit/" + no + "'></iframe>").css({"margin-top":"-" + margin_top + "px","margin-left":"-" + margin_left + "px"});
 	//$("#overlayer img.close").click(function(){
 	//	$("#overlayer").hide();
 	//	$("#graylayer").hide();

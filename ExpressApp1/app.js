@@ -55,10 +55,10 @@ app.get('/dbsamples', db.samples);
 app.get('/db', db.list);
 app.post('/dbpost',db.post);
 app.get('/admin',admin.list);
-app.get('/entry_edit',entry_edit.list);
+app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
 app.post('/entry_post', entry_post.entry_post);
-app.get('/entry_get', entry_get.entry_get);
+app.get('/entry_get/:no?', entry_get.entry_get);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
