@@ -317,8 +317,9 @@ a.gt_milestone {
 a.gt_button:hover {
     background: #777777;
 }
-//
-// for Portal Menu
+/*
+*  for Portal Menu
+*/
 div.main_menu {
     position:relative;
     top:20px;
@@ -817,4 +818,8 @@ a.general_button {
 
 a.general_button:hover{
     background:#777777;
+}
+/* 入力フィールドの右詰 */
+.num_type {
+    text-align: right;
 }

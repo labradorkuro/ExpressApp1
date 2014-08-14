@@ -73,7 +73,7 @@
     <Content Include="README.md" />
     <Content Include="views\admin.jade" />
     <Content Include="views\calendar.jade" />
-    <Content Include="views\entry_estimate_dialog.jade" />
+    <Content Include="views\entry_quote_dialog.jade" />
     <Content Include="views\entry_form.jade" />
     <Content Include="views\entry_list.jade" />
     <Content Include="views\entry_edit.jade" />

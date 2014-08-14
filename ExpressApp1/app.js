@@ -58,7 +58,9 @@ app.get('/admin',admin.list);
 app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
 app.post('/entry_post', entry_post.entry_post);
+app.post('/quote_post', entry_post.quote_post);
 app.get('/entry_get/:no?', entry_get.entry_get);
+app.get('/quote_get/:entry_no?', entry_get.quote_get);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

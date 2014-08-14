@@ -80,9 +80,13 @@ entryList.changeFontSize = function(size){
 };
 
 // 編集用画面の表示
-entryList.openEditWindow = function() {
+entryList.openEditWindow = function(sender) {
 	$("#graylayer").show();
-	var no = '140808013';
+	var no = '';
+
+	if ($(sender.target).attr('id') == 'edit_entry') {
+		no = entryList.getSelectEntry();
+	}
 	var margin_top = $("#overlayer").height() / 2;
 	var margin_left = $("#overlayer").width() / 2;
 	// 表示する内容を読込む
@@ -94,3 +98,13 @@ entryList.openEditWindow = function() {
 	return false;
 };
 
+entryList.getSelectEntry = function () {
+	var no = "";
+	var grid = $("#entry_list");
+	var id = grid.getGridParam('selrow');
+	if (id != null) {
+		var row = grid.getRowData(id);
+		no = row.entry_no;
+	}
+	return no;
+};

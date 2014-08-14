@@ -15,8 +15,8 @@ exports.create = function(req, res){
 			+ "entry_title VARCHAR(128),"		// 案件名
 			+ "inquiry_date DATE,"				// 問合せ日
 			+ "entry_status VARCHAR(2),"		// 案件ステータス
-			+ "quoto_no VARCHAR(9),"			// 見積番号
-			+ "quoto_issue_date DATE,"			// 見積書発行日
+			+ "quote_no VARCHAR(9),"			// 見積番号
+			+ "quote_issue_date DATE,"			// 見積書発行日
 			+ "order_accepted_date DATE,"			// 受注日付
 			+ "order_accept_check INT(1),"		// 仮受注日チェック
 			+ "acounting_period_no INT(1),"		// 会計期No
@@ -41,40 +41,44 @@ exports.create = function(req, res){
 			+ "confirm_check_date DATE,"		// 確認日
 			+ "confirm_check INT(1),"			// 確認完了チェック
 			+ "confirm_operator_id VARCHAR(32),"	// 確認者ID
-			+ "created TIMESTAMP,"				// 作成日
+			+ "created TIMESTAMP not null default 0,"				// 作成日
 			+ "created_id VARCHAR(32),"			// 作成者ID
-			+ "updated TIMESTAMP,"				// 更新日
+			+ "updated TIMESTAMP not null on update current_timestamp default current_timestamp,"				// 更新日
 			+ "updated_id VARCHAR(32)"			// 更新者ID
 			+ ", INDEX(entry_no));",
-		"CREATE TABLE IF NOT EXISTS drc_sch.entry_detail_info ("	// 案件明細データ
+		"CREATE TABLE IF NOT EXISTS drc_sch.quote_info ("	// 案件明細データ
 			+ "entry_no VARCHAR(10),"			// 案件No
-			+ "quoto_detail_no VARCHAR(7),"		// 明細番号
+			+ "quote_no VARCHAR(9),"			// 見積番号
+			+ "quote_detail_no VARCHAR(7),"		// 明細番号
 			+ "test_item_cd VARCHAR(3),"		// 試験項目CD
-			+ "test_item VARCHAR(255),"			// 試料名または試験項目名
+			+ "test_item VARCHAR(255),"			// 試験項目名
+			+ "sample_name VARCHAR(255),"		// 試料名
 			+ "arrive_date DATE,"				// 到着日
 			+ "test_planning_no VARCHAR(12),"	// 試験計画書番号
-			+ "monitor_num INT(5),"				// 被験者数
+			+ "monitors_num INT(5),"			// 被験者数
 			+ "sample_volume INT(5),"			// 検体数
+			+ "final_report_no VARCHAR(12),"	// 報告書番号
 			+ "final_report_limit DATE,"		// 報告書提出期限
 			+ "final_report_date DATE,"			// 報告書提出日
 			+ "quick_report_limit1 DATE,"		// 速報提出期限1
 			+ "quick_report_date1 DATE,"		// 速報提出日1
 			+ "quick_report_limit2 DATE,"		// 速報提出期限2
 			+ "quick_report_date2 DATE,"		// 速報提出日2
-			+ "expetc_value DECIMAL(9,2),"		// 期待値・設定値
+			+ "expect_value DECIMAL(9,2),"		// 期待値・設定値
 			+ "descript_value VARCHAR(255),"	// 値説明
+			+ "unit_cd VARCHAR(5),"				// 単位CD
 			+ "unit VARCHAR(5),"				// 単位
 			+ "unit_price DECIMAL(9,2),"		// 単価
-			+ "qantity INT(11),"				// 数量
-			+ "quoto_price DECIMAL(9,2),"		// 見積金額
+			+ "quantity INT(11),"				// 数量
+			+ "quote_price DECIMAL(9,2),"		// 見積金額
 			+ "test_memo VARCHAR(128),"			// 備考
-			+ "delete_check INT(1),"			// 削除フラグ
-			+ "delete_reason VARCHAR(255),"		// 削除理由
-			+ "created TIMESTAMP,"				// 作成日
+			+ "quote_delete_check INT(1),"			// 削除フラグ
+			+ "quote_delete_reason VARCHAR(255),"		// 削除理由
+			+ "created TIMESTAMP not null default 0,"				// 作成日
 			+ "created_id VARCHAR(32),"			// 作成者ID
-			+ "updated TIMESTAMP,"				// 更新日
+			+ "updated TIMESTAMP not null on update current_timestamp default current_timestamp,"				// 更新日
 			+ "updated_id VARCHAR(32)"			// 更新者ID
-			+ ", INDEX(entry_no,quoto_detail_no));",
+			+ ", INDEX(entry_no,quote_detail_no));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.base_info ("		// 拠点マスタ
 			+ "base_cd VARCHAR(2),"				// 拠点CD
 			+ "base_name VARCHAR(32)"			// 拠点名
@@ -83,10 +87,19 @@ exports.create = function(req, res){
 			+ "division VARCHAR(2),"			// 事業部ID
 			+ "division_name VARCHAR(32)"		// 事業部名
 			+ ", INDEX(division));",
-		"CREATE TABLE IF NOT EXISTS drc_sch.entry_number ("		// 案件カウント
-			+ "entry_date DATE,"				// 案件登録日付
-			+ "entry_count INT(4)"				// 案件登録カウント
+		"CREATE TABLE IF NOT EXISTS drc_sch.entry_number (" // 案件番号管理テーブル
+			+ "entry_date DATE," // 案件登録日付
+			+ "entry_count INT(4)" // 案件登録数
 			+ ", INDEX(entry_date));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.quote_number (" // 試験（見積）番号管理テーブル
+			+ "quote_date DATE," // 試験（見積）登録日付
+			+ "quote_count INT(4)"	// 試験（見積）登録数
+			+", INDEX(quote_date));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.quote_detail_number (" // 試験（見積）明細番号管理テーブル
+			+ "quote_no VARCHAR(9)," // 試験（見積）番号（yymmdd###)
+			+ "quote_detail_count INT(4)," // 試験（見積）明細登録数
+			+ "entry_no VARCHAR(10)"
+			+", INDEX(quote_no));",
 		
 		"CREATE TABLE IF NOT EXISTS drc_sch.sales_info (sales_id INT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,name VARCHAR(128) NOT NULL,customer_code VARCHAR(128),estimate INT(5),regist_date DATE,order_date DATE,money_receive_date DATE,money_received_date DATE,sales_user_id VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_id,sales_no));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",

@@ -1,0 +1,112 @@
+﻿form#quoteForm(method="post",action="javascript:return false;")
+	table.dlg_table
+		tr
+			td 見積番号
+			td
+				input#quote_no_dlg(type="text" name="quote_no_dlg" readonly="true" placeholder="見積番号")
+			td 見積明細番号
+			td
+				input#quote_detail_no(type="text" name="quote_detail_no" readonly="true" placeholder="見積明細番号")
+		tr
+			td 見積明細履歴番号
+			td(colspan='3')
+				input#quote_hist_no(type="text"  name="quote_hist_no" placeholder="見積明細履歴番号")
+		tr
+			td 削除フラグ
+			td
+				input#quote_delete_check(type="checkbox" name="quote_delete_check" value="0")
+				label 削除
+			td 削除理由
+			td
+				input#quote_delete_reason(type="text" name="quote_delete_reason" )
+	hr
+	table.dlg_table
+		tr
+			td 試験項目CD
+			td
+				input#test_item_cd(type="text"  name="test_item_cd" placeholder="試験項目CD")
+			td 試験項目名
+			td
+				input#test_item(type="text"  name="test_item" placeholder="試験項目名")
+		tr
+			td 試料名
+			td(colspan='3')
+				input#sample_name(type="text"  name="sample_name" placeholder="試料名")
+		tr
+			td 到着日
+			td
+				input.datepicker#arrive_date(type="text"  name="arrive_date" placeholder="到着日")
+			td 試験計画書番号
+			td
+				input#test_planning_no(type="text"  name="test_planning_no" placeholder="計画書番号")
+		tr
+			td 検体数
+			td
+				input.num_type#sample_volume(type="text"  name="sample_volume" placeholder="検体数")
+			td 被験者数
+			td
+				input.num_type#monitors_num(type="text"  name="monitors_num" placeholder="被験者数")
+	hr
+	table.dlg_table
+		tr
+			td 期待値/設定値
+			td
+				input.num_type#expect_value(type="text"  name="expect_value" placeholder="期待値/設定値")
+			td 値説明
+			td
+				textarea#descript_value(cols="20"  name="descript_value" rows="3")
+		tr
+			td 単位CD
+			td 
+				select#unit_cd(name="unit_cd")
+					option(value="01") 式
+					option(value="02") 名
+					option(value="03") 回
+					option(value="04") 冊
+					option(value="05") その他
+			td 単位
+			td
+				input#unit(type="text"  name="unit" placeholder="単位")
+		tr
+			td 単価
+			td
+				input.num_type#unit_price(type="text"  name="unit_price" placeholder="単価")
+			td 数量
+			td
+				input.num_type#quantity(type="text"  name="quantity" placeholder="数量")
+		tr
+			td 見積金額
+			td
+				input.num_type#quote_price(type="text"  name="quote_price" placeholder="見積金額")
+	hr
+	table.dlg_table
+		tr
+		tr
+			td 報告書番号
+			td
+				input#final_report_no(type="text"  name="final_report_no" placeholder="報告書番号")
+		tr
+			td 報告書提出期限
+			td
+				input.datepicker#final_report_limit(type="text"  name="final_report_limit" placeholder="報告書提出期限")
+			td 報告書提出日
+			td
+				input.datepicker#final_report_date(type="text"  name="final_report_date" placeholder="報告書提出日")
+		tr
+			td 速報提出期限1
+			td
+				input.datepicker#quick_report_limit1(type="text"  name="quick_report_limit1" placeholder="速報提出期限1")
+			td 速報提出日1
+			td
+				input.datepicker#quick_report_date1(type="text"  name="quick_report_date1" placeholder="速報提出日1")
+		tr
+			td 速報提出期限2
+			td
+				input.datepicker#quick_report_limit2(type="text"  name="quick_report_limit2" placeholder="速報提出期限2")
+			td 速報提出日2
+			td
+				input.datepicker#quick_report_date2(type="text"  name="quick_report_date2" placeholder="速報提出日2")
+		tr
+			td 備考（試験関連）
+			td
+				input#test_memo(type="text"  name="test_memo" placeholder="備考（試験関連）")
