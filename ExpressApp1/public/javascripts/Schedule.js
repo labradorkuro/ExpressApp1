@@ -21,8 +21,8 @@
 				}
 			}
 	});
-	GanttTable.Init("ganttTable_div1","2014/05/07","2014/05/13",1,1);
-	GanttTable.Init("ganttTable_div2","2014/05/07","2014/05/13",2,1);
+	GanttTable.Init("ganttTable_div1","2014/08/21","2014/09/21",1,1);
+	GanttTable.Init("ganttTable_div2","2014/08/21","2014/11/21",2,1);
 	GanttTable.Init("ganttTable_div3","2014/05/07","2014/05/13",3,1);
 	GanttTable.Init("ganttTable_div4","2014/05/07","2014/05/13",4,1);
 	$(".datepicker").datepicker({dateFormat:"yy/mm/dd"});

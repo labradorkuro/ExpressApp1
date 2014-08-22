@@ -66,14 +66,14 @@ span.titlebar {
     /*height:20px;*/
     margin-left:auto;
     margin-right:auto;
-
 }
 
 div.gantt_table {
     position:relative;
     border:1px #000000 solid;
-    width:945px;
+    width:100%;/*945px;*/
     font-size:small;
+    overflow:auto;
 }
 div.gt_left_div {
     float:left;
@@ -103,7 +103,7 @@ div.gt_left_top1_div {
     border-left:none;
     border-right:1px #777777 solid;
     width:240px;
-    height:4.1em;
+    height:4em;
     
 }
 div.gt_left_top2_div {
@@ -137,7 +137,8 @@ div.gt_right_top_div {
     border-bottom:1px #777777 solid;
     border-left:1px #777777 solid;
     border-right:  1px #000000 solid;
-    width:703px;
+    /*width:703px;*/
+    width:100%;
     height:6em;
     background-color:#ecf9d2;
 }
@@ -148,7 +149,8 @@ div.gt_right_top1_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:703px;
+    /*width:703px;*/
+    width:100%;
     height:2em;
     background-color:#ecf9d2;
     
@@ -160,7 +162,8 @@ div.gt_right_top2_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:703px;
+    /*width:703px;*/
+    width:100%;
     height:2em;
     background-color:#ecf9d2;
 
@@ -172,7 +175,8 @@ div.gt_right_top3_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:703px;
+    /*width:703px;*/
+    width:100%;
     height:2em;
     background-color:#ecf9d2;
 
@@ -237,6 +241,21 @@ div.gt_right_row_div {
 
 }
 div.gt_cal_header {
+    position:absolute;
+    float:left;
+    top:0px;
+    left:0px;
+    font-size:1em;
+    width:100px;
+    height:1.5em;
+    padding-top:0.25em;
+    padding-left:2em;
+    margin-top:2px;
+    margin-left:0px;
+    text-align:left;
+    font-weight:bold;
+}
+div.gt_cal_header_date {
     position:absolute;
     float:left;
     top:0px;
