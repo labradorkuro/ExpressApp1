@@ -60,7 +60,9 @@ app.get('/entry_list', entry_list.list);
 app.post('/entry_post', entry_post.entry_post);
 app.post('/quote_post', entry_post.quote_post);
 app.get('/entry_get/:no?', entry_get.entry_get);
+app.get('/entry_get/term/:start/:end/:test_type', entry_get.entry_get);
 app.get('/quote_get/:entry_no?', entry_get.quote_get);
+app.get('/quote_gantt/:entry_no?', entry_get.quote_gantt);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

@@ -14,7 +14,12 @@ var connection = mysql.createConnection({
 
 // 案件基本データのGET
 exports.entry_get = function (req, res) {
-	if ((req.params.no != undefined) && (req.params.no != '')) {
+	if ((req.params.start != undefined) && (req.params.start != '')) {
+		if ((req.params.end != undefined) && (req.params.end != '')) {
+			entry_get_list_term(req, res);
+		}
+	}	
+	else if ((req.params.no != undefined) && (req.params.no != '')) {
 		entry_get_detail(req, res);
 	} else {
 		entry_get_list(req, res);
@@ -41,9 +46,41 @@ var entry_get_list = function (req, res) {
 		+ 'DATE_FORMAT(updated,"%Y/%m/%d %H:%i:%s") AS updated,' 
 		+ 'updated_id' 
 		+ ' FROM drc_sch.entry_info WHERE delete_check = ? ORDER BY entry_no DESC';
+	return entry_get_list_for_grid(res, sql,[0]);
+};
+
+// 案件リストの取得（ガントチャート用）
+var entry_get_list_term = function (req, res) {
+	var start_date = req.params.start;
+	var end_date = req.params.end;
+	var sql = 'SELECT ' 
+		+ 'entry_no,' 
+		+ 'entry_title,' 
+		+ 'DATE_FORMAT(inquiry_date, "%Y/%m/%d") AS inquiry_date,' 
+		+ 'entry_status,' 
+		+ 'base_cd,' 
+		+ 'person_id,' 
+		+ 'quote_no,' 
+		+ 'DATE_FORMAT(quote_issue_date,"%Y/%m/%d") AS quote_issue_date,' 
+		+ 'DATE_FORMAT(order_accepted_date,"%Y/%m/%d") AS order_accepted_date,' 
+		+ 'order_accept_check,' 
+		+ 'order_type,' 
+		+ 'division,' 
+		+ 'DATE_FORMAT(created,"%Y/%m/%d %H:%i:%s") AS created,' 
+		+ 'created_id,' 
+		+ 'DATE_FORMAT(updated,"%Y/%m/%d %H:%i:%s") AS updated,' 
+		+ 'updated_id' 
+		+ ' FROM drc_sch.entry_info WHERE delete_check = ?' 
+		+ ' AND division = ?'
+		//+ ' AND order_accept_date NOT NULL '
+		+ ' ORDER BY entry_no ASC ';
+	return entry_get_list_for_gantt(res, sql,[0,req.params.test_type]);
+};
+
+var entry_get_list_for_grid = function (res, sql, params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
-	connection.query(sql, [0], function (err, rows) {
+	connection.query(sql, params, function (err, rows) {
 		if (err) throw err;
 		result.records = rows.length;
 		for (var i in rows) {
@@ -73,6 +110,22 @@ var entry_get_list = function (req, res) {
 			row.cell.push(rows[i].updated_id);			// 更新者ID
 			result.rows.push(row);
 		}
+		res.send(result);
+	});
+};
+
+// ガントチャート用案件データリスト取得
+var entry_get_list_for_gantt = function (res, sql, params) {
+	var result = { page: 1, total: 20, records: 0, rows: [] };
+	// SQL実行
+	connection.query(sql, params, function (err, rows) {
+		if (err) throw err;
+		result.records = rows.length;
+		for (var i in rows) {
+			var entry = rows[i];
+			rows[i].quote = [];
+		}
+		result.rows = rows;
 		res.send(result);
 	});
 };
@@ -139,6 +192,11 @@ exports.quote_get = function (req, res) {
 		}
 	}
 };
+// 試験（見積）明細データの取得（ガントチャート用）
+exports.quote_gantt = function (req, res) {
+	quote_get_list_for_gantt(req, res);
+};
+
 // 試験（見積）明細リストの取得
 var quote_get_list = function (req, res) {
 	var sql = 'SELECT ' 
@@ -208,9 +266,55 @@ var quote_get_list = function (req, res) {
 			row.cell.push(rows[i].test_memo);			// 備考
 			row.cell.push(rows[i].created);
 			row.cell.push(rows[i].created_id);
-			row.cell.push(rows[i].updated); 
-			row.cell.push(rows[i].updated_id); 
+			row.cell.push(rows[i].updated);
+			row.cell.push(rows[i].updated_id);
 			result.rows.push(row);
+		}
+		res.send(result);
+	});
+};
+
+
+// 試験（見積）明細リストの取得（ガントチャート用）
+var quote_get_list_for_gantt = function (req, res) {
+	var sql = 'SELECT ' 
+		+ 'quote_no,' // 見積番号
+		+ 'quote_detail_no,' // 明細番号
+		+ 'test_item_cd,' // 試験項目CD
+		+ 'test_item,' // 試験項目名
+		+ 'sample_name,' // 試料名
+		+ 'DATE_FORMAT(arrive_date,"%Y/%m/%d") AS arrive_date,' // 到着日
+		+ 'test_planning_no,' // 試験計画書番号
+		+ 'monitors_num,' // 被験者数
+		+ 'sample_volume,' // 検体数
+		+ 'final_report_no,' // 報告書番号
+		+ 'DATE_FORMAT(final_report_limit,"%Y/%m/%d") AS final_report_limit,' // 報告書提出期限
+		+ 'DATE_FORMAT(final_report_date,"%Y/%m/%d") AS final_report_date,' // 報告書提出日
+		+ 'DATE_FORMAT(quick_report_limit1,"%Y/%m/%d") AS quick_report_limit1,' // 速報提出期限1
+		+ 'DATE_FORMAT(quick_report_date1,"%Y/%m/%d") AS quick_report_date1,' // 速報提出日1
+		+ 'DATE_FORMAT(quick_report_limit2,"%Y/%m/%d") AS quick_report_limit2,' // 速報提出期限2
+		+ 'DATE_FORMAT(quick_report_date2,"%Y/%m/%d") AS quick_report_date2,' // 速報提出日2
+		+ 'expect_value,' // 期待値・設定値
+		+ 'descript_value,' // 値説明
+		+ 'unit_cd,' // 単位CD
+		+ 'unit,' // 単位
+		+ 'unit_price,' // 単価
+		+ 'quantity,' // 数量
+		+ 'quote_price,' // 見積金額
+		+ 'test_memo,' // 備考
+		+ 'quote_delete_check,' // 削除フラグ
+		+ 'quote_delete_reason,' // 削除理由
+		+ 'DATE_FORMAT(created,"%Y/%m/%d %H:%i:%s") AS created,' 
+		+ 'created_id,' 
+		+ 'DATE_FORMAT(updated,"%Y/%m/%d %H:%i:%s") AS updated,' 
+		+ 'updated_id' 
+		+ ' FROM drc_sch.quote_info WHERE quote_delete_check = ? AND entry_no = ? ORDER BY quote_detail_no ASC';
+	// SQL実行
+	var result = [];
+	connection.query(sql, [0,entry_no], function (err, rows) {
+		if (err) throw err;
+		for (var i in rows) {
+			result.push(rows[i]);
 		}
 		res.send(result);
 	});

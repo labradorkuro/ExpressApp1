@@ -92,7 +92,7 @@ div.gt_left_top_div {
     border-left:none;
     border-right:none;
     width:240px;
-    height:6em;
+    height:72px;
 
 }
 div.gt_left_top1_div {
@@ -103,7 +103,7 @@ div.gt_left_top1_div {
     border-left:none;
     border-right:1px #777777 solid;
     width:240px;
-    height:4em;
+    height:49px;
     
 }
 div.gt_left_top2_div {
@@ -114,7 +114,7 @@ div.gt_left_top2_div {
     border-left:none;
     border-right:1px #777777 solid;
     width:240px;
-    height:2em;
+    height:24px;
     background-color:#ecf9d2;
 
 }
@@ -139,7 +139,7 @@ div.gt_right_top_div {
     border-right:  1px #000000 solid;
     /*width:703px;*/
     width:100%;
-    height:6em;
+    height:72px;
     background-color:#ecf9d2;
 }
 div.gt_right_top1_div {
@@ -151,7 +151,7 @@ div.gt_right_top1_div {
     border-right:none;
     /*width:703px;*/
     width:100%;
-    height:2em;
+    height:24px;
     background-color:#ecf9d2;
     
 }
@@ -164,7 +164,7 @@ div.gt_right_top2_div {
     border-right:none;
     /*width:703px;*/
     width:100%;
-    height:2em;
+    height:24px;
     background-color:#ecf9d2;
 
 }
@@ -177,7 +177,7 @@ div.gt_right_top3_div {
     border-right:none;
     /*width:703px;*/
     width:100%;
-    height:2em;
+    height:24px;
     background-color:#ecf9d2;
 
 }
@@ -190,10 +190,11 @@ div.gt_category1_div {
     border-bottom:none;
     border-left:1px #777777 solid;
     width:120px;
-    height:2em;
+    height:24px;
     font-weight:bold;
     padding-left:4px;
-    padding-top:0.25em;
+    padding-top:2px;
+    margin-top:2px;
     word-wrap:break-word;
     overflow:hidden;
 }
@@ -207,9 +208,11 @@ div.gt_category2_div {
     border-left:1px #777777 solid;
     border-right:none;
     width:120px;
-    height:2em;
+    height:24px;
     font-weight:bold;
     padding-left:4px;
+    padding-top:2px;
+    margin-top:2px;
     word-wrap:break-word;
     overflow:hidden;
 }
@@ -324,12 +327,12 @@ a.gt_milestone {
     left:0px;
     font-size:1em;
     display:block;
-    width:32px;
+    width:200px;
     height:32px;
-    padding-top:0.25em;
-    margin-top:4px;
+    padding-top:0px;
+    margin-top:0px;
     margin-left:0px;
-    text-align:center;
+    text-align:left;
     border:none;
 }
 
