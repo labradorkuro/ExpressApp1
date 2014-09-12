@@ -21,6 +21,39 @@ scheduleCommon.closeModalWindow = function() {
 };
 
 // カレンダー
+scheduleCommon.getToday = function (format_str) {
+	var d = new Date();
+	return scheduleCommon.getDateString(d, format_str);
+/*
+	var date_format = this.format(format_str,
+			d.getFullYear(),
+			d.getMonth() + 1 < 10 ? "0" + (d.getMonth() + 1) : (d.getMonth() + 1),
+		    d.getDate() < 10 ? "0" + d.getDate() : d.getDate()
+	);
+	return date_format;
+*/
+};
+scheduleCommon.getDateString = function(date,format_str) {
+	var date_format = scheduleCommon.format(format_str,
+			date.getFullYear(),
+			date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1),
+		    date.getDate() < 10 ? "0" + date.getDate() : date.getDate()
+	);
+	return date_format;
+};
+scheduleCommon.format = function (fmt, a) {
+	var rep_fn = undefined;
+	
+	if (typeof a == "object") {
+		rep_fn = function (m, k) { return a[ k ]; }
+	}
+	else {
+		var args = arguments;
+		rep_fn = function (m, k) { return args[ parseInt(k) + 1 ]; }
+	}
+	
+	return fmt.replace(/\{(\w+)\}/g, rep_fn);
+};
 
 // 月の日数を取得する
 scheduleCommon.getDaysCount = function(year,month) {
@@ -39,6 +72,14 @@ scheduleCommon.addDayCount = function(year,month,date,count) {
 	var d = new Date(year,month - 1 ,date ,0,0,0,0);
 	var t = d.getTime();
 	t = t + (count * 86400000);
+	d.setTime(t);
+	return d;
+};
+// 開始日付＋日数
+scheduleCommon.addDate = function (start_date, count) {
+	var t = start_date.getTime();
+	t = t + (count * 86400000);
+	var d = new Date();
 	d.setTime(t);
 	return d;
 };

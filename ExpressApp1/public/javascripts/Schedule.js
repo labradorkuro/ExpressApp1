@@ -2,15 +2,15 @@
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
 	$( "#tabs" ).tabs();
 					
-	$('#schedule_dialog').dialog({
+	$('#workitem_dialog').dialog({
 		autoOpen: false,
-		width:'400px',
-		title: 'スケジュールの詳細',
+		width:'700px',
+		title: '作業項目の編集',
 		closeOnEscape: false,
 		modal: true,
 			buttons: {
 				"追加": function(){
-					scheduleManagement.addSchedule();
+					workitemEdit.addItem();
 					$(this).dialog('close');
 				},
 				"OK": function(){
@@ -21,81 +21,60 @@
 				}
 			}
 	});
-	GanttTable.Init("ganttTable_div1","2014/09/01","2014/11/30",01,1);
-	GanttTable.Init("ganttTable_div2","2014/08/21","2014/11/21","02",1);
-	GanttTable.Init("ganttTable_div3","2014/05/07","2014/05/13",03,1);
-	GanttTable.Init("ganttTable_div4","2014/05/07","2014/05/13",04,1);
-	$(".datepicker").datepicker({dateFormat:"yy/mm/dd"});
-	$("#add_schedule_1").click(scheduleManagement.openDialog);
-	$("#add_schedule_2").click(scheduleManagement.openDialog);
-	$("#add_schedule_3").click(scheduleManagement.openDialog);
-	$("#add_schedule_4").click(scheduleManagement.openDialog);
-	$("#dlg_tests").change(scheduleManagement.getSubjects);
+	var today = scheduleCommon.getToday("{0}/{1}/{2}");
+	GanttTable.start_date = today;
+	GanttTable.disp_span = 1;
+	GanttTable.Init("ganttTable_div1","01",1);
+	GanttTable.Init("ganttTable_div2","02",1);
+	GanttTable.Init("ganttTable_div3","03",1);
+	GanttTable.Init("ganttTable_div4","04",1);
+	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
+	$("#prev_btn").click(workitemEdit.prev);
+	$("#next_btn").click(workitemEdit.next);
 });
-var	scheduleManagement = scheduleManagement || {};
-scheduleManagement.openDialog = function() {
-	$.ajax({
-		url: 'db?q=2',
-		cache: false,
-		dataType:'json',
-		success: function(tests){
-			scheduleManagement.setTestList(tests);				
-			$("#schedule_dialog").dialog("open");
-		}
-	});
+var workitemEdit = workitemEdit || {};
+workitemEdit.openDialog = function (event) {
+	$("#entry_no").val(event.data.entry_no);
+	$("#entry_title").val(event.data.entry_title);
+	$("#workitem_dialog").dialog("open");
 };
 
-scheduleManagement.setTestList = function(tests) {
-	$("#dlg_tests").empty();
-	$("#dlg_tests").append("<option value='0'>選択して下さい</option>");
-	for(var i = 0;i < tests.rows.length;i++) {
-		$("#dlg_tests").append("<option value='" + tests.rows[i].test_id + "'>" + tests.rows[i].name + "</option>");
+workitemEdit.addItem = function() {
+	// formデータの取得
+	var form = workitemEdit.getFormData();
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/workitem_post', true);
+	xhr.responseType = 'json';
+	xhr.onload = workitemEdit.onloadWorkitemReq;
+	xhr.send(form);
+};
+// formデータの取得
+workitemEdit.getFormData = function () {
+	var form = new FormData(document.querySelector("#workitemForm"));
+	// 新規追加時は-1を入れておく
+	form.append('work_item_id', '-1');
+	return form;
+};
+// 保存後のコールバック
+workitemEdit.onloadEntryReq = function (e) {
+	if (this.status == 200) {
+		var workitem = this.response;
+		// formに取得したデータを埋め込む
+		$("#entry_no").val(workitem.entry_no); // 案件No
+		
 	}
 };
-scheduleManagement.setSubjectList = function(subjects) {
-	$("#dlg_subjects").empty();
-	for(var i = 0;i < subjects.rows.length;i++) {
-		$("#dlg_subjects").append("<option value='" + subjects.rows[i].subject_no + "'>" + subjects.rows[i].name + "</option>");
-	}
+workitemEdit.prev = function () {
+	GanttTable.prev();
+	GanttTable.Init("ganttTable_div1", "01",1);
+	GanttTable.Init("ganttTable_div2", "02", 1);
+	GanttTable.Init("ganttTable_div3", "03", 1);
+	GanttTable.Init("ganttTable_div4", "04", 1);
 };
-scheduleManagement.getSubjects = function() {
-	$.ajax({
-		url: 'db?q=1',
-		cache: false,
-		dataType:'json',
-		success: function(subjects){
-			scheduleManagement.setSubjectList(subjects);
-		}
-	});
-};
-
-scheduleManagement.addSchedule = function() {
-	var test_id = $("#dlg_tests option:selected").val();
-	var patch_no = $("#dlg_patch_no option:selected").val();
-	var sd = $("#dlg_start_date").val();
-	var ed = $("#dlg_end_date").val();
-	var sdr = $("#dlg_start_date_r").val();
-	var edr = $("#dlg_end_date_r").val();
-	//$("#dlg_subjects option:selected").each(function() {
-	//	$(subject_no).push($(this).val());
-	//});
-	var post_data = "q=1&test_id=" + test_id + "&patch_no=" + patch_no + "&start_date=" + sd +"&end_date=" + ed + "&start_date_r=" + sdr + "&end_date_r=" + edr + "&subjects=";
-	var children = $("#dlg_subjects").children("option:selected");
-	var count = 0;
-	for(var i = 0;i < children.length;i++) {
-		//if ($(children[i]).attr("selected")) {
-			var v = $(children[i]).val();
-			if (count > 0) post_data += ",";
-			post_data += v;		
-			count++;
-		//}
-	}
-	$.ajax({
-	   type: "POST",
-	   url: "dbpost",
-	   data: post_data,
-	   success: function(msg){
-		 alert( "Data Saved: " + msg );
-	   }
-	 });
+workitemEdit.next = function () {
+	GanttTable.next();
+	GanttTable.Init("ganttTable_div1", "01", 1);
+	GanttTable.Init("ganttTable_div2", "02", 1);
+	GanttTable.Init("ganttTable_div3", "03", 1);
+	GanttTable.Init("ganttTable_div4", "04", 1);
 };

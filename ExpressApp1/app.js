@@ -17,6 +17,8 @@ var entry_edit = require('./routes/entry_edit');
 var entry_list = require('./routes/entry_list');
 var entry_post = require('./api/entry_post');
 var entry_get = require('./api/entry_get');
+var workitem_post = require('./api/workitem_post');
+var workitem_get = require('./api/workitem_get');
 
 var http = require('http');
 var path = require('path');
@@ -59,10 +61,12 @@ app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
 app.post('/entry_post', entry_post.entry_post);
 app.post('/quote_post', entry_post.quote_post);
+app.post('/workitem_post', workitem_post.workitem_post);
 app.get('/entry_get/:no?', entry_get.entry_get);
 app.get('/entry_get/term/:start/:end/:test_type', entry_get.entry_get);
 app.get('/quote_get/:entry_no?', entry_get.quote_get);
 app.get('/quote_gantt/:entry_no?', entry_get.quote_gantt);
+app.get('/workitem_get/:entry_no?', workitem_get.workitem_get);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

@@ -66,6 +66,7 @@ var entry_get_list_term = function (req, res) {
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
 		+ 'division,' 
+		+ 'DATE_FORMAT(prior_payment_limit,"%Y/%m/%d") AS prior_payment_limit,'
 		+ 'DATE_FORMAT(created,"%Y/%m/%d %H:%i:%s") AS created,' 
 		+ 'created_id,' 
 		+ 'DATE_FORMAT(updated,"%Y/%m/%d %H:%i:%s") AS updated,' 
@@ -311,7 +312,7 @@ var quote_get_list_for_gantt = function (req, res) {
 		+ ' FROM drc_sch.quote_info WHERE quote_delete_check = ? AND entry_no = ? ORDER BY quote_detail_no ASC';
 	// SQL実行
 	var result = [];
-	connection.query(sql, [0,entry_no], function (err, rows) {
+	connection.query(sql, [0,req.params.entry_no], function (err, rows) {
 		if (err) throw err;
 		for (var i in rows) {
 			result.push(rows[i]);

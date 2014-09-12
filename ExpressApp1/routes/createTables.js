@@ -81,11 +81,19 @@ exports.create = function(req, res){
 			+ ", INDEX(entry_no,quote_detail_no));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.base_info ("		// 拠点マスタ
 			+ "base_cd VARCHAR(2),"				// 拠点CD
-			+ "base_name VARCHAR(32)"			// 拠点名
+			+ "base_name VARCHAR(32),"			// 拠点名
+			+ "created TIMESTAMP not null default 0," // 作成日
+			+ "created_id VARCHAR(32)," // 作成者ID
+			+ "updated TIMESTAMP not null on update current_timestamp default current_timestamp," // 更新日
+			+ "updated_id VARCHAR(32)" // 更新者ID
 			+ ", INDEX(base_cd));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.division_info ("	// 事業部マスタ
 			+ "division VARCHAR(2),"			// 事業部ID
-			+ "division_name VARCHAR(32)"		// 事業部名
+			+ "division_name VARCHAR(32),"		// 事業部名
+			+ "created TIMESTAMP not null default 0," // 作成日
+			+ "created_id VARCHAR(32)," // 作成者ID
+			+ "updated TIMESTAMP not null on update current_timestamp default current_timestamp," // 更新日
+			+ "updated_id VARCHAR(32)" // 更新者ID
 			+ ", INDEX(division));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.entry_number (" // 案件番号管理テーブル
 			+ "entry_date DATE," // 案件登録日付
@@ -98,8 +106,24 @@ exports.create = function(req, res){
 		"CREATE TABLE IF NOT EXISTS drc_sch.quote_detail_number (" // 試験（見積）明細番号管理テーブル
 			+ "quote_no VARCHAR(9)," // 試験（見積）番号（yymmdd###)
 			+ "quote_detail_count INT(4)," // 試験（見積）明細登録数
-			+ "entry_no VARCHAR(10)"
-			+", INDEX(quote_no));",
+			+ "entry_no VARCHAR(10)" 
+			+ ", INDEX(quote_no));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.workitem_schedule (" // ガントチャート作業項目テーブル
+			+ "work_item_id INT(11) NOT NULL AUTO_INCREMENT,"		// 作業項目ID
+			+ "entry_no VARCHAR(10),"		// 案件番号（yymmdd-###)
+			+ "work_title VARCHAR(128),"	// 作業項目名称
+			+ "start_date DATE,"			// 作業開始予定日
+			+ "end_date DATE,"				// 作業終了予定日
+			+ "start_date_result DATE,"		// 作業開始日
+ 			+ "end_date_result DATE,"		// 作業終了日
+			+ "priority_item_id INT(11),"	// 先行（優先）項目
+			+ "subsequent_item_id INT(11)," // 後続項目
+			+ "progress INT(3),"				// 作業進捗度
+			+ "created TIMESTAMP not null default 0," // 作成日
+			+ "created_id VARCHAR(32)," // 作成者ID
+			+ "updated TIMESTAMP not null on update current_timestamp default current_timestamp," // 更新日
+			+ "updated_id VARCHAR(32)" // 更新者ID
+			+ ", INDEX(work_item_id, entry_no));",
 		
 		"CREATE TABLE IF NOT EXISTS drc_sch.sales_info (sales_id INT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,name VARCHAR(128) NOT NULL,customer_code VARCHAR(128),estimate INT(5),regist_date DATE,order_date DATE,money_receive_date DATE,money_received_date DATE,sales_user_id VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_id,sales_no));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",

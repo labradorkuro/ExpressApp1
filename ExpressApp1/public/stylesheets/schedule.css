@@ -73,7 +73,7 @@ div.gantt_table {
     border:1px #000000 solid;
     width:100%;/*945px;*/
     font-size:small;
-    overflow:auto;
+    /*overflow:auto;*/
 }
 div.gt_left_div {
     float:left;
@@ -82,7 +82,7 @@ div.gt_left_div {
     border-bottom: none;
     border-left: none;
     border-right: 1px #777777 solid;
-    width: 240px;
+    width: 20%;
 }
 
 div.gt_left_top_div {
@@ -91,7 +91,7 @@ div.gt_left_top_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:none;
-    width:240px;
+    width:100%;
     height:72px;
 
 }
@@ -102,7 +102,7 @@ div.gt_left_top1_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:1px #777777 solid;
-    width:240px;
+    width:100%;
     height:49px;
     
 }
@@ -113,7 +113,7 @@ div.gt_left_top2_div {
     border-bottom:1px #777777 solid;
     border-left:none;
     border-right:1px #777777 solid;
-    width:240px;
+    width:100%;
     height:24px;
     background-color:#ecf9d2;
 
@@ -123,12 +123,13 @@ div.gt_left_top2_div {
 div.gt_right_div {
     position:relative;
     top:0px;
-    left:240px;
+    left:0px;
     border-top: none;
     border-bottom: none;
     border-left: none;
     border-right: 1px #000000 solid;
-    width: 704px;
+    width: 78%;
+    overflow:auto;
 }
 div.gt_right_top_div {
 
@@ -148,7 +149,7 @@ div.gt_right_top1_div {
     border-top:none;
     border-bottom:1px #777777 solid;
     border-left:none;
-    border-right:none;
+    border-right:  1px #777777 solid;
     /*width:703px;*/
     width:100%;
     height:24px;
@@ -161,7 +162,7 @@ div.gt_right_top2_div {
     border-top:none;
     border-bottom:1px #777777 solid;
     border-left:none;
-    border-right:none;
+    border-right:  1px #777777 solid;
     /*width:703px;*/
     width:100%;
     height:24px;
@@ -174,7 +175,7 @@ div.gt_right_top3_div {
     border-top:none;
     border-bottom:1px #777777 solid;
     border-left:none;
-    border-right:none;
+    border-right:  1px #777777 solid;
     /*width:703px;*/
     width:100%;
     height:24px;
@@ -186,15 +187,13 @@ div.gt_category1_div {
     float:left;
     position:absolute;
     top:0px;
-    border-top:none;
     border-bottom:none;
-    border-left:1px #777777 solid;
-    width:120px;
-    height:24px;
+    width:50%;
+    height:32px;
     font-weight:bold;
-    padding-left:4px;
-    padding-top:2px;
-    margin-top:2px;
+    padding-left:0px;
+    padding-top:0px;
+    margin-top:0px;
     word-wrap:break-word;
     overflow:hidden;
 }
@@ -202,17 +201,17 @@ div.gt_category1_div {
 div.gt_category2_div {
     position:absolute;
     top:0px;
-    left:120px;
-    border-top:none;
+    left:50%;
+    border-top:1px #777777 solid;
     border-bottom:none;
     border-left:1px #777777 solid;
     border-right:none;
-    width:120px;
-    height:24px;
+    width:50%;
+    height:32px;
     font-weight:bold;
-    padding-left:4px;
-    padding-top:2px;
-    margin-top:2px;
+    padding-left:0px;
+    padding-top:0px;
+    margin-top:0px;
     word-wrap:break-word;
     overflow:hidden;
 }
@@ -221,26 +220,27 @@ label.gt_label {
     margin-top:0.25em;
     margin-left:0.25em;
 }
+/*ガントチャート左側の行*/
 div.gt_left_row_div {
     position:relative;
     top:0px;
     border-top:none;
     border-bottom:1px #777777 solid;
     border-left:none;
-    border-right:none;
-    width:240px;
-    height:3em;
-
+    border-right:  1px #777777 solid;
+    width:100%;
+    height:32px;
 }
+/*ガントチャート右側の行*/
 div.gt_right_row_div {
     position:relative;
     top:0px;
-    border-top:none;
+    border-top:1px #777777 solid;
     border-bottom:1px #777777 solid;
     border-left:none;
-    border-right:none;
+    border-right:  1px #777777 solid;
     width:704px;
-    height:3em;
+    height:32px;
 
 }
 div.gt_cal_header {
@@ -301,23 +301,101 @@ a.gt_mode_button {
     top:0px;
     left:0px;
     font-size:1em;
-    display:block;
-    width:232px;
-    height:2.25em;
+    display:inline-block;
+    outline: none;
+    width:98%;
+    height:2.0em;
     padding-top:1em;
     margin-top:3px;
     margin-left:2px;
     margin-right:1px;
     margin-bottom:1px;
     text-align:center;
-    border:2px solid;
-    border-color:#aaaaaa #444444 #444444 #aaaaaa;
-    background:#cccccc;
+    background-color: #ff6a00;
+	border-radius: 4px;
+	color: #fff;
+	line-height: 2.0em;
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: 0 3px 0 #ff0000;    
     font-weight:bold;
 }
 
 a.gt_mode_button:hover {
-    background: #777777;
+    background-color: #ff6a99;
+	box-shadow: 0 3px 0 #ff0000;}
+a.gt_mode_button:active {
+    top:3px;
+    box-shadow:none;
+}
+/* ガントチャート作業項目追加用ボタン */
+a.gt_workitem_button {
+    position:absolute;
+    float:left;
+    top:20px;
+    left:10px;
+    font-size:1em;
+    display:inline-block;
+    outline: none;
+    width:80%;
+    height:1.0em;
+    padding-top:0.25em;
+    margin-top:3px;
+    margin-left:2px;
+    margin-right:1px;
+    margin-bottom:1px;
+    text-align:center;
+    background-color: #1abc9c;
+	border-radius: 4px;
+	color: #fff;
+	line-height: 1.0em;
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: 0 3px 0 #0e8c73;    
+    font-weight:bold;
+    box-shadow: 0 3px 0 #0e8c73;
+}
+
+a.gt_workitem_button:hover {
+    background-color: #31c8aa;
+	box-shadow: 0 3px 0 #23a188;}
+a.gt_workitem_button:active {
+    top:23px;
+    box-shadow:none;
+}
+/*ガントチャートに表示する作業項目（帯）*/
+a.gt_workitem_band {
+    position:absolute;
+    float:left;
+    top:0px;
+    left:10px;
+    font-size:1em;
+    display:inline-block;
+    outline: none;
+    
+    height:1.0em;
+    padding-top:0.25em;
+    margin-top:3px;
+    margin-left:2px;
+    margin-right:1px;
+    margin-bottom:1px;
+    text-align:center;
+    background-color: #0094ff;
+	border-radius: 4px;
+	color: #fff;
+	line-height: 1.0em;
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: 0 3px 0 #061150;    
+    font-weight:bold;
+}
+
+a.gt_workitem_band:hover {
+    background-color: #0094aa;
+	box-shadow: 0 3px 0 #061150;}
+a.gt_workitem_band:active {
+    top:3px;
+    box-shadow:none;
 }
 
 a.gt_milestone {
@@ -336,9 +414,6 @@ a.gt_milestone {
     border:none;
 }
 
-a.gt_button:hover {
-    background: #777777;
-}
 /*
 *  for Portal Menu
 */
@@ -391,7 +466,7 @@ div.main_menu_row_b {
     border-left:2px #4cff00 solid;
     border-right:2px #4cff00 solid;
     width:600px;
-    height:360px;
+    height:140px;
     margin-left:auto;
     margin-right:auto;
 
@@ -427,13 +502,13 @@ div.main_menu_col_right {
 a.menu_button_a {
     float:left;
     top:0px;
-    font-size:2em;
+    font-size:1.2em;
     display:block;
-    width:260px;
-    height:100px;
-    padding-top:20px;
-    margin-top:20px;
-    margin-left:20px;
+    width:130px;
+    height:60px;
+    padding-top:10px;
+    margin-top:10px;
+    margin-left:10px;
     text-align:center;
     border:2px solid;
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
@@ -467,13 +542,13 @@ a.menu_button_b:hover {
 a.menu_button_c {
     float:left;
     top:0px;
-    font-size:2em;
+    font-size:1em;
     display:block;
-    width:540px;
-    height:100px;
-    padding-top:20px;
-    margin-top:20px;
-    margin-left:20px;
+    width:575px;
+    height:70px;
+    padding-top:10px;
+    margin-top:10px;
+    margin-left:10px;
     text-align:center;
     border:2px solid;
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
