@@ -11,6 +11,7 @@ html
 		script(src="javascripts/Schedule.js")
 		script(src="javascripts/ScheduleCommon.js")
 		script(src="javascripts/GanttTable.js")
+		script(src="javascripts/holiday.min.js")
 		link(rel="stylesheet" ,href="jQuery.Gantt-master/css/style.css")
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
 	body
@@ -23,6 +24,8 @@ html
 			a.tool_button_a#prev_btn 前へ
 			a.tool_button_a#today_btn 今日
 			a.tool_button_a#next_btn 次へ
+			label.select_date 日付選択
+			input.datepicker.select_date#select_date
 		div#tabs
 			ul
 				li

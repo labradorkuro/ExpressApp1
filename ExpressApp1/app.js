@@ -19,6 +19,7 @@ var entry_post = require('./api/entry_post');
 var entry_get = require('./api/entry_get');
 var workitem_post = require('./api/workitem_post');
 var workitem_get = require('./api/workitem_get');
+mysql = require('mysql');
 
 var http = require('http');
 var path = require('path');
@@ -53,9 +54,9 @@ app.post('/login',login.login);
 app.post('/portal',portal.portal);
 app.get('/portal',portal.portal);
 app.get('/dbinit', db.create);
-app.get('/dbsamples', db.samples);
-app.get('/db', db.list);
-app.post('/dbpost',db.post);
+//app.get('/dbsamples', db.samples);
+//app.get('/db', db.list);
+//app.post('/dbpost',db.post);
 app.get('/admin',admin.list);
 app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
@@ -68,6 +69,13 @@ app.get('/quote_get/:entry_no?', entry_get.quote_get);
 app.get('/quote_gantt/:entry_no?', entry_get.quote_gantt);
 app.get('/workitem_get/:entry_no?', workitem_get.workitem_get);
 
+pool = mysql.createPool({
+	host : 'localhost',
+	user : 'drc_root',
+	password: 'drc_r00t@',
+	database : 'drc_sch'
+
+});	
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

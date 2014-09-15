@@ -1,14 +1,16 @@
-﻿var mysql = require('mysql');
+﻿//var mysql = require('mysql');
 
 exports.create = function(req, res){
-    var connection = mysql.createConnection({
+/*	
+	var connection = mysql.createConnection({
       host     : 'localhost',
       port     : '3306',
       user     : 'root',
       password : 'ViVi0504',
       database : 'drc_sch'
     });
-	var sql = [
+*/
+  	var sql = [
 		"CREATE TABLE IF NOT EXISTS drc_sch.entry_info ("	// 案件データ
 			+ "entry_no VARCHAR(10) NOT NULL,"	// 案件No
 			+ "base_cd VARCHAR(2),"				// 拠点CD
@@ -17,7 +19,7 @@ exports.create = function(req, res){
 			+ "entry_status VARCHAR(2),"		// 案件ステータス
 			+ "quote_no VARCHAR(9),"			// 見積番号
 			+ "quote_issue_date DATE,"			// 見積書発行日
-			+ "order_accepted_date DATE,"			// 受注日付
+			+ "order_accepted_date DATE,"		// 受注日付
 			+ "order_accept_check INT(1),"		// 仮受注日チェック
 			+ "acounting_period_no INT(1),"		// 会計期No
 			+ "order_type INT(1),"				// 受託区分
@@ -132,19 +134,21 @@ exports.create = function(req, res){
 		"CREATE TABLE IF NOT EXISTS drc_sch.subject_schedule (id BIGINT(11) NOT NULL AUTO_INCREMENT,subject_no INT(5) NOT NULL,patch_no INT(3),test_id BIGINT(11) NOT NULL,start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128), INDEX(id,subject_no)); ",
 		"CREATE TABLE IF NOT EXISTS drc_sch.subjects (subject_no INT(5) NOT NULL AUTO_INCREMENT,name VARCHAR(128) NOT NULL,name_kana VARCHAR(128) ,age INT(3),sex INT(1),affiliation VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128),INDEX(subject_no)); "
 	];
-	for(var i = 0;i < sql.length;i++) {
-		connection.query(sql[i],[],function(err,rows){
-            if (err)    throw err;
-            console.log(rows);
-        });
-	}
+	pool.getConnection(function (err, connection) {
+		for (var i = 0; i < sql.length; i++) {
+			connection.query(sql[i], [], function (err, rows) {
+				if (err) throw err;
+				console.log(rows);
+			});
+		}
+	});
 	
-    //コネクションクローズ
-    connection.end();
+    //コネクション解放
+    connection.release();
     res.render('tables', { title: 'DRC 試験スケジュール管理' });
     //res.send("respond with a resource");
 };
-
+/**
 exports.samples = function(req, res){
     var mysql      = require('mysql');
     var connection = mysql.createConnection({
@@ -437,3 +441,4 @@ exports.list = function(req, res){
 exports.postEntry = function(req, res){
 	console.log("test");
 };
+ * */

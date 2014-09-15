@@ -1,9 +1,9 @@
 ﻿//
 // 案件リストからのGETを処理する
 //
-var mysql = require('mysql');
+//var mysql = require('mysql');
 var tools = require('../tools/tool');
-
+/*
 var connection = mysql.createConnection({
 	host     : 'localhost',
 	port     : '3306',
@@ -11,7 +11,7 @@ var connection = mysql.createConnection({
 	password : 'drc_r00t@',
 	database : 'drc_sch'
 });
-
+*/
 // 案件基本データのGET
 exports.entry_get = function (req, res) {
 	if ((req.params.start != undefined) && (req.params.start != '')) {
@@ -81,37 +81,40 @@ var entry_get_list_term = function (req, res) {
 var entry_get_list_for_grid = function (res, sql, params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
-	connection.query(sql, params, function (err, rows) {
-		if (err) throw err;
-		result.records = rows.length;
-		for (var i in rows) {
-			var row = { id: '', cell: [] };
-			var entry = [];
-			row.id = (i + 1);
-			//colNames: ['案件No','案件名','問合せ日', '案件ステータス', '拠点CD','担当者','見積番号','見積発行日'
-			//	,'受注日','仮受注チェック','受注区分','試験課','作成日','作成者','更新日','更新者'],
-			row.cell.push(rows[i].entry_no); // 案件No
-			row.cell.push(rows[i].entry_title); // 案件名
-			row.cell.push(rows[i].inquiry_date); // 問合せ日
-			row.cell.push(rows[i].entry_status); // 案件ステータス
-			row.cell.push(rows[i].base_cd); // 拠点CD
-			row.cell.push(rows[i].person_id); // 担当者ID
-			row.cell.push(rows[i].quote_no); // 見積番号
-			row.cell.push(rows[i].quote_issue_date); // 見積書発行日
-			row.cell.push(rows[i].order_accepted_date); // 受注日付
-			row.cell.push(rows[i].order_accept_check); // 仮受注日チェック
-			//row.cell.acounting_period_no = rows[i].acounting_period_no; // 会計期No
-			row.cell.push(rows[i].order_type); // 受託区分
-			//row.cell.contract_type = rows[i].contract_type; // 契約区分
-			//row.cell.outsourcing_cd = rows[i].outsourcing_cd; // 委託先CD
-			row.cell.push(rows[i].division); // 事業部ID
-			row.cell.push(rows[i].created); // 作成日
-			row.cell.push(rows[i].created_id);			// 作成者ID
-			row.cell.push(rows[i].updated); // 更新日
-			row.cell.push(rows[i].updated_id);			// 更新者ID
-			result.rows.push(row);
-		}
-		res.send(result);
+	pool.getConnection(function (err, connection) {
+		connection.query(sql, params, function (err, rows) {
+			if (err) throw err;
+			result.records = rows.length;
+			for (var i in rows) {
+				var row = { id: '', cell: [] };
+				var entry = [];
+				row.id = (i + 1);
+				//colNames: ['案件No','案件名','問合せ日', '案件ステータス', '拠点CD','担当者','見積番号','見積発行日'
+				//	,'受注日','仮受注チェック','受注区分','試験課','作成日','作成者','更新日','更新者'],
+				row.cell.push(rows[i].entry_no); // 案件No
+				row.cell.push(rows[i].entry_title); // 案件名
+				row.cell.push(rows[i].inquiry_date); // 問合せ日
+				row.cell.push(rows[i].entry_status); // 案件ステータス
+				row.cell.push(rows[i].base_cd); // 拠点CD
+				row.cell.push(rows[i].person_id); // 担当者ID
+				row.cell.push(rows[i].quote_no); // 見積番号
+				row.cell.push(rows[i].quote_issue_date); // 見積書発行日
+				row.cell.push(rows[i].order_accepted_date); // 受注日付
+				row.cell.push(rows[i].order_accept_check); // 仮受注日チェック
+				//row.cell.acounting_period_no = rows[i].acounting_period_no; // 会計期No
+				row.cell.push(rows[i].order_type); // 受託区分
+				//row.cell.contract_type = rows[i].contract_type; // 契約区分
+				//row.cell.outsourcing_cd = rows[i].outsourcing_cd; // 委託先CD
+				row.cell.push(rows[i].division); // 事業部ID
+				row.cell.push(rows[i].created); // 作成日
+				row.cell.push(rows[i].created_id);			// 作成者ID
+				row.cell.push(rows[i].updated); // 更新日
+				row.cell.push(rows[i].updated_id);			// 更新者ID
+				result.rows.push(row);
+			}
+			connection.release();
+			res.send(result);
+		});
 	});
 };
 
@@ -119,15 +122,18 @@ var entry_get_list_for_grid = function (res, sql, params) {
 var entry_get_list_for_gantt = function (res, sql, params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
-	connection.query(sql, params, function (err, rows) {
-		if (err) throw err;
-		result.records = rows.length;
-		for (var i in rows) {
-			var entry = rows[i];
-			rows[i].quote = [];
-		}
-		result.rows = rows;
-		res.send(result);
+	pool.getConnection(function (err, connection) {
+		connection.query(sql, params, function (err, rows) {
+			if (err) throw err;
+			result.records = rows.length;
+			for (var i in rows) {
+				var entry = rows[i];
+				rows[i].quote = [];
+			}
+			result.rows = rows;
+			connection.release();
+			res.send(result);
+		});
 	});
 };
 
@@ -172,12 +178,15 @@ var entry_get_detail = function (req, res) {
 			+ ' FROM drc_sch.entry_info WHERE entry_no = ?';
 	var entry = {};
 	// SQL実行
-	connection.query(sql, [req.params.no], function (err, rows) {
-		if (err) throw err;
-		for (var i in rows) {
-			entry = rows[i]; 
-		}
-		res.send(entry);
+	pool.getConnection(function (err, connection) {
+		connection.query(sql, [req.params.no], function (err, rows) {
+			if (err) throw err;
+			for (var i in rows) {
+				entry = rows[i];
+			}
+			connection.release();
+			res.send(entry);
+		});
 	});
 };
 
@@ -234,44 +243,47 @@ var quote_get_list = function (req, res) {
 		+ ' FROM drc_sch.quote_info WHERE quote_delete_check = ? AND entry_no = ? ORDER BY quote_detail_no ASC';
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
-	connection.query(sql, [0,req.params.entry_no], function (err, rows) {
-		if (err) throw err;
-		result.records = rows.length;
-		for (var i in rows) {
-			var row = { id: '', cell: [] };
-			var quote = [];
-			row.id = (i + 1);
-			row.cell.push(rows[i].quote_no);			// 見積番号
-			row.cell.push(rows[i].quote_detail_no);		// 明細番号
-			row.cell.push(rows[i].test_item_cd);		// 試験項目CD
-			row.cell.push(rows[i].test_item);			// 試験項目名
-			row.cell.push(rows[i].sample_name);			// 試料名
-			row.cell.push(rows[i].arrive_date);			// 到着日
-			row.cell.push(rows[i].test_planning_no);	// 試験計画書番号
-			row.cell.push(rows[i].monitors_num);		// 被験者数
-			row.cell.push(rows[i].sample_volume);		// 検体数
-			row.cell.push(rows[i].final_report_no);		// 報告書番号
-			row.cell.push(rows[i].final_report_limit);	// 報告書提出期限
-			row.cell.push(rows[i].final_report_date);	// 報告書提出日
-			row.cell.push(rows[i].quick_report_limit1); // 速報提出期限1
-			row.cell.push(rows[i].quick_report_date1);	// 速報提出日1
-			row.cell.push(rows[i].quick_report_limit2); // 速報提出期限2
-			row.cell.push(rows[i].quick_report_date2);	// 速報提出日2
-			row.cell.push(rows[i].expect_value);		// 期待値・設定値
-			row.cell.push(rows[i].descript_value);		// 値説明
-			row.cell.push(rows[i].unit_cd);				// 単位
-			row.cell.push(rows[i].unit);				// 単位
-			row.cell.push(rows[i].unit_price);			// 単価
-			row.cell.push(rows[i].quantity);				// 数量
-			row.cell.push(rows[i].quote_price);			// 見積金額
-			row.cell.push(rows[i].test_memo);			// 備考
-			row.cell.push(rows[i].created);
-			row.cell.push(rows[i].created_id);
-			row.cell.push(rows[i].updated);
-			row.cell.push(rows[i].updated_id);
-			result.rows.push(row);
-		}
-		res.send(result);
+	pool.getConnection(function (err, connection) {
+		connection.query(sql, [0,req.params.entry_no], function (err, rows) {
+			if (err) throw err;
+			result.records = rows.length;
+			for (var i in rows) {
+				var row = { id: '', cell: [] };
+				var quote = [];
+				row.id = (i + 1);
+				row.cell.push(rows[i].quote_no);			// 見積番号
+				row.cell.push(rows[i].quote_detail_no);		// 明細番号
+				row.cell.push(rows[i].test_item_cd);		// 試験項目CD
+				row.cell.push(rows[i].test_item);			// 試験項目名
+				row.cell.push(rows[i].sample_name);			// 試料名
+				row.cell.push(rows[i].arrive_date);			// 到着日
+				row.cell.push(rows[i].test_planning_no);	// 試験計画書番号
+				row.cell.push(rows[i].monitors_num);		// 被験者数
+				row.cell.push(rows[i].sample_volume);		// 検体数
+				row.cell.push(rows[i].final_report_no);		// 報告書番号
+				row.cell.push(rows[i].final_report_limit);	// 報告書提出期限
+				row.cell.push(rows[i].final_report_date);	// 報告書提出日
+				row.cell.push(rows[i].quick_report_limit1); // 速報提出期限1
+				row.cell.push(rows[i].quick_report_date1);	// 速報提出日1
+				row.cell.push(rows[i].quick_report_limit2); // 速報提出期限2
+				row.cell.push(rows[i].quick_report_date2);	// 速報提出日2
+				row.cell.push(rows[i].expect_value);		// 期待値・設定値
+				row.cell.push(rows[i].descript_value);		// 値説明
+				row.cell.push(rows[i].unit_cd);				// 単位
+				row.cell.push(rows[i].unit);				// 単位
+				row.cell.push(rows[i].unit_price);			// 単価
+				row.cell.push(rows[i].quantity);				// 数量
+				row.cell.push(rows[i].quote_price);			// 見積金額
+				row.cell.push(rows[i].test_memo);			// 備考
+				row.cell.push(rows[i].created);
+				row.cell.push(rows[i].created_id);
+				row.cell.push(rows[i].updated);
+				row.cell.push(rows[i].updated_id);
+				result.rows.push(row);
+			}
+			connection.release();
+			res.send(result);
+		});
 	});
 };
 
@@ -312,12 +324,15 @@ var quote_get_list_for_gantt = function (req, res) {
 		+ ' FROM drc_sch.quote_info WHERE quote_delete_check = ? AND entry_no = ? ORDER BY quote_detail_no ASC';
 	// SQL実行
 	var result = [];
-	connection.query(sql, [0,req.params.entry_no], function (err, rows) {
-		if (err) throw err;
-		for (var i in rows) {
-			result.push(rows[i]);
-		}
-		res.send(result);
+	pool.getConnection(function (err, connection) {
+		connection.query(sql, [0,req.params.entry_no], function (err, rows) {
+			if (err) throw err;
+			for (var i in rows) {
+				result.push(rows[i]);
+			}
+			connection.release();
+			res.send(result);
+		});
 	});
 };
 
@@ -358,11 +373,14 @@ var quote_get_detail = function (req, res) {
 		+ ' FROM drc_sch.quote_info WHERE entry_no = ? AND quote_detail_no = ?';
 	var entry = {};
 	// SQL実行
-	connection.query(sql, [req.params.entry_no, req.params.quote_detail_no], function (err, rows) {
-		if (err) throw err;
-		for (var i in rows) {
-			entry = rows[i];
-		}
-		res.send(entry);
+	pool.getConnection(function (err, connection) {
+		connection.query(sql, [req.params.entry_no, req.params.quote_detail_no], function (err, rows) {
+			if (err) throw err;
+			for (var i in rows) {
+				entry = rows[i];
+			}
+			connection.release();
+			res.send(entry);
+		});
 	});
 };

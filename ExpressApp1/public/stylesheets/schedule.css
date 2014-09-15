@@ -241,7 +241,7 @@ div.gt_right_row_div {
     border-right:  1px #777777 solid;
     width:704px;
     height:32px;
-
+    overflow: hidden;
 }
 div.gt_cal_header {
     position:absolute;
@@ -667,8 +667,8 @@ div.admin_right_div {
     position:fixed;
     top:50%;
     left:50%;
-    width:80%;
-    height:90%;
+    width:60%;
+    height:70%;
 }
 #overlayer img.close {
     position:absolute;
@@ -919,4 +919,8 @@ a.general_button:hover{
 /* 入力フィールドの右詰 */
 .num_type {
     text-align: right;
+}
+.select_date {
+    font-size: 1.5em;
+    color: green;
 }

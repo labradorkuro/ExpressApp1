@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="api\entry_get.js" />
     <Compile Include="api\entry_post.js" />
+    <Compile Include="api\workitem_get.js" />
     <Compile Include="api\workitem_post.js" />
     <Compile Include="app.js" />
     <Compile Include="public\javascripts\AdminMenu.js" />
@@ -46,6 +47,7 @@
     <Compile Include="public\javascripts\Entry.js" />
     <Compile Include="public\javascripts\EntryList.js" />
     <Compile Include="public\javascripts\GanttTable.js" />
+    <Compile Include="public\javascripts\holiday.min.js" />
     <Compile Include="public\javascripts\SalesEdit.js" />
     <Compile Include="public\javascripts\SalesManagement.js" />
     <Compile Include="public\javascripts\Schedule.js" />
@@ -67,6 +69,9 @@
     <Compile Include="tools\tool.js" />
     <Content Include="package.json" />
     <Content Include="public\images\drc_logo.jpg" />
+    <Content Include="public\images\milestone_red.png" />
+    <Content Include="public\images\milestone_yellow.png" />
+    <Content Include="public\images\no.png" />
     <Content Include="public\stylesheets\schedule.css" />
     <Content Include="public\stylesheets\style.css" />
     <Content Include="public\stylesheets\style.styl" />
@@ -82,6 +87,7 @@
     <Content Include="views\portal.jade" />
     <Content Include="views\schedule.jade" />
     <Content Include="views\tables.jade" />
+    <Content Include="views\workitem_form.jade" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
