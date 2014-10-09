@@ -369,11 +369,11 @@ a.gt_workitem_band {
     float:left;
     top:0px;
     left:10px;
-    font-size:1em;
+    font-size:12px;
     display:inline-block;
     outline: none;
     
-    height:1.0em;
+    height:16px;
     padding-top:0.25em;
     margin-top:3px;
     margin-left:2px;
@@ -383,17 +383,53 @@ a.gt_workitem_band {
     background-color: #0094ff;
 	border-radius: 4px;
 	color: #fff;
-	line-height: 1.0em;
+	line-height: 16px;
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: 0 3px 0 #061150;    
+    font-weight:bold;
+}
+a.gt_workitem_band:hover {
+    background-color: #0094aa;
+	box-shadow: 0 3px 0 #061150;
+
+}
+a.gt_workitem_band:active {
+    top: 3px;
+    box-shadow: none;
+}
+/*ガントチャートに表示する作業項目の進捗度（帯）*/
+a.gt_workitem_progress {
+    position:absolute;
+    float:left;
+    top:0px;
+    left:10px;
+    font-size:12px;
+    display:inline-block;
+    outline: none;
+    
+    height:16px;
+    padding-top:0.25em;
+    margin-top:3px;
+    margin-left:2px;
+    margin-right:1px;
+    margin-bottom:1px;
+    text-align:center;
+    background-color: #0e8c73;
+	border-radius: 4px;
+	color: black;
+	line-height: 16px;
 	-webkit-transition: none;
 	transition: none;
 	box-shadow: 0 3px 0 #061150;    
     font-weight:bold;
 }
 
-a.gt_workitem_band:hover {
-    background-color: #0094aa;
+
+a.gt_workitem_progress:hover {
+    background-color: #1abc9c;
 	box-shadow: 0 3px 0 #061150;}
-a.gt_workitem_band:active {
+a.gt_workitem_progress:active {
     top:3px;
     box-shadow:none;
 }
@@ -435,7 +471,7 @@ div.menu_title {
     border-bottom:1px solid #0026ff;
     border-left:none;
     border-right:none;
-    width:590px;
+    width:100%;
     height:2em;
     background-color:darkolivegreen;
     color:white;
@@ -443,7 +479,8 @@ div.menu_title {
     margin-left:auto;
     margin-right:auto;
     padding-top:0.5em;
-    padding-left:10px;
+    padding-left:0px;
+    text-align:center;
 }
 div.main_menu_row {
     position:relative;
@@ -452,7 +489,7 @@ div.main_menu_row {
     border-bottom:2px #4cff00 solid;
     border-left:2px #4cff00 solid;
     border-right:2px #4cff00 solid;
-    width:600px;
+    width:740px;
     height:200px;
     margin-left:auto;
     margin-right:auto;
@@ -465,7 +502,7 @@ div.main_menu_row_b {
     border-bottom:2px #4cff00 solid;
     border-left:2px #4cff00 solid;
     border-right:2px #4cff00 solid;
-    width:600px;
+    width:740px;
     height:140px;
     margin-left:auto;
     margin-right:auto;
@@ -544,7 +581,7 @@ a.menu_button_c {
     top:0px;
     font-size:1em;
     display:block;
-    width:575px;
+    width:710px;
     height:70px;
     padding-top:10px;
     margin-top:10px;
@@ -668,7 +705,7 @@ div.admin_right_div {
     top:50%;
     left:50%;
     width:60%;
-    height:70%;
+    height:80%;
 }
 #overlayer img.close {
     position:absolute;
@@ -681,11 +718,11 @@ div.admin_right_div {
     height:100%;
 }
 
-/* カレンダー表示用 */
+/* 試験スケジュールカレンダー表示用 */
 div.calendar_div {
     overflow:auto;
     width:90%;
-    height:500px;
+    height : 600px;
     border-top: 1px solid #777777;
     border-bottom:1px solid #777777;
     border-left: 1px solid #777777;
@@ -764,102 +801,99 @@ div.cal_memo {
     padding-left:2px;
 
 }
+
+// 安全性試験スケジュールカレンダー
 div.cal_patch_base {
     position:relative;
-    width:1283px;
-    height:40px;
-    border-bottom:1px solid #777777;
+    width: 100%;
+    border:1px solid #777777;
     background-color:white;
+}
+div.cal_patch_left_div {
+    position:relative;
+    float : left;
+    width : 5%;
+}
+div.cal_patch_right_div {
+    position:relative;
+    width : 95%;
+    overflow : auto;
+}
+div.cal_patch_left_row {
+    position:relative;
+    width: 100%;
+    height:60px;
+}
+div.cal_patch_right_row {
+    position:relative;
+    width: 100%;
+    height:60px;
 }
 div.cal_patch_no {
     position: relative;
     float: left;
     left: 0;
     top: 0;
-    width: 36px;
-    height: 34px;
-    margin-top: 1px;
+    width: 100%;
+    height: 53px;
     border-right: 1px solid #777777;
+    border-bottom: 1px solid #777777;
     padding-top: 6px;
-    padding-right: 4px;
+    text-align : center;
 }
-div.cal_branch_title {
-    position: relative;
-    float: left;
-    left: 0;
-    top: 0;
-    width: 36px;
-    height: 34px;
-    margin-top: 1px;
-    border-right: 1px solid #777777;
-    padding-top: 1px;
-    padding-right: 4px;
-    font-size:0.7em;
+div.cal_patch_week_div {
+    top:0px;
+    width: 100%;
+    height:60px;
+    border-left: 1px solid #777777;
 }
-div.cal_branch_up {
-    position: relative;
-    float: left;
-    left: 0;
-    top: 0;
-    width: 36px;
-    height: 18px;
-    margin-top: 0px;
-    border-right: 1px solid #777777;
-    border-bottom:1px solid #777777;
-    padding-top: 0px;
-    padding-right: 4px;
-    font-size:0.7em;
-}
-div.cal_branch_low {
-    position: relative;
-    float: left;
-    left: 0;
-    top: 0;
-    width: 36px;
-    height: 18px;
-    margin-top: 1px;
-    border-right: 1px solid #777777;
-    padding-top: 0px;
-    padding-right: 4px;
-    font-size:0.7em;
-    background-color:#ecf9d2;
-}
-
 div.cal_patch_week {
-    position:relative;
     float:left;
     top:0;
-    width:1200px;
-    height:38px;
-    margin-top:1px;
-    border-right:1px solid #777777;
+    width: 100%;
+    height:60px;
+}
+div.cal_patch_week_header_1 {
+    position : absolute;
+    top:0px;
+    width: 100%;
+    height:30px;
+}
+div.cal_patch_week_header_2 {
+    position : absolute;
+    top:30px;
+    width: 100%;
+    height:30px;
 }
 div.cal_patch_week_header_up {
     position:relative;
-    float:left;
+    float : left;
     top:0;
-    width:239px;
-    height:19px;
-    margin-top:0px;
+    width:18%/*241px*/;
+    height:30px;
     border-right:1px solid #777777;
     border-bottom:1px solid #777777;
+    padding-left : 1px;
+    text-align : center;
+    overflow : hidden;
+    background-color:#ecf9d2;
 }
 div.cal_patch_week_header_low {
-    position:relative;
+    position :relative;
     float:left;
     top:0px;
-    width:119px;
-    height:18px;
-    margin-top:1px;
+    width:9%/*120px*/;
+    height:28px;
     border-right:1px solid #777777;
+    border-top: 1px solid #777777;
+    border-bottom:1px solid #777777;
+    text-align : center;
 }
-div.cal_patch_week_up {
-    position:relative;
+div.cal_patch_week_day {
     float:left;
     top:0px;
-    width:119px;
-    height:18px;
-    margin-top:1px;
+    width:9%/*120px*/;
+    height:59px;
     border-bottom:1px solid #777777;
     border-right:1px solid #777777;
 }
@@ -867,7 +901,7 @@ div.cal_patch_week_low {
     position:relative;
     float:left;
     top:0px;
-    width:119px;
+    width:120px;
     height:18px;
     margin-top:1px;
     border-right:1px solid #777777;
@@ -886,7 +920,43 @@ div.cal_patch_memo {
     padding-left:2px;
 
 }
-.entry_title {
+
+a.cal_add_button {
+    position:relative;
+    float:left;
+    top:1px;
+    left:1px;
+    font-size:12pt;
+    display:inline-block;
+    outline: none;
+    width:16px;
+    height:16px;
+    padding-top:2px;
+    margin-top:1px;
+    margin-left:1px;
+    margin-right:2px;
+    margin-bottom:2px;
+    text-align:center;
+    background-color: #1abc9c;
+	border-radius: 2px;
+	color: #fff;
+	line-height: 16px;
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: 0 1px 0 #0e8c73;    
+    font-weight:bold;
+    box-shadow: 0 1px 0 #0e8c73;
+}
+
+a.cal_add_button:hover {
+    background-color: #31c8aa;
+	box-shadow: 0 1px 0 #23a188;}
+a.cal_add_button:active {
+    top:4px;
+    box-shadow:none;
+}
+
+.form_title {
     text-align:right;
     width:200px;
 }

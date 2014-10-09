@@ -5,7 +5,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>ExpressApp7</Name>
     <RootNamespace>ExpressApp7</RootNamespace>
-    <NodeExeArguments>--debug=5858 c:\source\sample\ExpressApp1\ExpressApp1\app.js</NodeExeArguments>
+    <NodeExeArguments>--debug=5858 C:\Users\武則\Documents\DRC殿\ExpressApp1\ExpressApp1\app.js</NodeExeArguments>
     <DebuggerPort>
     </DebuggerPort>
     <ScriptArguments>
@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="api\entry_get.js" />
     <Compile Include="api\entry_post.js" />
+    <Compile Include="api\schedule_get.js" />
     <Compile Include="api\workitem_get.js" />
     <Compile Include="api\workitem_post.js" />
     <Compile Include="app.js" />
@@ -86,6 +87,7 @@
     <Content Include="views\layout.jade" />
     <Content Include="views\portal.jade" />
     <Content Include="views\schedule.jade" />
+    <Content Include="views\schedule_form.jade" />
     <Content Include="views\tables.jade" />
     <Content Include="views\workitem_form.jade" />
   </ItemGroup>

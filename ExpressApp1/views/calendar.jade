@@ -21,15 +21,17 @@ html
 		div#tabs
 			ul
 				li
-					a(href="#tabs-1") 安全性試験
+					a(href="#tabs-1") SPF・UVAPF測定試験
 				li
-					a(href="#tabs-2") SPF・UVAPF測定試験
+					a(href="#tabs-2") 安全性試験
 				li
 					a(href="#tabs-3") 化粧品有用性試験
 				li
 					a(href="#tabs-4") 食品ヒト試験
+				li
+					a(href="#tabs-5") 代替法試験
 			div#tabs-1
-				p(style="font-size:small") (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
+				p(style="font-size:small") in vivo（ヒト臨床試験）による測定
 				div.toolbar
 					a.tool_button_a#add_schedule_1 スケジュール追加
 					a.tool_button_b#prev_btn_1 前へ
@@ -37,13 +39,22 @@ html
 					a.tool_button_a#next_btn_1 次へ
 				div.calendar_div#calendar_div1
 			div#tabs-2
-				p(style="font-size:small") in vivo（ヒト臨床試験）による測定
+				p(style="font-size:small") (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
 				div.toolbar
 					a.tool_button_a#add_schedule_2 スケジュール追加
 					a.tool_button_b#prev_btn_2 前へ
 					a.tool_button_a#today_btn_2 今日
 					a.tool_button_a#next_btn_2 次へ
-				div.calendar_div#calendar_div2
+				div#tabs_patch
+					ul
+						li
+							a(href="#tabs_patch-1") 大阪
+						li
+							a(href="#tabs_patch-2") 札幌
+					div#tabs_patch-1
+						div.calendar_div#calendar_div2_1
+					div#tabs_patch-2
+						div.calendar_div#calendar_div2_2
 			div#tabs-3
 				p(style="font-size:small") 抗シワガイドライン対応試験や、化粧品などの使用試験
 				div.toolbar
@@ -60,63 +71,14 @@ html
 					a.tool_button_a#today_btn_4 今日
 					a.tool_button_a#next_btn_4 次へ
 				div.calendar_div#calendar_div4
+			div#tabs-5
+				p(style="font-size:small") 代替法試験
+				div.toolbar
+					a.tool_button_a#add_schedule_5 スケジュール追加
+					a.tool_button_b#prev_btn_5 前へ
+					a.tool_button_a#today_btn_5 今日
+					a.tool_button_a#next_btn_5 次へ
+				div.calendar_div#calendar_div5
 		div#schedule_dialog
-			p スケジュール詳細
-			div
-				div
-					table
-						tr
-							td 試験名
-							td
-								select#dlg_tests
-						tr
-							td 被験者名
-							td
-								select#dlg_subjects(multiple="true")
-						tr
-							td 検体No
-							td
-								select#dlg_patch_no
-									option(value="1") 1
-									option(value="2") 2
-									option(value="3") 3
-									option(value="4") 4
-									option(value="5") 5
-									option(value="6") 6
-									option(value="7") 7
-									option(value="8") 8
-									option(value="9") 9
-									option(value="10") 10
-									option(value="11") 11
-									option(value="12") 12
-									option(value="13") 13
-									option(value="14") 14
-									option(value="15") 15
-									option(value="16") 16
-									option(value="17") 17
-									option(value="18") 18
-									option(value="19") 19
-									option(value="20") 20
-									option(value="21") 21
-									option(value="22") 22
-									option(value="23") 23
-									option(value="24") 24
-									option(value="25") 25
-									option(value="26") 26
-									option(value="27") 27
-						tr
-							td 開始予定日
-							td
-								input.datepicker#dlg_start_date(type="text")
-						tr
-							td 終了予定日
-							td
-								input.datepicker#dlg_end_date(type="input")
-						tr
-							td 開始日
-							td
-								input.datepicker#dlg_start_date_r(type="text")
-						tr
-							td 終了日
-							td
-								input.datepicker#dlg_end_date_r(type="input")
+			p 試験スケジュール
+			include schedule_form

@@ -29,18 +29,20 @@ html
 		div#tabs
 			ul
 				li
-					a(href="#tabs-1") 安全性試験
+					a(href="#tabs-1") SPF・UVAPF測定試験
 				li
-					a(href="#tabs-2") SPF・UVAPF測定試験
+					a(href="#tabs-2") 安全性試験
 				li
 					a(href="#tabs-3") 化粧品有用性試験
 				li
 					a(href="#tabs-4") 食品ヒト試験
+				li
+					a(href="#tabs-5") 代替法試験
 			div#tabs-1
-				p(style="font-size:small") (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
+				p(style="font-size:small") in vivo（ヒト臨床試験）による測定
 				div#ganttTable_div1
 			div#tabs-2
-				p(style="font-size:small") in vivo（ヒト臨床試験）による測定
+				p(style="font-size:small") (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
 				div#ganttTable_div2
 			div#tabs-3
 				p(style="font-size:small") 抗シワガイドライン対応試験や、化粧品などの使用試験
@@ -48,5 +50,9 @@ html
 			div(id="tabs-4")
 				p(style="font-size:small") 食品の有効性を評価するヒト試験
 				div#ganttTable_div4
+			div(id="tabs-5")
+				p(style="font-size:small") 代替法試験
+				div#ganttTable_div5
 		div#workitem_dialog
-			include workitem_form			
+			include workitem_form
+			div#messageDlg		

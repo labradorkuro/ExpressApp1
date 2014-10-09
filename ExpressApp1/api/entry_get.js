@@ -51,8 +51,6 @@ var entry_get_list = function (req, res) {
 
 // 案件リストの取得（ガントチャート用）
 var entry_get_list_term = function (req, res) {
-	var start_date = req.params.start;
-	var end_date = req.params.end;
 	var sql = 'SELECT ' 
 		+ 'entry_no,' 
 		+ 'entry_title,' 

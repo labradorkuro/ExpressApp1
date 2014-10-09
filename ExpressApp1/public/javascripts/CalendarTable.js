@@ -65,3 +65,17 @@ CalendarTable.showEditDialog = function() {
 	var id = $(this).attr("id");
 	alert("click:" + id);
 };
+
+// 試験スケジュール編集ダイアログ表示
+CalendarTable.openDialog = function (event) {
+	// eventに渡されたデータをフォームにセットする
+	$("#start_date").val(scheduleCommon.getDateString(event.data.start_date, "{0}/{1}/{2}"));
+	$("#end_date").val(scheduleCommon.getDateString(event.data.end_date, "{0}/{1}/{2}"));
+	$("#patch_no").val(event.data.patch_no);
+	$("#am_pm").val(event.data.am_pm);
+	$("#schedule_dialog").dialog("open");
+};
+
+// 試験スケジュールのDB追加
+CalendarTable.addSchedule = function () {
+};

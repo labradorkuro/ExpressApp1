@@ -1,0 +1,70 @@
+﻿form#scheduleForm(method="post",action="javascript:return false;")
+	table
+		tr
+			td.form_title 案件番号
+			td 
+				input#entry_no(type="text" name="entry_no" readonly="true" placeholder="案件番号" size="10")
+			td.form_title 試験明細番号
+			td 
+				input#quoto_detail_no(type="text" name="quoto_detail_no" placeholder="試験明細番号" size="10")
+		tr
+			td.form_title 試験項目名
+			td 
+				input#test_item(type="text" name="test_item" readonly="true" placeholder="試験項目名" size="10")
+			td.form_title 試料名
+			td 
+				input#sample_name(type="text" name="sample_name" readonly="true" placeholder="試料名" size="10")
+		tr
+			td.form_title 開始日
+			td 
+				input.datepicker#start_date(type="text" name="start_date" placeholder="開始日" size="10")
+			td.form_title 開始時間
+			td 
+				input#start_time(type="text" name="start_time" placeholder="開始時間" size="10")
+		tr
+			td.form_title 終了日 
+			td 
+				input.datepicker#end_date(type="text" name="end_date" placeholder="終了日" size="10")
+			td.form_title 終了時間
+			td 
+				input#end_time(type="text" name="end_time" placeholder="終了時間" size="10")
+		tr
+			td.form_title AM/PM(安全性試験用） 
+			td 
+				select#am_pm(name="am_pm" placeholder="AM/PM")
+					option(value="0") AM
+					option(value="1") PM
+			td.form_title パッチNo
+			td 
+				select#patch_no(name="patch_no" placeholder="パッチNo")
+					option(value="1") 1
+					option(value="2") 2
+					option(value="3") 3
+					option(value="4") 4
+					option(value="5") 5
+					option(value="6") 6
+					option(value="7") 7
+					option(value="8") 8
+					option(value="9") 9
+					option(value="10") 10
+					option(value="11") 11
+					option(value="12") 12
+					option(value="13") 13
+					option(value="14") 14
+					option(value="15") 15
+					option(value="16") 16
+					option(value="17") 17
+					option(value="18") 18
+					option(value="19") 19
+					option(value="20") 20
+					option(value="21") 21
+					option(value="22") 22
+					option(value="23") 23
+					option(value="24") 24
+					option(value="25") 25
+					option(value="26") 26
+					option(value="27") 27
+					option(value="28") 28
+					option(value="29") 29
+					option(value="30") 30
+

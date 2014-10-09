@@ -83,3 +83,21 @@ scheduleCommon.addDate = function (start_date, count) {
 	d.setTime(t);
 	return d;
 };
+// 確認ダイアログの表示(JQuery)
+scheduleCommon.showConfirmDialog = function(target, title, comment, okFunc) {
+    var strTitle = title;
+	var strComment = comment;
+    // ダイアログのメッセージを設定
+    $( target ).html( strComment );
+    // ダイアログを作成
+    $( target ).dialog({
+        modal: true,
+        title: strTitle,
+        buttons: {
+			"OK": okFunc,
+			"キャンセル": function () {
+				$(this).dialog("close");
+			}
+        }
+    });
+}

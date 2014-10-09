@@ -29,6 +29,7 @@
 				text: "削除",
 				class: "delete-btn",
 				click: function () {
+				workitemEdit.deleteItemConfirm();
 					$(this).dialog('close');
 				}
 			},
@@ -55,7 +56,9 @@ var workitemEdit = workitemEdit || {};
 workitemEdit.openDialog = function (event) {
 	if (event.data.workitem != null) {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable"); 
-		$(".ui-dialog-buttonpane button:contains('更新')").button("enable"); 
+		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
+		// eventに渡されたデータをフォームにセットする
 		$("#entry_no").val(event.data.workitem.entry_no);
 		$("#work_item_id").val(event.data.workitem.work_item_id);
 		$("#work_title").val(event.data.workitem.work_title);
@@ -105,18 +108,34 @@ workitemEdit.updateItem = function () {
 	xhr.onload = workitemEdit.onloadWorkitemReq;
 	xhr.send(form);
 };
+// 作業項目の削除確認ダイアログ表示
+workitemEdit.deleteItemConfirm = function () {
+	scheduleCommon.showConfirmDialog("#messageDlg", "作業項目の削除", "この作業項目を削除しますか？", workitemEdit.deleteItem);
+};
+
+// 作業項目の削除(削除フラグのセット）
+workitemEdit.deleteItem = function () {
+	$("#messageDlg").dialog("close");
+	// formデータの取得
+	var form = workitemEdit.getFormData();
+	form.append('delete_check', '1'); // 削除フラグセット
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/workitem_post', true);
+	xhr.responseType = 'json';
+	xhr.onload = workitemEdit.onloadWorkitemReq;
+	xhr.send(form);
+};
 // formデータの取得
 workitemEdit.getFormData = function () {
 	var form = new FormData(document.querySelector("#workitemForm"));
 	return form;
 };
-// 保存後のコールバック
-workitemEdit.onloadEntryReq = function (e) {
+// 追加、更新後のコールバック
+workitemEdit.onloadWorkitemReq = function (e) {
 	if (this.status == 200) {
 		var workitem = this.response;
-		// formに取得したデータを埋め込む
-		$("#entry_no").val(workitem.entry_no); // 案件No
-		
+		// ガントチャート表示の更新処理		
+		workitemEdit.ganttTableInit();
 	}
 };
 workitemEdit.prev = function () {
@@ -140,4 +159,5 @@ workitemEdit.ganttTableInit = function () {
 	GanttTable.Init("ganttTable_div2", "02", 1);
 	GanttTable.Init("ganttTable_div3", "03", 1);
 	GanttTable.Init("ganttTable_div4", "04", 1);
+	GanttTable.Init("ganttTable_div5", "05", 1);
 };
