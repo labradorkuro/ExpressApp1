@@ -136,13 +136,13 @@ exports.create = function(req, res){
 			+ "start_time TIME,"	// 開始時間
 			+ "end_time TIME,"		// 開始時間
 			+ "am_pm VARCHAR(2),"	// 午前午後
-			+ "patch_no INT(2)"	// 検体番号(1～30)
+			+ "patch_no INT(2),"	// 検体番号(1～30)
 			+ "delete_check VARCHAR(1)," // 削除フラグ
 			+ "created TIMESTAMP not null default 0," // 作成日
 			+ "created_id VARCHAR(32)," // 作成者ID
 			+ "updated TIMESTAMP not null on update current_timestamp default current_timestamp," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
-			+ ", INDEX(entry_no, start_date));",
+			+ ", INDEX(schedule_id,entry_no, start_date));",
 		
 		"CREATE TABLE IF NOT EXISTS drc_sch.sales_info (sales_id INT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,name VARCHAR(128) NOT NULL,customer_code VARCHAR(128),estimate INT(5),regist_date DATE,order_date DATE,money_receive_date DATE,money_received_date DATE,sales_user_id VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_id,sales_no));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",

@@ -19,6 +19,8 @@ var entry_post = require('./api/entry_post');
 var entry_get = require('./api/entry_get');
 var workitem_post = require('./api/workitem_post');
 var workitem_get = require('./api/workitem_get');
+var schedule_post = require('./api/schedule_post');
+var schedule_get = require('./api/schedule_get');
 mysql = require('mysql');
 
 var http = require('http');
@@ -63,11 +65,14 @@ app.get('/entry_list', entry_list.list);
 app.post('/entry_post', entry_post.entry_post);
 app.post('/quote_post', entry_post.quote_post);
 app.post('/workitem_post', workitem_post.workitem_post);
+app.post('/schedule_post', schedule_post.schedule_post);
 app.get('/entry_get/:no?', entry_get.entry_get);
 app.get('/entry_get/term/:start/:end/:test_type', entry_get.entry_get);
 app.get('/quote_get/:entry_no?', entry_get.quote_get);
 app.get('/quote_gantt/:entry_no?', entry_get.quote_gantt);
 app.get('/workitem_get/:entry_no?', workitem_get.workitem_get);
+app.get('/schedule_get/:schedule_id?', schedule_get.schedule_get);
+app.get('/schedule_get/term/:start/:end/:base_cd?/:test_type', schedule_get.schedule_get);
 
 pool = mysql.createPool({
 	host : 'localhost',

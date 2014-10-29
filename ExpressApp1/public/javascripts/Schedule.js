@@ -138,18 +138,26 @@ workitemEdit.onloadWorkitemReq = function (e) {
 		workitemEdit.ganttTableInit();
 	}
 };
+
+// 前へボタン
 workitemEdit.prev = function () {
 	GanttTable.prev();
 	workitemEdit.ganttTableInit();
 };
+
+// 次へボタン
 workitemEdit.next = function () {
 	GanttTable.next();
 	workitemEdit.ganttTableInit();
 };
+
+// 今日ボタン
 workitemEdit.today = function () {
 	GanttTable.start_date = scheduleCommon.getToday("{0}/{1}/{2}");
 	workitemEdit.ganttTableInit();
 };
+
+// 日付選択
 workitemEdit.selectDate = function () {
 	GanttTable.start_date = $("#select_date").val();
 	workitemEdit.ganttTableInit();

@@ -54,7 +54,11 @@ scheduleCommon.format = function (fmt, a) {
 	
 	return fmt.replace(/\{(\w+)\}/g, rep_fn);
 };
-
+//
+// 日付区切り文字変更
+scheduleCommon.dateSeparatorChange = function (dateString, separator) {
+	return dateString.replace(/[/]/g, separator);
+};
 // 月の日数を取得する
 scheduleCommon.getDaysCount = function(year,month) {
 	var d = new Date(year,month ,1 ,0,0,0,0);
@@ -82,6 +86,27 @@ scheduleCommon.addDate = function (start_date, count) {
 	var d = new Date();
 	d.setTime(t);
 	return d;
+};
+scheduleCommon.dateStringToDate = function (dateString) {
+	var date = new Date(dateString);
+	return date;
+};
+
+// 前月
+scheduleCommon.prevMonth = function (start_date, disp_span) {
+	var startDate = start_date;
+	var d = scheduleCommon.dateStringToDate(start_date);
+	d = scheduleCommon.addDate(d, -(disp_span * 30));
+	startDate = scheduleCommon.getDateString(d, "{0}/{1}/{2}");
+	return startDate;
+};
+// 次月
+scheduleCommon.nextMonth = function (start_date, disp_span) {
+	var startDate = start_date;
+	var d = scheduleCommon.dateStringToDate(start_date);
+	d = scheduleCommon.addDate(d, (disp_span * 30));
+	startDate = scheduleCommon.getDateString(d, "{0}/{1}/{2}");
+	return startDate;
 };
 // 確認ダイアログの表示(JQuery)
 scheduleCommon.showConfirmDialog = function(target, title, comment, okFunc) {

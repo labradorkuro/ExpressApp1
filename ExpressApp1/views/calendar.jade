@@ -1,4 +1,6 @@
-﻿doctype html
+﻿//
+	スケジュール画面
+doctype html
 html
 	head
 		meta(charset="utf-8")
@@ -7,6 +9,7 @@ html
 		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
 		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
 		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+		script(src="javascripts/holiday.min.js")
 		script(src="javascripts/ScheduleCommon.js")
 		script(src="javascripts/CalendarTable.js")
 		script(src="javascripts/CalendarTableForPatchTest.js")
@@ -18,6 +21,12 @@ html
 				a(href="portal") Home
 			img.titlebar_logo(src="images/drc_logo.jpg")
 			span.titlebar= title
+		div.toolbar
+			a.tool_button_a#prev_btn 前へ
+			a.tool_button_a#today_btn 今日
+			a.tool_button_a#next_btn 次へ
+			label.select_date 日付選択
+			input.datepicker.select_date#select_date
 		div#tabs
 			ul
 				li
@@ -32,19 +41,9 @@ html
 					a(href="#tabs-5") 代替法試験
 			div#tabs-1
 				p(style="font-size:small") in vivo（ヒト臨床試験）による測定
-				div.toolbar
-					a.tool_button_a#add_schedule_1 スケジュール追加
-					a.tool_button_b#prev_btn_1 前へ
-					a.tool_button_a#today_btn_1 今日
-					a.tool_button_a#next_btn_1 次へ
 				div.calendar_div#calendar_div1
 			div#tabs-2
 				p(style="font-size:small") (パッチテスト・RIPT)化粧品・医薬部外品の安全性試験
-				div.toolbar
-					a.tool_button_a#add_schedule_2 スケジュール追加
-					a.tool_button_b#prev_btn_2 前へ
-					a.tool_button_a#today_btn_2 今日
-					a.tool_button_a#next_btn_2 次へ
 				div#tabs_patch
 					ul
 						li
@@ -57,28 +56,14 @@ html
 						div.calendar_div#calendar_div2_2
 			div#tabs-3
 				p(style="font-size:small") 抗シワガイドライン対応試験や、化粧品などの使用試験
-				div.toolbar
-					a.tool_button_a#add_schedule_3 スケジュール追加
-					a.tool_button_b#prev_btn_3 前へ
-					a.tool_button_a#today_btn_3 今日
-					a.tool_button_a#next_btn_3 次へ
 				div.calendar_div#calendar_div3
 			div#tabs-4
 				p(style="font-size:small") 食品の有効性を評価するヒト試験
-				div.toolbar
-					a.tool_button_a#add_schedule_4 スケジュール追加
-					a.tool_button_b#prev_btn_4 前へ
-					a.tool_button_a#today_btn_4 今日
-					a.tool_button_a#next_btn_4 次へ
 				div.calendar_div#calendar_div4
 			div#tabs-5
 				p(style="font-size:small") 代替法試験
-				div.toolbar
-					a.tool_button_a#add_schedule_5 スケジュール追加
-					a.tool_button_b#prev_btn_5 前へ
-					a.tool_button_a#today_btn_5 今日
-					a.tool_button_a#next_btn_5 次へ
 				div.calendar_div#calendar_div5
 		div#schedule_dialog
-			p 試験スケジュール
 			include schedule_form
+		div#entry_ref_dialog
+			include entry_refer

@@ -38,6 +38,7 @@
     <Compile Include="api\entry_get.js" />
     <Compile Include="api\entry_post.js" />
     <Compile Include="api\schedule_get.js" />
+    <Compile Include="api\schedule_post.js" />
     <Compile Include="api\workitem_get.js" />
     <Compile Include="api\workitem_post.js" />
     <Compile Include="app.js" />
@@ -83,6 +84,7 @@
     <Content Include="views\entry_form.jade" />
     <Content Include="views\entry_list.jade" />
     <Content Include="views\entry_edit.jade" />
+    <Content Include="views\entry_refer.jade" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\portal.jade" />

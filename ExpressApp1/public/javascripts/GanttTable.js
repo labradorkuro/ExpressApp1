@@ -15,7 +15,7 @@ GanttTable.rowHeight = 32;
 GanttTable.Init = function (id, test_type, disp_mode){
 	$('#' + id).empty();
 	var startDate = GanttTable.start_date;
-	var d = GanttTable.dateStringToDate(GanttTable.start_date);
+	var d = scheduleCommon.dateStringToDate(GanttTable.start_date);
 	var endDate = scheduleCommon.getDateString(scheduleCommon.addDate(d, (GanttTable.disp_span * 30)), "{0}/{1}/{2}");
 	var ganttData = {};
 	ganttData.name = "案件名";
@@ -30,18 +30,17 @@ GanttTable.Init = function (id, test_type, disp_mode){
 };
 GanttTable.prev = function () {
 	var startDate = GanttTable.start_date;
-	var d = GanttTable.dateStringToDate(GanttTable.start_date);
-	d = scheduleCommon.addDate(d, -(GanttTable.disp_span * 30));
-	startDate = scheduleCommon.getDateString(d, "{0}/{1}/{2}");
-	GanttTable.start_date = startDate;
-	//GanttTable.Init(id, "", "", test_type.disp_mode);
+	//var d = GanttTable.dateStringToDate(GanttTable.start_date);
+	//d = scheduleCommon.addDate(d, -(GanttTable.disp_span * 30));
+	//startDate = scheduleCommon.getDateString(d, "{0}/{1}/{2}");
+	GanttTable.start_date = scheduleCommon.prevMonth(startDate,GanttTable.disp_span);
 };
 GanttTable.next = function (id, test_type, disp_mode) {
 	var startDate = GanttTable.start_date;
-	var d = GanttTable.dateStringToDate(GanttTable.start_date);
-	d = scheduleCommon.addDate(d, (GanttTable.disp_span * 30));
-	startDate = scheduleCommon.getDateString(d, "{0}/{1}/{2}");
-	GanttTable.start_date = startDate;
+	//var d = GanttTable.dateStringToDate(GanttTable.start_date);
+	//d = scheduleCommon.addDate(d, (GanttTable.disp_span * 30));
+	//startDate = scheduleCommon.getDateString(d, "{0}/{1}/{2}");
+	GanttTable.start_date = scheduleCommon.nextMonth(startDate, GanttTable.disp_span);
 	//GanttTable.Init(id, "", "", test_type.disp_mode);
 };
 // ガントテーブルの生成
@@ -107,7 +106,7 @@ GanttTable.createGanttTable = function (target_id,start_date,end_date,test_type,
 // カレンダー表示行生成
 GanttTable.createCalendarHeader = function(ganttData,right_top1,right_top2,right_top3,dateCount) {
     if (ganttData != null) {
-		var startDate = GanttTable.dateStringToDate(ganttData.from);
+		var startDate = scheduleCommon.dateStringToDate(ganttData.from);
 		// 表示日付を年月日毎に文字列分割
 		var sd = GanttTable.splitDateString(ganttData.from);
 		var ed = GanttTable.splitDateString(ganttData.to);
@@ -212,7 +211,7 @@ GanttTable.createRows = function (ganttData, left_div, right_div, dateCount) {
 GanttTable.searchEntryData = function (ganttData, left_div, right_div, dateCount) {
 	
 	$.ajax({
-		url: '/entry_get/term/' + GanttTable.dateSeparatorChange(ganttData.from, '-') + '/' + GanttTable.dateSeparatorChange(ganttData.to, '-') + '/' + ganttData.test_type,
+		url: '/entry_get/term/' + scheduleCommon.dateSeparatorChange(ganttData.from, '-') + '/' + scheduleCommon.dateSeparatorChange(ganttData.to, '-') + '/' + ganttData.test_type,
 		cache: false,
 		dataType: 'json',
 		success: function (entry_list) {
@@ -598,8 +597,8 @@ GanttTable.scheduleBtnClick = function() {
 
 // 日数計算
 GanttTable.calcDateCount = function (from, to) {
-	var s = GanttTable.dateStringToDate(from);
-	var e = GanttTable.dateStringToDate(to);
+	var s = scheduleCommon.dateStringToDate(from);
+	var e = scheduleCommon.dateStringToDate(to);
 	var d = GanttTable.getDateCount(s, e);
 	return d;
 };
@@ -610,10 +609,6 @@ GanttTable.checkTodayProgress = function (today, from, to) {
 	if (d1 < 0) return -1;
 	var prog = (d1 / d2) * 100;
 	return prog;
-};
-GanttTable.dateStringToDate = function(dateString) {
-    var date = new Date(dateString);
-    return date;
 };
 
 GanttTable.getDateCount = function (start, end) {
@@ -631,9 +626,4 @@ GanttTable.splitDateString = function(dateString) {
 };
 
 GanttTable.dispModeChange = function() {
-};
-//
-// 日付区切り文字変更
-GanttTable.dateSeparatorChange = function (dateString, separator) {
-	return dateString.replace(/[/]/g, separator);
 };
