@@ -9,12 +9,12 @@ CalendarTableForPatchTest.days = ['日','月','火','水','木','金','土'];
 CalendarTableForPatchTest.days_color = ['red','black','black','black','black','black','blue'];
 CalendarTableForPatchTest.start_date_list = [null,null,null,null,null];
 CalendarTableForPatchTest.end_date_list = [null,null,null,null,null];
-CalendarTableForPatchTest.init = function (id, base_cd) {
+CalendarTableForPatchTest.init = function () {
 	var ymd = CalendarTable.start_date.split("/");
 	var year = ymd[0];
 	var month = ymd[1];
-	$("#" + id).empty();
-	CalendarTableForPatchTest.base_cd = base_cd;
+	$("#" + CalendarTable.current_div).empty();
+	
 	// 指定された年月の日数を取得する
 	var days = scheduleCommon.getDaysCount(year, month);
 	// 月の初めの曜日を取得する
@@ -22,8 +22,8 @@ CalendarTableForPatchTest.init = function (id, base_cd) {
 	// 週初めの日付を算出する
 	var startDate = scheduleCommon.addDayCount(year, month, 1, ((day - 1) * -1));
 	// テーブル生成
-	var width = $("#" + id).width();
-	var height = $("#" + id).height();
+	var width = $("#" + CalendarTable.current_div).width();
+	var height = $("#" + CalendarTable.current_div).height();
 	var left_width = 40;
 	var right_width = width - left_width - 20;
 	var patch_tbl = $("<div class='cal_patch_base'></div>");
@@ -38,7 +38,7 @@ CalendarTableForPatchTest.init = function (id, base_cd) {
 	$(patch_tbl).append(patch_tbl_body);
 	$(patch_tbl_header).append(left_div);
 	$(patch_tbl_header).append(right_div);
-	$("#" + id).append(patch_tbl);
+	$("#" + CalendarTable.current_div).append(patch_tbl);
 	
 	// ヘッダー生成
 	var left_row = $("<div class='cal_patch_left_row'></div>");
@@ -91,7 +91,7 @@ CalendarTableForPatchTest.init = function (id, base_cd) {
 	CalendarTableForPatchTest.createCalendar(patch_tbl_body, year, month, width, right_width);
 	// 試験スケジュールデータの検索と表示
 //	CalendarTableForPatchTest.searchScheduleData();
-	CalendarTable.searchScheduleData(CalendarTableForPatchTest.start_date_list[0], CalendarTableForPatchTest.end_date_list[4], CalendarTableForPatchTest.base_cd,"02", CalendarTableForPatchTest.addScheduleData);
+	CalendarTable.searchScheduleData(CalendarTableForPatchTest.start_date_list[0], CalendarTableForPatchTest.end_date_list[4], CalendarTable.current_base_cd,"02", CalendarTableForPatchTest.addScheduleData);
 };
 
 // スケジュールデータを表示用テーブルに追加する
@@ -106,7 +106,7 @@ CalendarTableForPatchTest.addScheduleData = function (schedule_list) {
 			var am_pm = rows[i].am_pm;
 			var patch_no = rows[i].patch_no;
 			// スケジュールを表示する要素のIDを生成する
-			var id = "#schedule_" + sd + "_" + am_pm + "_" + patch_no;
+			var id = "#schedule_" + rows[i].base_cd + "_" + sd + "_" + am_pm + "_" + patch_no;
 			$(id).append(sch);
 			$(id).bind('click',
 				 {
@@ -119,7 +119,8 @@ CalendarTableForPatchTest.addScheduleData = function (schedule_list) {
 				end_date: rows[i].end_date,
 				am_pm: rows[i].am_pm, 
 				patch_no: rows[i].patch_no,
-				test_type: "02"	// 安全性試験
+				test_type: "02",	// 安全性試験
+				base_cd: rows[i].base_cd
 			}, CalendarTable.openDialog);
 
 		}
@@ -164,7 +165,7 @@ CalendarTableForPatchTest.createCalendar = function (patch_tbl_body, year, month
 			//			}
 			var start = scheduleCommon.getDateString(CalendarTableForPatchTest.start_date_list[Math.floor(t / 2)], "{0}-{1}-{2}");
 			var end = scheduleCommon.getDateString(CalendarTableForPatchTest.end_date_list[Math.floor(t / 2)], "{0}-{1}-{2}");
-			$(week_l).attr("id", "schedule_" + start + "_" + cc + "_" + i);
+			$(week_l).attr("id", "schedule_" + CalendarTable.current_base_cd + "_" + start + "_" + cc + "_" + i);
 			$(week_l).css("width", w1 + "px");			
 			// 追加用ボタンのイベント処理登録
 			start = scheduleCommon.getDateString(CalendarTableForPatchTest.start_date_list[Math.floor(t / 2)], "{0}/{1}/{2}");
@@ -176,7 +177,8 @@ CalendarTableForPatchTest.createCalendar = function (patch_tbl_body, year, month
 				end_date: end,
 				am_pm: cc, 
 				patch_no: i,
-				test_type: "02"	// 安全性試験
+				test_type: "02",	// 安全性試験
+				base_cd: CalendarTable.current_base_cd
 			}, CalendarTable.openDialog);
 			$(week_l).append(add_btn);
 			$(patch_week_div).append(week_l);

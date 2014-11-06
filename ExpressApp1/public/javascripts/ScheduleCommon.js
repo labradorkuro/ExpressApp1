@@ -5,11 +5,14 @@ var scheduleCommon = scheduleCommon || {};
 // jqgridのフォントサイズを変える
 scheduleCommon.changeFontSize = function(size){
     $('div.ui-jqgrid').css('font-size', size);
+	$('div.ui-jqgrid-view').css('font-size', size);
     $('table.ui-jqgrid-htable th').css('font-size', size);
     $('table.ui-jqgrid-htable th').css('height', size)
         .children('div').css('height', size);
-    $('div.ui-jqgrid-pager').css('height', size);
-    $('div.ui-jqgrid-pager').css('font-size', '1em');
+//    $('div.ui-jqgrid-pager').css('height', size);
+//    $('div.ui-jqgrid-pager').css('font-size', '1em');
+	$('div.ui-jqgrid-pager').css('height', '1.6em');
+	$('div.ui-jqgrid-pager').css('font-size', '1.2em');
     $('.ui-pg-input').css('height', '1.3em');
     $('.ui-pg-selbox').css('height', '1.3em');
 };

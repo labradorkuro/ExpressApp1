@@ -3,24 +3,77 @@
 	// 試験毎のタブを生成
 	$("#tabs").tabs({
 		// タブの選択時に中のカレンダー表示を更新する
+		create: function (event, ui) {
+			var today = scheduleCommon.getToday("{0}/{1}/{2}");
+			CalendarTable.start_date = today;
+			var h = window.innerHeight;
+			$(".calendar_div").css("height", h - 270);
+			switch (ui.tab.index()) {
+				case 0:
+					CalendarTable.current_div = "calendar_div1";
+					CalendarTable.current_test_type = "01";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
+					break;
+				case 1:
+					CalendarTable.current_div = "calendar_div2_1";
+					CalendarTable.current_test_type = "02";
+					CalendarTable.current_base_cd = "01";
+					CalendarTableForPatchTest.init();	// 年、月、拠点CD
+					break;
+				case 2:
+					CalendarTable.current_div = "calendar_div3";
+					CalendarTable.current_test_type = "03";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
+					break;
+				case 3:
+					CalendarTable.current_div = "calendar_div4";
+					CalendarTable.current_test_type = "04";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
+					break;
+				case 4:
+					CalendarTable.current_div = "calendar_div5";
+					CalendarTable.current_test_type = "05";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
+					break;
+			}
+		},
 		activate: function (event, ui) {
 			var h = window.innerHeight;
 			$(".calendar_div").css("height", h - 270);
 			switch (ui.newTab.index()) {
 				case 0:
-					CalendarTable.init("calendar_div1","01");
-					break;					
+					CalendarTable.current_div = "calendar_div1";
+					CalendarTable.current_test_type = "01";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
+					break;
 				case 1:
-					CalendarTableForPatchTest.init("calendar_div2_1", "01");	// 年、月、拠点CD
+					CalendarTable.current_div = "calendar_div2_1";
+					CalendarTable.current_test_type = "02";
+					CalendarTable.current_base_cd = "01";
+					CalendarTableForPatchTest.init();	// 年、月、拠点CD
 					break;
 				case 2:
-					CalendarTable.init("calendar_div3","03");
+					CalendarTable.current_div = "calendar_div3";
+					CalendarTable.current_test_type = "03";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
 					break;
 				case 3:
-					CalendarTable.init("calendar_div4","04");
+					CalendarTable.current_div = "calendar_div4";
+					CalendarTable.current_test_type = "04";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
 					break;
 				case 4:
-					CalendarTable.init("calendar_div5","05");
+					CalendarTable.current_div = "calendar_div5";
+					CalendarTable.current_test_type = "05";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
 					break;
 			}
 		}
@@ -34,10 +87,16 @@
 			$(".calendar_div").css("height", h - 270);
 			switch (ui.newTab.index()) {
 				case 0:
-					CalendarTableForPatchTest.init("calendar_div2_1", "01");	// 年、月、拠点CD
+					CalendarTable.current_div = "calendar_div2_1";
+					CalendarTable.current_test_type = "02";
+					CalendarTable.current_base_cd = "01";
+					CalendarTableForPatchTest.init();	// 年、月、拠点CD
 					break;					
 				case 1:
-					CalendarTableForPatchTest.init("calendar_div2_2", "02");	// 年、月、拠点CD
+					CalendarTable.current_div = "calendar_div2_2";
+					CalendarTable.current_test_type = "02";
+					CalendarTable.current_base_cd = "02";
+					CalendarTableForPatchTest.init();	// 年、月、拠点CD
 					break;
 			}
 		}
@@ -91,7 +150,7 @@
 	$(window).resize(function () {
 		calendarEdit.calendarTableInit();
 	});
-	calendarEdit.calendarTableInit();
+	//calendarEdit.calendarTableInit();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 
 	$("#prev_btn").click(calendarEdit.prev);
@@ -104,13 +163,12 @@
 var calendarEdit = calendarEdit || {};
 calendarEdit.calendarTableInit = function () {
 	var h = window.innerHeight;
-	$(".calendar_div").css("height", h - 270); 
-	CalendarTable.init("calendar_div1","01");
-	CalendarTableForPatchTest.init("calendar_div2_1", "01");	// 年、月、拠点CD
-	CalendarTableForPatchTest.init("calendar_div2_2", "02");	// 年、月、拠点CD
-	CalendarTable.init("calendar_div3", "03");
-	CalendarTable.init("calendar_div4", "04");
-	CalendarTable.init("calendar_div5", "05");
+	$(".calendar_div").css("height", h - 270);
+	if (CalendarTable.current_test_type != "02") {
+		CalendarTable.init();
+	} else {
+		CalendarTableForPatchTest.init();	// 年、月、拠点CD
+	}
 };
 
 

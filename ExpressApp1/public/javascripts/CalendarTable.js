@@ -3,19 +3,22 @@
 //
 
 var CalendarTable = CalendarTable || {};
+CalendarTable.current_div = "";
+CalendarTable.current_test_type = "01";
+CalendarTable.current_base_cd = "01"; 
 CalendarTable.start_date = null;
 CalendarTable.schedule = null;
 CalendarTable.days = ['日','月','火','水','木','金','土'];
 CalendarTable.days_color = ['red','black','black','black','black','black','blue'];
 CalendarTable.width_15 = [];
-CalendarTable.init = function(id, test_type) {
+CalendarTable.init = function() {
 	var ymd = CalendarTable.start_date.split("/");
 	var year = ymd[0];
 	var month = ymd[1];
-	$("#" + id).empty();
+	$("#" + CalendarTable.current_div).empty();
 	// 表示幅の取得
-	var width = $("#" + id).width();
-	var height = $("#" + id).height();
+	var width = $("#" + CalendarTable.current_div).width();
+	var height = $("#" + CalendarTable.current_div).height();
 	var times_width = width - 240;
 	// 指定された年月の日数を取得する
 	var days = scheduleCommon.getDaysCount(year,month);
@@ -27,16 +30,16 @@ CalendarTable.init = function(id, test_type) {
 	var day_day  = $("<div class='cal_day' align='center'>曜日</div>");
 	var day_times = $("<div class='cal_day_times'></div>");
 	var day_memo  = $("<div class='cal_memo' align='center'>備考</div>");
-	var dd = id + "_header";
+	var dd = CalendarTable.current_div + "_header";
 	$(day_div).attr("id",dd);
-	$("#" + id).append(day_div);
+	$("#" + CalendarTable.current_div).append(day_div);
 	$(day_div).append(header);
 	$(day_div).append(body);
 	$(header).append(day_date);
 	$(header).append(day_day);
 	// 15分刻みを表示する幅を保存しておく
-	CalendarTable.width_15[test_type] = Math.floor((times_width - 52) / 52);
-	var dtw = (CalendarTable.width_15[test_type] * 52) + 52;
+	CalendarTable.width_15[CalendarTable.current_test_type] = Math.floor((times_width - 52) / 52);
+	var dtw = (CalendarTable.width_15[CalendarTable.current_test_type] * 52) + 52;
 	$(body).css("width", dtw + 233 + "px");
 	$(body).css("height", (height - 42) + "px");
 	$(day_div).css("width", dtw + 212 + "px");
@@ -45,7 +48,7 @@ CalendarTable.init = function(id, test_type) {
 	for(var t = 0;t < 13;t++) {
 		var day_times_u = $("<div class='cal_day_times_header_up' align='center'></div>");
 		$(day_times_u).append(t + 8 + " 時");
-		$(day_times_u).css("width", ((CalendarTable.width_15[test_type] * 4) + 3)+ "px");
+		$(day_times_u).css("width", ((CalendarTable.width_15[CalendarTable.current_test_type] * 4) + 3)+ "px");
 		$(day_times).append(day_times_u);
 	}
 	// 15分刻みの表示
@@ -53,7 +56,7 @@ CalendarTable.init = function(id, test_type) {
 		var day_times_l = $("<div class='cal_day_times_header_low' align='center'></div>");
 		var m = t % 4;
 		$(day_times_l).append(m * 15);
-		$(day_times_l).css("width", CalendarTable.width_15[test_type] + "px");
+		$(day_times_l).css("width", CalendarTable.width_15[CalendarTable.current_test_type] + "px");
 		$(day_times).append(day_times_l);
 	}
 	$(header).append(day_times);
@@ -68,10 +71,10 @@ CalendarTable.init = function(id, test_type) {
 		day_div = $("<div class='cal_day_base'></div>");
 		day_date = $("<div class='cal_date' align='right'></div>");
 		day_day  = $("<div class='cal_day' align='center'></div>");
-		day_times = $("<div class='cal_day_times'" + " id='cal_day_times_" + ymd + "-" + test_type + "'></div>");
+		day_times = $("<div class='cal_day_times'" + " id='cal_day_times_" + ymd + "-" + CalendarTable.current_test_type + "'></div>");
 		day_memo  = $("<div class='cal_memo'></div>");
 		
-		dd = id + "_" + i;
+		dd = CalendarTable.current_div + "_" + i;
 		$(day_div).css("width", dtw + 212 + "px");
 		$(day_div).attr("id",dd);
 		if ((i % 2) === 0) {
@@ -105,12 +108,13 @@ CalendarTable.init = function(id, test_type) {
 			end_date: scheduleCommon.getDateString(end_date, "{0}/{1}/{2}"),
 			am_pm: "00", 
 			patch_no: 0,
-			test_type: test_type
+			test_type: CalendarTable.current_test_type,
+			base_cd: CalendarTable.current_base_cd
 		}, CalendarTable.openDialog);
 		
 	}
 	// スケジュールデータを検索して表示する
-	CalendarTable.searchScheduleData(start_date, end_date, "01", test_type, CalendarTable.addScheduleData);
+	CalendarTable.searchScheduleData(start_date, end_date, "01", CalendarTable.current_test_type, CalendarTable.addScheduleData);
 
 };
 
@@ -129,9 +133,22 @@ CalendarTable.openDialog = function (event) {
 	$("#am_pm").val("0");
 	// 安全性試験の時はAMPMの選択とパッチ番号の選択を表示する。それ以外は非表示にする。
 	if (event.data.test_type === "02") {
+		// 安全性試験の場合
 		$("#test_02_row").css("display", "table-row");
+		$("#start_time_label").css("display", "none");
+		$("#end_time_label").css("display", "none");
+		$("#start_time").css("display", "none");
+		$("#end_time").css("display", "none");
+		$("#end_date_label").css("display", "inline");
+		$("#end_date").css("display", "inline");
 	} else {
 		$("#test_02_row").css("display", "none");
+		$("#start_time_label").css("display", "inline");
+		$("#end_time_label").css("display", "inline");
+		$("#start_time").css("display", "inline");
+		$("#end_time").css("display", "inline");
+		$("#end_date_label").css("display", "none");
+		$("#end_date").css("display", "none");
 	}
 	// eventに渡されたデータをフォームにセットする
 	var sd = event.data.start_date;
@@ -169,11 +186,12 @@ CalendarTable.openDialog = function (event) {
 	$("#patch_no").val(event.data.patch_no);
 	$("#am_pm").val(event.data.am_pm);
 	// 案件番号をクリックしたら、案件情報参照用のダイアログ表示する
-	$("#entry_no").bind("click", { from: sd, to: ed, test_type: event.data.test_type }, CalendarTable.showEntryList);
+	$("#entry_no").bind("click", { from: sd, to: ed, test_type: event.data.test_type,base_cd: event.data.base_cd }, CalendarTable.showEntryList);
 	// 案件情報参照画面のイベント処理登録
 	$("#entry_list").bind("change", {}, CalendarTable.searchQuoteData);
 	$("#quote_list").bind("change", {}, CalendarTable.selectQuoteData);
 	$("#schedule_dialog").dialog("open");
+	return false;
 };
 // スケジュールデータの検索
 CalendarTable.searchScheduleData = function (start,end,base_cd,test_type, callback) {
@@ -226,7 +244,8 @@ CalendarTable.addScheduleData = function (schedule_list) {
 				end_time: rows[i].end_time,
 				am_pm: rows[i].am_pm, 
 				patch_no: rows[i].patch_no,
-				test_type: rows[i].division
+				test_type: rows[i].division,
+				base_cd: rows[i].base_cd
 			}, CalendarTable.openDialog);
 		}
 
@@ -268,21 +287,28 @@ CalendarTable.deleteSchedule = function () {
 
 // DB追加後のコールバック
 CalendarTable.onloadAddSchedule = function (schedule) {
+	if (CalendarTable.current_test_type != "02") {
+		CalendarTable.init();
+	} else {
+		CalendarTableForPatchTest.init();	// 年、月、拠点CD
+	}
 };
 
 // 案件データの参照画面の準備（案件データ検索）
 CalendarTable.showEntryList = function (event) {
-	CalendarTable.searchEntryData(event.data.from, event.data.to, event.data.test_type);	
+	CalendarTable.searchEntryData(event.data.from, event.data.to, event.data.test_type, event.data.base_cd);	
 };
 // 表示する案件データの検索
-CalendarTable.searchEntryData = function (from, to, test_type) {
+CalendarTable.searchEntryData = function (from, to, test_type, base_cd) {
+	$("#entry_list").empty();
+	$("#quote_list").empty();
 	
 	$.ajax({
 		url: '/entry_get/term/' + scheduleCommon.dateSeparatorChange(from, '-') + '/' + scheduleCommon.dateSeparatorChange(to, '-') + '/' + test_type,
 		cache: false,
 		dataType: 'json',
 		success: function (entry_list) {
-			CalendarTable.setEntryList(entry_list);
+			CalendarTable.setEntryList(entry_list,base_cd);
 		}
 	});
 
@@ -306,14 +332,15 @@ CalendarTable.searchQuoteData = function () {
 };
 
 // 案件リストにデータを追加してダイアログを表示する
-CalendarTable.setEntryList = function (entry_list) {
+CalendarTable.setEntryList = function (entry_list,base_cd) {
 	$("#entry_list").empty();
 	if (entry_list != null) {
 		var rows = entry_list.rows;
 		for (var i in rows) {
-			var op = $("<option value=" + rows[i].entry_no + ">" + rows[i].entry_title + "</option>");
-			$("#entry_list").append(op);
-
+			if (base_cd === rows[i].base_cd) {
+				var op = $("<option value=" + rows[i].entry_no + ">" + rows[i].entry_title + "</option>");
+				$("#entry_list").append(op);
+			}
 		}
 	}
 	// ダイアログ表示

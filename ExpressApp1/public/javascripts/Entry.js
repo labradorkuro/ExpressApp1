@@ -12,7 +12,7 @@ $(function() {
 		$("#tab2").css("display", "none");
 	}
 	// Tab生成
-	$("#tabs1").tabs();
+	$("#tabs").tabs();
 	entryEdit.tabsActivate();
 	// 日付入力設定
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
@@ -24,7 +24,7 @@ $(function() {
 	// 閉じるボタンイベント
 	$("#close_entry").click(entryEdit.closeEntry);
 
-	scheduleCommon.changeFontSize('1.4em');
+	scheduleCommon.changeFontSize('1.0em');
 	// 明細の編集用ダイアログ（ダイアログの中身はentry_edit.jadeの中に記述されている）
 	entryEdit.quoteDialog();
 	// 試験（見積）明細追加ボタンイベント

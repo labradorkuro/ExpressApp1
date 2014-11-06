@@ -1074,3 +1074,9 @@ a.general_button:hover{
     overflow: hidden;
     
 }
+select#entry_list {
+    width: 200px;
+}
+select#quote_list {
+    width:200px;
+}
