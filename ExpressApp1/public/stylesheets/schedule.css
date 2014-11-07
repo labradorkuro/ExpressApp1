@@ -1080,3 +1080,8 @@ select#entry_list {
 select#quote_list {
     width:200px;
 }
+
+div#entry_dialog {
+    height: 600px;
+    
+}

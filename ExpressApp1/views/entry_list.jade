@@ -27,10 +27,17 @@ html
 				div.toolbar
 					a.tool_button_a#add_entry 追 加
 					a.tool_button_a#edit_entry 編 集
-					a.tool_button_a#del_entry 削 除
 				div.admin_div
 					table#entry_list
 					div#entry_pager
-				div#entry_dialog
-					p 案件情報編集
-					div 
+				p
+				div.toolbar
+					a.tool_button_a#add_quote 追 加
+					a.tool_button_a#edit_quote 編 集
+				div.admin_div
+					table#test_list
+					div#test_list_pager
+				div#entry_dialog 
+					include entry_form
+				div#quote_dialog 
+					include entry_quote_dialog
