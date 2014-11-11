@@ -357,7 +357,7 @@ entryList.getSelectEntry = function () {
 	var no = "";
 	var id = $("#entry_list").getGridParam('selrow');
 	if (id != null) {
-		var row = grid.getRowData(id);
+		var row = $("#entry_list").getRowData(id);
 		no = row.entry_no;
 	}
 	return no;

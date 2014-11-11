@@ -36,11 +36,17 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="api\entry_get.js" />
+    <Compile Include="api\entry_getPG.js" />
     <Compile Include="api\entry_post.js" />
+    <Compile Include="api\entry_postPG.js" />
     <Compile Include="api\schedule_get.js" />
     <Compile Include="api\schedule_post.js" />
+    <Compile Include="api\schedule_postPG.js" />
+    <Compile Include="api\schedule_getPG.js" />
     <Compile Include="api\workitem_get.js" />
+    <Compile Include="api\workitem_getPG.js" />
     <Compile Include="api\workitem_post.js" />
+    <Compile Include="api\workitem_postPG.js" />
     <Compile Include="app.js" />
     <Compile Include="public\javascripts\AdminMenu.js" />
     <Compile Include="public\javascripts\Calendar.js" />
@@ -59,6 +65,7 @@
     <Compile Include="routes\admin.js" />
     <Compile Include="routes\calendar.js" />
     <Compile Include="routes\createTables.js" />
+    <Compile Include="routes\createTablesPG.js" />
     <Compile Include="routes\db.js" />
     <Compile Include="routes\entry_list.js" />
     <Compile Include="routes\entry_edit.js" />

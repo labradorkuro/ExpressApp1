@@ -233,6 +233,7 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 			var date_captions = ['問合せ日', '見積発行日', '受注日','事前入金期日'];
 			// 表示に必要な行数（高さ）を算出する
 			var lines = GanttTable.checkDateSpan(date_infos);
+			if (lines === 1) lines = 2;
 			// 項目名の表示
             var left_row = $("<div class='gt_left_row_div'></div>");
 			var cate1 = $("<div class='gt_category1_div'></div>");

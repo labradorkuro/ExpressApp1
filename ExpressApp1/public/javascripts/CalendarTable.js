@@ -153,6 +153,9 @@ CalendarTable.openDialog = function (event) {
 	// eventに渡されたデータをフォームにセットする
 	var sd = event.data.start_date;
 	var ed = event.data.end_date;
+	if (event.data.test_type != "02") {
+		ed = sd;
+	}
 	if (event.data.entry_no) {
 		$("#entry_no").val(event.data.entry_no);
 	}

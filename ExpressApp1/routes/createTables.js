@@ -1,5 +1,4 @@
 ﻿//var mysql = require('mysql');
-
 exports.create = function(req, res){
 /*	
 	var connection = mysql.createConnection({

@@ -229,7 +229,7 @@ div.gt_left_row_div {
     border-left:none;
     border-right:  1px #777777 solid;
     width:100%;
-    height:32px;
+    height:64px;
 }
 /*ガントチャート右側の行*/
 div.gt_right_row_div {
@@ -240,7 +240,7 @@ div.gt_right_row_div {
     border-left:none;
     border-right:  1px #777777 solid;
     width:704px;
-    height:32px;
+    height:64px;
     overflow: hidden;
 }
 div.gt_cal_header {
