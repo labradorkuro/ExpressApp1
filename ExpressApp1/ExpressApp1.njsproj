@@ -43,6 +43,8 @@
     <Compile Include="api\schedule_post.js" />
     <Compile Include="api\schedule_postPG.js" />
     <Compile Include="api\schedule_getPG.js" />
+    <Compile Include="api\user_getPG.js" />
+    <Compile Include="api\user_postPG.js" />
     <Compile Include="api\workitem_get.js" />
     <Compile Include="api\workitem_getPG.js" />
     <Compile Include="api\workitem_post.js" />
@@ -62,6 +64,7 @@
     <Compile Include="public\javascripts\ScheduleCommon.js" />
     <Compile Include="public\javascripts\ScheduleTable.js" />
     <Compile Include="public\javascripts\TestManagement.js" />
+    <Compile Include="public\javascripts\UserList.js" />
     <Compile Include="routes\admin.js" />
     <Compile Include="routes\calendar.js" />
     <Compile Include="routes\createTables.js" />
@@ -74,7 +77,7 @@
     <Compile Include="routes\portal.js" />
     <Compile Include="routes\schedule.js" />
     <Compile Include="routes\test_management.js" />
-    <Compile Include="routes\user.js" />
+    <Compile Include="routes\user_list.js" />
     <Compile Include="tools\tool.js" />
     <Content Include="package.json" />
     <Content Include="public\images\drc_logo.jpg" />
@@ -98,6 +101,8 @@
     <Content Include="views\schedule.jade" />
     <Content Include="views\schedule_form.jade" />
     <Content Include="views\tables.jade" />
+    <Content Include="views\user_form.jade" />
+    <Content Include="views\user_list.jade" />
     <Content Include="views\workitem_form.jade" />
   </ItemGroup>
   <ItemGroup>

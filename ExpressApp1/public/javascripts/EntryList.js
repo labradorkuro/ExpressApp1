@@ -105,8 +105,8 @@ entryList.createGrid = function () {
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
 			{ name: 'updated_id', index: 'updated_id' },
 		],
-		rowNum: 20,
-		rowList: [10,20,30],
+		rowNum: 10,
+		rowList: [10],
 		pager: '#entry_pager',
 		sortname: 'entry_no',
 		viewrecords: true,
@@ -155,8 +155,8 @@ entryList.createTestGrid = function (no) {
 			{ name: 'updated', index: 'updated', width: 120 }, // 更新日
 			{ name: 'updated_id', index: 'updated_id', width: 120 },			// 更新者ID
 		],
-		rowNum: 20,
-		rowList: [10,20,30],
+		rowNum: 10,
+		rowList: [10],
 		pager: '#test_list_pager',
 		sortname: 'quote_detail_no',
 		viewrecords: true,
