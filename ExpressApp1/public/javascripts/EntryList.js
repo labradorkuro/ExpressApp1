@@ -6,6 +6,7 @@ $(function() {
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
 	$( "#tabs" ).tabs();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
+	entryList.createMessageDialog();
 	// 編集用ダイアログの設定
 	entryList.createEntryDialog();
 	entryList.createQuoteDialog();
@@ -30,6 +31,22 @@ $(function() {
 var entryList = entryList || {};
 entryList.currentEntryNo = 0;
 
+// メッセージ表示用ダイアログの生成
+entryList.createMessageDialog = function () {
+	$('#message_dialog').dialog({
+		autoOpen: false,
+		width: 400,
+		height: 180,
+		title: 'メッセージ',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
 // 案件入力用ダイアログの生成
 entryList.createEntryDialog = function () {
 	$('#entry_dialog').dialog({
@@ -41,12 +58,14 @@ entryList.createEntryDialog = function () {
 		modal: true,
 		buttons: {
 			"追加": function () {
-				entryList.saveEntry();
-				$(this).dialog('close');
+				if (entryList.saveEntry()) {
+					$(this).dialog('close');
+				}
 			},
 			"更新": function () {
-				entryList.saveEntry();
-				$(this).dialog('close');
+				if (entryList.saveEntry()) {
+					$(this).dialog('close');
+				}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -66,12 +85,14 @@ entryList.createQuoteDialog = function () {
 		modal: true,
 		buttons: {
 			"追加": function () {
-				entryList.saveQuote();
-				$(this).dialog('close');
+				if (entryList.saveQuote()) {
+					$(this).dialog('close');
+				}
 			},
 			"更新": function () {
-				entryList.saveQuote();
-				$(this).dialog('close');
+				if (entryList.saveQuote()) {
+					$(this).dialog('close');
+				}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -175,7 +196,13 @@ entryList.openEntryDialog = function (event) {
 		// 編集ボタンから呼ばれた時は選択中の案件のデータを取得して表示する
 		var no = entryList.getSelectEntry();
 		entryList.requestEntryData(no);
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
+		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+	} else {
+		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
+
 	$("#entry_dialog").dialog("open");
 };
 // 編集用ダイアログの表示
@@ -187,6 +214,11 @@ entryList.openQuoteDialog = function (event) {
 		// 編集ボタンから呼ばれた時は選択中の案件のデータを取得して表示する
 		var quote = entryList.getSelectQuote();
 		entryList.setQuoteFormData(quote);
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
+		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+	} else {
+		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
 	$("#quote_dialog").dialog("open");
 };
@@ -200,6 +232,10 @@ entryList.requestEntryData = function (no) {
 };
 // 案件データの保存
 entryList.saveEntry = function () {
+	// 入力値チェック
+	if (!entryList.entryInputCheck()) {
+		return false;
+	}
 	// checkboxのチェック状態確認と値設定
 	entryList.checkCheckbox();
 	// formデータの取得
@@ -209,6 +245,7 @@ entryList.saveEntry = function () {
 	xhr.responseType = 'json';
 	xhr.onload = entryList.onloadEntrySave;
 	xhr.send(form);
+	return true;
 };
 
 // checkboxのチェック状態確認と値設定
@@ -223,9 +260,64 @@ entryList.checkCheckbox = function () {
 		$("#confirm_check").val('1');
 	}
 };
+entryList.entryInputCheck = function () {
+	var result = true;
+	if ($("#entry_title").val() == "") {
+		// 案件名
+		$("#message").text("案件名が未入力です。");
+		result = false;
+	}
+	// 数値項目チェック	
+	else if ($("#entry_amount_price").val() == ""){
+		// 案件合計金額
+		$("#message").text("案件合計金額が未入力です。");
+		result = false;
+	}
+	else if ($("#entry_amount_billing").val() == "") {
+		// 案件請求金額合計
+		$("#message").text("案件請求金額合計が未入力です。");
+		result = false;
+	}
+	else if ($("#entry_amount_deposit").val() == "") {
+		// 案件入金金額合計
+		$("#message").text("案件入金金額合計が未入力です。");
+		result = false;
+	}
+	else if ($("#drc_substituted_amount").val() == "") {
+		$("#message").text("DRC立替準備金額が未入力です。");
+		result = false;
+	}
+	else if ($("#pay_amount_1").val() == "") {
+		$("#message").text("分割支払合計金額1が未入力です。");
+		result = false;
+	}
+	else if ($("#pay_amount_2").val() == "") {
+		$("#message").text("分割支払合計金額2が未入力です。");
+		result = false;
+	}
+	else if ($("#pay_amount_3").val() == "") {
+		$("#message").text("分割支払合計金額3が未入力です。");
+		result = false;
+	}
+	else if ($("#pay_amount_4").val() == "") {
+		$("#message").text("分割支払合計金額4が未入力です。");
+		result = false;
+	}
+	else if ($("#pay_amount_5").val() == "") {
+		$("#message").text("分割支払合計金額5が未入力です。");
+		result = false;
+	}
+	if (!result) {
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
+	}
+	return result;
+};
+
 // formデータの取得
 entryList.getFormData = function () {
 	var form = new FormData(document.querySelector("#entryForm"));
+
 	// checkboxのチェックがないとFormDataで値が取得されないので値を追加する
 	if (!$("#delete_check:checked").val()) {
 		form.append('delete_check', '0');
@@ -280,6 +372,26 @@ entryList.setEntryForm = function (entry) {
 	$("#drc_substituted_amount").val(entry.drc_substituted_amount); // DRC立替準備金額
 	$("#prior_payment_limit").val(entry.prior_payment_limit); // 事前入金期日
 	$("#prior_payment_accept").val(entry.prior_payment_accept); // 事前入金日
+	$("#pay_planning_date_1").val(entry.pay_planning_date_1);	// 分割請求日1
+	$("#pay_complete_date_1").val(entry.pay_complete_date_1);	// 分割入金日1
+	$("#pay_amount_1").val(entry.pay_amount_1);					// 分割支払合計金額1
+	$("#pay_result_1").val(entry.pay_result_1);					// 分割請求区分1
+	$("#pay_planning_date_2").val(entry.pay_planning_date_2);	// 分割請求日2
+	$("#pay_complete_date_2").val(entry.pay_complete_date_2);	// 分割入金日2
+	$("#pay_amount_2").val(entry.pay_amount_2);					// 分割支払合計金額2
+	$("#pay_result_2").val(entry.pay_result_2);					// 分割請求区分2
+	$("#pay_planning_date_3").val(entry.pay_planning_date_3);	// 分割請求日3
+	$("#pay_complete_date_3").val(entry.pay_complete_date_3);	// 分割入金日3
+	$("#pay_amount_3").val(entry.pay_amount_3);					// 分割支払合計金額3
+	$("#pay_result_3").val(entry.pay_result_3);					// 分割請求区分3
+	$("#pay_planning_date_4").val(entry.pay_planning_date_4);	// 分割請求日4
+	$("#pay_complete_date_4").val(entry.pay_complete_date_4);	// 分割入金日4
+	$("#pay_amount_4").val(entry.pay_amount_4);					// 分割支払合計金額4
+	$("#pay_result_4").val(entry.pay_result_4);					// 分割請求区分4
+	$("#pay_planning_date_5").val(entry.pay_planning_date_5);	// 分割請求日5
+	$("#pay_complete_date_5").val(entry.pay_complete_date_5);	// 分割入金日5
+	$("#pay_amount_5").val(entry.pay_amount_5);					// 分割支払合計金額5
+	$("#pay_result_5").val(entry.pay_result_5);					// 分割請求区分5
 	$("#person_id").val(entry.person_id); // 担当者ID
 	$("#delete_check").val(entry.delete_check); // 削除フラグ
 	$("#delete_reason").val(entry.delete_reason); // 削除理由
@@ -297,7 +409,7 @@ entryList.setEntryForm = function (entry) {
 entryList.clearEntry = function () {
 	var entry = {} ;
 	entry.entry_no = ""; // 案件No
-	entry.base_cd = ""; // 拠点CD
+	entry.base_cd = "01"; // 拠点CD
 	entry.entry_title = ""; // 案件名
 	entry.inquiry_date = ""; // 問合せ日
 	entry.entry_status = "01"; // 案件ステータス
@@ -309,7 +421,7 @@ entryList.clearEntry = function () {
 	entry.order_type = 0; // 受託区分
 	entry.contract_type = 1; // 契約区分
 	entry.outsourcing_cd = ""; // 委託先CD
-	entry.division  = ""; // 事業部ID
+	entry.division  = "01"; // 事業部ID
 	entry.entry_amount_price = 0; // 案件合計金額
 	entry.entry_amount_price = 0; // 案件請求合計金額
 	entry.entry_amount_billing = 0; // 案件入金合計金額
@@ -318,6 +430,26 @@ entryList.clearEntry = function () {
 	entry.drc_substituted_amount = 0; // DRC立替準備金額
 	entry.prior_payment_limit = ""; // 事前入金期日
 	entry.prior_payment_accept = ""; // 事前入金日
+	entry.pay_planning_date_1 = "";	// 分割請求日1
+	entry.pay_complete_date_1 = "";	// 分割入金日1
+	entry.pay_amount_1 = 0;			// 分割支払合計金額1
+	entry.pay_result_1 = 0;			// 分割請求区分1
+	entry.pay_planning_date_2 = "";	// 分割請求日2
+	entry.pay_complete_date_2 = "";	// 分割入金日2
+	entry.pay_amount_2 = 0;			// 分割支払合計金額2
+	entry.pay_result_2 = 0;			// 分割請求区分2
+	entry.pay_planning_date_3 = "";	// 分割請求日3
+	entry.pay_complete_date_3 = "";	// 分割入金日3
+	entry.pay_amount_3 = 0;			// 分割支払合計金額3
+	entry.pay_result_3 = 0;			// 分割請求区分3
+	entry.pay_planning_date_4 = "";	// 分割請求日4
+	entry.pay_complete_date_4 = "";	// 分割入金日4
+	entry.pay_amount_4 = 0;			// 分割支払合計金額4
+	entry.pay_result_4 = 0;			// 分割請求区分4
+	entry.pay_planning_date_5 = "";	// 分割請求日5
+	entry.pay_complete_date_5 = "";	// 分割入金日5
+	entry.pay_amount_5 = 0;			// 分割支払合計金額5
+	entry.pay_result_5 = 0;			// 分割請求区分5
 	entry.person_id = ""; // 担当者ID
 	entry.delete_check = 0; // 削除フラグ
 	entry.delete_reason = ""; // 削除理由
@@ -415,9 +547,9 @@ entryList.clearQuoteFormData = function (quote) {
 	$('#descript_value').val(''); // 値説明
 	$('#unit_cd').val('01'); // 単位CD
 	$('#unit').val(''); // 単位
-	$('#unit_price').val(''); // 単価
-	$('#quantity').val(''); // 数量
-	$('#quote_price').val(''); // 見積金額
+	$('#unit_price').val('0'); // 単価
+	$('#quantity').val('0'); // 数量
+	$('#quote_price').val('0'); // 見積金額
 	$('#test_memo').val(''); // 備考
 	$('#quote_delete_check').val(0); // 削除フラグ
 	$('#quote_delete_reason').val(''); // 削除理由
@@ -452,6 +584,10 @@ entryList.setQuoteFormData = function (quote) {
 };
 // 試験（見積）データの保存
 entryList.saveQuote = function () {
+	// 入力値チェック
+	if (!entryList.quoteInputCheck()) {
+		return false;
+	}
 	// checkboxのチェック状態確認と値設定
 	entryList.checkQuoteCheckbox();
 	// formデータの取得
@@ -463,6 +599,20 @@ entryList.saveQuote = function () {
 	xhr.responseType = 'json';
 	xhr.onload = entryList.onloadQuoteReq;
 	xhr.send(form);
+	return true;
+};
+entryList.quoteInputCheck = function () {
+	var result = true;
+	if ($("#test_item").val() == "") {
+		// 試験項目名名
+		$("#message").text("試験項目名が未入力です。");
+		result = false;
+	}
+	if (!result) {
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
+	}
+	return result;
 };
 
 // checkboxのチェック状態確認と値設定

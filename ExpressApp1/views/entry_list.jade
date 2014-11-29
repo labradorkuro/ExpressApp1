@@ -19,6 +19,7 @@ html
 				a(href="portal") Home
 			img.titlebar_logo(src="images/drc_logo.jpg")
 			span.titlebar= title
+			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。" 
 		div#tabs
 			ul
 				li
@@ -41,3 +42,6 @@ html
 					include entry_form
 				div#quote_dialog 
 					include entry_quote_dialog
+				div#message_dialog
+					div
+						span#message 

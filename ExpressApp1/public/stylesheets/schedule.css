@@ -62,8 +62,16 @@ span.titlebar {
     left:70px;
     font-size:1em;
     display:block;
-    /*width:400px;*/
-    /*height:20px;*/
+    margin-left:auto;
+    margin-right:auto;
+}
+span.login_user {
+    position:relative;
+    float:left;
+    top:10px;
+    left:200px;
+    font-size:1em;
+    display:block;
     margin-left:auto;
     margin-right:auto;
 }
@@ -1084,4 +1092,7 @@ select#quote_list {
 div#entry_dialog {
     height: 600px;
     
+}
+span.remark {
+    color:red;
 }

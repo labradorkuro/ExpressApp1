@@ -39,6 +39,7 @@
     <Compile Include="api\entry_getPG.js" />
     <Compile Include="api\entry_post.js" />
     <Compile Include="api\entry_postPG.js" />
+    <Compile Include="api\login_post.js" />
     <Compile Include="api\schedule_get.js" />
     <Compile Include="api\schedule_post.js" />
     <Compile Include="api\schedule_postPG.js" />

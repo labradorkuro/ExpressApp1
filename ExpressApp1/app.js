@@ -23,6 +23,7 @@ var schedule_post = require('./api/schedule_postPG');
 var schedule_get = require('./api/schedule_getPG');
 var user_post = require('./api/user_postPG');
 var user_get = require('./api/user_getPG');
+var login_post = require('./api/login_post');
 mysql = require('mysql');
 pg = require('pg');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
@@ -37,6 +38,9 @@ var app = express();
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+app.use(express.cookieParser('secret', 'drc_secreted_key'));
+app.use(express.session({ key: 'session_id' }));
+
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
@@ -52,6 +56,7 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+app.get('/index', routes.index);
 app.get('/', routes.index);
 app.get('/user_list', user_list.list);
 app.get('/schedule', schedule.list);
@@ -79,7 +84,7 @@ app.get('/workitem_get/:entry_no?', workitem_get.workitem_get);
 app.get('/schedule_get/:schedule_id?', schedule_get.schedule_get);
 app.get('/schedule_get/term/:start/:end/:base_cd?/:test_type', schedule_get.schedule_get);
 app.get('/user_get/:uid?', user_get.user_get);
-
+app.post('/', login_post.login_post);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',

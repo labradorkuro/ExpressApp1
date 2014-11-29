@@ -1,28 +1,27 @@
 ﻿extends layout
 
 block head
-  link(rel="stylesheet" ,href="stylesheets/schedule.css")
+	link(rel="stylesheet" ,href="stylesheets/schedule.css")
 
 block content
-  div.titlebar
-    img.titlebar_logo(src="images/drc_logo.jpg")
-    span.titlebar= title
-  div(style="padding-top:50px")
-    form(method="POST" action="login")
-        table.login_table
-            tr.login_title
-                th(colspan="2") ログイン
-            tr
-                td.login_title ユーザID
-                td 
-                    input#userid(type="text" name="userid" size="20")
-            tr
-                td.login_title パスワード
-                td 
-                    input#passwd(type="password" name="passwd" size="20")
-            tr
-                td(colspan="2" style="text-align:center")
-                    input(type="submit" name="submit" value="送信")
-                
-                     
-    
+	div.titlebar
+		img.titlebar_logo(src="images/drc_logo.jpg")
+		span.titlebar= title
+	div(style="padding-top:50px")
+		form(method="POST" action="/")
+			table.login_table
+				tr.login_title
+					th(colspan="2") ログイン
+				tr
+					td.login_title ユーザID
+					td 
+						input#uid(type="text" name="uid" size="20")
+				tr
+					td.login_title パスワード
+					td 
+						input#passwd(type="password" name="passwd" size="20")
+				tr
+					td(colspan="2" style="text-align:center")
+						input(type="submit" name="submit" value="送信")
+	div
+		p(style="text-align:center")= msg
