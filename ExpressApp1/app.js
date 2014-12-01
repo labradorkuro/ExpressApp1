@@ -7,6 +7,7 @@
 var express = require('express');
 var routes = require('./routes');
 var user_list = require('./routes/user_list');
+var division_list = require('./routes/division_list');
 var schedule = require('./routes/schedule');
 var calendar = require('./routes/calendar');
 var login = require('./routes/login');
@@ -23,6 +24,8 @@ var schedule_post = require('./api/schedule_postPG');
 var schedule_get = require('./api/schedule_getPG');
 var user_post = require('./api/user_postPG');
 var user_get = require('./api/user_getPG');
+var division_post = require('./api/division_postPG');
+var division_get = require('./api/division_getPG');
 var login_post = require('./api/login_post');
 mysql = require('mysql');
 pg = require('pg');
@@ -59,6 +62,7 @@ if ('development' == app.get('env')) {
 app.get('/index', routes.index);
 app.get('/', routes.index);
 app.get('/user_list', user_list.list);
+app.get('/division_list', division_list.list);
 app.get('/schedule', schedule.list);
 app.get('/calendar', calendar.list);
 app.post('/login',login.login);
@@ -76,6 +80,8 @@ app.post('/quote_post', entry_post.quote_post);
 app.post('/workitem_post', workitem_post.workitem_post);
 app.post('/schedule_post', schedule_post.schedule_post);
 app.post('/user_post', user_post.user_post);
+app.post('/password_post', user_post.password_post);
+app.post('/division_post', division_post.division_post);
 app.get('/entry_get/:no?', entry_get.entry_get);
 app.get('/entry_get/term/:start/:end/:test_type', entry_get.entry_get);
 app.get('/quote_get/:entry_no?', entry_get.quote_get);
@@ -84,7 +90,9 @@ app.get('/workitem_get/:entry_no?', workitem_get.workitem_get);
 app.get('/schedule_get/:schedule_id?', schedule_get.schedule_get);
 app.get('/schedule_get/term/:start/:end/:base_cd?/:test_type', schedule_get.schedule_get);
 app.get('/user_get/:uid?', user_get.user_get);
+app.get('/division_get/:division?', division_get.division_get);
 app.post('/', login_post.login_post);
+app.get('/logout', login_post.logout_post);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',

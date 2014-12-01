@@ -39,9 +39,10 @@ a.titlebar_button {
     position:relative;
     float:left;
     top:0px;
+    left:300px;
     font-size:small;
     display:block;
-    width:80px;
+    width:120px;
     height:22px;
     padding-top:6px;
     margin-top:1px;

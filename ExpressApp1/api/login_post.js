@@ -27,10 +27,17 @@ exports.login_post = function (req, res) {
 					res.render('portal', { title: 'DRC試験スケジュール管理' , userid: results.rows[0].uid ,name:results.rows[0].name});
 				} else {
 					req.session.login = false;
-					res.render('index', { title: 'DRC試験スケジュール管理' });
+					var msg = 'ログインしてください。';
+					res.render('index', { title: 'DRC試験スケジュール管理', msg: msg });
 				}
 			}
 		});
 	});
 };
 
+exports.logout_post = function (req, res) {
+	req.session.destroy();
+	var msg = 'ログインしてください。';
+	res.render('index', { title: 'DRC試験スケジュール管理', msg: msg });
+
+};

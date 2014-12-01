@@ -19,10 +19,10 @@ exports.user_post = function (req, res) {
 				} else {
 					if (results.rows.length == 0) {
 						// 社員データのDB追加
-						insertUser(connection,user, res);
+						insertUser(connection,user, req, res);
 					} else {
 						// 社員データの更新
-						updateUser(connection, user, res);
+						updateUser(connection, user, req, res);
 					}
 				}
 			});
@@ -41,14 +41,14 @@ var user_check = function (user) {
 	}
 	return user;
 };
-var insertUser = function (connection, user, res) {
+var insertUser = function (connection, user, req, res) {
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
-	var created_id = "tanaka";
+	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
 	var sql = 'INSERT INTO drc_sch.user_list(' 
 			+ 'uid,' // ユーザID
-			+ 'password,'
+			//+ 'password,'
 			+ 'name,' // 名前
 			+ 'u_no,' // 社員番号
 			+ 'start_date,' // 入社日
@@ -62,13 +62,13 @@ var insertUser = function (connection, user, res) {
 			+ 'updated,' // 
 			+ 'updated_id' // 更新者ID
 			+ ') values (' 
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)'
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)'
 			;
 	//pg.connect(connectionString, function (err, connection) {
 		// SQL実行
 		var query = connection.query(sql, [
 			user.uid,
-			user.password,
+			//user.password,
 			user.name,
 			user.u_no,
 			user.start_date,
@@ -91,28 +91,28 @@ var insertUser = function (connection, user, res) {
 		});
 	//});
 };
-var updateUser = function (connection, user, res) {
+var updateUser = function (connection, user, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
-	var updated_id = "tanaka";
+	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.user_list SET ' 
 			+ 'uid = $1,' // ユーザID
-			+ 'password = $2,' // ユーザID
-			+ 'name = $3,' // 名前
-			+ 'u_no = $4,' // 名前
-			+ 'start_date = $5,' // 名前
-			+ 'base_cd = $6,' // 拠点CD
-			+ 'division = $7,' // 事業部CD
-			+ 'telno = $8,' // 内線
-			+ 'title = $9,' // 役職名
-			+ 'delete_check = $10,' // 削除フラグ
-			+ 'updated_id = $11,' // 更新者ID
-			+ 'updated = $12'
-			+ " WHERE uid = $13";
+			//+ 'password = $2,' // ユーザID
+			+ 'name = $2,' // 名前
+			+ 'u_no = $3,' // 名前
+			+ 'start_date = $4,' // 名前
+			+ 'base_cd = $5,' // 拠点CD
+			+ 'division = $6,' // 事業部CD
+			+ 'telno = $7,' // 内線
+			+ 'title = $8,' // 役職名
+			+ 'delete_check = $9,' // 削除フラグ
+			+ 'updated_id = $10,' // 更新者ID
+			+ 'updated = $11'
+			+ " WHERE uid = $12";
 	//pg.connect(connectionString, function (err, connection) {
 		// SQL実行
 		var query = connection.query(sql, [
 			user.uid,
-			user.password,
+			//user.password,
 			user.name,
 			user.u_no,
 			user.start_date,
@@ -133,4 +133,53 @@ var updateUser = function (connection, user, res) {
 			}
 		});
 	//});
+};
+
+exports.password_post = function (req, res) {
+	var user = req.body;
+	if (user.uid === "") {
+		res.send(user);
+	} else {
+		var sql = "SELECT uid FROM drc_sch.user_list WHERE uid = $1";
+		pg.connect(connectionString, function (err, connection) {
+			// SQL実行
+			connection.query(sql, [user.uid], function (err, results) {
+				if (err) {
+					console.log(err);
+				} else {
+					if (results.rows.length == 0) {
+						// ユーザが未登録
+						res.send(user);
+					} else {
+						// 社員データの更新
+						updateUserPassword(connection, user, req, res);
+					}
+				}
+			});
+		});
+	}
+};
+
+var updateUserPassword = function (connection, user, req, res) {
+	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
+	var updated_id = req.session.uid;
+	var sql = 'UPDATE drc_sch.user_list SET ' 
+			+ 'password = $1,' // ユーザID
+			+ 'updated_id = $2,' // 更新者ID
+			+ 'updated = $3' 
+			+ " WHERE uid = $4";
+	// SQL実行
+	var query = connection.query(sql, [
+			user.password,
+			updated_id,			// 更新者ID
+			updated,
+			user.uid
+		], function (err, results) {
+		if (err) {
+			console.log(err);
+		} else {
+			res.send(user);
+			connection.end();
+		}
+	});
 };

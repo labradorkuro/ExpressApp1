@@ -6,6 +6,6 @@ exports.portal = function(req, res){
 		msg = 'ログインしてください。';
 		res.render('index', { title: 'DRC試験スケジュール管理', msg: msg });
 	} else {
-		res.render('portal', { title: 'DRC試験スケジュール管理' });
+		res.render('portal', { title: 'DRC試験スケジュール管理' ,userid:req.session.uid, name:req.session.name});
 	}
 };

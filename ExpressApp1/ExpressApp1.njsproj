@@ -35,6 +35,8 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api\division_getPG.js" />
+    <Compile Include="api\division_postPG.js" />
     <Compile Include="api\entry_get.js" />
     <Compile Include="api\entry_getPG.js" />
     <Compile Include="api\entry_post.js" />
@@ -55,10 +57,12 @@
     <Compile Include="public\javascripts\Calendar.js" />
     <Compile Include="public\javascripts\CalendarTable.js" />
     <Compile Include="public\javascripts\CalendarTableForPatchTest.js" />
+    <Compile Include="public\javascripts\DivisionList.js" />
     <Compile Include="public\javascripts\Entry.js" />
     <Compile Include="public\javascripts\EntryList.js" />
     <Compile Include="public\javascripts\GanttTable.js" />
     <Compile Include="public\javascripts\holiday.min.js" />
+    <Compile Include="public\javascripts\Portal.js" />
     <Compile Include="public\javascripts\SalesEdit.js" />
     <Compile Include="public\javascripts\SalesManagement.js" />
     <Compile Include="public\javascripts\Schedule.js" />
@@ -71,6 +75,7 @@
     <Compile Include="routes\createTables.js" />
     <Compile Include="routes\createTablesPG.js" />
     <Compile Include="routes\db.js" />
+    <Compile Include="routes\division_list.js" />
     <Compile Include="routes\entry_list.js" />
     <Compile Include="routes\entry_edit.js" />
     <Compile Include="routes\index.js" />
@@ -91,6 +96,8 @@
     <Content Include="README.md" />
     <Content Include="views\admin.jade" />
     <Content Include="views\calendar.jade" />
+    <Content Include="views\division_form.jade" />
+    <Content Include="views\division_list.jade" />
     <Content Include="views\entry_quote_dialog.jade" />
     <Content Include="views\entry_form.jade" />
     <Content Include="views\entry_list.jade" />
@@ -98,6 +105,7 @@
     <Content Include="views\entry_refer.jade" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
+    <Content Include="views\password_form.jade" />
     <Content Include="views\portal.jade" />
     <Content Include="views\schedule.jade" />
     <Content Include="views\schedule_form.jade" />

@@ -30,15 +30,16 @@ var user_get_list = function (req, res) {
 		+ 'u_no,' 
 		+ "to_char(start_date, 'YYYY/MM/DD') AS start_date," 
 		+ 'base_cd,' 
-		+ 'division,' 
+		+ 'user_list.division,' 
+		+ 'division_name,' 
 		+ 'telno,' 
 		+ 'title,' 
-		+ 'delete_check,' 
-		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created," 
-		+ 'created_id,' 
-		+ "to_char(updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
-		+ 'updated_id' 
-		+ ' FROM drc_sch.user_list WHERE delete_check = $1 ORDER BY ' 
+		+ 'user_list.delete_check,' 
+		+ "to_char(user_list.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
+		+ 'user_list.created_id,' 
+		+ "to_char(user_list.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
+		+ 'user_list.updated_id' 
+		+ ' FROM drc_sch.user_list LEFT JOIN drc_sch.division_info ON (user_list.division = division_info.division) WHERE user_list.delete_check = $1 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return user_get_list_for_grid(res, sql_count, sql, [0], pg_params.limit);

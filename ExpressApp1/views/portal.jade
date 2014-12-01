@@ -1,13 +1,23 @@
 ﻿extends layout
 
 block head
+	link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+	script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+	script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+	script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+	script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
+	script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+	script(src="javascripts/ScheduleCommon.js")
+	script(src="javascripts/Portal.js")
 	link(rel="stylesheet" ,href="stylesheets/schedule.css")
 
 block content
 	div.titlebar
 		img.titlebar_logo(src="images/drc_logo.jpg")
 		span.titlebar= title
-		span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。" 
+		span.login_user(style='text-align:right')= "ログイン:" + name + "さん" 
+		a.titlebar_button#edit_password パスワード変更
+		a.titlebar_button#logout(href="/logout") ログアウト
 	div.main_menu
 		div.main_menu_row 
 			div.menu_title お知らせ
@@ -32,5 +42,12 @@ block content
 		div.main_menu_row_b
 			div.menu_title 管理メニュー
 			a.menu_button_a(href="admin#tabs-1") 顧客管理
-			a.menu_button_a(href="user_list") 社員情報
+			a.menu_button_a(href="division_list") 事業部マスタ
+			a.menu_button_a(href="user_list") 社員マスタ
 			a.menu_button_a(href="admin#tabs-3") 試験テンプレート管理
+	div
+		div#password_dialog
+			include password_form
+		div#message_dialog
+			div
+				span#message 
