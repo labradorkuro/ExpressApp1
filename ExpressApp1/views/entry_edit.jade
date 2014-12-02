@@ -1,0 +1,48 @@
+﻿//
+// 案件情報ウィンドウ
+//
+doctype html
+html
+	head
+		meta(charset="utf-8")
+		title= title
+		link(rel="stylesheet",href="/javascripts/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+		script(src="/javascripts/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="/javascripts/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+		script(src="/javascripts/jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+		script(src="/jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
+		script(src="/jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+		script(src="/javascripts/ScheduleCommon.js")
+		script(src="/javascripts/Entry.js")
+		link(rel="stylesheet" ,href="/jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
+		link(rel="stylesheet" ,href="/stylesheets/schedule.css")
+	body
+		div#tabs
+			ul
+				li#tab0
+					a(href="#tabs-0") 基本情報
+				li#tab1
+					a(href="#tabs-1") 試験（見積）明細
+				li#tab2
+					a(href="#tabs-2") 見積履歴
+			div#tabs-0
+				div(class="toolbar")
+					a.tool_button_a#save_entry 保　存
+					a.tool_button_a#cancel_entry キャンセル
+					a.tool_button_a#close_entry 閉じる
+				div.tabPanel
+					include entry_form
+			div.tabPanel#tabs-1
+				div.toolbar
+					a.tool_button_a#add_quote 追加
+					a.tool_button_a#edit_quote 編集
+				div.admin_div
+					table#test_list
+					div#test_list_pager
+				div#quote_dialog
+					include entry_quote_dialog
+			div.tabPanel#tabs-2
+				div.toolbar
+					a.tool_button_a#add_test 追加
+					a.tool_button_a#edit_test 編集
+					a.tool_button_a#delete_test 削除

@@ -1,0 +1,38 @@
+﻿form#workitemForm(method="post",action="javascript:return false;")
+	table
+		tr
+			td.form_title 案件番号
+			td 
+				input#entry_no(type="text" name="entry_no" value=no readonly="true")
+			td.form_title 案件名
+			td 
+				input#entry_title(type="text" name="entry_title" value=no readonly="true")
+		tr
+			td.form_title 作業項目名称
+			td
+				input#work_title(type="text" name="work_title" placeholder="作業項目名称")
+				input#work_item_id(type="hidden" name="work_item_id" )
+			td.form_title 作業進捗度(%)
+			td 
+				input#progress(type="text" name="progress" placeholder="作業進捗度")
+		tr
+			td.form_title 開始予定日
+			td 
+				input.datepicker#start_date(type="text" name="start_date" placeholder="開始予定日")
+			td.form_title 終了予定日
+			td 
+				input.datepicker#end_date(type="text" name="end_date" placeholder="終了予定日")
+		tr
+			td.form_title 開始日
+			td 
+				input.datepicker#start_date_result(type="text" name="start_date_result" placeholder="開始日")
+			td.form_title 終了日
+			td 
+				input.datepicker#end_date_result(type="text" name="end_date_result" placeholder="終了日")
+		tr
+			td.form_title 先行項目
+			td 
+				input#priority_item_id(type="text" name="priority_item_id" placeholder="先行項目")
+			td.form_title 後続項目
+			td 
+				input#subsequent_item_id(type="text" name="subsequent_item_id" placeholder="後続項目")

@@ -1,0 +1,19 @@
+﻿//
+// 案件登録フォーム
+//
+form#divisionForm(method="post",action="javascript:return false;")
+	table
+		tr
+			td.form_title 事業部ID
+			td 
+				input#division(type="text" name="division" placeholder="事業部ID")
+			td.form_title 事業部名
+			td 
+				input#division_name(type="text" name="division_name" placeholder="事業部名")
+	hr
+	table
+		tr
+			td.form_title 削除フラグ
+			td(colspan="3")
+				input#delete_check(type="checkbox" name="delete_check" value="0")
+				label 削除
