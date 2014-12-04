@@ -39,7 +39,7 @@ a.titlebar_button {
     position:relative;
     float:left;
     top:0px;
-    left:300px;
+    left:200px;
     font-size:small;
     display:block;
     width:120px;
@@ -70,7 +70,7 @@ span.login_user {
     position:relative;
     float:left;
     top:10px;
-    left:200px;
+    left:160px;
     font-size:1em;
     display:block;
     margin-left:auto;
