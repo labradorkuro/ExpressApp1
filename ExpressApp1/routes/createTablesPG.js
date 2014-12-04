@@ -167,7 +167,7 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY(schedule_id,entry_no, start_date));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.user_list (" // 社員マスタ
 			+ "uid VARCHAR(32) NOT NULL," 
-			+ "password VARCHAR(32) NOT NULL,"
+			+ "password VARCHAR(32),"
 			+ "name VARCHAR(128)," 
 			+ "u_no VARCHAR(32)," 
 			+ "start_date DATE," 
