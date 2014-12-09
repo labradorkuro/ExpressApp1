@@ -6,6 +6,8 @@ $(function () {
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	$("#tabs").tabs();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
+	// 必要な情報をDBから取得する
+	scheduleCommon.getDivisionInfo();
 	// 編集用ダイアログの設定
 	userList.createUserDialog();
 	userList.createGrid();

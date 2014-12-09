@@ -238,7 +238,7 @@ form#entryForm(method="post",action="javascript:return false;")
 				input.datepicker#input_check_date(type="text" name="input_check_date")
 			td.form_title 入力者ID
 			td
-				input#input_operator_id(type="text" name="input_operator_id")
+				select#input_operator_id(name="input_operator_id")
 		tr
 			td.form_title 入力完了チェック
 			td(colspan="3")
@@ -250,7 +250,7 @@ form#entryForm(method="post",action="javascript:return false;")
 				input.datepicker#confirm_check_date(type="text" name="confirm_check_date")
 			td.form_title 確認者ID
 			td
-				input#confirm_operator_id(type="text" name="confirm_operator_id")
+				select#confirm_operator_id(name="confirm_operator_id")
 		tr
 			td.form_title 確認完了チェック
 			td(colspan="3")

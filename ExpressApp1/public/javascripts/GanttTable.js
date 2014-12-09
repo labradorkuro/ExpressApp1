@@ -563,7 +563,7 @@ GanttTable.workitem_progress = function (top, GanttData, workitem, entry_no, ent
 		} else if (p < 0.5) {
 			bg_color = "yellow";
 			color = "black";
-		} else if (p > 0.8) {
+		} else if (p < 0.8) {
 			bg_color = "cyan";
 			color = "black";
 		}

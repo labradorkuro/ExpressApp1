@@ -55,12 +55,15 @@ var entry_get_list = function (req, res) {
 		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date," 
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
-		+ 'division,' 
-		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created," 
-		+ 'created_id,' 
-		+ "to_char(updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
-		+ 'updated_id' 
-		+ ' FROM drc_sch.entry_info WHERE delete_check = $1 ORDER BY ' 
+		+ 'entry_info.division,' 
+		+ 'division_info.division_name,' 
+		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
+		+ 'entry_info.created_id,' 
+		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
+		+ 'entry_info.updated_id' 
+		+ ' FROM drc_sch.entry_info'
+		+ ' LEFT JOIN drc_sch.division_info ON(entry_info.division = division_info.division)' 
+		+ ' WHERE entry_info.delete_check = $1 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return entry_get_list_for_grid(res, sql_count, sql, [0], pg_params.limit);
@@ -80,14 +83,15 @@ var entry_get_list_term = function (req, res) {
 		+ 'to_char(order_accepted_date,\'YYYY/MM/DD\') AS order_accepted_date,' 
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
-		+ 'division,' 
+		+ 'entry_info.division,' 
+		+ 'division_info.division_name,' 
 		+ 'to_char(prior_payment_limit,\'YYYY/MM/DD\') AS prior_payment_limit,' 
-		+ 'to_char(created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
-		+ 'created_id,' 
-		+ 'to_char(updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
-		+ 'updated_id' 
-		+ ' FROM drc_sch.entry_info WHERE delete_check = $1' 
-		+ ' AND division = $2' 
+		+ 'to_char(entry_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'entry_info.created_id,' 
+		+ 'to_char(entry_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ 'entry_info.updated_id' 
+		+ ' FROM drc_sch.entry_info LEFT JOIN drc_sch.division_info ON (entry_info.division = division_info.division) WHERE entry_info.delete_check = $1' 
+		+ ' AND entry_info.division = $2' 
 		//+ ' AND order_accept_date NOT NULL '
 		+ ' ORDER BY entry_no ASC ';
 	return entry_get_list_for_gantt(res, sql, [0,req.params.test_type]);
@@ -168,7 +172,8 @@ var entry_get_detail = function (req, res) {
 			+ 'order_type,' // 受託区分
 			+ 'contract_type,' // 契約区分
 			+ 'outsourcing_cd,' // 委託先CD
-			+ 'division,' // 事業部ID
+			+ 'entry_info.division,' 
+			+ 'division_info.division_name,' 
 			+ 'entry_amount_price,' // 案件合計金額
 			+ 'entry_amount_billing,' // 案件請求合計金額
 			+ 'entry_amount_deposit,' // 案件入金合計金額
@@ -198,7 +203,7 @@ var entry_get_detail = function (req, res) {
 			+ 'pay_result_4,' 
 			+ 'pay_result_5,' 
 			+ 'person_id,' // 担当者ID
-			+ 'delete_check,' // 削除フラグ
+			+ 'entry_info.delete_check,' // 削除フラグ
 			+ 'delete_reason,' // 削除理由
 			+ 'to_char(input_check_date,\'YYYY/MM/DD\') AS input_check_date,' // 入力日
 			+ 'input_check,' // 入力完了チェック
@@ -206,11 +211,11 @@ var entry_get_detail = function (req, res) {
 			+ 'to_char(confirm_check_date,\'YYYY/MM/DD\') AS confirm_check_date,' // 確認日
 			+ 'confirm_check,' // 確認完了チェック
 			+ 'confirm_operator_id,' // 確認者ID
-			+ 'to_char(created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' // 作成日
-			+ 'created_id,' // 作成者ID
-			+ 'to_char(updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' // 更新日
-			+ 'updated_id' // 更新者ID
-			+ ' FROM drc_sch.entry_info WHERE entry_no = $1';
+			+ 'to_char(entry_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' // 作成日
+			+ 'entry_info.created_id,' // 作成者ID
+			+ 'to_char(entry_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' // 更新日
+			+ 'entry_info.updated_id' // 更新者ID
+			+ ' FROM drc_sch.entry_info LEFT JOIN drc_sch.division_info ON (entry_info.division = division_info.division) WHERE entry_no = $1';
 	var entry = {};
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
@@ -308,6 +313,7 @@ var quote_get_list = function (req, res) {
 							var row = { id: '', cell: [] };
 							var quote = [];
 							row.id = (i + 1);
+							row.cell.push(req.params.entry_no);					// 案件番号
 							row.cell.push(results.rows[i].quote_no);			// 見積番号
 							row.cell.push(results.rows[i].quote_detail_no);		// 明細番号
 							row.cell.push(results.rows[i].test_item_cd);		// 試験項目CD

@@ -1,6 +1,53 @@
 ﻿//
 // 共通処理
 var scheduleCommon = scheduleCommon || {};
+scheduleCommon.user_list = new Array();
+// 社員マスタから情報取得
+scheduleCommon.getUserInfo = function () {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/user_get/?rows=100', true);
+	xhr.responseType = 'json';
+	xhr.onload = scheduleCommon.onloadUserReq;
+	xhr.send();
+};
+scheduleCommon.onloadUserReq = function (e) {
+	if (this.status == 200) {
+		var users = this.response;
+		// formに取得したデータを埋め込む
+		$("#person_id").empty();
+		$("#input_operator_id").empty();
+		$("#confirm_operator_id").empty();
+		scheduleCommon.user_list = new Array();
+		for (var i in users.rows) {
+			var user = users.rows[i].cell;
+			scheduleCommon.user_list.push(user);
+			$("#person_id").append("<option value=" + user.uid + ">" + user.name);
+			$("#input_operator_id").append("<option value=" + user.uid + ">" + user.name);
+			$("#confirm_operator_id").append("<option value=" + user.uid + ">" + user.name);
+		}
+	}
+};
+// 事業部マスタから情報取得
+scheduleCommon.getDivisionInfo = function () {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/division_get/?rows=100', true);
+	xhr.responseType = 'json';
+	xhr.onload = scheduleCommon.onloadDivisionReq;
+	xhr.send();
+	
+};
+scheduleCommon.onloadDivisionReq = function (e) {
+	if (this.status == 200) {
+		var divisions = this.response;
+		// formに取得したデータを埋め込む
+		$("#division").empty();
+		for (var i in divisions.rows) {
+			var division = divisions.rows[i].cell;
+			$("#division").append("<option value=" + division.division + ">" + division.division_name);
+		}
+	}
+
+};
 
 // jqgridのフォントサイズを変える
 scheduleCommon.changeFontSize = function(size){

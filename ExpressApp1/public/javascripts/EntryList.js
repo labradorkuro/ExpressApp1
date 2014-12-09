@@ -7,6 +7,9 @@ $(function() {
 	$( "#tabs" ).tabs();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 	entryList.createMessageDialog();
+	// 必要な情報をDBから取得する
+	scheduleCommon.getUserInfo();
+	scheduleCommon.getDivisionInfo();
 	// 編集用ダイアログの設定
 	entryList.createEntryDialog();
 	entryList.createQuoteDialog();
@@ -26,8 +29,9 @@ $(function() {
 
 	entryList.enableQuoteButtons(false);
 });
-
+//
 // 案件リスト処理
+//
 var entryList = entryList || {};
 entryList.currentEntryNo = 0;
 
@@ -114,13 +118,13 @@ entryList.createGrid = function () {
 			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
 			{ name: 'entry_status', index: 'entry_status', width: 100 },
 			{ name: 'base_cd', index: 'base_cd', width: 100, align: "center" },
-			{ name: 'person_id', index: 'person_id', width: 100, align: "center" },
+			{ name: 'person_id', index: 'person_id', width: 100, align: "center", formatter: entryList.personFormatter },
 			{ name: 'quoto_no', index: 'quoto_no', width: 80, align: "center" },
 			{ name: 'quoto_issue_date', index: 'quoto_issue_date', width: 80, align: "center" },
 			{ name: 'order_accepted_date', index: 'order_accepted_date', width: 80, align: "center" },
 			{ name: 'order_accept_check', index: 'order_accept_check', width: 80, align: "center" },
 			{ name: 'order_type', index: 'order_type', width: 100, align: "center" },
-			{ name: 'division', index: 'division', width: 100, align: "center" },
+			{ name: 'division_name', index: 'division_name', width: 100, align: "center" },
 			{ name: 'created', index: 'created', width: 130, align: "center" },
 			{ name: 'created_id', index: 'created_id' },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
@@ -142,12 +146,13 @@ entryList.createTestGrid = function (no) {
 		url: '/quote_get/' + no,
 		altRows: true,
 		datatype: "json",
-		colNames: ['見積番号', '明細番号','試験項目CD', '試験項目名','試料名','到着日','計画書番号',
+		colNames: ['案件番号','見積番号', '明細番号','試験項目CD', '試験項目名','試料名','到着日','計画書番号',
 			'被験者数','検体数','報告書番号','報告書提出期限','報告書提出日',
 			'速報提出期限１','速報提出日１','速報提出期限２','速報提出日２','期待値/設定値',
 			'値説明','単位CD','単位','単価','数量','見積金額','備考','作成日','作成者','更新日','更新者'],
 		colModel: [
-			{ name: 'quote_no' , index: 'quote_no', width: 80, align:"center" }, // 見積番号
+			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" }, // 案件番号
+			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" }, // 見積番号
 			{ name: 'quote_detail_no', index: 'quote_detail_no', width: 80, align: "center" }, // 明細番号
 			{ name: 'test_item_cd', index: 'test_item_cd', width: 120 }, // 試験項目CD
 			{ name: 'test_item', index: 'test_item', width: 120 }, // 試験項目名
@@ -186,7 +191,16 @@ entryList.createTestGrid = function (no) {
 	});
 	jQuery("#test_list").jqGrid('navGrid', '#test_list_pager', { edit: false, add: false, del: false });
 };
-
+entryList.personFormatter = function (cellval, options,rowObject) {
+	var name = "";	
+	for (var i in scheduleCommon.user_list) {
+		if (cellval === scheduleCommon.user_list[i].uid) {
+			name = scheduleCommon.user_list[i].name;
+			break;
+		}
+	}
+	return name;
+};
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {
 	
