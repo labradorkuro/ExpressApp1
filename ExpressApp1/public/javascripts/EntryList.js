@@ -116,8 +116,8 @@ entryList.createGrid = function () {
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
 			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
-			{ name: 'entry_status', index: 'entry_status', width: 100 },
-			{ name: 'base_cd', index: 'base_cd', width: 100, align: "center" },
+			{ name: 'entry_status', index: 'entry_status', width: 100 ,formatter: entryList.statusFormatter},
+			{ name: 'base_cd', index: 'base_cd', width: 100, align: "center" ,formatter: entryList.base_cdFormatter},
 			{ name: 'person_id', index: 'person_id', width: 100, align: "center", formatter: entryList.personFormatter },
 			{ name: 'quoto_no', index: 'quoto_no', width: 80, align: "center" },
 			{ name: 'quoto_issue_date', index: 'quoto_issue_date', width: 80, align: "center" },
@@ -126,9 +126,9 @@ entryList.createGrid = function () {
 			{ name: 'order_type', index: 'order_type', width: 100, align: "center" },
 			{ name: 'division_name', index: 'division_name', width: 100, align: "center" },
 			{ name: 'created', index: 'created', width: 130, align: "center" },
-			{ name: 'created_id', index: 'created_id' },
+			{ name: 'created_id', index: 'created_id' , formatter: entryList.personFormatter },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
-			{ name: 'updated_id', index: 'updated_id' },
+			{ name: 'updated_id', index: 'updated_id', formatter: entryList.personFormatter  },
 		],
 		rowNum: 10,
 		rowList: [10],
@@ -191,8 +191,11 @@ entryList.createTestGrid = function (no) {
 	});
 	jQuery("#test_list").jqGrid('navGrid', '#test_list_pager', { edit: false, add: false, del: false });
 };
-entryList.personFormatter = function (cellval, options,rowObject) {
-	var name = "";	
+entryList.personFormatter = function (cellval, options, rowObject) {
+	var name = "";
+	if (cellval === "drc_admin") {
+		return "管理者";
+	}
 	for (var i in scheduleCommon.user_list) {
 		if (cellval === scheduleCommon.user_list[i].uid) {
 			name = scheduleCommon.user_list[i].name;
@@ -200,6 +203,14 @@ entryList.personFormatter = function (cellval, options,rowObject) {
 		}
 	}
 	return name;
+};
+// 拠点CD
+entryList.base_cdFormatter = function (cellval, options, rowObject) {
+	return scheduleCommon.getBase_cd(cellval);
+};
+// 案件ステータスのフォーマッター
+entryList.statusFormatter = function (cellval, options, rowObject) {
+	return scheduleCommon.getEntry_status(cellval);
 };
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {

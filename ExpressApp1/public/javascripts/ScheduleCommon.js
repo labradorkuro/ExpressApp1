@@ -1,7 +1,28 @@
 ﻿//
 // 共通処理
 var scheduleCommon = scheduleCommon || {};
+scheduleCommon.base_cd = [{ base_cd: "00", base_name: "共通" },{ base_cd: "01", base_name: "本社" },{ base_cd: "02", base_name: "札幌" }];
+scheduleCommon.entry_status = [{ entry_status: "01", status_name: "引合" },{ entry_status: "02", status_name: "見積" },{ entry_status: "03", status_name: "依頼" },{ entry_status: "04", status_name: "失注" }];
 scheduleCommon.user_list = new Array();
+
+// 拠点コード
+scheduleCommon.getBase_cd = function (base_cd) {
+	for (var i in scheduleCommon.base_cd) {
+		if (base_cd === scheduleCommon.base_cd[i].base_cd) {
+			return scheduleCommon.base_cd[i].base_name;
+		}
+	}
+	return "";
+};
+// 案件ステータス
+scheduleCommon.getEntry_status = function (no) {
+	for (var i in scheduleCommon.entry_status) {
+		if (no === scheduleCommon.entry_status[i].entry_status) {
+			return scheduleCommon.entry_status[i].status_name;
+		}
+	}
+	return "";
+};
 // 社員マスタから情報取得
 scheduleCommon.getUserInfo = function () {
 	var xhr = new XMLHttpRequest();
