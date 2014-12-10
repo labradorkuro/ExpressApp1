@@ -61,11 +61,11 @@ var insertDivision = function (connection, division, req, res) {
 			updated,
 			updated_id			// 更新者ID
 		], function (err, result) {
+		connection.end();
 		if (err) {
 			console.log(err);
 		} else {
 			res.send(division);
-			connection.end();
 		}
 	});
 	//});
@@ -90,11 +90,11 @@ var updateDivision = function (connection, division, req, res) {
 			updated,
 			division.division
 		], function (err, results) {
+		connection.end();
 		if (err) {
 			console.log(err);
 		} else {
 			res.send(division);
-			connection.end();
 		}
 	});
 	//});
