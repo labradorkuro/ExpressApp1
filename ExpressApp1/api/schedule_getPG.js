@@ -56,6 +56,7 @@ var schedule_get_list_for_table = function (res, sql, params) {
 			result.records = rows.length;
 			result.rows = rows;
 			res.send(result);
+			connection.end();
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
