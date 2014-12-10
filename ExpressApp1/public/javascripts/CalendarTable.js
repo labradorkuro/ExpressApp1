@@ -355,7 +355,7 @@ CalendarTable.setQuoteList = function (quote_list) {
 	if (quote_list != null) {
 		var rows = quote_list.rows;
 		for (var i in rows) {
-			var op = $("<option value=" + rows[i].cell[1]  + ">" + rows[i].cell[3] + "</option>");
+			var op = $("<option value=" + rows[i].cell[2]  + ">" + rows[i].cell[4] + "</option>");
 			$("#quote_list").append(op);
 
 		}
