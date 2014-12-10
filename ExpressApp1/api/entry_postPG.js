@@ -547,9 +547,9 @@ var getQuoteDetailNo = function (connection, quote, req, res) {
 			
 		} else {
 			// 明細登録カウントの更新
-			count++;
+			count = rows[0].quote_detail_count + 1;
 			sql = 'UPDATE drc_sch.quote_detail_number SET quote_detail_count = $1 WHERE entry_no = $2';
-			var query = connection.query(sql, [count,quote.quote_no]);
+			var query = connection.query(sql, [count,quote.entry_no]);
 			query.on('end', function(result,err) {
 				// 試験（見積）明細の追加
 				quote.quote_detail_no = count;
