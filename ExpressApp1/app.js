@@ -16,6 +16,7 @@ var db = require('./routes/createTablesPG');
 var admin = require('./routes/admin');
 var entry_edit = require('./routes/entry_edit');
 var entry_list = require('./routes/entry_list');
+var quote_form = require('./routes/quote_form');
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
 var workitem_post = require('./api/workitem_postPG');
@@ -27,6 +28,7 @@ var user_get = require('./api/user_getPG');
 var division_post = require('./api/division_postPG');
 var division_get = require('./api/division_getPG');
 var login_post = require('./api/login_post');
+var print_pdf = require('./api/print_pdf');
 mysql = require('mysql');
 pg = require('pg');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
@@ -93,6 +95,8 @@ app.get('/user_get/:uid?', user_get.user_get);
 app.get('/division_get/:division?', division_get.division_get);
 app.post('/', login_post.login_post);
 app.get('/logout', login_post.logout_post);
+app.get('/quote_form', quote_form.form);
+app.post('/print_pdf/:entry_no?', print_pdf.print_pdf);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',

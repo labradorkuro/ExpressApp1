@@ -681,7 +681,41 @@ a.tool_button_b {
 a.tool_button_b:hover {
         background: #777777;
 }
+/* 案件フォーム内の見積発行ボタン */
+a.form_button {
+    position:relative;
+    float:left;
+    top:0px;
+    left:0px;
+    font-size:0.8em;
+    display:inline-block;
+    outline: none;
+    width:120px;
+    height:22px;
+    padding-top:3px;
+    margin-top:3px;
+    margin-left:2px;
+    margin-right:1px;
+    margin-bottom:1px;
+    text-align:center;
+    background-color: green;
+	border-radius: 4px;
+	color: #fff;
+	line-height: 2.0em;
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: 0 3px 0 darkolivegreen;    
+    font-weight:bold;
+}
 
+a.form_button:hover{
+    background:#31c8aa;
+	box-shadow: 0 3px 0 #061150;
+}
+a.form_button:active{
+    top:3px;
+	box-shadow: none;
+}
 
 div.admin_left_div {
     float:left;
@@ -1096,4 +1130,123 @@ div#entry_dialog {
 }
 span.remark {
     color:red;
+}
+/* 見積書フォームの定義 */
+form#estimateForm {
+    width:100%;
+}
+span#estimate_title {
+    font-size:28px;
+}
+span#estimate_title2 {
+    font-size:20px;
+}
+div.estimate_top {
+    position:relative;
+    padding-top:20px;
+    width:100%;
+    height:50px;
+    text-align:center;
+}
+div.estimate_billing_left {
+    position:relative;
+    left:0px;
+    float:left;
+    width:50%;
+    height:280px;
+}
+div.estimate_billing_right {
+    position:relative;
+    float: left;
+    width: 50%;
+    height:280px;
+}
+div.estimate_mid {
+    position:absolute;
+    top:360px;
+    width:90%;
+    height:200px;
+    text-align:left;
+    height:80px;
+}
+div.estimate_meisai {
+    position:absolute;
+    top:420px;
+    width:90%;
+    height:600px;
+    text-align:left;
+}
+input#billing_company {
+    font-size:16px;
+}
+input#billing_division {
+    font-size: 16px;
+}
+input#billing_prepared {
+    font-size: 16px;
+}
+input#quote_title {
+    font-size: 16px;
+}
+input#quote_title1 {
+    font-size: 16px;
+}
+input#quote_title2 {
+    font-size: 16px;
+}
+input#quote_title3 {
+    font-size: 16px;
+}
+input#quote_expire {
+    font-size: 16px;
+}
+label#quote_total_title {
+    font-size: 20px;
+    font-weight:bold;
+}
+input#quote_total_price {
+    font-size: 20px;
+    font-weight:bold;
+}
+div.quote_total {
+    border-bottom:solid 3px;
+}
+table.estimate_meisai_table {
+  margin-top: 0.2em;
+  margin-bottom: 1em;
+  width: 570px;
+  border-collapse: collapse;
+  border: solid 1px #999;
+  font-size: 100%;
+}
+
+table.estimate_meisai_table caption {
+  margin-top: 1em;
+  text-align: left;
+}
+
+table.estimate_meisai_table th,
+table.estimate_meisai_table td {
+  border: solid 1px #999;
+  padding: 4px 6px;
+}
+
+table.estimate_meisai_table th {
+  background: #E6E6E6;
+  text-align: center;
+  white-space: nowrap;
+  color: #666;
+}
+
+table.estimate_meisai_table td.course {
+  text-align: center;
+  font-size: 200%;
+  font-weight: bolder;
+}
+
+table.estimate_meisai_table td.qty,
+table.estimate_meisai_table td.price,
+table.estimate_meisai_table td.unit_price {
+  text-align: right;
+  white-space: nowrap;
 }

@@ -1,15 +1,8 @@
-﻿//var mysql = require('mysql');
+﻿// テーブルの生成と変更処理
 
+
+// テーブルの生成
 exports.create = function (req, res) {
-	/*	
-	var connection = mysql.createConnection({
-      host     : 'localhost',
-      port     : '3306',
-      user     : 'root',
-      password : 'ViVi0504',
-      database : 'drc_sch'
-    });
-*/
   	var sql = [
 		"CREATE TABLE IF NOT EXISTS drc_sch.entry_info (" // 案件データ
 			+ "entry_no VARCHAR(10) NOT NULL," // 案件No
@@ -68,6 +61,8 @@ exports.create = function (req, res) {
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
 			+ ", PRIMARY KEY (entry_no));",
+
+		"ALTER Table drc_sch.entry_info ADD COLUMN client_cd varchar(4);",	// 案件情報に得意先コードを追加
 
 		"CREATE TABLE IF NOT EXISTS drc_sch.quote_info (" // 案件明細データ
 			+ "entry_no VARCHAR(10)," // 案件No
@@ -195,12 +190,41 @@ exports.create = function (req, res) {
 			+ "rid VARCHAR(32) NOT NULL," 
 			+ "uid VARCHAR(32)," 
 			+ "memo VARCHAR(128)," 
+			+ "delete_check INT2," 
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
+			+ "created_id VARCHAR(32)," // 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
+			+ "updated_id VARCHAR(32)" // 更新者ID
+			+ ", PRIMARY KEY (rid));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.client_list (" // 得意先リスト
+			+ "client_cd VARCHAR(4) NOT NULL,"	// 得意先コード 
+			+ "name_1 VARCHAR(128),"			// 得意先名１
+			+ "name_2 VARCHAR(128),"			// 得意先名２
+			+ "compellation VARCHAR(16),"		// 敬称
+			+ "kana VARCHAR(128),"				// カナ
+			+ "email VARCHAR(128),"				// メールアドレス 
+			+ "zipcode VARCHAR(16),"			// 郵便番号
+			+ "adress_1 VARCHAR(255),"			// 住所１
+			+ "adress_2 VARCHAR(255),"			// 住所２
+ 			+ "tel_no VARCHAR(16),"				// 電話番号
+ 			+ "fax_no VARCHAR(16),"				// FAX番号
+ 			+ "prepared_name VARCHAR(32)," // 担当者氏名
+ 			+ "prepared_compellation VARCHAR(16)," // 担当者敬称
+ 			+ "prepared_division VARCHAR(32),"	// 担当部署
+ 			+ "prepared_title VARCHAR(32),"		// 担当者役職名
+ 			+ "prepared_cellular VARCHAR(32),"	// 担当者携帯電話番号
+ 			+ "prepared_email VARCHAR(128)," // 担当者メールアドレス
+ 			+ "prepared_telno VARCHAR(16)," // 担当者電話番号
+ 			+ "prepared_faxno VARCHAR(16)," // 担当者FAX番号
+ 			+ "billing_limit DATE,"			// 請求締日
+ 			+ "payment_date DATE,"			// 支払日
+			+ "memo VARCHAR(128)," 
 			+ "delete_check INT2,"
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32)," // 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
-			+ ", PRIMARY KEY (rid));"
+			+ ", PRIMARY KEY (client_cd));"
 		/**
 		"CREATE TABLE IF NOT EXISTS drc_sch.sales_info (sales_id INT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,name VARCHAR(128) NOT NULL,customer_code VARCHAR(128),estimate INT(5),regist_date DATE,order_date DATE,money_receive_date DATE,money_received_date DATE,sales_user_id VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_id,sales_no));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",

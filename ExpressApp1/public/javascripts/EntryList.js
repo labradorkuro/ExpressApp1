@@ -13,6 +13,7 @@ $(function() {
 	// 編集用ダイアログの設定
 	entryList.createEntryDialog();
 	entryList.createQuoteDialog();
+	entryList.createQuoteFormDialog();
 	entryList.createGrid();
 	entryList.createTestGrid(0);
 	scheduleCommon.changeFontSize('1.0em');
@@ -24,6 +25,8 @@ $(function() {
 	$("#add_quote").bind('click' , {}, entryList.openQuoteDialog);
 	// 明細編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_quote").bind('click' , {}, entryList.openQuoteDialog);
+	// 明細編集ボタンイベント（登録・編集用画面の表示）
+	$("#print_quote").bind('click' , {}, entryList.openQuoteFormDialog);
 	// オーバーレイ表示する（元の画面全体をグレー表示にする）	
 	$("body").append("<div id='graylayer'></div><div id='overlayer'></div>");
 
@@ -95,6 +98,28 @@ entryList.createQuoteDialog = function () {
 			},
 			"更新": function () {
 				if (entryList.saveQuote()) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+
+// 見積書用ダイアログの生成
+entryList.createQuoteFormDialog = function () {
+	$('#quoteForm_dialog').dialog({
+		autoOpen: false,
+		width: 900,
+		height: 700,
+		title: '見積書',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"印刷": function () {
+				if (entryList.printQuote()) {
 					$(this).dialog('close');
 				}
 			},
@@ -246,6 +271,12 @@ entryList.openQuoteDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
 	$("#quote_dialog").dialog("open");
+};
+// 見積書ダイアログ表示
+entryList.openQuoteFormDialog = function (event) {
+	var quote = {};
+	quote.quote_no = '';
+	$("#quoteForm_dialog").dialog("open");
 };
 // 案件データの読込み
 entryList.requestEntryData = function (no) {
@@ -666,3 +697,15 @@ entryList.onloadQuoteReq = function (e) {
 
 	}
 };
+
+// 見積書の印刷（PDF生成）
+entryList.printQuote = function () {
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/print_pdf/' + entryList.currentEntryNo, true);
+	xhr.responseType = 'application/pdf';
+	xhr.onload = entryList.onloadPrintPDFReq;
+	xhr.send();
+};
+entryList.onloadPrintPDFReq = function () {
+};
+

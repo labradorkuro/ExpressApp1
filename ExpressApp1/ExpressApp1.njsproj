@@ -42,6 +42,7 @@
     <Compile Include="api\entry_post.js" />
     <Compile Include="api\entry_postPG.js" />
     <Compile Include="api\login_post.js" />
+    <Compile Include="api\print_pdf.js" />
     <Compile Include="api\schedule_get.js" />
     <Compile Include="api\schedule_post.js" />
     <Compile Include="api\schedule_postPG.js" />
@@ -81,6 +82,7 @@
     <Compile Include="routes\index.js" />
     <Compile Include="routes\login.js" />
     <Compile Include="routes\portal.js" />
+    <Compile Include="routes\quote_form.js" />
     <Compile Include="routes\schedule.js" />
     <Compile Include="routes\test_management.js" />
     <Compile Include="routes\user_list.js" />
@@ -106,7 +108,9 @@
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\password_form.jade" />
+    <Content Include="views\pdf.jade" />
     <Content Include="views\portal.jade" />
+    <Content Include="views\quote_form.jade" />
     <Content Include="views\schedule.jade" />
     <Content Include="views\schedule_form.jade" />
     <Content Include="views\tables.jade" />
