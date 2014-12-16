@@ -4,7 +4,8 @@
 //
 $(function() {
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
-	$( "#tabs" ).tabs();
+	$("#tabs").tabs();
+	$("#tabs-client").tabs();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 	entryList.createMessageDialog();
 	// 必要な情報をDBから取得する
@@ -14,8 +15,12 @@ $(function() {
 	entryList.createEntryDialog();
 	entryList.createQuoteDialog();
 	entryList.createQuoteFormDialog();
+	entryList.createClientListDialog();
 	entryList.createGrid();
 	entryList.createTestGrid(0);
+	for (var i = 1; i <= 12; i++) {
+		entryList.createClientListGrid(i);
+	}
 	scheduleCommon.changeFontSize('1.0em');
 	// 案件追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_entry").bind('click' , {}, entryList.openEntryDialog);
@@ -25,10 +30,12 @@ $(function() {
 	$("#add_quote").bind('click' , {}, entryList.openQuoteDialog);
 	// 明細編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_quote").bind('click' , {}, entryList.openQuoteDialog);
-	// 明細編集ボタンイベント（登録・編集用画面の表示）
+	// 見積書発行用フォームを表示する
 	$("#print_quote").bind('click' , {}, entryList.openQuoteFormDialog);
+	// クライアント選択を表示する
+	$("#client_cd").bind('click' , {}, entryList.openClientListDialog);
 	// オーバーレイ表示する（元の画面全体をグレー表示にする）	
-	$("body").append("<div id='graylayer'></div><div id='overlayer'></div>");
+//	$("body").append("<div id='graylayer'></div><div id='overlayer'></div>");
 
 	entryList.enableQuoteButtons(false);
 });
@@ -59,7 +66,7 @@ entryList.createEntryDialog = function () {
 	$('#entry_dialog').dialog({
 		autoOpen: false,
 		width: 800,
-		height: 800,
+		height: 600,
 		title: '案件情報',
 		closeOnEscape: false,
 		modal: true,
@@ -86,7 +93,7 @@ entryList.createQuoteDialog = function () {
 	$('#quote_dialog').dialog({
 		autoOpen: false,
 		width: 800,
-		height: 800,
+		height: 600,
 		title: '試験（見積）明細',
 		closeOnEscape: false,
 		modal: true,
@@ -108,12 +115,33 @@ entryList.createQuoteDialog = function () {
 	});
 };
 
+// クライアント選択用ダイアログの生成
+entryList.createClientListDialog = function () {
+	$('#client_list_dialog').dialog({
+		autoOpen: false,
+		width: 900,
+		height: 600,
+		title: '受注先選択',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"選択": function () {
+				if (entryList.selectClient()) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
 // 見積書用ダイアログの生成
 entryList.createQuoteFormDialog = function () {
 	$('#quoteForm_dialog').dialog({
 		autoOpen: false,
 		width: 900,
-		height: 700,
+		height: 600,
 		title: '見積書',
 		closeOnEscape: false,
 		modal: true,
@@ -216,6 +244,38 @@ entryList.createTestGrid = function (no) {
 	});
 	jQuery("#test_list").jqGrid('navGrid', '#test_list_pager', { edit: false, add: false, del: false });
 };
+
+// 得意先リストの生成
+entryList.createClientListGrid = function (no) {
+	// 得意先リストのグリッド
+	jQuery("#client_list_" + no).jqGrid({
+		url: '/client_get?no=' + no,
+		altRows: true,
+		datatype: "json",
+		colNames: ['得意先コード','得意先名１','得意先名２', '住所１', '住所２','担当者','所属部署','役職'],
+		colModel: [
+			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center" },
+			{ name: 'name_1', index: 'name_1', width: 200, align: "center" },
+			{ name: 'name_2', index: 'name_2', width: 80, align: "center" },
+			{ name: 'address_1', index: 'address_1', width: 100 , formatter: entryList.statusFormatter },
+			{ name: 'address_2', index: 'address_2', width: 100, align: "center" , formatter: entryList.base_cdFormatter },
+			{ name: 'prepared_name', index: 'prepared_name', width: 100, align: "center", formatter: entryList.personFormatter },
+			{ name: 'prepared_division', index: 'prepared_division', width: 80, align: "center" },
+			{ name: 'prepared_title', index: 'prepared_title', width: 80, align: "center" },
+		],
+		height: "260px",
+		width:"100%",
+		rowNum: 10,
+		rowList: [10],
+		pager: '#client_list_pager_' + no,
+		sortname: 'client_cd',
+		viewrecords: true,
+		sortorder: "desc",
+		caption: "得意先リスト",
+		onSelectRow: entryList.onSelectClientList
+	});
+	jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false });
+};
 entryList.personFormatter = function (cellval, options, rowObject) {
 	var name = "";
 	if (cellval === "drc_admin") {
@@ -271,6 +331,10 @@ entryList.openQuoteDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
 	$("#quote_dialog").dialog("open");
+};
+// クライアント参照ダイアログ表示
+entryList.openClientListDialog = function (event) {
+	$("#client_list_dialog").dialog("open");
 };
 // 見積書ダイアログ表示
 entryList.openQuoteFormDialog = function (event) {
@@ -709,3 +773,5 @@ entryList.printQuote = function () {
 entryList.onloadPrintPDFReq = function () {
 };
 
+entryList.accordion = function () {
+};

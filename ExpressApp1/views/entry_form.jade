@@ -32,12 +32,19 @@ form#entryForm(method="post",action="javascript:return false;")
 			td 
 				input.datepicker#quote_issue_date(type="text" name="quote_issue_date")
 		tr
-			td.form_title クライアントCD
+			td.form_title 受注先CD
 			td
 				input#client_cd(type="text" name="client_cd")
 			td.form_title 見積書
 			td 
 				a.form_button#print_quote 発行
+		tr
+			td.form_title 受注先名称
+			td
+				input#client_name(type="text" name="client_name")
+			td.form_title 受注先担当者
+			td 
+				input#client_prepared(type="text" name="client_prepared")
 	hr
 	table
 		tr

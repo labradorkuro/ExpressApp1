@@ -35,6 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api\client_getPG.js" />
     <Compile Include="api\division_getPG.js" />
     <Compile Include="api\division_postPG.js" />
     <Compile Include="api\entry_get.js" />
@@ -98,6 +99,7 @@
     <Content Include="README.md" />
     <Content Include="views\admin.jade" />
     <Content Include="views\calendar.jade" />
+    <Content Include="views\client_list.jade" />
     <Content Include="views\division_form.jade" />
     <Content Include="views\division_list.jade" />
     <Content Include="views\entry_quote_dialog.jade" />

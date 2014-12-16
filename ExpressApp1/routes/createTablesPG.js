@@ -204,8 +204,8 @@ exports.create = function (req, res) {
 			+ "kana VARCHAR(128),"				// カナ
 			+ "email VARCHAR(128),"				// メールアドレス 
 			+ "zipcode VARCHAR(16),"			// 郵便番号
-			+ "adress_1 VARCHAR(255),"			// 住所１
-			+ "adress_2 VARCHAR(255),"			// 住所２
+			+ "address_1 VARCHAR(255),"			// 住所１
+			+ "address_2 VARCHAR(255),"			// 住所２
  			+ "tel_no VARCHAR(16),"				// 電話番号
  			+ "fax_no VARCHAR(16),"				// FAX番号
  			+ "prepared_name VARCHAR(32)," // 担当者氏名
@@ -219,7 +219,7 @@ exports.create = function (req, res) {
  			+ "billing_limit DATE,"			// 請求締日
  			+ "payment_date DATE,"			// 支払日
 			+ "memo VARCHAR(128)," 
-			+ "delete_check INT2,"
+			+ "delete_check INT2 DEFAULT 0,"
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32)," // 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日

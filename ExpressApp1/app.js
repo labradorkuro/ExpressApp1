@@ -29,6 +29,7 @@ var division_post = require('./api/division_postPG');
 var division_get = require('./api/division_getPG');
 var login_post = require('./api/login_post');
 var print_pdf = require('./api/print_pdf');
+var client_get = require('./api/client_getPG');
 mysql = require('mysql');
 pg = require('pg');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
@@ -97,6 +98,7 @@ app.post('/', login_post.login_post);
 app.get('/logout', login_post.logout_post);
 app.get('/quote_form', quote_form.form);
 app.post('/print_pdf/:entry_no?', print_pdf.print_pdf);
+app.get('/client_get/:no?', client_get.client_get);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',
