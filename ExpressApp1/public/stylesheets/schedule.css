@@ -1163,7 +1163,7 @@ div.estimate_billing_right {
 }
 div.estimate_mid {
     position:absolute;
-    top:360px;
+    top:380px;
     width:90%;
     height:200px;
     text-align:left;
@@ -1171,12 +1171,15 @@ div.estimate_mid {
 }
 div.estimate_meisai {
     position:absolute;
-    top:420px;
+    top:440px;
     width:90%;
     height:600px;
     text-align:left;
 }
-input#billing_company {
+input#billing_company_name_1 {
+    font-size:16px;
+}
+input#billing_company_name_2 {
     font-size:16px;
 }
 input#billing_division {
@@ -1252,4 +1255,9 @@ table.estimate_meisai_table td.unit_price {
 }
 table.client_list {
     height:400px;
+}
+canvas#canvas {
+    height:900px;
+    width:900px;
+    visibility:hidden;
 }

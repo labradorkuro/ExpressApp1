@@ -52,6 +52,15 @@ var entry_get_list = function (req, res) {
 		+ 'person_id,' 
 		+ 'quote_no,' 
 		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date," 
+		+ "entry_info.client_cd," 
+		+ "client_list.name_1 AS client_name_1," 
+		+ "client_list.name_2 AS client_name_2," 
+		+ "client_list.address_1 AS client_address_1," 
+		+ "client_list.address_2 AS client_address_2," 
+		+ "client_list.prepared_division," 
+		+ "client_list.prepared_name," 
+		+ "client_list.compellation," 
+		+ "client_list.prepared_compellation," 
 		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date," 
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
@@ -63,10 +72,11 @@ var entry_get_list = function (req, res) {
 		+ 'entry_info.updated_id' 
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.division_info ON(entry_info.division = division_info.division)' 
+		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
 		+ ' WHERE entry_info.delete_check = $1 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return entry_get_list_for_grid(res, sql_count, sql, [0], pg_params.limit);
+	return entry_get_list_for_grid(res, sql_count, sql, [0], pg_params);
 };
 
 // 案件リストの取得（ガントチャート用）
@@ -80,6 +90,13 @@ var entry_get_list_term = function (req, res) {
 		+ 'person_id,' 
 		+ 'quote_no,' 
 		+ 'to_char(quote_issue_date,\'YYYY/MM/DD\') AS quote_issue_date,' 
+		+ "entry_info.client_cd," 
+		+ "client_list.name_1 AS client_name_1," 
+		+ "client_list.name_2 AS client_name_2," 
+		+ "client_list.address_1 AS client_address_1," 
+		+ "client_list.address_2 AS client_address_2," 
+		+ "client_list.prepared_division," 
+		+ "client_list.prepared_name," 
 		+ 'to_char(order_accepted_date,\'YYYY/MM/DD\') AS order_accepted_date,' 
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
@@ -90,14 +107,17 @@ var entry_get_list_term = function (req, res) {
 		+ 'entry_info.created_id,' 
 		+ 'to_char(entry_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
 		+ 'entry_info.updated_id' 
-		+ ' FROM drc_sch.entry_info LEFT JOIN drc_sch.division_info ON (entry_info.division = division_info.division) WHERE entry_info.delete_check = $1' 
+		+ ' FROM drc_sch.entry_info'
+		+ ' LEFT JOIN drc_sch.division_info ON(entry_info.division = division_info.division)'
+		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
+		+ ' WHERE entry_info.delete_check = $1 ' 
 		+ ' AND entry_info.division = $2' 
 		//+ ' AND order_accept_date NOT NULL '
 		+ ' ORDER BY entry_no ASC ';
 	return entry_get_list_for_gantt(res, sql, [0,req.params.test_type]);
 };
 
-var entry_get_list_for_grid = function (res, sql_count, sql, params, limit) {
+var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
@@ -107,13 +127,15 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, limit) {
 				console.log(err);
 			} else {
 				// 取得した件数からページ数を計算する
-				result.total = Math.round(results.rows[0].cnt / limit) + 1;
+				result.total = Math.round(results.rows[0].cnt / pg_params.limit);
+				result.page = pg_params.page;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
 					if (err) {
 						console.log(err);
 					} else {
 						result.records = results.rows.length;
+						result.page = pg_params.page;
 						for (var i in results.rows) {
 							var row = { id: '', cell: [] };
 							var entry = [];
@@ -166,6 +188,15 @@ var entry_get_detail = function (req, res) {
 			+ 'entry_status,' // 案件ステータス
 			+ 'quote_no,' // 見積番号
 			+ 'to_char(quote_issue_date,\'YYYY/MM/DD\') AS quote_issue_date,' // 見積書発行日
+			+ "entry_info.client_cd," 
+			+ "client_list.name_1 AS client_name_1," 
+			+ "client_list.name_2 AS client_name_2," 
+			+ "client_list.address_1 AS client_address_1," 
+			+ "client_list.address_2 AS client_address_2," 
+			+ "client_list.prepared_division," 
+			+ "client_list.prepared_name," 
+			+ "client_list.compellation," 
+			+ "client_list.prepared_compellation," 
 			+ 'to_char(order_accepted_date,\'YYYY/MM/DD\') AS order_accepted_date,' // 受注日付
 			+ 'order_accept_check,' // 仮受注日チェック
 			+ 'acounting_period_no,' // 会計期No
@@ -215,7 +246,10 @@ var entry_get_detail = function (req, res) {
 			+ 'entry_info.created_id,' // 作成者ID
 			+ 'to_char(entry_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' // 更新日
 			+ 'entry_info.updated_id' // 更新者ID
-			+ ' FROM drc_sch.entry_info LEFT JOIN drc_sch.division_info ON (entry_info.division = division_info.division) WHERE entry_no = $1';
+			+ ' FROM drc_sch.entry_info'
+			+ ' LEFT JOIN drc_sch.division_info ON(entry_info.division = division_info.division)'
+			+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
+			+ ' WHERE entry_no = $1 ';
 	var entry = {};
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
@@ -302,7 +336,8 @@ var quote_get_list = function (req, res) {
 				console.log(err);
 			} else {
 				// 取得した件数からページ数を計算する
-				result.total = Math.round(results.rows[0].cnt / pg_params.limit) + 1;
+				result.total = Math.round(results.rows[0].cnt / pg_params.limit);
+				result.page = pg_params.page;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, [0, req.params.entry_no], function (err, results) {
 					if (err) {

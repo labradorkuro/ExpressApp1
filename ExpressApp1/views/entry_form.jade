@@ -39,12 +39,19 @@ form#entryForm(method="post",action="javascript:return false;")
 			td 
 				a.form_button#print_quote 発行
 		tr
-			td.form_title 受注先名称
+			td.form_title 受注先名称1
 			td
-				input#client_name(type="text" name="client_name")
+				input#client_name_1(type="text" name="client_name_1")
+			td.form_title 受注先名称2
+			td 
+				input#client_name_2(type="text" name="client_name_2")
+		tr
+			td.form_title 受注先部署
+			td
+				input#prepared_division(type="text" name="prepared_division")
 			td.form_title 受注先担当者
 			td 
-				input#client_prepared(type="text" name="client_prepared")
+				input#prepared_name(type="text" name="prepared_name")
 	hr
 	table
 		tr

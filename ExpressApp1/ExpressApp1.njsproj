@@ -62,8 +62,12 @@
     <Compile Include="public\javascripts\DivisionList.js" />
     <Compile Include="public\javascripts\Entry.js" />
     <Compile Include="public\javascripts\EntryList.js" />
+    <Compile Include="public\javascripts\fabric.min.js" />
+    <Compile Include="public\javascripts\FileSaver.min.js" />
     <Compile Include="public\javascripts\GanttTable.js" />
     <Compile Include="public\javascripts\holiday.min.js" />
+    <Compile Include="public\javascripts\jspdf.min.js" />
+    <Compile Include="public\javascripts\jspdf.plugin.addimage.js" />
     <Compile Include="public\javascripts\Portal.js" />
     <Compile Include="public\javascripts\SalesEdit.js" />
     <Compile Include="public\javascripts\SalesManagement.js" />

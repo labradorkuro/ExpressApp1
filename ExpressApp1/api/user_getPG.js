@@ -42,9 +42,9 @@ var user_get_list = function (req, res) {
 		+ ' FROM drc_sch.user_list LEFT JOIN drc_sch.division_info ON (user_list.division = division_info.division) WHERE user_list.delete_check = $1 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return user_get_list_for_grid(res, sql_count, sql, [0], pg_params.limit);
+	return user_get_list_for_grid(res, sql_count, sql, [0], pg_params);
 };
-var user_get_list_for_grid = function (res, sql_count, sql, params, limit) {
+var user_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
@@ -54,7 +54,8 @@ var user_get_list_for_grid = function (res, sql_count, sql, params, limit) {
 				console.log(err);
 			} else {
 				// 取得した件数からページ数を計算する
-				result.total = Math.round(results.rows[0].cnt / limit) + 1;
+				result.total = Math.round(results.rows[0].cnt / pg_params.limit);
+				result.page = pg_params.page;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
 					if (err) {

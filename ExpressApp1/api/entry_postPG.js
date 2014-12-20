@@ -89,6 +89,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ 'entry_status,'					// 案件ステータス
 			+ 'quote_no,'						// 見積番号
 			+ 'quote_issue_date,'				// 見積書発行日
+			+ 'client_cd,'						// 得意先コード
 			+ 'order_accepted_date,'			// 受注日付
 			+ 'order_accept_check,'				// 仮受注日チェック
 			+ 'acounting_period_no,'			// 会計期No
@@ -144,55 +145,56 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ '$4,'			// 問合せ日
 			+ '$5,'	// 案件ステータス
 			+ '$6,'		// 見積番号
-			+ '$7,'		// 見積書発行日
-			+ '$8,'	// 受注日付
-			+ '$9,'	// 仮受注日チェック
-			+ '$10,'	// 会計期No
-			+ '$11,'			// 受託区分
-			+ '$12,'			// 契約区分
-			+ '$13,' // 委託先CD
-			+ '$14,'		// 事業部ID
-			+ '$15,'	// 案件合計金額
-			+ '$16,'	// 案件請求合計金額
-			+ '$17,'	// 案件入金合計金額
-			+ '$18,' // 被験者費用準備期日
-			+ '$19,' // 被験者費用準備完了日
-			+ '$20,'// DRC立替準備金額
-			+ '$21,'	// 事前入金期日
-			+ '$22,'	// 事前入金日
-			+ "$23," // 分割請求日1
-			+ "$24," // 分割入金日1
-			+ "$25," // 分割支払合計金額1 
-			+ "$26," // 分割請求区分1
-			+ "$27," // 分割請求日2
-			+ "$28," // 分割入金日2
-			+ "$29," // 分割支払合計金額2 
-			+ "$30," // 分割請求区分2
-			+ "$31," // 分割請求日3
-			+ "$32," // 分割入金日3
-			+ "$33," // 分割支払合計金額3
-			+ "$34," // 分割請求区分3
-			+ "$35," // 分割請求日4
-			+ "$36," // 分割入金日4
-			+ "$37," // 分割支払合計金額4
-			+ "$38," // 分割請求区分4
-			+ "$39," // 分割請求日5
-			+ "$40," // 分割入金日5
-			+ "$41," // 分割支払合計金額5
-			+ "$42," // 分割請求区分5
-			+ '$43,'		// 担当者ID
-			+ '$44,'			// 削除フラグ
-			+ '$45,'	// 削除理由
-			+ '$46,'		// 入力日
-			+ '$47,'			// 入力完了チェック
-			+ '$48,' // 入力者ID
-			+ '$49,'	// 確認日
-			+ '$50,'			// 確認完了チェック
-			+ '$51,' // 確認者ID
-			+ '$52,'			// 作成日
-			+ '$53,'			// 作成者ID
-//			+ '?,'			// 更新日
-			+ '$54'			// 更新者ID
+			+ '$7,' // 見積書発行日
+			+ '$8,'	// 得意先コード
+			+ '$9,'	// 受注日付
+			+ '$10,'	// 仮受注日チェック
+			+ '$11,'	// 会計期No
+			+ '$12,'			// 受託区分
+			+ '$13,'			// 契約区分
+			+ '$14,' // 委託先CD
+			+ '$15,'		// 事業部ID
+			+ '$16,'	// 案件合計金額
+			+ '$17,'	// 案件請求合計金額
+			+ '$18,'	// 案件入金合計金額
+			+ '$19,' // 被験者費用準備期日
+			+ '$20,' // 被験者費用準備完了日
+			+ '$21,'// DRC立替準備金額
+			+ '$22,'	// 事前入金期日
+			+ '$23,'	// 事前入金日
+			+ "$24," // 分割請求日1
+			+ "$25," // 分割入金日1
+			+ "$26," // 分割支払合計金額1 
+			+ "$27," // 分割請求区分1
+			+ "$28," // 分割請求日2
+			+ "$29," // 分割入金日2
+			+ "$30," // 分割支払合計金額2 
+			+ "$31," // 分割請求区分2
+			+ "$32," // 分割請求日3
+			+ "$33," // 分割入金日3
+			+ "$34," // 分割支払合計金額3
+			+ "$35," // 分割請求区分3
+			+ "$36," // 分割請求日4
+			+ "$37," // 分割入金日4
+			+ "$38," // 分割支払合計金額4
+			+ "$39," // 分割請求区分4
+			+ "$40," // 分割請求日5
+			+ "$41," // 分割入金日5
+			+ "$42," // 分割支払合計金額5
+			+ "$43," // 分割請求区分5
+			+ '$44,' // 担当者ID
+			+ '$45,' // 削除フラグ
+			+ '$46,' // 削除理由
+			+ '$47,'		// 入力日
+			+ '$48,'			// 入力完了チェック
+			+ '$49,' // 入力者ID
+			+ '$50,'	// 確認日
+			+ '$51,'			// 確認完了チェック
+			+ '$52,' // 確認者ID
+			+ '$53,'			// 作成日
+			+ '$54,'			// 作成者ID
+//			+ '?,			// 更新日
+			+ '$55'			// 更新者ID
 			+ ')'
 			;
 	// SQL実行
@@ -204,6 +206,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			entry.entry_status, // 案件ステータス
 			entry.quote_no, // 見積番号
 			entry.quote_issue_date, // 見積書発行日
+			entry.client_cd,			// 得意先コード
 			entry.order_accepted_date, // 受注日付
 			entry.order_accept_check, // 仮受注日チェック
 			entry.acounting_period_no, // 会計期No
@@ -273,53 +276,54 @@ var updateEntryInfo = function(entry, req, res) {
 			+ 'entry_status = $4,' // 案件ステータス
 			+ 'quote_no = $5,' // 見積番号
 			+ 'quote_issue_date = $6,' // 見積書発行日
-			+ 'order_accepted_date = $7,' // 受注日付
-			+ 'order_accept_check = $8,' // 仮受注日チェック
-			+ 'acounting_period_no = $9,' // 会計期No
-			+ 'order_type = $10,' // 受託区分
-			+ 'contract_type = $11,' // 契約区分
-			+ 'outsourcing_cd = $12,' // 委託先CD
-			+ 'division = $13,' // 事業部ID
-			+ 'entry_amount_price = $14,' // 案件合計金額
-			+ 'entry_amount_billing = $15,' // 案件請求合計金額
-			+ 'entry_amount_deposit = $16,' // 案件入金合計金額
-			+ 'monitors_cost_prep_limit = $17,' // 被験者費用準備期日
-			+ 'monitors_cost_prep_comp = $18,' // 被験者費用準備完了日
-			+ 'drc_substituted_amount = $19,' // DRC立替準備金額
-			+ 'prior_payment_limit = $20,' // 事前入金期日
-			+ 'prior_payment_accept = $21,' // 事前入金日
-			+ "pay_planning_date_1 = $22," // 分割請求日2
-			+ "pay_complete_date_1 = $23," // 分割入金日2
-			+ "pay_amount_1 = $24," // 分割支払合計金額1 
-			+ "pay_result_1 = $25," // 分割請求区分1
-			+ "pay_planning_date_2 = $26," // 分割請求日2
-			+ "pay_complete_date_2 = $27," // 分割入金日2
-			+ "pay_amount_2 = $28," // 分割支払合計金額2 
-			+ "pay_result_2 = $29," // 分割請求区分2
-			+ "pay_planning_date_3 = $30," // 分割請求日3
-			+ "pay_complete_date_3 = $31," // 分割入金日3
-			+ "pay_amount_3 = $32," // 分割支払合計金額3
-			+ "pay_result_3 = $33," // 分割請求区分3
-			+ "pay_planning_date_4 = $34," // 分割請求日4
-			+ "pay_complete_date_4 = $35," // 分割入金日4
-			+ "pay_amount_4 = $36," // 分割支払合計金額4
-			+ "pay_result_4 = $37," // 分割請求区分4
-			+ "pay_planning_date_5 = $38," // 分割請求日5
-			+ "pay_complete_date_5 = $39," // 分割入金日5
-			+ "pay_amount_5 = $40," // 分割支払合計金額5
-			+ "pay_result_5 = $41," // 分割請求区分5
-			+ 'person_id = $42,' // 担当者ID
-			+ 'delete_check = $43,' // 削除フラグ
-			+ 'delete_reason = $44,' // 削除理由
-			+ 'input_check_date = $45,' // 入力日
-			+ 'input_check = $46,' // 入力完了チェック
-			+ 'input_operator_id = $47,' // 入力者ID
-			+ 'confirm_check_date = $48,' // 確認日
-			+ 'confirm_check = $49,' // 確認完了チェック
-			+ 'confirm_operator_id = $50,' // 確認者ID
+			+ 'client_cd = $7,'
+			+ 'order_accepted_date = $8,' // 受注日付
+			+ 'order_accept_check = $9,' // 仮受注日チェック
+			+ 'acounting_period_no = $10,' // 会計期No
+			+ 'order_type = $11,' // 受託区分
+			+ 'contract_type = $12,' // 契約区分
+			+ 'outsourcing_cd = $13,' // 委託先CD
+			+ 'division = $14,' // 事業部ID
+			+ 'entry_amount_price = $15,' // 案件合計金額
+			+ 'entry_amount_billing = $16,' // 案件請求合計金額
+			+ 'entry_amount_deposit = $17,' // 案件入金合計金額
+			+ 'monitors_cost_prep_limit = $18,' // 被験者費用準備期日
+			+ 'monitors_cost_prep_comp = $19,' // 被験者費用準備完了日
+			+ 'drc_substituted_amount = $20,' // DRC立替準備金額
+			+ 'prior_payment_limit = $21,' // 事前入金期日
+			+ 'prior_payment_accept = $22,' // 事前入金日
+			+ "pay_planning_date_1 = $23," // 分割請求日2
+			+ "pay_complete_date_1 = $24," // 分割入金日2
+			+ "pay_amount_1 = $25," // 分割支払合計金額1 
+			+ "pay_result_1 = $26," // 分割請求区分1
+			+ "pay_planning_date_2 = $27," // 分割請求日2
+			+ "pay_complete_date_2 = $28," // 分割入金日2
+			+ "pay_amount_2 = $29," // 分割支払合計金額2 
+			+ "pay_result_2 = $30," // 分割請求区分2
+			+ "pay_planning_date_3 = $31," // 分割請求日3
+			+ "pay_complete_date_3 = $32," // 分割入金日3
+			+ "pay_amount_3 = $33," // 分割支払合計金額3
+			+ "pay_result_3 = $34," // 分割請求区分3
+			+ "pay_planning_date_4 = $35," // 分割請求日4
+			+ "pay_complete_date_4 = $36," // 分割入金日4
+			+ "pay_amount_4 = $37," // 分割支払合計金額4
+			+ "pay_result_4 = $38," // 分割請求区分4
+			+ "pay_planning_date_5 = $39," // 分割請求日5
+			+ "pay_complete_date_5 = $40," // 分割入金日5
+			+ "pay_amount_5 = $41," // 分割支払合計金額5
+			+ "pay_result_5 = $42," // 分割請求区分5
+			+ 'person_id = $43,' // 担当者ID
+			+ 'delete_check = $44,' // 削除フラグ
+			+ 'delete_reason = $45,' // 削除理由
+			+ 'input_check_date = $46,' // 入力日
+			+ 'input_check = $47,' // 入力完了チェック
+			+ 'input_operator_id = $48,' // 入力者ID
+			+ 'confirm_check_date = $49,' // 確認日
+			+ 'confirm_check = $50,' // 確認完了チェック
+			+ 'confirm_operator_id = $51,' // 確認者ID
 //			+ 'updated = ?,' // 更新日
-			+ 'updated_id = $51' // 更新者ID
-			+ ' WHERE entry_no = $52';
+			+ 'updated_id = $52' // 更新者ID
+			+ ' WHERE entry_no = $53';
 
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
@@ -330,6 +334,7 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.entry_status, // 案件ステータス
 			entry.quote_no, // 見積番号
 			entry.quote_issue_date, // 見積書発行日
+			entry.client_cd,			// 得意先コード
 			entry.order_accepted_date, // 受注日付
 			entry.order_accept_check, // 仮受注日チェック
 			entry.acounting_period_no, // 会計期No

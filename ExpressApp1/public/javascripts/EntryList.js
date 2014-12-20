@@ -3,9 +3,12 @@
 // 案件リスト画面の処理
 //
 $(function() {
-	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
+	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
+	// 案件リストのタブ生成
 	$("#tabs").tabs();
-	$("#tabs-client").tabs();
+	// 得意先選択ダイアログ用のタブ生成
+	entryList.createClientListTabs();
+	// 日付選択用設定
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 	entryList.createMessageDialog();
 	// 必要な情報をDBから取得する
@@ -18,6 +21,7 @@ $(function() {
 	entryList.createClientListDialog();
 	entryList.createGrid();
 	entryList.createTestGrid(0);
+	// 得意先選択用グリッドの生成
 	for (var i = 1; i <= 12; i++) {
 		entryList.createClientListGrid(i);
 	}
@@ -39,12 +43,23 @@ $(function() {
 
 	entryList.enableQuoteButtons(false);
 });
+
 //
-// 案件リスト処理
+// 案件入力、リスト表示に関する処理
 //
 var entryList = entryList || {};
-entryList.currentEntryNo = 0;
+entryList.currentEntryNo = 0;	// 案件リストで選択中の案件の番号
+entryList.currentClientListTabNo = 0;	// 得意先リストで選択中のタブ番号
+entryList.currentClient = {};			// 選択中の得意先情報
 
+// 得意先リストのタブ生成と選択イベントの設定
+entryList.createClientListTabs = function () {
+	$("#tabs-client").tabs({
+		activate: function (event, ui) {
+			entryList.currentClientListTabNo = ui.newTab.index();
+		}
+	});
+};
 // メッセージ表示用ダイアログの生成
 entryList.createMessageDialog = function () {
 	$('#message_dialog').dialog({
@@ -140,7 +155,7 @@ entryList.createClientListDialog = function () {
 entryList.createQuoteFormDialog = function () {
 	$('#quoteForm_dialog').dialog({
 		autoOpen: false,
-		width: 900,
+		width: 910,
 		height: 600,
 		title: '見積書',
 		closeOnEscape: false,
@@ -163,10 +178,12 @@ entryList.createGrid = function () {
 		url: '/entry_get',
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件No','案件名','問合せ日', '案件ステータス', '拠点CD','担当者','見積番号','見積発行日'
+		colNames: ['案件No','得意先名1','得意先名2','案件名','問合せ日', '案件ステータス', '拠点CD','担当者','見積番号','見積発行日'
 				,'受注日','仮受注チェック','受注区分','試験課','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
+			{ name: 'client_name_1', index: 'client_name_1', width: 200, align: "center" },
+			{ name: 'client_name_2', index: 'client_name_2', width: 200, align: "center" },
 			{ name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
 			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
 			{ name: 'entry_status', index: 'entry_status', width: 100 ,formatter: entryList.statusFormatter},
@@ -183,6 +200,7 @@ entryList.createGrid = function () {
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
 			{ name: 'updated_id', index: 'updated_id', formatter: entryList.personFormatter  },
 		],
+		height:"260px",
 		rowNum: 10,
 		rowList: [10],
 		pager: '#entry_pager',
@@ -234,6 +252,7 @@ entryList.createTestGrid = function (no) {
 			{ name: 'updated', index: 'updated', width: 120 }, // 更新日
 			{ name: 'updated_id', index: 'updated_id', width: 120 },			// 更新者ID
 		],
+		height: "260px",
 		rowNum: 10,
 		rowList: [10],
 		pager: '#test_list_pager',
@@ -255,11 +274,11 @@ entryList.createClientListGrid = function (no) {
 		colNames: ['得意先コード','得意先名１','得意先名２', '住所１', '住所２','担当者','所属部署','役職'],
 		colModel: [
 			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center" },
-			{ name: 'name_1', index: 'name_1', width: 200, align: "center" },
-			{ name: 'name_2', index: 'name_2', width: 80, align: "center" },
-			{ name: 'address_1', index: 'address_1', width: 100 , formatter: entryList.statusFormatter },
-			{ name: 'address_2', index: 'address_2', width: 100, align: "center" , formatter: entryList.base_cdFormatter },
-			{ name: 'prepared_name', index: 'prepared_name', width: 100, align: "center", formatter: entryList.personFormatter },
+			{ name: 'name_1', index: 'name_1', width: 200, align: "left" },
+			{ name: 'name_2', index: 'name_2', width: 80, align: "left" },
+			{ name: 'address_1', index: 'address_1', width: 100 ,align:"left" },
+			{ name: 'address_2', index: 'address_2', width: 100, align: "left"},
+			{ name: 'prepared_name', index: 'prepared_name', width: 100, align: "center" },
 			{ name: 'prepared_division', index: 'prepared_division', width: 80, align: "center" },
 			{ name: 'prepared_title', index: 'prepared_title', width: 80, align: "center" },
 		],
@@ -276,6 +295,25 @@ entryList.createClientListGrid = function (no) {
 	});
 	jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false });
 };
+// 得意先選択イベント
+entryList.onSelectClientList = function (rowid) {
+	var no;
+	if (rowid != null) {
+		var row = $("#client_list_" + (entryList.currentClientListTabNo + 1)).getRowData(rowid);
+		entryList.currentClient = row;
+	}
+};
+
+// 得意先選択ダイアログの選択ボタン押下イベント処理
+entryList.selectClient = function () {
+	$("#client_cd").val(entryList.currentClient.client_cd);
+	$("#client_name_1").val(entryList.currentClient.name_1);
+	$("#client_name_2").val(entryList.currentClient.name_2);
+	$("#prepared_division").val(entryList.currentClient.prepared_division);
+	$("#prepared_name").val(entryList.currentClient.prepared_name);
+	return true;
+};
+
 entryList.personFormatter = function (cellval, options, rowObject) {
 	var name = "";
 	if (cellval === "drc_admin") {
@@ -338,8 +376,12 @@ entryList.openClientListDialog = function (event) {
 };
 // 見積書ダイアログ表示
 entryList.openQuoteFormDialog = function (event) {
-	var quote = {};
-	quote.quote_no = '';
+	$("#billing_company_name_1").val($("#client_name_1").val());
+	$("#billing_company_name_2").val($("#client_name_2").val());
+	$("#billing_division").val($("#prepared_division").val());
+	$("#billing_prepared").val($("#prepared_name").val());
+	$("#drc_division_name").text($("#division option:selected").text());
+	$("#drc_prepared").text($("#person_id option:selected").text());
 	$("#quoteForm_dialog").dialog("open");
 };
 // 案件データの読込み
@@ -477,15 +519,40 @@ entryList.setEntryForm = function (entry) {
 	$("#entry_status").val(entry.entry_status); // 案件ステータス
 	$("#quote_no").val(entry.quote_no); // 見積番号
 	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
-	$("#order_accepted_date").val(entry.order_accepted_date); // 受注日付
-	$("#order_accept_check").val(entry.order_accept_check); // 仮受注日チェック
-	$("#acounting_period_no").val(entry.acounting_period_no); // 会計期No
-	$("#order_type").val(entry.order_type); // 受託区分
-	$("#contract_type").val(entry.contract_type); // 契約区分
-	$("#outsourcing_cd").val(entry.outsourcing_cd); // 委託先CD
-	$("#division").val(entry.division); // 事業部ID
-	$("#entry_amount_price").val(entry.entry_amount_price); // 案件合計金額
-	$("#entry_amount_billing").val(entry.entry_amount_price); // 案件請求合計金額
+	$("#client_cd").val(entry.client_cd);				// 得意先コード
+	var name_1 = entry.client_name_1;
+	var name_2 = entry.client_name_2;
+	// 敬称を付ける項目を判定する
+	if ((!entry.prepared_name) || (entry.prepared_name == "")) {
+		if ((entry.compellation) && (entry.compellation != "")) {
+			if ((!entry.client_name_2) || (entry.client_name_2 == ""))
+				name_1 = name_1 + " " + entry.compellation;
+			else
+				name_2 = name_2 + " " + entry.compellation;
+		}
+	}
+	$("#client_name_1").val(name_1 );		// 得意先名1
+	$("#client_name_2").val(name_2);		// 得意先名2
+	$("#client_address_1").val(entry.client_address_1);	// 住所1
+	$("#client_address_2").val(entry.client_address_2);	// 住所2
+	$("#prepared_division").val(entry.prepared_division);		// 所属部署
+	// 担当者名があるときは担当者名に敬称を付ける
+	var pname = "";
+	if ((entry.prepared_name) && (entry.prepared_name != "")) {
+		pname = entry.prepared_name;
+		if ((entry.prepared_compellation) && (entry.prepared_compellation != ""))
+			pname = pname + " " + entry.prepared_compellation;
+	}
+	$("#prepared_name").val(pname);				// 担当者
+	$("#order_accepted_date").val(entry.order_accepted_date);	// 受注日付
+	$("#order_accept_check").val(entry.order_accept_check);		// 仮受注日チェック
+	$("#acounting_period_no").val(entry.acounting_period_no);	// 会計期No
+	$("#order_type").val(entry.order_type);						// 受託区分
+	$("#contract_type").val(entry.contract_type);				// 契約区分
+	$("#outsourcing_cd").val(entry.outsourcing_cd);				// 委託先CD
+	$("#division").val(entry.division);							// 事業部ID
+	$("#entry_amount_price").val(entry.entry_amount_price);		// 案件合計金額
+	$("#entry_amount_billing").val(entry.entry_amount_price);	// 案件請求合計金額
 	$("#entry_amount_deposit").val(entry.entry_amount_billing); // 案件入金合計金額
 	$("#monitors_cost_prep_limit").val(entry.monitors_cost_prep_limit); // 被験者費用準備期日
 	$("#monitors_cost_prep_comp").val(entry.monitors_cost_prep_comp); // 被験者費用準備完了日
@@ -535,6 +602,13 @@ entryList.clearEntry = function () {
 	entry.entry_status = "01"; // 案件ステータス
 	entry.quote_no = ""; // 見積番号
 	entry.quote_issue_date = ""; // 見積書発行日
+	entry.client_cd = "";		// 得意先コード
+	entry.client_name_1 = "";	// 得意先名
+	entry.client_name_2 = "";	// 得意先名
+	entry.client_address_1 = "";	// 住所
+	entry.client_address_2 = "";	// 住所
+	entry.prepared_division = "";	// 担当者所属部署
+	entry.prepared_name = "";		// 担当者
 	entry.order_accepted_date = ""; // 受注日付
 	entry.order_accept_check = 0; // 仮受注日チェック
 	entry.acounting_period_no = 1; // 会計期No
@@ -764,14 +838,155 @@ entryList.onloadQuoteReq = function (e) {
 
 // 見積書の印刷（PDF生成）
 entryList.printQuote = function () {
+	// 印刷用データ
+	var data = {
+		title: '御 見 積 書',
+		quote_issue_date: $("#billing_date").val(),
+		quote_no: $("#quote_no").val(),
+		drc_address1: '〒530-0044 大阪市北区東天満2-10-31　第9田淵ビル3F',
+		drc_tel: 'TEL：06-6882-8201',
+		drc_fax: 'FAX：06-6882-8202',
+		drc_name: 'DRC株式会社',
+		drc_division_name: $("#drc_division_name").text(),
+		drc_prepared: $("#drc_prepared").text(),
+		client_name_1: $("#billing_company_name_1").val(),
+		client_name_2: $("#billing_company_name_2").val(),
+		prepared_division: $("#billing_division").val(),
+		prepared_name: $("#prepared_name").val(),
+		quote_title: $("#quote_title").val(),
+		quote_title1: $("#quote_title1").val(),
+		quote_title2: $("#quote_title2").val(),
+		quote_title3: $("#quote_title3").val(),
+		quote_expire: $("#quote_expire").val(),
+		quote_total_price: $("#quote_total_price").val(),
+		rows:[]
+	};
+	var canvas = new fabric.Canvas('canvas', { backgroundColor : "#fff" });
+	canvas.setHeight(1500);
+	canvas.setWidth(900);
+	var doc = new jsPDF();
+	
+	var top = 100;
+	var font_size = 25;
+	// タイトル	
+	entryList.outputText(canvas, data.title, font_size, 80, 40);
+	// 請求先情報	
+	font_size = 16;
+	var left = 60;
+	top = 100;
+	if (data.client_name_1 != null)
+		entryList.outputText(canvas, data.client_name_1, font_size, left, top);
+	top += font_size + 2;
+	if (data.client_name_2 != null)
+		entryList.outputText(canvas, data.client_name_2, font_size, left, top);
+	top += font_size + 2;
+	if (data.prepared_division != null)
+		entryList.outputText(canvas, data.prepared_division, font_size, left, top);
+	top += font_size + 2;
+	if (data.prepared_name != null)
+		entryList.outputText(canvas, data.prepared_name, font_size, left, top);
+	// 見積内容	
+	top += font_size + 10;
+	entryList.outputText(canvas, "下記の通りお見積申し上げます。", font_size, left, top);
+	top += font_size + 2;
+	entryList.outputText(canvas, "件名：" + data.quote_title, font_size, left, top);
+	top += font_size + 3;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
+
+	entryList.outputText(canvas, data.quote_title1, font_size, left, top);
+	top += font_size + 3;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
+	
+	entryList.outputText(canvas, data.quote_title2, font_size, left, top);
+	top += font_size + 3;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
+	
+	entryList.outputText(canvas, data.quote_title3, font_size, left, top);
+	top += font_size + 3;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
+	top += 10;
+	entryList.outputText(canvas, "有効期限：" + data.quote_expire, font_size, left, top);
+	top += font_size + 3;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
+	font_size = 18;
+	entryList.outputText(canvas, "御見積合計金額　" + data.quote_total_price, font_size, left, top);
+	top += font_size + 3;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 2 }));
+	// 見積情報
+	font_size = 16;
+	left = 340;
+	top = 100;
+	if (data.quote_issue_date != null)
+		entryList.outputText(canvas, "見積日：" + data.quote_issue_date, font_size, left, top);
+	top += font_size + 2;
+	if (data.quote_no != null)
+		entryList.outputText(canvas, "見積番号：" + data.quote_no, font_size, left, top);
+	// 自社情報
+	top += font_size + 2;
+	entryList.outputText(canvas, data.drc_address1, font_size, left, top);
+	top += font_size + 2;
+	entryList.outputText(canvas, data.drc_name, font_size, left, top);
+	top += font_size + 2;
+	entryList.outputText(canvas, data.drc_tel, font_size, left, top);
+	top += font_size + 2;
+	entryList.outputText(canvas, data.drc_fax, font_size, left, top);
+	top += font_size + 20;
+	entryList.outputText(canvas, data.drc_division_name, font_size, left, top);
+	top += font_size + 2;
+	entryList.outputText(canvas, data.drc_prepared, font_size, left, top);
+	
+	// 明細表
+	left = 60;
+	top = 400;
+	var w = 680;
+	var h = 20;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'gray', stroke: 'black',opacity: 0.7 }));
+	h = 620;
+	
+	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h,fill:'none', stroke:'black', strokeWidth:2, opacity:0.7}));
+	h = 1;	
+	for (var i = 0; i < 31; i++) {
+		top += 20;
+		canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	}
+	top = 400;
+	h = 620;
+	canvas.add(new fabric.Rect({ top : top, left : 280, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 340, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 440, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 540, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 640, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	
+	top = 400;
+	font_size = 16;
+	entryList.outputText(canvas, "件　　名", font_size, 130, top);
+	entryList.outputText(canvas, "単位"  , font_size, 290, top);
+	entryList.outputText(canvas, "数  量", font_size, 365, top);
+	entryList.outputText(canvas, "単  価", font_size, 465, top);
+	entryList.outputText(canvas, "金  額", font_size, 570, top);
+	entryList.outputText(canvas, "備  考", font_size, 665, top);
+	// 印鑑枠	
+	canvas.add(new fabric.Rect({ top : 300, left : 530, width : 210, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : 300, left : 600, width : 70, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	
+	canvas.calcOffset();
+	canvas.renderAll();
+	doc.addImage( $('canvas').get(0).toDataURL('image/jpeg'),'JPEG',0,0);
+	var filename = "御見積書_" + data.quote_issue_date + "_" + data.quote_no + "_" + data.client_name_1 + ".pdf";
+	doc.save(filename);
+	canvas.setHeight(0);
+	canvas.setWidth(0);
+/*
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/print_pdf/' + entryList.currentEntryNo, true);
 	xhr.responseType = 'application/pdf';
 	xhr.onload = entryList.onloadPrintPDFReq;
 	xhr.send();
+ * **/
+};
+entryList.outputText = function (canvas, text,font_size,left, top) {
+	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo UI', fill: 'black', left: left, top: top, fontSize: font_size }));
 };
 entryList.onloadPrintPDFReq = function () {
 };
 
-entryList.accordion = function () {
-};
