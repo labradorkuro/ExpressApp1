@@ -162,7 +162,10 @@ entryList.createQuoteFormDialog = function () {
 		modal: true,
 		buttons: {
 			"印刷": function () {
-				if (entryList.printQuote()) {
+				// 印刷用データを作成する
+				var data = entryList.printDataSetup();
+				// データを渡してPDFを生成する
+				if (entryList.printQuote(data)) {
 					$(this).dialog('close');
 				}
 			},
@@ -172,6 +175,38 @@ entryList.createQuoteFormDialog = function () {
 		}
 	});
 };
+
+// 見積書用データの生成
+entryList.printDataSetup = function () {
+	// 印刷用データ
+	var data = {
+		title: '御 見 積 書',
+		quote_issue_date: $("#billing_date").val(),
+		quote_no: $("#quote_no").val(),
+		drc_address1: '〒530-0044 大阪市北区東天満2-10-31　第9田淵ビル3F',
+		drc_tel: 'TEL：06-6882-8201',
+		drc_fax: 'FAX：06-6882-8202',
+		drc_name: 'DRC株式会社',
+		drc_division_name: $("#drc_division_name").text(),
+		drc_prepared: $("#drc_prepared").text(),
+		client_name_1: $("#billing_company_name_1").val(),	// 請求先情報
+		client_name_2: $("#billing_company_name_2").val(),	// 請求先情報
+		prepared_division: $("#billing_division").val(),	// 請求先情報
+		prepared_name: $("#prepared_name").val(),			// 請求先情報
+		quote_title: $("#quote_title").val(),
+		quote_title1: $("#quote_title1").val(),
+		quote_title2: $("#quote_title2").val(),
+		quote_title3: $("#quote_title3").val(),
+		quote_expire: $("#quote_expire").val(),
+		quote_total_price: $("#quote_total_price").val(),
+		rows: [{ name: '試験明細データ', unit: '1式', quantity: '    20', unit_price: '     1,000', price: '  20,000', memo: '特になし' }]
+	};
+	// 明細データの生成
+	// ここに処理をかく
+
+	return data;
+};
+
 entryList.createGrid = function () {
 	// 案件リストのグリッド
 	jQuery("#entry_list").jqGrid({
@@ -837,30 +872,7 @@ entryList.onloadQuoteReq = function (e) {
 };
 
 // 見積書の印刷（PDF生成）
-entryList.printQuote = function () {
-	// 印刷用データ
-	var data = {
-		title: '御 見 積 書',
-		quote_issue_date: $("#billing_date").val(),
-		quote_no: $("#quote_no").val(),
-		drc_address1: '〒530-0044 大阪市北区東天満2-10-31　第9田淵ビル3F',
-		drc_tel: 'TEL：06-6882-8201',
-		drc_fax: 'FAX：06-6882-8202',
-		drc_name: 'DRC株式会社',
-		drc_division_name: $("#drc_division_name").text(),
-		drc_prepared: $("#drc_prepared").text(),
-		client_name_1: $("#billing_company_name_1").val(),
-		client_name_2: $("#billing_company_name_2").val(),
-		prepared_division: $("#billing_division").val(),
-		prepared_name: $("#prepared_name").val(),
-		quote_title: $("#quote_title").val(),
-		quote_title1: $("#quote_title1").val(),
-		quote_title2: $("#quote_title2").val(),
-		quote_title3: $("#quote_title3").val(),
-		quote_expire: $("#quote_expire").val(),
-		quote_total_price: $("#quote_total_price").val(),
-		rows:[]
-	};
+entryList.printQuote = function (data) {
 	var canvas = new fabric.Canvas('canvas', { backgroundColor : "#fff" });
 	canvas.setHeight(1500);
 	canvas.setWidth(900);
@@ -968,9 +980,12 @@ entryList.printQuote = function () {
 	// 印鑑枠	
 	canvas.add(new fabric.Rect({ top : 300, left : 530, width : 210, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
 	canvas.add(new fabric.Rect({ top : 300, left : 600, width : 70, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
-	
+	// 明細データの出力
+	entryList.outputQuoteList(canvas, data, 420, 16);
+
 	canvas.calcOffset();
 	canvas.renderAll();
+	// canvasからイメージを取得してPDFに追加する
 	doc.addImage( $('canvas').get(0).toDataURL('image/jpeg'),'JPEG',0,0);
 	var filename = "御見積書_" + data.quote_issue_date + "_" + data.quote_no + "_" + data.client_name_1 + ".pdf";
 	doc.save(filename);
@@ -984,8 +999,24 @@ entryList.printQuote = function () {
 	xhr.send();
  * **/
 };
+
+// canvasにテキストを出力
 entryList.outputText = function (canvas, text,font_size,left, top) {
 	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo UI', fill: 'black', left: left, top: top, fontSize: font_size }));
+};
+
+// 見積明細データの出力
+entryList.outputQuoteList = function (canvas, data, top, font_size) {
+	for (var i in data.rows) {
+		var row = data.rows[i];
+		entryList.outputText(canvas, row.name, font_size, 65, top);			// 件名
+		entryList.outputText(canvas, row.unit, font_size, 295, top);		// 単位
+		entryList.outputText(canvas, row.quantity, font_size, 370, top);	// 数量
+		entryList.outputText(canvas, row.unit_price, font_size, 470, top);	// 単価
+		entryList.outputText(canvas, row.price, font_size, 575, top);		// 金額
+		entryList.outputText(canvas, row.memo, font_size, 670, top);		// 備考
+		top += 20;
+	}
 };
 entryList.onloadPrintPDFReq = function () {
 };
