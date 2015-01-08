@@ -1,5 +1,5 @@
 ﻿//
-// カレンダー表示用テーブルの生成
+// 試験スケジュール用カレンダー画面の処理クラス
 //
 
 var CalendarTable = CalendarTable || {};
@@ -11,6 +11,8 @@ CalendarTable.schedule = null;
 CalendarTable.days = ['日','月','火','水','木','金','土'];
 CalendarTable.days_color = ['red','black','black','black','black','black','blue'];
 CalendarTable.width_15 = [];
+
+// 初期化
 CalendarTable.init = function() {
 	var ymd = CalendarTable.start_date.split("/");
 	var year = ymd[0];
@@ -81,6 +83,8 @@ CalendarTable.init = function() {
 			$(day_div).css("background-color","#ecf9d2");
 		} 
 		$(body).append(day_div);
+		// 要素にカスタムデータとして日付を設定
+		$(day_times).data("date", scheduleCommon.getDateString(end_date, "{0}/{1}/{2}"));
 		$(day_times).css("width", dtw + "px");
 		if (i === 1) {
 			var m = Number(month);
@@ -89,6 +93,7 @@ CalendarTable.init = function() {
 		else
 			$(day_date).append(i);
 		$(day_day).append(CalendarTable.days[day]);
+		// 曜日による表示色設定
 		$(day_div).css("color", CalendarTable.days_color[day]);
 		$(day_day).css("color", CalendarTable.days_color[day]);
 		// 祝日チェック		
@@ -101,25 +106,42 @@ CalendarTable.init = function() {
 		$(day_div).append(day_day);
 		$(day_div).append(day_times);
 		$(day_div).append(day_memo);
-		$(day_times).bind('click',
-		{
+		// 新規スケジュールを追加するための初期値をデータとして設定する
+		var data = {
 			schedule_id: 0,
-			start_date: scheduleCommon.getDateString(end_date,"{0}/{1}/{2}"), 
+			start_date: scheduleCommon.getDateString(end_date, "{0}/{1}/{2}"), 
 			end_date: scheduleCommon.getDateString(end_date, "{0}/{1}/{2}"),
 			am_pm: "00", 
 			patch_no: 0,
 			test_type: CalendarTable.current_test_type,
 			base_cd: CalendarTable.current_base_cd
-		}, CalendarTable.openDialog);
+		};
+		$(day_times).data('schedule', data);
+		// クリックイベントで入力フォームを表示する
+		$(day_times).bind('click',CalendarTable.openDialog);
 		
 	}
 	// スケジュールデータを検索して表示する
 	CalendarTable.searchScheduleData(start_date, end_date, "01", CalendarTable.current_test_type, CalendarTable.addScheduleData);
-
+	// droppable設定
+	$(".cal_day_times").droppable({drop:CalendarTable.drop});
 };
 
 // 試験スケジュール編集ダイアログ表示
 CalendarTable.openDialog = function (event) {
+	// カスタムデータとして保存されているスケジュールデータを取得する
+	var data = $(event.target).data('schedule');
+	// フォームにデータを設定する。
+	CalendarTable.setFormData(data);
+	// 案件番号をクリックしたら、案件情報参照用のダイアログ表示する
+	$("#entry_no").bind("click", { from: $("#start_date").val(), to: $("#end_date").val(), test_type: data.test_type, base_cd: data.base_cd }, CalendarTable.showEntryList);
+	// 案件情報参照画面のイベント処理登録
+	$("#entry_list").bind("change", {}, CalendarTable.searchQuoteData);
+	$("#quote_list").bind("change", {}, CalendarTable.selectQuoteData);
+	$("#schedule_dialog").dialog("open");
+	return false;
+};
+CalendarTable.setFormData = function(data) {
 	// 初期化
 	$("#entry_no").val("");
 	$("#entry_title").val("");
@@ -132,7 +154,7 @@ CalendarTable.openDialog = function (event) {
 	$("#patch_no").val("1");
 	$("#am_pm").val("0");
 	// 安全性試験の時はAMPMの選択とパッチ番号の選択を表示する。それ以外は非表示にする。
-	if (event.data.test_type === "02") {
+	if (data.test_type === "02") {
 		// 安全性試験の場合
 		$("#test_02_row").css("display", "table-row");
 		$("#start_time_label").css("display", "none");
@@ -151,25 +173,25 @@ CalendarTable.openDialog = function (event) {
 		$("#end_date").css("display", "none");
 	}
 	// eventに渡されたデータをフォームにセットする
-	var sd = event.data.start_date;
-	var ed = event.data.end_date;
-	if (event.data.test_type != "02") {
+	var sd = data.start_date;
+	var ed = data.end_date;
+	if (data.test_type != "02") {
 		ed = sd;
 	}
-	if (event.data.entry_no) {
-		$("#entry_no").val(event.data.entry_no);
+	if (data.entry_no) {
+		$("#entry_no").val(data.entry_no);
 	}
-	if (event.data.entry_title) {
-		$("#entry_title").val(event.data.entry_title);
+	if (data.entry_title) {
+		$("#entry_title").val(data.entry_title);
 	}
-	if (event.data.quote_detail_no) {
-		$("#quote_detail_no").val(event.data.quote_detail_no);
+	if (data.quote_detail_no) {
+		$("#quote_detail_no").val(data.quote_detail_no);
 	}
-	if (event.data.test_item) {
-		$("#test_item").val(event.data.test_item);
+	if (data.test_item) {
+		$("#test_item").val(data.test_item);
 	}
-	$("#schedule_id").val(event.data.schedule_id);
-	if (event.data.schedule_id) {
+	$("#schedule_id").val(data.schedule_id);
+	if (data.schedule_id) {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
@@ -180,21 +202,14 @@ CalendarTable.openDialog = function (event) {
 	}
 	$("#start_date").val(sd);
 	$("#end_date").val(ed);
-	if (event.data.start_time) {
-		$("#start_time").val(event.data.start_time);
+	if (data.start_time) {
+		$("#start_time").val(data.start_time);
 	}
-	if (event.data.end_time) {
-		$("#end_time").val(event.data.end_time);
+	if (data.end_time) {
+		$("#end_time").val(data.end_time);
 	}
-	$("#patch_no").val(event.data.patch_no);
-	$("#am_pm").val(event.data.am_pm);
-	// 案件番号をクリックしたら、案件情報参照用のダイアログ表示する
-	$("#entry_no").bind("click", { from: sd, to: ed, test_type: event.data.test_type,base_cd: event.data.base_cd }, CalendarTable.showEntryList);
-	// 案件情報参照画面のイベント処理登録
-	$("#entry_list").bind("change", {}, CalendarTable.searchQuoteData);
-	$("#quote_list").bind("change", {}, CalendarTable.selectQuoteData);
-	$("#schedule_dialog").dialog("open");
-	return false;
+	$("#patch_no").val(data.patch_no);
+	$("#am_pm").val(data.am_pm);
 };
 // スケジュールデータの検索
 CalendarTable.searchScheduleData = function (start,end,base_cd,test_type, callback) {
@@ -234,25 +249,52 @@ CalendarTable.addScheduleData = function (schedule_list) {
 			// スケジュールを表示する要素のIDを生成する
 			var id = "#cal_day_times_" + sd + "-" + rows[i].division; 
 			$(id).append(sch);
-			$("#" + rows[i].schedule_id).bind('click',
-				 {
-				schedule_id: rows[i].schedule_id,
-				entry_no: rows[i].entry_no,
-				entry_title: rows[i].entry_title,
-				quote_detail_no: rows[i].quote_detail_no,
-				test_item: rows[i].test_item,
-				start_date: rows[i].start_date, 
-				end_date: rows[i].end_date,
-				start_time: rows[i].start_time, 
-				end_time: rows[i].end_time,
-				am_pm: rows[i].am_pm, 
-				patch_no: rows[i].patch_no,
-				test_type: rows[i].division,
-				base_cd: rows[i].base_cd
-			}, CalendarTable.openDialog);
+			// 要素のカスタムデータとしてデータを追加
+			$("#" + rows[i].schedule_id).data('schedule', rows[i]);
+			// クリックイベント処理登録
+			$("#" + rows[i].schedule_id).bind('click', CalendarTable.openDialog);
+			// Drag&Drop
+			$("#" + rows[i].schedule_id).draggable({ revert:false,zIndex: 1000 });
 		}
 
 	}
+};
+
+// 試験スケジュールのドロップイベント処理
+CalendarTable.drop = function (event, ui) {
+	var left = ui.position.left;
+	var top = ui.position.top;
+	var data = $(ui.draggable).data('schedule');
+	data.start_date = $(event.target).data('date');
+	// 横方向の移動位置の判定（時間の変更）
+	// 移動した位置から１５分単位の位置を求めて表示位置を合わせる	
+	left = Math.round(left / (CalendarTable.width_15[data.division] + 1));
+	var min = left * 15 * 60000;	// 分単位の時間を求めておく
+	left = (left * CalendarTable.width_15[data.division]) + (left - 1);
+	$("#" + data.schedule_id).css("left", left);
+	// 現在のデータから作業時間の長さを求める
+	var start_time = scheduleCommon.dateStringToDate(data.start_date + " " + data.start_time);
+	var end_time = scheduleCommon.dateStringToDate(data.start_date + " " + data.end_time);
+	var len = end_time.getTime() - start_time.getTime();
+
+	// 移動した位置から開始時間を求める
+	var base_time = scheduleCommon.dateStringToDate(data.start_date + " 08:00:00");
+	var time = min + base_time.getTime();
+	var d = new Date();
+	// 開始時間
+	d.setTime(time);
+	data.start_time = scheduleCommon.getTimeString(d, "{0}:{1}");
+	// 終了時間
+	d.setTime(time + len);
+	data.end_time = scheduleCommon.getTimeString(d, "{0}:{1}");
+	// 要素に設定するカスタムデータを更新する
+	$(ui.draggable).data('schedule', data);
+	// ドラッグした要素をターゲットの子要素として追加する
+	$(ui.draggable).css('top', 0);	
+	$(event.target).append(ui.draggable);
+	// 更新されたデータでDBのデータを更新する
+	CalendarTable.setFormData(data);	// 入力フォームにデータを入れて
+	CalendarTable.updateSchedule();		// 更新処理を実行する（ダイアログから更新する処理を利用）
 };
 
 // 試験スケジュールのDB追加

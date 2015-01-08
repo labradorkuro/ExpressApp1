@@ -104,11 +104,18 @@ scheduleCommon.getToday = function (format_str) {
 	return date_format;
 */
 };
-scheduleCommon.getDateString = function(date,format_str) {
+scheduleCommon.getDateString = function (date, format_str) {
 	var date_format = scheduleCommon.format(format_str,
 			date.getFullYear(),
 			date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1),
 		    date.getDate() < 10 ? "0" + date.getDate() : date.getDate()
+	);
+	return date_format;
+};
+scheduleCommon.getTimeString = function (date, format_str) {
+	var date_format = scheduleCommon.format(format_str,
+			date.getHours() < 10 ? "0" + date.getHours() : date.getHours(),
+			date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes()
 	);
 	return date_format;
 };
