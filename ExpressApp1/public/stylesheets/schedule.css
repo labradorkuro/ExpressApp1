@@ -974,7 +974,7 @@ div.cal_patch_week_day {
     height:59px;
     border-bottom:1px solid #777777;
     border-right:1px solid #777777;
-    overflow:auto;
+    /*overflow:auto;*/
 }
 div.cal_patch_week_low {
     position:relative;
@@ -1035,6 +1035,8 @@ a.cal_add_button:active {
 div.schedule_data {
     font-size: 11pt;
     background-color: white;
+    height:36px;
+    overflow:auto;
 }
 div.schedule_data:hover {
     background-color: #ecf9d2;
