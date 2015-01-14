@@ -1,0 +1,96 @@
+﻿//
+// 見積書フォーム
+//
+form#estimateForm(method="post",action="javascript:return false;")
+	div.estimate_top
+		span#estimate_title 御 見 積 書
+	div.estimate_billing_left
+		table
+			tr
+				td
+					input#billing_company_name_1(type="text" name="billing_company_name_1" size="40" placeholder="請求先会社名")
+			tr
+				td
+					input#billing_company_name_2(type="text" name="billing_company_name_2" size="40" placeholder="請求先会社名")
+			tr
+				td
+					input#billing_division(type="text" name="billing_division" size="40" placeholder="請求先部署名")
+			tr
+				td
+					input#billing_prepared(type="text" name="billing_prepared" size="40" placeholder="請求先担当者名")
+			tr
+				td
+					span#estimate_title2 下記の通りお見積申し上げます。
+			tr
+				td
+					label 件名：
+					input#quote_title(type="text" name="quote_title" size="35" placeholder="件名")
+			tr
+				td
+					input#quote_title1(type="text" name="quote_title1" size="40" )
+			tr
+				td
+					input#quote_title2(type="text" name="quote_title2" size="40" )
+			tr
+				td
+					input#quote_title3(type="text" name="quote_title3" size="40" )
+			tr
+				td
+					label 有効期限：
+					input.datepicker#quote_expire(type="text" name="quote_expire" size="31" placeholder="有効期限" )
+	div.estimate_billing_right
+		table
+			tr
+				td
+					label 見積日
+					input#billing_date(type="text" name="billing_date" placeholder="請求先会社名")
+			tr
+				td
+					label No.
+					input#quote_no(type="text" name="quote_no" placeholder="見積番号")
+			tr
+				td
+					label#drc_adress1 〒530-0044 大阪市北区東天満2-10-31　第9田淵ビル3F
+			tr
+				td
+					label#drc_adress2 TEL:06-6882-8201  FAX:06-6882-8202
+			tr
+				td
+					label#drc_name DRC株式会社
+			tr
+				td
+					label#drc_division_name 試験課
+			tr
+				td
+					label#drc_prepared 担当者：
+	div.estimate_mid
+		table
+			tr
+				td
+			tr
+				td
+					div.quote_total
+						label#quote_total_title 御見積合計金額　
+						input#quote_total_price(type="text" name="quote_total_price" size="19" placeholder="見積合計金額")
+	div.estimate_meisai
+		table.estimate_meisai_table
+			tr
+				th 名称
+				th 単位
+				th 数量
+				th 単価
+				th 金額
+				th 備考
+			tr
+				td.name
+					input#name_1(type="text" name="name_1" size="30" placeholder="名称")
+				td.unit
+					input#unit_1(type="text" name="unit_1" size="4" placeholder="単位")
+				td.qty
+					input.num_type#qty_1(type="text" name="qty_1" size="4" placeholder="数量")
+				td.unit_price
+					input.num_type#unit_price_1(type="text" name="unit_price_1" size="9" placeholder="単価")
+				td.price
+					input.num_type#price_1(type="text" name="price_1" size="12" placeholder="金額")
+				td.memo
+					input#memo_1(type="text" name="memo_1" size="12" placeholder="備考")

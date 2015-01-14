@@ -1,0 +1,10 @@
+﻿extends layout
+
+block head
+	link(rel="stylesheet" ,href="stylesheets/schedule.css")
+
+block content
+	div.titlebar
+		img.titlebar_logo(src="images/drc_logo.jpg")
+		span.titlebar= title
+	iframe(src=url)
