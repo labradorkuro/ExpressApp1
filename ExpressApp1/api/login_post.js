@@ -12,7 +12,7 @@ exports.login_post = function (req, res) {
 		res.render('portal', { title: 'DRC試験スケジュール管理' , userid: uid , name: "管理者" });
 		return;
 	}
-	var sql = "SELECT uid,name FROM drc_sch.user_list WHERE uid = $1 AND password = $2";
+	var sql = "SELECT uid,name FROM drc_sch.user_list WHERE uid = $1 AND password = $2 AND delete_check = 0";
 	pg.connect(connectionString, function (err, connection) {
 		// SQL実行
 		connection.query(sql, [uid,pass], function (err, results) {

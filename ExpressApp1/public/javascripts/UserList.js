@@ -74,7 +74,7 @@ userList.createGrid = function () {
 		sortname: 'uid',
 		viewrecords: true,
 		sortorder: "asc",
-		caption: "案件リスト",
+		caption: "社員リスト",
 		onSelectRow: userList.onSelectuser
 	});
 	jQuery("#user_list").jqGrid('navGrid', '#user_pager', { edit: false, add: false, del: false });
@@ -89,6 +89,11 @@ userList.openUserDialog = function (event) {
 		// 編集ボタンから呼ばれた時は選択中の案件のデータを取得して表示する
 		var no = userList.getSelectUser();
 		userList.requestUserData(no);
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
+		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+	} else {
+		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
 	$("#user_dialog").dialog("open");
 };
@@ -133,8 +138,12 @@ userList.getFormData = function () {
 userList.onloadUserSave = function (e) {
 	if (this.status == 200) {
 		var user = this.response;
-		$("#user_list").GridUnload();
-		userList.createGrid();
+		if (user.error_msg) {
+			alert(user.error_msg);
+		} else {
+			$("#user_list").GridUnload();
+			userList.createGrid();
+		}
 	}
 };
 // 社員データ取得リクエストのコールバック

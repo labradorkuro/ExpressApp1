@@ -10,7 +10,7 @@ exports.user_post = function (req, res) {
 	if (user.uid === "") {
 		res.send(user);
 	} else {
-		var sql = "SELECT uid FROM drc_sch.user_list WHERE uid = $1";
+		var sql = "SELECT uid FROM drc_sch.user_list WHERE uid = $1 AND delete_check = 0";
 		pg.connect(connectionString, function (err, connection) {
 			// SQL実行
 			connection.query(sql,[user.uid], function (err, results) {
@@ -85,6 +85,8 @@ var insertUser = function (connection, user, req, res) {
 		], function (err, result) {
 			if (err) {
 				console.log(err);
+				res.send({error_msg:'データベースの登録に失敗しました。'});
+				connection.end();
 			} else {
 				res.send(user);
 				connection.end();
@@ -128,6 +130,8 @@ var updateUser = function (connection, user, req, res) {
 		], function (err, results) { 
 			if (err) {
 				console.log(err);
+				res.send({ error_msg: 'データベースの更新に失敗しました。' });
+				connection.end();
 			} else {
 				res.send(user);
 				connection.end();
