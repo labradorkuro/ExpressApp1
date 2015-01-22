@@ -42,7 +42,7 @@ var getPagingParams = function (req) {
 // 案件リストの取得
 var entry_get_list = function (req, res) {
 	var pg_params = getPagingParams(req);
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.entry_info WHERE delete_check = $1';
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.entry_info WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5) AND delete_check = $1';
 	var sql = 'SELECT ' 
 		+ 'entry_no,' 
 		+ 'entry_title,' 
@@ -73,10 +73,10 @@ var entry_get_list = function (req, res) {
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.division_info ON(entry_info.division = division_info.division)' 
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
-		+ ' WHERE entry_info.delete_check = $1 ORDER BY ' 
+		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5) AND entry_info.delete_check = $1 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return entry_get_list_for_grid(res, sql_count, sql, [0], pg_params);
+	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04], pg_params);
 };
 
 // 案件リストの取得（ガントチャート用）
@@ -127,7 +127,7 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 				console.log(err);
 			} else {
 				// 取得した件数からページ数を計算する
-				result.total = Math.round(results.rows[0].cnt / pg_params.limit);
+				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
@@ -322,24 +322,28 @@ var quote_get_list = function (req, res) {
 		+ 'to_char(created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
 		+ 'created_id,' 
 		+ 'to_char(updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
-		+ 'updated_id' 
+		+ 'updated_id,' 
+		+ 'quote_delete_check,' 
+		+ 'quote_delete_reason' 
 		+ ' FROM drc_sch.quote_info WHERE quote_delete_check = $1 AND entry_no = $2 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
 	var rows = [];
+	var dc = Number(req.query.quote_delete_check);
+	var params = [dc,req.params.entry_no];
 	pg.connect(connectionString, function (err, connection) {
 		// 最初に件数を取得する		
-		connection.query(sql_count, [0,req.params.entry_no], function (err, results) {
+		connection.query(sql_count, params, function (err, results) {
 			if (err) {
 				console.log(err);
 			} else {
 				// 取得した件数からページ数を計算する
-				result.total = Math.round(results.rows[0].cnt / pg_params.limit);
+				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
-				connection.query(sql, [0, req.params.entry_no], function (err, results) {
+				connection.query(sql, params, function (err, results) {
 					if (err) {
 						console.log(err);
 					} else {
@@ -377,6 +381,8 @@ var quote_get_list = function (req, res) {
 							row.cell.push(results.rows[i].created_id);
 							row.cell.push(results.rows[i].updated);
 							row.cell.push(results.rows[i].updated_id);
+							row.cell.push(results.rows[i].quote_delete_check);	// 削除フラグ
+							row.cell.push(results.rows[i].quote_delete_reason);	// 削除理由
 							result.rows.push(row);
 						}
 						connection.end();

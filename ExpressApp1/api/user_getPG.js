@@ -23,6 +23,8 @@ var getPagingParams = function (req) {
 // 社員データリストの取得
 var user_get_list = function (req, res) {
 	var pg_params = getPagingParams(req);
+	var del_chk = 0;
+	if (req.query.delete_check == 1) del_chk = 1;
 	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.user_list WHERE delete_check = $1';
 	var sql = 'SELECT ' 
 		+ 'uid,' 
@@ -42,7 +44,7 @@ var user_get_list = function (req, res) {
 		+ ' FROM drc_sch.user_list LEFT JOIN drc_sch.division_info ON (user_list.division = division_info.division) WHERE user_list.delete_check = $1 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return user_get_list_for_grid(res, sql_count, sql, [0], pg_params);
+	return user_get_list_for_grid(res, sql_count, sql, [del_chk], pg_params);
 };
 var user_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
@@ -54,7 +56,7 @@ var user_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 				console.log(err);
 			} else {
 				// 取得した件数からページ数を計算する
-				result.total = Math.round(results.rows[0].cnt / pg_params.limit);
+				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
@@ -79,7 +81,6 @@ var user_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 };
 // 社員データの取得
 var user_get_detail = function (req, res) {
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.user_list WHERE delete_check = $1';
 	var sql = 'SELECT ' 
 		+ 'uid,' 
 		+ 'name,' 

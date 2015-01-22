@@ -26,7 +26,7 @@ scheduleCommon.getEntry_status = function (no) {
 // 社員マスタから情報取得
 scheduleCommon.getUserInfo = function () {
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/user_get/?rows=100', true);
+	xhr.open('GET', '/user_get/?rows=100&delete_check=0', true);
 	xhr.responseType = 'json';
 	xhr.onload = scheduleCommon.onloadUserReq;
 	xhr.send();

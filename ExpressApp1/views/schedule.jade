@@ -7,12 +7,10 @@ html
 		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
 		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
 		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
-		script(src="jQuery.Gantt-master/js/jquery.fn.gantt.js")
 		script(src="javascripts/Schedule.js")
 		script(src="javascripts/ScheduleCommon.js")
 		script(src="javascripts/GanttTable.js")
 		script(src="javascripts/holiday.min.js")
-		link(rel="stylesheet" ,href="jQuery.Gantt-master/css/style.css")
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
 	body
 		div.titlebar
@@ -39,6 +37,8 @@ html
 					a(href="#tabs-4") 食品ヒト試験
 				li
 					a(href="#tabs-5") 代替法試験
+				li
+					a(href="#tabs-6") 外注
 			div#tabs-1
 				p(style="font-size:small") in vivo（ヒト臨床試験）による測定
 				div#ganttTable_div1
@@ -48,12 +48,15 @@ html
 			div#tabs-3
 				p(style="font-size:small") 抗シワガイドライン対応試験や、化粧品などの使用試験
 				div#ganttTable_div3
-			div(id="tabs-4")
+			div#tabs-4
 				p(style="font-size:small") 食品の有効性を評価するヒト試験
 				div#ganttTable_div4
-			div(id="tabs-5")
+			div#tabs-5
 				p(style="font-size:small") 代替法試験
 				div#ganttTable_div5
+			div#tabs-6
+				p(style="font-size:small") 外注
+				div#ganttTable_div6
 		div#workitem_dialog
 			include workitem_form
 			div#messageDlg		

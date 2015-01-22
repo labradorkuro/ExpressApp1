@@ -10,7 +10,7 @@ exports.user_post = function (req, res) {
 	if (user.uid === "") {
 		res.send(user);
 	} else {
-		var sql = "SELECT uid FROM drc_sch.user_list WHERE uid = $1 AND delete_check = 0";
+		var sql = "SELECT uid FROM drc_sch.user_list WHERE uid = $1";
 		pg.connect(connectionString, function (err, connection) {
 			// SQL実行
 			connection.query(sql,[user.uid], function (err, results) {

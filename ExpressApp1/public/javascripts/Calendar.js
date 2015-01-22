@@ -39,6 +39,12 @@
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
+				case 5:
+					CalendarTable.current_div = "calendar_div6";
+					CalendarTable.current_test_type = "06";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
+					break;
 			}
 		},
 		activate: function (event, ui) {
@@ -72,6 +78,12 @@
 				case 4:
 					CalendarTable.current_div = "calendar_div5";
 					CalendarTable.current_test_type = "05";
+					CalendarTable.current_base_cd = "01";
+					CalendarTable.init();
+					break;
+				case 5:
+					CalendarTable.current_div = "calendar_div6";
+					CalendarTable.current_test_type = "06";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;

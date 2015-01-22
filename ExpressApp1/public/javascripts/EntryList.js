@@ -19,6 +19,12 @@ $(function() {
 	entryList.createQuoteDialog();
 	entryList.createQuoteFormDialog();
 	entryList.createClientListDialog();
+	// 検索用オプションの初期化	
+	$("#entry_status_01").prop("checked", true);
+	$("#entry_status_02").prop("checked", true);
+	$("#entry_status_03").prop("checked", true);
+	$("#entry_status_04").prop("checked", true);
+	// グリッドの生成
 	entryList.createGrid();
 	entryList.createTestGrid(0);
 	// 得意先選択用グリッドの生成
@@ -42,6 +48,16 @@ $(function() {
 //	$("body").append("<div id='graylayer'></div><div id='overlayer'></div>");
 
 	entryList.enableQuoteButtons(false);
+	
+	// 削除分を表示のチェックイベント
+	$("#entry_delete_check_disp").bind('change', entryList.changeEntryOption);
+	$("#quote_delete_check_disp").bind('change', entryList.changeQuoteOption);
+	
+	$("#entry_status_01").bind('change', entryList.changeEntryOption);
+	$("#entry_status_02").bind('change', entryList.changeEntryOption);
+	$("#entry_status_03").bind('change', entryList.changeEntryOption);
+	$("#entry_status_04").bind('change', entryList.changeEntryOption);
+
 });
 
 //
@@ -208,9 +224,14 @@ entryList.printDataSetup = function () {
 };
 
 entryList.createGrid = function () {
+	var delchk = ($("#entry_delete_check_disp").prop("checked")) ? 1:0;
+	var sts01 = ($("#entry_status_01").prop("checked")) ? '01':'0';
+	var sts02 = ($("#entry_status_02").prop("checked")) ? '02':'0';
+	var sts03 = ($("#entry_status_03").prop("checked")) ? '03':'0';
+	var sts04 = ($("#entry_status_04").prop("checked")) ? '04':'0';
 	// 案件リストのグリッド
 	jQuery("#entry_list").jqGrid({
-		url: '/entry_get',
+		url: '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01 + '&entry_status_02=' + sts02 + '&entry_status_03=' + sts03 + '&entry_status_04=' + sts04,
 		altRows: true,
 		datatype: "json",
 		colNames: ['案件No','得意先名1','得意先名2','案件名','問合せ日', '案件ステータス', '拠点CD','担当者','見積番号','見積発行日'
@@ -235,7 +256,7 @@ entryList.createGrid = function () {
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
 			{ name: 'updated_id', index: 'updated_id', formatter: entryList.personFormatter  },
 		],
-		height:"260px",
+		height:"230px",
 		rowNum: 10,
 		rowList: [10],
 		pager: '#entry_pager',
@@ -248,14 +269,16 @@ entryList.createGrid = function () {
 	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false });
 };
 entryList.createTestGrid = function (no) {
+	// checkboxの状態取得	
+	var delchk = entryList.getQuoteDeleteCheckDispCheck();
 	jQuery("#test_list").jqGrid({
-		url: '/quote_get/' + no,
+		url: '/quote_get/' + no + '/?quote_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
 		colNames: ['案件番号','見積番号', '明細番号','試験項目CD', '試験項目名','試料名','到着日','計画書番号',
 			'被験者数','検体数','報告書番号','報告書提出期限','報告書提出日',
 			'速報提出期限１','速報提出日１','速報提出期限２','速報提出日２','期待値/設定値',
-			'値説明','単位CD','単位','単価','数量','見積金額','備考','作成日','作成者','更新日','更新者'],
+			'値説明','単位CD','単位','単価','数量','見積金額','備考','作成日','作成者','更新日','更新者','削除フラグ','削除理由'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" }, // 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" }, // 見積番号
@@ -286,8 +309,10 @@ entryList.createTestGrid = function (no) {
 			{ name: 'created_id', index: 'created_id', width: 120 }, // 作成者ID
 			{ name: 'updated', index: 'updated', width: 120 }, // 更新日
 			{ name: 'updated_id', index: 'updated_id', width: 120 },			// 更新者ID
+			{ name: 'quote_delete_check', index: 'quote_delete_check', hidden: true },			// 削除フラグ
+			{ name: 'quote_delete_reason', index: 'quote_delete_reason', hidden: true },			// 削除理由
 		],
-		height: "260px",
+		height: "230px",
 		rowNum: 10,
 		rowList: [10],
 		pager: '#test_list_pager',
@@ -317,7 +342,7 @@ entryList.createClientListGrid = function (no) {
 			{ name: 'prepared_division', index: 'prepared_division', width: 80, align: "center" },
 			{ name: 'prepared_title', index: 'prepared_title', width: 80, align: "center" },
 		],
-		height: "260px",
+		height: "230px",
 		width:"100%",
 		rowNum: 10,
 		rowList: [10],
@@ -372,7 +397,7 @@ entryList.statusFormatter = function (cellval, options, rowObject) {
 };
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {
-	
+	// フォームをクリアする
 	var entry = entryList.clearEntry();
 	entryList.setEntryForm(entry);
 	if ($(event.target).attr('id') == 'edit_entry') {
@@ -447,7 +472,7 @@ entryList.saveEntry = function () {
 
 // checkboxのチェック状態確認と値設定
 entryList.checkCheckbox = function () {
-	if ($("#delete_check:checked").val()) {
+	if ($("#delete_check").prop("checked")) {
 		$("#delete_check").val('1');
 	}
 	if ($("#input_check:checked").val()) {
@@ -516,13 +541,13 @@ entryList.getFormData = function () {
 	var form = new FormData(document.querySelector("#entryForm"));
 
 	// checkboxのチェックがないとFormDataで値が取得されないので値を追加する
-	if (!$("#delete_check:checked").val()) {
+	if (!$("#delete_check").prop("checked")) {
 		form.append('delete_check', '0');
 	}
-	if (!$("#input_check:checked").val()) {
+	if (!$("#input_check").prop("checked")) {
 		form.append('input_check', '0');
 	}
-	if (!$("#confirm_check:checked").val()) {
+	if (!$("#confirm_check").prop("checked")) {
 		form.append('confirm_check', '0');
 	}
 	return form;
@@ -615,13 +640,25 @@ entryList.setEntryForm = function (entry) {
 	$("#pay_amount_5").val(entry.pay_amount_5);					// 分割支払合計金額5
 	$("#pay_result_5").val(entry.pay_result_5);					// 分割請求区分5
 	$("#person_id").val(entry.person_id); // 担当者ID
-	$("#delete_check").val(entry.delete_check); // 削除フラグ
+	if (entry.delete_check == 1) {
+		$("#delete_check").prop("checked", true); // 削除フラグ
+	} else {
+		$("#delete_check").prop("checked", false); // 削除フラグ
+	}
 	$("#delete_reason").val(entry.delete_reason); // 削除理由
 	$("#input_check_date").val(entry.input_check_date); // 入力日
-	$("#input_check").val(entry.input_check); // 入力完了チェック
+	if (entry.input_check == 1) {
+		$("#input_check").prop("checked",true); // 入力完了チェック
+	} else {
+		$("#input_check").prop("checked", false); // 入力完了チェック
+	}
 	$("#input_operator_id").val(entry.input_operator_id); // 入力者ID
 	$("#confirm_check_date").val(entry.confirm_check_date); // 確認日
-	$("#confirm_check").val(entry.confirm_check); // 確認完了チェック
+	if (entry.confirm_check == 1) {
+		$("#confirm_check").prop("checked",true); // 確認完了チェック
+	} else {
+		$("#confirm_check").prop("checked", false); // 確認完了チェック
+	}
 	$("#confirm_operator_id").val(entry.confirm_operator_id); // 確認者ID
 	$("#created").val(entry.created);						// 作成日
 	$("#created_id").val(entry.created_id); // 作成者ID
@@ -742,11 +779,16 @@ entryList.enableQuoteButtons = function(enable) {
 	if (enable) {
 		$("#add_quote").css("display", "inline");
 		$("#edit_quote").css("display", "inline");
+		$("#quote_delete_check_disp").css("display", "inline");
+		$("#quote_delete_disp").css("display", "inline");
 	} else {
 		$("#add_quote").css("display", "none");
 		$("#edit_quote").css("display", "none");
+		$("#quote_delete_check_disp").css("display", "none");
+		$("#quote_delete_disp").css("display", "none");
 	}
 };
+// 試験（見積）情報の選択中データを取得する
 entryList.getSelectQuote = function () {
 	var grid = $("#test_list");
 	var id = grid.getGridParam('selrow');
@@ -755,6 +797,7 @@ entryList.getSelectQuote = function () {
 	}
 	return null;
 };
+// 試験（見積）情報の入力フォームをクリアする
 entryList.clearQuoteFormData = function (quote) {
 	$('#quote_no_dlg').val(quote.quote_no); // 見積番号
 	$('#quote_detail_no').val('');			// 明細番号
@@ -780,7 +823,7 @@ entryList.clearQuoteFormData = function (quote) {
 	$('#quantity').val('0');				// 数量
 	$('#quote_price').val('0');				// 見積金額
 	$('#test_memo').val('');				// 備考
-	$('#quote_delete_check').val(0);		// 削除フラグ
+	$('#quote_delete_check').prop("checked",false);	// 削除フラグ
 	$('#quote_delete_reason').val('');		// 削除理由
 };
 entryList.setQuoteFormData = function (quote) {
@@ -808,7 +851,11 @@ entryList.setQuoteFormData = function (quote) {
 	$('#quantity').val(quote.quantity);					// 数量
 	$('#quote_price').val(quote.quote_price);			// 見積金額
 	$('#test_memo').val(quote.test_memo);				// 備考
-	$('#quote_delete_check').val(quote.quote_delete_check);		// 削除フラグ
+	if (quote.quote_delete_check == 1) {
+		$('#quote_delete_check').prop("checked", true);		// 削除フラグ
+	} else {
+		$('#quote_delete_check').prop("checked", false);	// 削除フラグ
+	}
 	$('#quote_delete_reason').val(quote.quote_delete_reason);	// 削除理由
 };
 // 試験（見積）データの保存
@@ -817,8 +864,6 @@ entryList.saveQuote = function () {
 	if (!entryList.quoteInputCheck()) {
 		return false;
 	}
-	// checkboxのチェック状態確認と値設定
-	entryList.checkQuoteCheckbox();
 	// formデータの取得
 	var form = entryList.getQuoteFormData();
 	// 案件番号をフォームデータに追加する
@@ -844,17 +889,12 @@ entryList.quoteInputCheck = function () {
 	return result;
 };
 
-// checkboxのチェック状態確認と値設定
-entryList.checkQuoteCheckbox = function () {
-	if ($("#quote_delete_check:checked").val()) {
-		$("#quote_delete_check").val('1');
-	}
-};
 // formデータの取得
 entryList.getQuoteFormData = function () {
 	var form = new FormData(document.querySelector("#quoteForm"));
 	// checkboxのチェックがないとFormDataで値が取得されないので値を追加する
-	if (!$("#quote_delete_check:checked").val()) {
+	var chk = $("#quote_delete_check").prop("checked");
+	if (!chk) {
 		form.append('quote_delete_check', '0');
 	}
 	return form;
@@ -869,6 +909,27 @@ entryList.onloadQuoteReq = function (e) {
 		entryList.createTestGrid(entryList.currentEntryNo);
 
 	}
+};
+
+// 削除分の表示チェックイベント（案件）
+entryList.changeEntryOption = function (event) {
+	$("#entry_list").GridUnload();
+	entryList.createGrid();
+};
+// 削除分の表示チェックイベント（明細）
+entryList.changeQuoteOption = function (event) {
+	var rowid = $("#entry_list").getGridParam("selrow");
+	if (rowid != null) {
+		var row = $("#entry_list").getRowData(rowid);
+		$("#test_list").GridUnload();
+		entryList.createTestGrid(row.entry_no);
+	}
+};
+// 試験（見積）の削除分を表示のチェックボックス情報取得
+entryList.getQuoteDeleteCheckDispCheck = function () {
+	var dc = $("#quote_delete_check_disp").prop("checked");
+	var delchk = (dc) ? 1:0;
+	return delchk;
 };
 
 // 見積書の印刷（PDF生成）

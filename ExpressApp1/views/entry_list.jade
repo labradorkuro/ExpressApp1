@@ -32,6 +32,18 @@ html
 				div.toolbar
 					a.tool_button_a#add_entry 追 加
 					a.tool_button_a#edit_entry 編 集
+					fieldset.search_option_set
+						input.search_option_check#entry_delete_check_disp(type="checkbox") 
+						label.search_option_check#entry_delete_disp(value=1) 削除分を表示
+					fieldset.search_option_set
+						input.search_option_check#entry_status_01(type="checkbox") 
+						label.search_option_check#entry_status_01_label(value=1) 引合
+						input.search_option_check#entry_status_02(type="checkbox") 
+						label.search_option_check#entry_status_02_label(value=1) 見積
+						input.search_option_check#entry_status_03(type="checkbox") 
+						label.search_option_check#entry_status_03_label(value=1) 依頼
+						input.search_option_check#entry_status_04(type="checkbox") 
+						label.search_option_check#entry_status_04_label(value=1) 失注
 				div.admin_div
 					table#entry_list
 					div#entry_pager
@@ -39,6 +51,8 @@ html
 				div.toolbar
 					a.tool_button_a#add_quote 追 加
 					a.tool_button_a#edit_quote 編 集
+					input.search_option_check#quote_delete_check_disp(type="checkbox") 
+					label.search_option_check#quote_delete_disp(value=1) 削除分を表示
 				div.admin_div
 					table#test_list
 					div#test_list_pager

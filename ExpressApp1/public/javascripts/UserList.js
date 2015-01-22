@@ -16,7 +16,8 @@ $(function () {
 	$("#add_user").bind('click' , {}, userList.openUserDialog);
 	// 社員情報編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_user").bind('click' , {}, userList.openUserDialog);
-	
+	// 削除分を表示のチェックイベント
+	$("#delete_check_disp").bind('change', userList.changeOption);
 });
 
 // 社員情報リスト処理
@@ -47,9 +48,11 @@ userList.createUserDialog = function () {
 	});
 };
 userList.createGrid = function () {
-	// 案件リストのグリッド
+	var dc = $("#delete_check_disp:checked").val();
+	var delchk = (dc) ? 1:0;
+	// 社員リストのグリッド
 	jQuery("#user_list").jqGrid({
-		url: '/user_get',
+		url: '/user_get/?delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
 		colNames: ['社員ID','名前','社員番号', '役職名', '拠点','事業部','内線番号','入社日'
@@ -68,6 +71,7 @@ userList.createGrid = function () {
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
 			{ name: 'updated_id', index: 'updated_id' },
 		],
+		height: "260px",
 		rowNum: 10,
 		rowList: [10],
 		pager: '#user_pager',
@@ -165,7 +169,13 @@ userList.setUserForm = function (user) {
 	$("#division").val(user.division);		// 事業部ID
 	$("#telno").val(user.telno); // 内線
 	$("#title").val(user.title); // 役職名
-	$("#delete_check").val(user.delete_check);	// 削除フラグ
+	// 削除フラグ
+	if (user.delete_check == 1) {
+		$("#delete_check").attr("checked", true);
+	} else {
+		$("#delete_check").attr("checked", false);
+	}
+	//$("#delete_check").val(user.delete_check);	// 削除フラグ
 	$("#created").val(user.created);			// 作成日
 	$("#created_id").val(user.created_id);	// 作成者ID
 	$("#updated").val(user.updated);		// 更新日
@@ -198,5 +208,10 @@ userList.getSelectUser = function () {
 		uid = row.uid;
 	}
 	return uid;
+};
+
+userList.changeOption = function (event) {
+	$("#user_list").GridUnload();
+	userList.createGrid();
 };
 

@@ -168,4 +168,5 @@ workitemEdit.ganttTableInit = function () {
 	GanttTable.Init("ganttTable_div3", "03", 1);
 	GanttTable.Init("ganttTable_div4", "04", 1);
 	GanttTable.Init("ganttTable_div5", "05", 1);
+	GanttTable.Init("ganttTable_div6", "06", 1);
 };

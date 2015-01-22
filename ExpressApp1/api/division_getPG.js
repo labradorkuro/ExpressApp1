@@ -47,7 +47,7 @@ var division_get_list_for_grid = function (res, sql_count, sql, params, pg_param
 				console.log(err);
 			} else {
 				// 取得した件数からページ数を計算する
-				result.total = Math.round(results.rows[0].cnt / pg_params.limit);
+				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
