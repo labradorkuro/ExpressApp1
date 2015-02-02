@@ -1,8 +1,8 @@
 ﻿// PDFの生成
-var PDFDocument = require('pdfkit-cjk');
-var blobStream = require('blob-stream');
-var Blob = require('blob');
-var fs = require('fs');
+//var PDFDocument = require('pdfkit-cjk');
+//var blobStream = require('blob-stream');
+//var Blob = require('blob');
+//var fs = require('fs');
 //var Iconv = require('iconv').Iconv;
 //var conv = new Iconv('utf8', 'UTF-16');
 //var bom = "\xFE\xFF";
