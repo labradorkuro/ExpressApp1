@@ -6,6 +6,7 @@
 
 var express = require('express');
 var routes = require('./routes');
+var client_list = require('./routes/client_list');
 var user_list = require('./routes/user_list');
 var division_list = require('./routes/division_list');
 var schedule = require('./routes/schedule');
@@ -17,6 +18,7 @@ var admin = require('./routes/admin');
 var entry_edit = require('./routes/entry_edit');
 var entry_list = require('./routes/entry_list');
 var quote_form = require('./routes/quote_form');
+
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
 var workitem_post = require('./api/workitem_postPG');
@@ -64,6 +66,7 @@ if ('development' == app.get('env')) {
 
 app.get('/index', routes.index);
 app.get('/', routes.index);
+app.get('/client_list', client_list.list);
 app.get('/user_list', user_list.list);
 app.get('/division_list', division_list.list);
 app.get('/schedule', schedule.list);

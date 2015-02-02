@@ -21,7 +21,7 @@
 			text: "更新",
 			class: "update-btn",
 			click: function () {
-				workitemEdit.updateItem();
+				workitemEdit.updateItem(true);
 				$(this).dialog('close');
 			}
 		},
@@ -53,40 +53,43 @@
 	$("#select_date").change(workitemEdit.selectDate);
 });
 var workitemEdit = workitemEdit || {};
+workitemEdit.setFormData = function (workitem) {
+	// eventに渡されたデータをフォームにセットする
+	$("#entry_no").val(workitem.entry_no);
+	$("#work_item_id").val(workitem.work_item_id);
+	$("#work_title").val(workitem.work_title);
+	$("#start_date").val(workitem.start_date);
+	$("#end_date").val(workitem.end_date);
+	$("#start_date_result").val(workitem.start_date_result);
+	$("#end_date_result").val(workitem.end_date_result);
+	$("#priority_item_id").val("");
+	$("#subsequent_item_id").val("");
+	$("#progress").val(workitem.progress);
+	$("#entry_no").val(workitem.entry_no);
+	$("#entry_title").val(workitem.entry_title);
+};
 workitemEdit.openDialog = function (event) {
-	if (event.data.workitem != null) {
+	// ドラッグした際に発生するイベントの場合はダイアログ表示しないようにフラグをチェックする
+	var drag = $(event.target).data("drag");
+	if (drag == 'on') {
+		// フラグをクリアする
+		$(event.target).data("drag","");
+		return false;
+	}
+	var workitem = $(event.target).data("workitem");
+	workitemEdit.setFormData(workitem);
+	if (workitem.work_item_id != -1) {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable"); 
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
-		// eventに渡されたデータをフォームにセットする
-		$("#entry_no").val(event.data.workitem.entry_no);
-		$("#work_item_id").val(event.data.workitem.work_item_id);
-		$("#work_title").val(event.data.workitem.work_title);
-		$("#start_date").val(event.data.workitem.start_date);
-		$("#end_date").val(event.data.workitem.end_date);
-		$("#start_date_result").val(event.data.workitem.start_date_result);
-		$("#end_date_result").val(event.data.workitem.end_date_result);
-		$("#priority_item_id").val("");
-		$("#subsequent_item_id").val("");
-		$("#progress").val(event.data.workitem.progress);
 
 	} else {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable"); 
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("disable");
-		$("#work_item_id").val(-1);
-		$("#work_title").val("");
-		$("#start_date").val("");
-		$("#end_date").val("");
-		$("#start_date_result").val("");
-		$("#end_date_result").val("");
-		$("#priority_item_id").val("");
-		$("#subsequent_item_id").val("");
-		$("#progress").val(0);
 	}
-	$("#entry_no").val(event.data.entry_no);
-	$("#entry_title").val(event.data.entry_title);
 	$("#workitem_dialog").dialog("open");
+	return false;
 };
 // 作業項目の追加
 workitemEdit.addItem = function () {
@@ -99,13 +102,15 @@ workitemEdit.addItem = function () {
 	xhr.send(form);
 };
 // 作業項目の更新
-workitemEdit.updateItem = function () {
+workitemEdit.updateItem = function (refresh) {
 	// formデータの取得
 	var form = workitemEdit.getFormData();
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/workitem_post', true);
 	xhr.responseType = 'json';
-	xhr.onload = workitemEdit.onloadWorkitemReq;
+	if (refresh) {
+		xhr.onload = workitemEdit.onloadWorkitemReq;
+	}
 	xhr.send(form);
 };
 // 作業項目の削除確認ダイアログ表示

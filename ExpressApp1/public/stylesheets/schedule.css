@@ -252,6 +252,17 @@ div.gt_right_row_div {
     height:64px;
     overflow: hidden;
 }
+div.gt_right_row_line_div {
+    position:absolute;
+    top:0px;
+    border-top:1px #777777 solid;
+    border-bottom:none;
+    border-left:none;
+    border-right:  1px #777777 solid;
+    width:704px;
+    height:64px;
+    overflow: hidden;
+}
 div.gt_cal_header {
     position:absolute;
     float:left;
@@ -340,8 +351,7 @@ a.gt_mode_button:active {
 /* ガントチャート作業項目追加用ボタン */
 a.gt_workitem_button {
     position:absolute;
-    float:left;
-    top:20px;
+    top:40px;
     left:10px;
     font-size:1em;
     display:inline-block;
@@ -369,6 +379,41 @@ a.gt_workitem_button:hover {
     background-color: #31c8aa;
 	box-shadow: 0 3px 0 #23a188;}
 a.gt_workitem_button:active {
+    top:43px;
+    box-shadow:none;
+}
+/* テンプレート選択ボタン */
+a.gt_template_button {
+    position:absolute;
+    top:20px;
+    left:10px;
+    font-size:1em;
+    display:inline-block;
+    outline: none;
+    width:80%;
+    height:1.0em;
+    padding-top:0.25em;
+    margin-top:3px;
+    margin-left:2px;
+    margin-right:1px;
+    margin-bottom:1px;
+    text-align:center;
+    background-color: #1abc9c;
+	border-radius: 4px;
+	color: #fff;
+	line-height: 1.0em;
+	-webkit-transition: none;
+	transition: none;
+	box-shadow: 0 3px 0 #0e8c73;    
+    font-weight:bold;
+    box-shadow: 0 3px 0 #0e8c73;
+}
+
+a.gt_template_button:hover {
+    background-color: #31c8aa;
+	box-shadow: 0 3px 0 #23a188;
+}
+a.gt_template_button:active {
     top:23px;
     box-shadow:none;
 }
@@ -1275,7 +1320,8 @@ table.estimate_meisai_table td.unit_price {
   white-space: nowrap;
 }
 table.client_list {
-    height:400px;
+    /*height:400px;*/
+    width:80%;
 }
 canvas#canvas {
     height:900px;

@@ -17,39 +17,39 @@ exports.workitem_post = function (req, res) {
 	var workitem = workitem_check(req.body);
 	if (workitem.delete_check === '1') {
 		// 削除
-		delete_workitem(workitem, res);
+		delete_workitem(workitem, req, res);
 		return;
 	}
 	if (workitem.work_item_id === -1) {
 		// 追加
-		insert_workitem(workitem, res);
+		insert_workitem(workitem, req, res);
 	} else {
 		// 更新
-		update_workitem(workitem, res);
+		update_workitem(workitem, req, res);
 	}
 };
 
 // 作業項目データの追加
-var insert_workitem = function (workitem, res) {
+var insert_workitem = function (workitem, req, res) {
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
-	var created_id = "tanaka";
+	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
 	var sql = 'INSERT INTO drc_sch.workitem_schedule (' 
-			+ "entry_no," // 案件番号（yymmdd-###)
-			+ "work_title," // 作業項目名称
-			+ "start_date," // 作業開始予定日
-			+ "end_date," // 作業終了予定日
-			+ "start_date_result," // 作業開始日
- 			+ "end_date_result," // 作業終了日
-			+ "priority_item_id," // 先行（優先）項目
-			+ "subsequent_item_id," // 後続項目
-			+ "progress," // 作業進捗度
-			+ "delete_check," // 削除フラグ
-			+ "created," // 作成日
-			+ "created_id," // 作成者ID
-			+ "updated," // 更新日
-			+ "updated_id" // 更新者ID
+			+ "entry_no,"				// 案件番号（yymmdd-###)
+			+ "work_title,"				// 作業項目名称
+			+ "start_date,"				// 作業開始予定日
+			+ "end_date,"				// 作業終了予定日
+			+ "start_date_result,"		// 作業開始日
+ 			+ "end_date_result,"		// 作業終了日
+			+ "priority_item_id,"		// 先行（優先）項目
+			+ "subsequent_item_id,"		// 後続項目
+			+ "progress,"		// 作業進捗度
+			+ "delete_check,"	// 削除フラグ
+			+ "created,"		// 作成日
+			+ "created_id,"		// 作成者ID
+			+ "updated,"		// 更新日
+			+ "updated_id"		// 更新者ID
 			+ ") values (" 
 			+ "$1," // 案件番号
 			+ "$2," // 作業項目名称
@@ -94,8 +94,8 @@ var insert_workitem = function (workitem, res) {
 	});
 };
 // 作業項目データの更新
-var update_workitem = function (workitem, res) {
-	var updated_id = "tanaka";
+var update_workitem = function (workitem, req, res) {
+	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.workitem_schedule SET ' 
 			+ "entry_no = $1," // 案件番号（yymmdd-###)
 			+ "work_title = $2," // 作業項目名称
@@ -133,12 +133,12 @@ var update_workitem = function (workitem, res) {
 	});
 };
 // 作業項目データの削除
-var delete_workitem = function (workitem, res) {
-	var updated_id = "tanaka";
+var delete_workitem = function (workitem, req, res) {
+	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.workitem_schedule SET ' 
-			+ "delete_check = $," // 削除フラグ
-			+ "updated_id = ?" // 更新者ID
-			+ " WHERE work_item_id = ?";
+			+ "delete_check = $1," // 削除フラグ
+			+ "updated_id = $2" // 更新者ID
+			+ " WHERE work_item_id = $3";
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
 		var query = connection.query(sql, [

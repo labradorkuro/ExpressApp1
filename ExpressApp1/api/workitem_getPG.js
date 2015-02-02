@@ -31,7 +31,7 @@ var workitem_get_list = function (req, res) {
 		+ 'priority_item_id,' 
 		+ 'subsequent_item_id,' 
 		+ 'progress' 
-		+ ' FROM drc_sch.workitem_schedule WHERE entry_no = $1 and delete_check = \'0\'';
+		+ ' FROM drc_sch.workitem_schedule WHERE entry_no = $1 and delete_check = \'0\' ORDER BY start_date';
 	return workitem_get_list_for_gantt(res, sql, [req.params.entry_no]);
 };
 

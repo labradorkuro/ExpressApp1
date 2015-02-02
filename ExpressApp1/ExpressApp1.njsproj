@@ -59,6 +59,7 @@
     <Compile Include="public\javascripts\Calendar.js" />
     <Compile Include="public\javascripts\CalendarTable.js" />
     <Compile Include="public\javascripts\CalendarTableForPatchTest.js" />
+    <Compile Include="public\javascripts\ClientList.js" />
     <Compile Include="public\javascripts\DivisionList.js" />
     <Compile Include="public\javascripts\Entry.js" />
     <Compile Include="public\javascripts\EntryList.js" />
@@ -78,6 +79,7 @@
     <Compile Include="public\javascripts\UserList.js" />
     <Compile Include="routes\admin.js" />
     <Compile Include="routes\calendar.js" />
+    <Compile Include="routes\client_list.js" />
     <Compile Include="routes\createTables.js" />
     <Compile Include="routes\createTablesPG.js" />
     <Compile Include="routes\db.js" />
@@ -104,6 +106,7 @@
     <Content Include="views\admin.jade" />
     <Content Include="views\calendar.jade" />
     <Content Include="views\client_list.jade" />
+    <Content Include="views\client_list_form.jade" />
     <Content Include="views\division_form.jade" />
     <Content Include="views\division_list.jade" />
     <Content Include="views\entry_quote_dialog.jade" />
