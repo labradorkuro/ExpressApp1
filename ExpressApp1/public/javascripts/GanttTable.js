@@ -155,7 +155,7 @@ GanttTable.createMonthHeader = function (parent,startDate, dateCount) {
 		}
 		else {
 			dayOfMonth.push(dateCount_1);
-			m++;
+			if (m == 11) m = 0; else m++;
 			dateCount_1 = 1;
 		}
 	}
@@ -171,7 +171,7 @@ GanttTable.createMonthHeader = function (parent,startDate, dateCount) {
 		$(month_div1).css("border-left", "1px solid #777777");
 		w1 += w2;
 		$(parent).append(month_div1);
-		m++;
+		if (m == 11) m = 0; else m++;
 	}
 	$(parent).css("width", w1 + "px");
 

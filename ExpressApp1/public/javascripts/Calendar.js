@@ -127,11 +127,11 @@
 				$(this).dialog('close');
 			},
 			"更新": function () {
-				CalendarTable.updateSchedule();
+				CalendarTable.updateSchedule(true);
 				$(this).dialog('close');
 			},
 			"削除": function () {
-				CalendarTable.deleteSchedule();
+				CalendarTable.deleteSchedule(true);
 				$(this).dialog('close');
 			},
 			"CANCEL": function () {

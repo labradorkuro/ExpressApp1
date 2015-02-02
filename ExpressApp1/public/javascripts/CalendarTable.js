@@ -294,7 +294,7 @@ CalendarTable.drop = function (event, ui) {
 	$(event.target).append(ui.draggable);
 	// 更新されたデータでDBのデータを更新する
 	CalendarTable.setFormData(data);	// 入力フォームにデータを入れて
-	CalendarTable.updateSchedule();		// 更新処理を実行する（ダイアログから更新する処理を利用）
+	CalendarTable.updateSchedule(false);		// 更新処理を実行する（ダイアログから更新する処理を利用）
 };
 
 // 試験スケジュールのDB追加
@@ -309,13 +309,15 @@ CalendarTable.addSchedule = function () {
 };
 
 // 試験スケジュールの更新
-CalendarTable.updateSchedule = function () {
+CalendarTable.updateSchedule = function (refresh) {
 	var form = new FormData(document.querySelector("#scheduleForm"));
 	form.append("delete_check", "0");
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/schedule_post', true);
 	xhr.responseType = 'json';
-	xhr.onload = CalendarTable.onloadAddSchedule;
+	if (refresh) {
+		xhr.onload = CalendarTable.onloadAddSchedule;
+	}
 	xhr.send(form);
 };
 
