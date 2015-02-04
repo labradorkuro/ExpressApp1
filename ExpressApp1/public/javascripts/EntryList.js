@@ -328,7 +328,7 @@ entryList.createTestGrid = function (no) {
 entryList.createClientListGrid = function (no) {
 	// 得意先リストのグリッド
 	jQuery("#client_list_" + no).jqGrid({
-		url: '/client_get?no=' + no,
+		url: '/client_get?no=' + no + '&delete_check=' + 0,
 		altRows: true,
 		datatype: "json",
 		colNames: ['得意先コード','得意先名１','得意先名２', '住所１', '住所２','担当者','所属部署','役職'],
