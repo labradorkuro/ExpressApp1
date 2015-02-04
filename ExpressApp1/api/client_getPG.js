@@ -23,9 +23,10 @@ var getPagingParams = function (req) {
 // 得意先リストの取得
 var client_get_list = function (req, res) {
 	var index_no = Number(req.query.no);
-	var index_str = ['','0','A','ｱ','ｶ','ｻ','ﾀ','ﾅ','ﾊ','ﾏ','ﾔ','ﾗ','ﾜ'];
+	var index_str = ['','0-9','A-Z','ｱ','ｶ','ｻ','ﾀ','ﾅ','ﾊ','ﾏ','ﾔ','ﾗ','ﾜ'];
 	var pg_params = getPagingParams(req);
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd LIKE \'' + index_str[index_no] + '%\'';
+//	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd LIKE \'' + index_str[index_no] + '%\'';
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd ~* \'^[' + index_str[index_no] + ']\'';
 	var sql = 'SELECT ' 
 		+ 'client_cd,' 
 		+ 'name_1,' 
@@ -54,7 +55,8 @@ var client_get_list = function (req, res) {
 		+ 'created_id,' 
 		+ "to_char(updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
 		+ 'updated_id' 
-		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd LIKE \'' + index_str[index_no] + '%\' ORDER BY ' 
+//		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd LIKE \'' + index_str[index_no] + '%\' ORDER BY ' 
+		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd ~* \'^[' + index_str[index_no] + ']\' ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return client_get_list_for_grid(res, sql_count, sql, [0], pg_params);
