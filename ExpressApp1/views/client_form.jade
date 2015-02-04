@@ -1,0 +1,90 @@
+﻿//
+// クライアント情報フォーム
+//
+form#clientForm(method="post",action="javascript:return false;")
+	table
+		tr
+			td.form_title 得意先コード(半角英数カナ)
+			td(colspan="3") 
+				input#client_cd(type="text" name="client_cd" placeholder="得意先コード(半角英数カナ)")
+		tr
+			td.form_title 得意先名１
+			td 
+				input#name_1(type="text" name="name_1" placeholder="得意先名１")
+			td.form_title 得意先名２
+			td 
+				input#name_2(type="text" name="name_2" placeholder="得意先名２")
+		tr
+			td.form_title カナ
+			td 
+				input#kana(type="text" name="kana" placeholder="カナ")
+			td.form_title 敬称
+			td 
+				input#compellation(type="text" name="compellation" placeholder="敬称")
+		tr
+			td.form_title 郵便番号
+			td 
+				input#zipcode(type="text" name="zipcode" placeholder="郵便番号")
+			td.form_title メールアドレス
+			td 
+				input#email(type="text" name="email" placeholder="メールアドレス")
+		tr
+			td.form_title 電話番号
+			td 
+				input#tel_no(type="text" name="tel_no" placeholder="電話番号")
+			td.form_title FAX番号
+			td 
+				input#fax_no(type="text" name="fax_no" placeholder="FAX番号")
+		tr
+			td.form_title 住所１
+			td 
+				input#address_1(type="text" name="address_1" placeholder="住所１")
+			td.form_title 住所２
+			td 
+				input#address_2(type="text" name="address_2" placeholder="住所２")
+	hr
+	table
+		tr
+			td.form_title 担当者
+			td 
+				input#prepared_name(type="text" name="prepared_name" placeholder="担当者")
+			td.form_title 担当者敬称
+			td 
+				input#prepared_compellation(type="text" name="prepared_compellation" placeholder="担当者敬称")
+		tr
+			td.form_title 所属部署
+			td 
+				input#prepared_division(type="text" name="prepared_division" placeholder="所属部署")
+			td.form_title 役職名
+			td 
+				input#prepared_title(type="text" name="prepared_title" placeholder="役職名")
+		tr
+			td.form_title 担当者電話番号
+			td 
+				input#prepared_telno(type="text" name="prepared_telno" placeholder="担当者電話番号")
+			td.form_title 担当者FAX番号
+			td 
+				input#prepared_faxno(type="text" name="prepared_faxno" placeholder="担当者FAX番号")
+		tr
+			td.form_title 担当者メールアドレス
+			td 
+				input#prepared_email(type="text" name="prepared_email" placeholder="担当者メールアドレス")
+			td.form_title メモ
+			td 
+				input#memo(type="text" name="memo" placeholder="メモ")
+	hr
+	table
+		tr
+			td.form_title 請求締日
+			td 
+				input.datepicker#billing_limit(type="text" name="billing_limit" placeholder="請求締日")
+			td.form_title 支払日
+			td 
+				input.datepicker#payment_date(type="text" name="payment_date" placeholder="支払日")
+	hr
+	table
+		tr
+			td.form_title 削除フラグ
+			td(colspan="3")
+				input#delete_check(type="checkbox" name="delete_check" value="0")
+				label 削除

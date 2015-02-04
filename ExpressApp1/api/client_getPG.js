@@ -59,7 +59,7 @@ var client_get_list = function (req, res) {
 		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd ~* \'^[' + index_str[index_no] + ']\' ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return client_get_list_for_grid(res, sql_count, sql, [0], pg_params);
+	return client_get_list_for_grid(res, sql_count, sql, [req.query.delete_check], pg_params);
 };
 var client_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
