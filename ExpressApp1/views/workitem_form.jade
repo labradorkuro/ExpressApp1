@@ -8,13 +8,22 @@
 			td 
 				input#entry_title(type="text" name="entry_title" value=no readonly="true")
 		tr
-			td.form_title 作業項目名称
+			td.form_title 項目名称
 			td
 				input#work_title(type="text" name="work_title" placeholder="作業項目名称")
 				input#work_item_id(type="hidden" name="work_item_id" )
 			td.form_title 作業進捗度(%)
 			td 
 				input#progress(type="text" name="progress" placeholder="作業進捗度")
+		tr
+			td.form_title 種別
+			td(colspan="3") 
+				label
+					input#item_type1(type="radio" name="item_type" value="0" checked="true")
+					| 作業項目
+				label
+					input#item_type2(type="radio" name="item_type" value="1")
+					| マイルストーン
 		tr
 			td.form_title 開始予定日
 			td 

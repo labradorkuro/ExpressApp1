@@ -45,6 +45,7 @@ var insert_workitem = function (workitem, req, res) {
 			+ "priority_item_id,"		// 先行（優先）項目
 			+ "subsequent_item_id,"		// 後続項目
 			+ "progress,"		// 作業進捗度
+			+ "item_type,"		// 種別
 			+ "delete_check,"	// 削除フラグ
 			+ "created,"		// 作成日
 			+ "created_id,"		// 作成者ID
@@ -60,11 +61,12 @@ var insert_workitem = function (workitem, req, res) {
 			+ "$7," // 先行項目
 			+ "$8," // 後続項目
 			+ "$9," // 進捗度
-			+ "$10," // 削除フラグ
-			+ "$11," // 作成日
-			+ "$12," // 作成者ID
-			+ "$13," // 更新日
-			+ "$14" // 更新者ID
+			+ "$10," // 種別
+			+ "$11," // 削除フラグ
+			+ "$12," // 作成日
+			+ "$13," // 作成者ID
+			+ "$14," // 更新日
+			+ "$15" // 更新者ID
 			+ ")";
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
@@ -78,6 +80,7 @@ var insert_workitem = function (workitem, req, res) {
 			workitem.priority_item_id,
 			workitem.subsequent_item_id,
 			workitem.progress,
+			workitem.item_type,
 			"0", // 削除フラグ
 			created, // 作成日
 			created_id, // 作成者ID
@@ -106,8 +109,9 @@ var update_workitem = function (workitem, req, res) {
 			+ "priority_item_id = $7," // 先行（優先）項目
 			+ "subsequent_item_id = $8," // 後続項目
 			+ "progress = $9," // 作業進捗度
-			+ "updated_id = $10" // 更新者ID
-			+ " WHERE work_item_id = $11";
+			+ "item_type = $10," // 種別
+			+ "updated_id = $11" // 更新者ID
+			+ " WHERE work_item_id = $12";
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
 		var query = connection.query(sql, [
@@ -120,6 +124,7 @@ var update_workitem = function (workitem, req, res) {
 			workitem.priority_item_id,
 			workitem.subsequent_item_id,
 			workitem.progress,
+			workitem.item_type,
 			updated_id, // 更新者ID
 			workitem.work_item_id
 		]);

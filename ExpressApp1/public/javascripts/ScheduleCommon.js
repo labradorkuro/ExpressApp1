@@ -170,6 +170,24 @@ scheduleCommon.dateStringToDate = function (dateString) {
 	return date;
 };
 
+// 日数計算
+scheduleCommon.calcDateCount = function (from, to) {
+	var s = scheduleCommon.dateStringToDate(from);
+	var e = scheduleCommon.dateStringToDate(to);
+	var d = scheduleCommon.getDateCount(s, e);
+	return d;
+};
+
+scheduleCommon.getDateCount = function (start, end) {
+	if ((start == null) || (end == null)) {
+		return 0;
+	}
+	var d = end.getTime() - start.getTime();
+	d = Math.floor((d / (24 * 3600 * 1000)) + 1);
+	return d;
+};
+
+
 // 前月
 scheduleCommon.prevMonth = function (start_date, disp_span) {
 	var startDate = start_date;

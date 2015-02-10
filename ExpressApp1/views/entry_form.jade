@@ -68,10 +68,15 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 受託区分
 			td(colspan="3")
-				input#order_type_01(type="radio" name="order_type" value="1" checked="true")
-				label DRC実施
-				input#order_type_02(type="radio" name="order_type" value="2")
-				label 外部委託
+				label
+					input#order_type_01(type="radio" name="order_type" value="1" checked="true")
+					| 社内実施
+				label
+					input#order_type_02(type="radio" name="order_type" value="2")
+					| 外部国内
+				label
+					input#order_type_03(type="radio" name="order_type" value="3")
+					| 外部海外
 		tr
 			td.form_title 委託先CD
 			td

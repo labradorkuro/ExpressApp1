@@ -135,13 +135,20 @@ clientList.openClientDialog = function (event) {
 };
 // formデータの取得
 clientList.getFormData = function () {
+	clientList.checkCheckbox();
 	var form = new FormData(document.querySelector("#clientForm"));
 	
 	// checkboxのチェックがないとFormDataで値が取得されないので値を追加する
 	if (!$("#delete_check").prop("checked")) {
 		form.append('delete_check', '0');
-	}
+	} 
 	return form;
+};
+// checkboxのチェック状態確認と値設定
+clientList.checkCheckbox = function () {
+	if ($("#delete_check").prop("checked")) {
+		$("#delete_check").val('1');
+	}
 };
 
 // 得意先情報の保存

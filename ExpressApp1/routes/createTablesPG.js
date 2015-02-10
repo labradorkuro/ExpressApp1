@@ -144,6 +144,8 @@ exports.create = function (req, res) {
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
 			+ ", PRIMARY KEY(work_item_id, entry_no));",
+		"ALTER Table drc_sch.workitem_schedule ADD COLUMN item_type varchar(1) default 0;",	// 作業項目テーブルに種別を追加
+
 		"CREATE TABLE IF NOT EXISTS drc_sch.test_schedule (" // 試験スケジュールデータ
 			+ "schedule_id SERIAL," // スケジュールID
 			+ "entry_no VARCHAR(10) NOT NULL," // 案件No
@@ -224,7 +226,21 @@ exports.create = function (req, res) {
 			+ "created_id VARCHAR(32)," // 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
-			+ ", PRIMARY KEY (client_cd));"
+			+ ", PRIMARY KEY (client_cd));",
+		"CREATE TABLE IF NOT EXISTS drc_sch.workitem_template (" // 作業項目テンプレートテーブル
+			+ "template_id SERIAL,"			// テンプレートID
+			+ "template_name VARCHAR(256),"	// テンプレート名
+			+ "work_title VARCHAR(128),"	// 項目名称
+			+ "start_date DATE,"			// 作業開始予定日
+			+ "end_date DATE,"				// 作業終了予定日
+			+ "priority_item_id INT4,"		// 先行（優先）項目
+			+ "item_type VARCHAR(1) default 0," // 種別 0:作業項目、1:マイルストーン
+			+ "delete_check VARCHAR(1)," // 削除フラグ
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
+			+ "created_id VARCHAR(32),"		// 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
+			+ "updated_id VARCHAR(32)" // 更新者ID
+			+ ", PRIMARY KEY(template_id,template_name));"
 		/**
 		"CREATE TABLE IF NOT EXISTS drc_sch.sales_info (sales_id INT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,name VARCHAR(128) NOT NULL,customer_code VARCHAR(128),estimate INT(5),regist_date DATE,order_date DATE,money_receive_date DATE,money_received_date DATE,sales_user_id VARCHAR(128),created TIMESTAMP,updated TIMESTAMP,INDEX(sales_id,sales_no));",
 		"CREATE TABLE IF NOT EXISTS drc_sch.tests (test_id BIGINT(11) NOT NULL AUTO_INCREMENT,sales_no VARCHAR(12) NOT NULL,test_name VARCHAR(128) NOT NULL,description VARCHAR(256),test_type INT(4) NOT NULL,test_person_id VARCHAR(128),start_date DATETIME,end_date DATETIME,start_date_r DATETIME,end_date_r DATETIME,subject_vol INT(5) DEFAULT 0,set_subject_vol INT(5) DEFAULT 0,complete_vol INT(5) DEFAULT 0,created TIMESTAMP,updated TIMESTAMP,creator VARCHAR(128),update_id VARCHAR(128) ,INDEX(test_id)); ",
