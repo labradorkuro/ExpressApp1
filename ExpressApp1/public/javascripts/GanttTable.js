@@ -259,7 +259,7 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 			$(template_button).data("workitem", workitem);
 			$(template_button).bind('click', workitemEdit.onSaveToTemplate);
 			$(template_select_button).data("workitem", workitem);
-			$(template_select_button).bind('click', workitemEdit.onSelectTemplate);
+			$(template_select_button).bind('click', workitemEdit.openSelectTemplateDialog);
             $(left_div).append(left_row);
 			$(cate2).append(add_button);
 			$(cate2).append(template_button);
@@ -525,6 +525,7 @@ GanttTable.createWorkitemRows = function (ganttData, workitem_list, entry_no,ent
 // 行数を増やす
 GanttTable.checkDateSpan = function (dates) {
 	var lines = 1;
+	var max = 1;
 	if (dates.length >= 2) {
 		for (var i = 0; i < dates.length - 1; i++) {
 			// 日数計算
@@ -533,11 +534,18 @@ GanttTable.checkDateSpan = function (dates) {
 				if (dc <= 1) {
 					// 日数が1日未満なら行を追加するためにカウントアップ
 					lines++;
+					if (max < lines) {
+						max = lines;
+					}
+				} else {
+					// 日付が1日以上ずれた時はその時点の行数を保存してカウントを初期化する
+					max = lines;
+					lines = 1;
 				}
 			}
 		}
 	}
-	return lines;
+	return max;
 };
 
 // マイルストーンの要素を作成する

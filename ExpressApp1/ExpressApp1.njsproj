@@ -126,7 +126,9 @@
     <Content Include="views\quote_form.jade" />
     <Content Include="views\schedule.jade" />
     <Content Include="views\schedule_form.jade" />
+    <Content Include="views\select_template_form.jade" />
     <Content Include="views\tables.jade" />
+    <Content Include="views\template_name_form.jade" />
     <Content Include="views\user_form.jade" />
     <Content Include="views\user_list.jade" />
     <Content Include="views\workitem_form.jade" />

@@ -17,6 +17,18 @@ exports.template_get = function (req, res) {
 		}
 	}
 };
+exports.template_get_all = function (req, res) {
+	var sql = 'SELECT ' 
+		+ 'template_id,' 
+		+ 'template_name,' 
+		+ 'work_title,' 
+		+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,' 
+		+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,' 
+		+ 'priority_item_id,' 
+		+ 'item_type' 
+		+ ' FROM drc_sch.workitem_template WHERE delete_check = $1 ORDER BY template_id';
+	return template_get_list_for_gantt(res, sql, [req.query.delete_check]);
+};
 
 // テンプレートリストの取得
 var template_get_list_all = function (req, res) {
