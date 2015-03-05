@@ -1,0 +1,46 @@
+﻿//
+// クライアント担当者情報フォーム
+//
+form#clientPersonForm(method="post",action="javascript:return false;")
+	table
+		tr
+			td.form_title 得意先名
+			td 
+				input#person_client_cd(type="hidden" name="person_client_cd" readonly=true)
+				input#person_client_name(type="text" name="person_client_name" readonly=true)
+			td.form_title 所属部署
+			td 
+				input#person_division_cd(type="hidden" name="person_division_cd")
+				input#person_division_name(type="text" name="person_division_name")
+		tr
+			td.form_title 担当者ID
+			td 
+				input#person_id(type="text" name="person_id" placeholder="担当者ID")
+			td.form_title 担当者名
+			td 
+				input#person_name(type="text" name="person_name" placeholder="担当者名")
+		tr
+			td.form_title カナ
+			td 
+				input#person_kana(type="text" name="person_kana" placeholder="カナ")
+			td.form_title 敬称
+			td 
+				input#compellation(type="text" name="compellation" placeholder="敬称")
+	hr
+	table
+		tr
+			td.form_title 役職名
+			td 
+				input#title(type="text" name="title" placeholder="役職名")
+		tr
+			td.form_title メモ
+			td 
+				textarea#person_memo(name="person_memo" placeholder="メモ" cols="12" rows="2")
+	hr
+	table
+		tr
+			td.form_title 削除フラグ
+			td(colspan="3")
+				label
+					input#person_delete_check(type="checkbox" name="person_delete_check" value="1")
+					| 削除

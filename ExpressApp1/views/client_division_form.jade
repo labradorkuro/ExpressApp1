@@ -1,0 +1,69 @@
+﻿//
+// クライアント部署情報フォーム
+//
+form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascript:return false;",ng-controller="client_controller", novalidate)
+	table
+		tr
+			td.form_title 得意先名
+			td
+				input#division_client_cd(type="hidden" name="division_client_cd" )
+				input#division_client_name(type="text" name="division_client_name" readonly=true)
+		tr
+			td.form_title 部署コード
+			td
+				input#division_cd(type="text" name="division_cd" ng-model="division.division_cd" placeholder="部署コード" ng-required="true")
+				span(ng-show="clientDivisionForm.division_cd.$error.required") 必須です
+		tr
+			td.form_title 部署名
+			td 
+				input#division_name(type="text" name="division_name" placeholder="部署名")
+			td.form_title カナ
+			td 
+				input#division_kana(type="text" name="division_kana" placeholder="カナ")
+		tr
+			td.form_title 郵便番号
+			td 
+				input#division_zipcode(type="text" name="division_zipcode" ng-model="division.zipcode" ng-pattern="/^[0-9]{3}[\-]?[0-9]{4}$/" placeholder="郵便番号")
+				span(ng-show="clientDivisionForm.division_zipcode.$error.pattern") 郵便番号が不正です
+			td.form_title メールアドレス
+			td 
+				input#division_email(type="email" name="division_email" ng-model="division.email" placeholder="{{division.email}}")
+				span(ng-show="clientDivisionForm.division_email.$error.email") メールアドレスが不正です
+		tr
+			td.form_title 住所１
+			td 
+				input#division_address_1(type="text" name="division_address_1" placeholder="住所１")
+			td.form_title 住所２
+			td 
+				input#division_address_2(type="text" name="division_address_2" placeholder="住所２")
+		tr
+			td.form_title 電話番号
+			td 
+				input#division_tel_no(type="text" name="division_tel_no" placeholder="電話番号")
+			td.form_title FAX番号
+			td 
+				input#division_fax_no(type="text" name="division_fax_no" placeholder="FAX番号")
+	hr
+	table
+		tr
+			td.form_title 請求締日
+			td 
+				input.datepicker#billing_limit(type="text" name="billing_limit" placeholder="請求締日")
+			td.form_title 支払日
+			td 
+				input.datepicker#payment_date(type="text" name="payment_date" placeholder="支払日")
+		tr
+			td.form_title 休日対応
+			td 
+				input#holiday_support(type="text" name="holiday_support" placeholder="休日対応")
+			td.form_title メモ
+			td 
+				textarea#division_memo(name="division_memo" placeholder="メモ" cols="12" rows="2")
+	hr
+	table
+		tr
+			td.form_title 削除フラグ
+			td(colspan="3")
+				label
+					input#division_delete_check(type="checkbox" name="delete_check" value="1")
+					| 削除
