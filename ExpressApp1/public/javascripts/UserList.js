@@ -79,7 +79,7 @@ userList.createGrid = function () {
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "社員リスト",
-		onSelectRow: userList.onSelectuser
+		onSelectRow: userList.onSelectUser
 	});
 	jQuery("#user_list").jqGrid('navGrid', '#user_pager', { edit: false, add: false, del: false });
 };

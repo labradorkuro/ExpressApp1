@@ -14,7 +14,7 @@
 	workitemEdit.createWorkitemDialog();
 	workitemEdit.createTemplateSelectDialog();
 	workitemEdit.createTemplateNameDialog();
-
+	workitemEdit.createEntryDialog();
 });
 var workitemEdit = workitemEdit || {};
 workitemEdit.createWorkitemDialog = function () {
@@ -422,4 +422,36 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 };
 workitemEdit.openTemplateNameDialog = function (event) {
 	$("#template_name_dialog").dialog("open");
+};
+// 案件入力用ダイアログの生成
+workitemEdit.createEntryDialog = function () {
+	$('#entry_dialog').dialog({
+		autoOpen: false,
+		width: 800,
+		height: 600,
+		title: '案件情報',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"追加": function () {
+				if (workitemEdit.saveEntry()) {
+					$(this).dialog('close');
+				}
+			},
+			"更新": function () {
+				if (workitemEdit.saveEntry()) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+workitemEdit.openEntryDialog = function (event) {
+	var entry = event.data;
+	$("#entry_dialog").dialog("open");
+};
+workitemEdit.saveEntry = function () {
 };

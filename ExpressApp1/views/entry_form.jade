@@ -4,70 +4,75 @@
 form#entryForm(method="post",action="javascript:return false;")
 	table
 		tr
-			td.form_title 案件番号
+			td.form_title_s 案件番号
 			td 
-				input#entry_no(type="text" name="entry_no" value=no readonly="true" placeholder="案件番号")
-			td.form_title 問合せ日
+				input#entry_no(type="text" name="entry_no" value=no readonly="true" placeholder="案件番号" size="12")
+			td.form_title_s 見積番号
 			td 
-				input.datepicker#inquiry_date(type="text" name="inquiry_date" placeholder="問合せ日")
+				input#quote_no(type="text" name="quote_no" size="15")
+			td.form_title_s 営業担当者
+			td 
+				select#sales_person_id(name="sales_person_id")
+	table
 		tr
-			td.form_title 拠点CD
+			td.form_title_s 問合せ日
 			td 
-				select#base_cd(name="base_cd")
-					option(value="00") 共通
-					option(value="01" selected="true") 本社
-					option(value="02") 札幌支社
-			td.form_title ステータス
-			td 
+				input.datepicker#inquiry_date(type="text" name="inquiry_date" placeholder="問合せ日" size="12")
+			td.form_title_s ステータス
+			td(colspan=3) 
 				select#entry_status(name="entry_status")
 					option(value="01" selected="true") 引合
 					option(value="02") 見積
 					option(value="03") 依頼
 					option(value="04") 失注
-		tr
-			td.form_title 見積番号
-			td 
-				input#quote_no(type="text" name="quote_no")
-			td.form_title 見積発行日
-			td 
-				input.datepicker#quote_issue_date(type="text" name="quote_issue_date")
-		tr
-			td.form_title 受注先CD
-			td
-				input#client_cd(type="text" name="client_cd")
-			td.form_title 見積書
-			td 
-				a.form_button#print_quote 発行
-		tr
-			td.form_title 受注先名称1
-			td
-				input#client_name_1(type="text" name="client_name_1")
-			td.form_title 受注先名称2
-			td 
-				input#client_name_2(type="text" name="client_name_2")
-		tr
-			td.form_title 受注先部署
-			td
-				input#prepared_division(type="text" name="prepared_division")
-			td.form_title 受注先担当者
-			td 
-				input#prepared_name(type="text" name="prepared_name")
+			td.form_title_ss 代理店
+			td(colspan=4)
+				input#agent_cd(type="hidden" name="agent_cd")
+				input#agent_name(type="text" name="agent_name" size="16")
 	hr
 	table
 		tr
-			td.form_title 
-				span.remark ＊案件名
-			td
-				input#entry_title(type="text" name="entry_title")
-			td.form_title 契約区分
-			td 
-				select#contract_type(name="contract_type")
-					option(value="1" selected="true") 一般依頼
-					option(value="2") 個別契約
-					option(value="3") その他契約
+			td(colspan=6) クライアント情報
 		tr
-			td.form_title 受託区分
-			td(colspan="3")
+			td.form_title_ss 社名
+			td
+				input#client_cd(type="hidden" name="client_cd")
+				input#client_name(type="text" name="client_name" size="16")
+			td.form_title_ss 部署
+			td
+				input#client_division_cd(type="hidden" name="client_division_cd")
+				input#client_division_name(type="text" name="client_division_name" size="16")
+			td.form_title_ss 担当者
+			td 
+				input#client_person_id(type="hidden" name="client_person_id")
+				input#client_person_name(type="text" name="client_person_name" size="16")
+	hr
+	table
+		tr
+			td.form_title 試験大分類
+			td 
+				select#test_large_class_cd(name="test_large_class_cd")
+					option(value="01" selected="true") SPF/PA試験
+					option(value="02") 安全性評価試験
+					option(value="03") 有用性試験
+					option(value="04") 食品ヒト試験
+					option(value="05") in vitro試験
+			td.form_title 試験中分類
+			td 
+				input#test_middle_class_cd(type="hidden" name="test_middle_class_cd")
+				input#test_middle_class_name(type="text" name="test_middle_class_name" size="12")
+			td
+				textarea#test_middle_class_list(cols="16" rows="2")
+	table
+		tr
+			td.form_title 
+				span.remark ＊試験タイトル
+			td(colspan=4)
+				input#entry_title(type="text" name="entry_title" size="32")
+	table
+		tr
+			td.form_title_s 受託区分
+			td
 				label
 					input#order_type_01(type="radio" name="order_type" value="1" checked="true")
 					| 社内実施
@@ -77,48 +82,39 @@ form#entryForm(method="post",action="javascript:return false;")
 				label
 					input#order_type_03(type="radio" name="order_type" value="3")
 					| 外部海外
-		tr
-			td.form_title 委託先CD
+			td.form_title_s 委託先
 			td
-				input#outsourcing_cd(type="text" name="outsourcing_cd")
-			td.form_title 外部委託先情報
-			td
-				textarea#outsourcing_info(cols="20" rows="3" name="outsourcing_info")
-	hr
+				input#outsourcing_cd(type="hidden" name="outsourcing_cd")
+				input#outsourcing_name(type="text" name="outsourcing_name" size="16")
 	table
 		tr
-			td.form_title 試験課
+			td.form_title_ss 受注日
 			td 
-				select#division(name="division")
-					option(value="01" selected="true") SPF/PA試験
-					option(value="02") 安全性評価試験
-					option(value="03") 有用性試験
-					option(value="04") 食品ヒト試験
-					option(value="05") 代替法試験
-			td.form_title 担当者
+				input.datepicker#order_accepted_date(type="text" name="order_accepted_date" size="12")
+			td.form_title_m 仮受注チェック
+			td
+				label
+					input#order_accept_check_0(type="radio" name="order_accept_check" value="0" checked="true")
+					| 本登録
+				label
+					input#order_accept_check_1(type="radio" name="order_accept_check" value="1")
+					| 仮登録
+			td.form_title_ss 担当者
 			td 
-				select#person_id(name="person_id")
+				select#test_person_id(name="test_person_id")
+	table
 		tr
-			td.form_title 受注日
-			td 
-				input.datepicker#order_accepted_date(type="text" name="order_accepted_date")
-			td.form_title 仮受注チェック
-			td
-				input#order_accept_check_0(type="radio" name="order_accept_check" value="0" checked="true")
-				label 本登録
-				input#order_accept_check_1(type="radio" name="order_accept_check" value="1")
-				label 仮登録
+			td(colspan=8) 案件金額
 		tr
-			td.form_title 案件合計金額
+			td.form_title_m 合計
 			td
-				input.num_type#entry_amount_price(type="text" name="entry_amount_price")
-			td.form_title 案件請求合計金額
+				input.num_type#entry_amount_price(type="text" name="entry_amount_price" size="10")
+			td.form_title_m 請求合計
 			td
-				input.num_type#entry_amount_billing(type="text" name="entry_amount_billing")
-		tr
-			td.form_title 案件入金合計金額
+				input.num_type#entry_amount_billing(type="text" name="entry_amount_billing" size="10")
+			td.form_title_m 入金合計
 			td
-				input.num_type#entry_amount_deposit(type="text" name="entry_amount_deposit")
+				input.num_type#entry_amount_deposit(type="text" name="entry_amount_deposit" size="10")
 			td.form_title 会計期No
 			td
 				select#acounting_period_no(name="acounting_period_no")
@@ -129,152 +125,42 @@ form#entryForm(method="post",action="javascript:return false;")
 	hr
 	table
 		tr
-			td.form_title 分割請求日1
-			td 
-				input.datepicker#pay_planning_date_1(type="text" name="pay_planning_date_1")
-			td.form_title 分割入金日1
-			td 
-				input.datepicker#pay_complete_date_1(type="text" name="pay_complete_date_1")
-		tr
-			td.form_title 分割支払合計金額1
-			td 
-				input.num_type#pay_amount_1(type="text" name="pay_amount_1")
-			td.form_title 分割請求区分1
-			td 
-				select#pay_result_1(name="pay_result_1")
-					option(value="0" selected="true") ?
-					option(value="1") 予
-					option(value="2") 完
+			td.form_title_ss 備考
+			td
+				textarea#entry_memo(name="entry_memo" cols="60" rows="2")
 	hr
 	table
 		tr
-			td.form_title 分割請求日2
-			td 
-				input.datepicker#pay_planning_date_2(type="text" name="pay_planning_date_2")
-			td.form_title 分割入金日2
-			td 
-				input.datepicker#pay_complete_date_2(type="text" name="pay_complete_date_2")
-		tr
-			td.form_title 分割支払合計金額2
-			td 
-				input.num_type#pay_amount_2(type="text" name="pay_amount_2")
-			td.form_title 分割請求区分2
-			td 
-				select#pay_result_2(name="pay_result_2")
-					option(value="0" selected="true") ?
-					option(value="1") 予
-					option(value="2") 完
-	hr
-	table
-		tr
-			td.form_title 分割請求日3
-			td 
-				input.datepicker#pay_planning_date_3(type="text" name="pay_planning_date_3")
-			td.form_title 分割入金日3
-			td 
-				input.datepicker#pay_complete_date_3(type="text" name="pay_complete_date_3")
-		tr
-			td.form_title 分割支払合計金額3
-			td 
-				input.num_type#pay_amount_3(type="text" name="pay_amount_3")
-			td.form_title 分割請求区分3
-			td 
-				select#pay_result_3(name="pay_result_3")
-					option(value="0" selected="true") ?
-					option(value="1") 予
-					option(value="2") 完
-	hr
-	table
-		tr
-			td.form_title 分割請求日4
-			td 
-				input.datepicker#pay_planning_date_4(type="text" name="pay_planning_date_4")
-			td.form_title 分割入金日4
-			td 
-				input.datepicker#pay_complete_date_4(type="text" name="pay_complete_date_4")
-		tr
-			td.form_title 分割支払合計金額4
-			td 
-				input.num_type#pay_amount_4(type="text" name="pay_amount_4")
-			td.form_title 分割請求区分4
-			td 
-				select#pay_result_4(name="pay_result_4")
-					option(value="0" selected="true") ?
-					option(value="1") 予
-					option(value="2") 完
-	hr
-	table
-		tr
-			td.form_title 分割請求日5
-			td 
-				input.datepicker#pay_planning_date_5(type="text" name="pay_planning_date_5")
-			td.form_title 分割入金日5
-			td 
-				input.datepicker#pay_complete_date_5(type="text" name="pay_complete_date_5")
-		tr
-			td.form_title 分割支払合計金額5
-			td 
-				input.num_type#pay_amount_5(type="text" name="pay_amount_5")
-			td.form_title 分割請求区分5
-			td 
-				select#pay_result_5(name="pay_result_5")
-					option(value="0" selected="true") ?
-					option(value="1") 予
-					option(value="2") 完
-	hr
-	table
-		tr
-			td.form_title 被験者費用準備期日
+			td.form_title_s 削除フラグ
 			td
-				input.datepicker#monitors_cost_prep_limit(type="text" name="monitors_cost_prep_limit")
-			td.form_title 被験者費用準備完了日
-			td
-				input.datepicker#monitors_cost_prep_comp(type="text" name="monitors_cost_prep_comp")
-		tr
-			td.form_title DRC立替準備金額
-			td
-				input.num_type#drc_substituted_amount(type="text" name="drc_substituted_amount")
-			td.form_title 事前入金期日
-			td
-				input.datepicker#prior_payment_limit(type="text" name="prior_payment_limit")
-		tr
-			td.form_title 事前入金日
-			td
-				input.datepicker#prior_payment_accept(type="text" name="prior_payment_accept")
-			td.form_title 事前入金額
-			td
-				input.num_type#prior_payment_amount(type="text" name="prior_payment_amount")
-	hr
-	table
-		tr
-			td.form_title 削除フラグ
-			td
-				input#delete_check(type="checkbox" name="delete_check" value="0")
-				label 削除
-			td.form_title 削除理由
+				label
+					input#delete_check(type="checkbox" name="delete_check" value="0")
+					| 削除
+			td.form_title_s 削除理由
 			td
 				input#delete_reason(type="text" name="delete_reason")
+	table
 		tr
-			td.form_title 入力日
+			td.form_title_ss 入力日
 			td
-				input.datepicker#input_check_date(type="text" name="input_check_date")
-			td.form_title 入力者ID
+				input.datepicker#input_check_date(type="text" name="input_check_date" size="10")
+			td.form_title_s 入力者ID
 			td
 				select#input_operator_id(name="input_operator_id")
-		tr
-			td.form_title 入力完了チェック
+			td.form_title_m 入力完了チェック
 			td(colspan="3")
-				input#input_check(type="checkbox" name="input_check" value="0")
-				label 入力完了
+				label
+					input#input_check(type="checkbox" name="input_check" value="0")
+					| 入力完了
 		tr
-			td.form_title 確認日
+			td.form_title_ss 確認日
 			td
-				input.datepicker#confirm_check_date(type="text" name="confirm_check_date")
-			td.form_title 確認者ID
+				input.datepicker#confirm_check_date(type="text" name="confirm_check_date" size="10")
+			td.form_title_s 確認者ID
 			td
 				select#confirm_operator_id(name="confirm_operator_id")
-		tr
 			td.form_title 確認完了チェック
 			td(colspan="3")
-				input#confirm_check(type="checkbox" name="confirm_check" value="0")
-				label 確認完了
+				label
+					input#confirm_check(type="checkbox" name="confirm_check" value="0")
+					| 確認完了

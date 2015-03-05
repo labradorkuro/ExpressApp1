@@ -230,14 +230,17 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 			var date_captions = ['問合せ日', '見積発行日', '受注日','事前入金期日'];
 			// 表示に必要な行数（高さ）を算出する
 			var lines = GanttTable.checkDateSpan(date_infos);
-			if (lines === 1) lines = 2;
+//			if (lines === 1) lines = 2;
+			if (lines < 3) lines = 3;
+			
 			// 項目名の表示
 			var left_row = $("<div class='gt_left_row_div'></div>");
 			// 案件名表示エリア
 			var cate1 = $("<div class='gt_category1_div'></div>");
 			// 案件番号、案件名を表示
-//			var title = $("<label class='gt_label'>[" + rows[i].entry_no + "]<br/> " + rows[i].entry_title + "</lebel>");
-			var title = $("<a class='gt_title_link' href='' >[" + rows[i].entry_no + "]<br/> " + rows[i].entry_title + "</a>");
+			var title = $("<label class='gt_label'>[" + rows[i].entry_no + "]<br/> " + rows[i].entry_title + "</lebel>");
+			var entry_ref_btn = $("<input type='button' class='gt_title_link' value='参照'>");
+			$(entry_ref_btn).bind('click', {entry:rows[i]},workitemEdit.openEntryDialog);
 			// 作業項目追加ボタン作成
 			var add_button = $('<a class="gt_workitem_button" id="addbutton_' + rows[i].entry_no + '">項目追加</a>');
 			// テンプレート選択用ボタン作成
@@ -263,8 +266,9 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
             $(left_div).append(left_row);
 			$(cate2).append(add_button);
 			$(cate2).append(template_button);
+			$(cate2).append(template_select_button);
 			$(cate1).append(title);
-			$(cate1).append(template_select_button);
+			$(cate1).append(entry_ref_btn);
             $(left_row).append(cate1);
             $(left_row).append(cate2);
 			// ガントチャートの表示

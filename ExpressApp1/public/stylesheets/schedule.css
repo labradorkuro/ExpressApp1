@@ -200,8 +200,8 @@ div.gt_category1_div {
     width:50%;
     height:24px;
     font-weight:bold;
-    padding-left:0px;
-    padding-top:0px;
+    padding-left:4px;
+    padding-top:2px;
     margin-top:0px;
     word-wrap:break-word;
     overflow:hidden;
@@ -352,7 +352,7 @@ a.gt_mode_button:active {
 /* ガントチャート作業項目追加用ボタン */
 a.gt_workitem_button {
     position:absolute;
-    top:40px;
+    top:64px;
     left:10px;
     font-size:1em;
     display:inline-block;
@@ -380,10 +380,10 @@ a.gt_workitem_button:hover {
     background-color: #31c8aa;
 	box-shadow: 0 3px 0 #23a188;}
 a.gt_workitem_button:active {
-    top:43px;
+    top:67px;
     box-shadow:none;
 }
-/* テンプレート選択ボタン */
+/* テンプレート保存ボタン */
 a.gt_template_button {
     position:absolute;
     top:20px;
@@ -422,7 +422,7 @@ a.gt_template_button:active {
 a.gt_template_select_button {
     position:absolute;
     left:10px;
-    bottom:6px;
+    top:42px;
     font-size:1em;
     display:inline-block;
     outline: none;
@@ -450,7 +450,7 @@ a.gt_template_select_button:hover {
 	box-shadow: 0 3px 0 #23a188;
 }
 a.gt_template_select_button:active {
-    bottom:4px;
+    top:45px;
     box-shadow:none;
 }
 /*ガントチャートに表示する作業項目（帯）*/
@@ -766,7 +766,7 @@ input.search_option_check {
     float:left;
     top:0px;
     font-size:1em;
-    margin-top:12px;
+    margin-top:2px;
 
 }
 label.search_option_check {
@@ -1180,6 +1180,18 @@ a.schedule_band:active {
 .form_title {
     text-align:right;
     width:200px;
+}
+.form_title_m {
+    text-align:right;
+    width:120px;
+}
+.form_title_s {
+    text-align:right;
+    width:90px;
+}
+.form_title_ss {
+    text-align:right;
+    width:60px;
 }
 
 

@@ -35,6 +35,8 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api\billing_getPG.js" />
+    <Compile Include="api\billing_postPG.js" />
     <Compile Include="api\client_getPG.js" />
     <Compile Include="api\client_postPG.js" />
     <Compile Include="api\division_getPG.js" />
@@ -59,6 +61,9 @@
     <Compile Include="api\workitem_postPG.js" />
     <Compile Include="app.js" />
     <Compile Include="public\javascripts\AdminMenu.js" />
+    <Compile Include="public\javascripts\BillingList.js" />
+    <Compile Include="public\javascripts\ClientMaster.js" />
+    <Compile Include="public\javascripts\client_app.js" />
     <Compile Include="public\javascripts\Calendar.js" />
     <Compile Include="public\javascripts\CalendarTable.js" />
     <Compile Include="public\javascripts\CalendarTableForPatchTest.js" />
@@ -107,10 +112,14 @@
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
     <Content Include="views\admin.jade" />
+    <Content Include="views\assess_form.jade" />
+    <Content Include="views\billing_info_form.jade" />
     <Content Include="views\calendar.jade" />
+    <Content Include="views\client_division_form.jade" />
     <Content Include="views\client_form.jade" />
     <Content Include="views\client_list.jade" />
     <Content Include="views\client_list_form.jade" />
+    <Content Include="views\client_person_form.jade" />
     <Content Include="views\division_form.jade" />
     <Content Include="views\division_list.jade" />
     <Content Include="views\entry_quote_dialog.jade" />

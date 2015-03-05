@@ -6,8 +6,6 @@ $(function() {
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	// 案件リストのタブ生成
 	$("#tabs").tabs();
-	// 得意先選択ダイアログ用のタブ生成
-	entryList.createClientListTabs();
 	// 日付選択用設定
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 	entryList.createMessageDialog();
@@ -15,23 +13,22 @@ $(function() {
 	scheduleCommon.getUserInfo();
 	scheduleCommon.getDivisionInfo();
 	// 編集用ダイアログの設定
-	entryList.createEntryDialog();
-	entryList.createQuoteDialog();
-	entryList.createQuoteFormDialog();
-	entryList.createClientListDialog();
+	entryList.createEntryDialog();				// 案件入力用
+	entryList.createQuoteDialog();				// 見積明細用
+	entryList.createQuoteFormDialog();			// 見積書発行用
+	entryList.createClientListDialog();			// 得意先選択用
+	billingList.createBillingListDialog();		// 請求情報リスト用
+	billingList.createBillingFormDialog();		// 請求情報編集選択用
 	// 検索用オプションの初期化	
 	$("#entry_status_01").prop("checked", true);
 	$("#entry_status_02").prop("checked", true);
 	$("#entry_status_03").prop("checked", true);
 	$("#entry_status_04").prop("checked", true);
 	// グリッドの生成
-	entryList.createGrid();
-	entryList.createTestGrid(0);
-	// 得意先選択用グリッドの生成
-	for (var i = 1; i <= 12; i++) {
-		entryList.createClientListGrid(i);
-	}
-	scheduleCommon.changeFontSize('1.0em');
+	entryList.createGrid();				// 案件リスト
+	entryList.createTestGrid(0);		// 見積リスト
+	//billingList.createBillingListGrid();	// 請求情報リスト
+	scheduleCommon.changeFontSize('1.1em');
 	// 案件追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_entry").bind('click' , {}, entryList.openEntryDialog);
 	// 案件編集ボタンイベント（登録・編集用画面の表示）
@@ -43,9 +40,18 @@ $(function() {
 	// 見積書発行用フォームを表示する
 	$("#print_quote").bind('click' , {}, entryList.openQuoteFormDialog);
 	// クライアント選択を表示する
-	$("#client_cd").bind('click' , {}, entryList.openClientListDialog);
+	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
+	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);
 	// オーバーレイ表示する（元の画面全体をグレー表示にする）	
 //	$("body").append("<div id='graylayer'></div><div id='overlayer'></div>");
+
+	// 請求情報ボタンイベント（登録・編集用画面の表示）
+	$("#entry_billing").bind('click' , {entryList:entryList}, billingList.openBillingListDialog);
+	$("#entry_billing").css("visibility","hidden");
+	// 請求情報追加ボタンイベント（登録・編集用画面の表示）
+	$("#add_billing").bind('click' , {}, billingList.openBillingFormDialog);
+	// 請求先編集ボタンイベント（登録・編集用画面の表示）
+	$("#edit_billing").bind('click' , {}, billingList.openBillingFormDialog);
 
 	entryList.enableQuoteButtons(false);
 	
@@ -58,13 +64,25 @@ $(function() {
 	$("#entry_status_03").bind('change', entryList.changeEntryOption);
 	$("#entry_status_04").bind('change', entryList.changeEntryOption);
 
+	// 得意先リスト画面生成
+	clientList.init(false);
+	// 得意先選択ダイアログ用のタブ生成
+	clientList.createClientListTabs();
+	// 得意先,部署、担当者グリッドの生成
+	for (var i = 1; i <= 12; i++) {
+		clientList.createClientListGrid(i);
+		clientList.createClientDivisionListGrid(i, "0");
+		clientList.createClientPersonListGrid(i, "0", "0");
+	}
+
 });
 
 //
 // 案件入力、リスト表示に関する処理
 //
 var entryList = entryList || {};
-entryList.currentEntryNo = 0;	// 案件リストで選択中の案件の番号
+entryList.currentEntry = {};			// 案件リストで選択中の案件情報
+entryList.currentEntryNo = 0;			// 案件リストで選択中の案件の番号
 entryList.currentClientListTabNo = 0;	// 得意先リストで選択中のタブ番号
 entryList.currentClient = {};			// 選択中の得意先情報
 
@@ -97,7 +115,7 @@ entryList.createEntryDialog = function () {
 	$('#entry_dialog').dialog({
 		autoOpen: false,
 		width: 800,
-		height: 600,
+		height: 720,
 		title: '案件情報',
 		closeOnEscape: false,
 		modal: true,
@@ -157,9 +175,9 @@ entryList.createClientListDialog = function () {
 		modal: true,
 		buttons: {
 			"選択": function () {
-				if (entryList.selectClient()) {
+				//if (selectFunc()) {
 					$(this).dialog('close');
-				}
+				//}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -191,7 +209,6 @@ entryList.createQuoteFormDialog = function () {
 		}
 	});
 };
-
 // 見積書用データの生成
 entryList.printDataSetup = function () {
 	// 印刷用データ
@@ -234,23 +251,30 @@ entryList.createGrid = function () {
 		url: '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01 + '&entry_status_02=' + sts02 + '&entry_status_03=' + sts03 + '&entry_status_04=' + sts04,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件No','得意先名1','得意先名2','案件名','問合せ日', '案件ステータス', '拠点CD','担当者','見積番号','見積発行日'
-				,'受注日','仮受注チェック','受注区分','試験課','作成日','作成者','更新日','更新者'],
+		colNames: ['案件No','','クライアント名','','クライアント部署','','','','','','クライアント担当者','試験タイトル','問合せ日', '案件ステータス', '営業担当者','見積番号'
+				,'受注日','仮受注チェック','受託区分', '試験大分類', '試験中分類','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
+			{ name: 'client_cd', index: '', hidden:true },
 			{ name: 'client_name_1', index: 'client_name_1', width: 200, align: "center" },
-			{ name: 'client_name_2', index: 'client_name_2', width: 200, align: "center" },
+			{ name: 'client_division_cd', index: '', hidden:true },
+			{ name: 'client_division_name', index: 'client_division_name', width: 200, align: "center" },
+			{ name: 'client_address_1', index: '', hidden:true },
+			{ name: 'client_address_2', index: '', hidden:true },
+			{ name: 'client_tel_no', index: '', hidden:true },
+			{ name: 'client_fax_no', index: '', hidden:true },
+			{ name: 'client_person_id', index: '', hidden:true },
+			{ name: 'client_person_name', index: 'client_person_name', width: 200, align: "center" },
 			{ name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
 			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
 			{ name: 'entry_status', index: 'entry_status', width: 100 ,formatter: entryList.statusFormatter},
-			{ name: 'base_cd', index: 'base_cd', width: 100, align: "center" ,formatter: entryList.base_cdFormatter},
-			{ name: 'person_id', index: 'person_id', width: 100, align: "center", formatter: entryList.personFormatter },
+			{ name: 'sales_person_id', index: 'sales_person_id', width: 100, align: "center", formatter: entryList.personFormatter },
 			{ name: 'quoto_no', index: 'quoto_no', width: 80, align: "center" },
-			{ name: 'quoto_issue_date', index: 'quoto_issue_date', width: 80, align: "center" },
 			{ name: 'order_accepted_date', index: 'order_accepted_date', width: 80, align: "center" },
 			{ name: 'order_accept_check', index: 'order_accept_check', width: 80, align: "center" },
 			{ name: 'order_type', index: 'order_type', width: 100, align: "center" },
-			{ name: 'division_name', index: 'division_name', width: 100, align: "center" },
+			{ name: 'test_large_class_name', index: 'test_large_class_name', width: 100, align: "center" },
+			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 100, align: "center" },
 			{ name: 'created', index: 'created', width: 130, align: "center" },
 			{ name: 'created_id', index: 'created_id' , formatter: entryList.personFormatter },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
@@ -324,53 +348,15 @@ entryList.createTestGrid = function (no) {
 	jQuery("#test_list").jqGrid('navGrid', '#test_list_pager', { edit: false, add: false, del: false });
 };
 
-// 得意先リストの生成
-entryList.createClientListGrid = function (no) {
-	// 得意先リストのグリッド
-	jQuery("#client_list_" + no).jqGrid({
-		url: '/client_get?no=' + no + '&delete_check=' + 0,
-		altRows: true,
-		datatype: "json",
-		colNames: ['得意先コード','得意先名１','得意先名２', '住所１', '住所２','担当者','所属部署','役職'],
-		colModel: [
-			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center" },
-			{ name: 'name_1', index: 'name_1', width: 200, align: "left" },
-			{ name: 'name_2', index: 'name_2', width: 80, align: "left" },
-			{ name: 'address_1', index: 'address_1', width: 100 ,align:"left" },
-			{ name: 'address_2', index: 'address_2', width: 100, align: "left"},
-			{ name: 'prepared_name', index: 'prepared_name', width: 100, align: "center" },
-			{ name: 'prepared_division', index: 'prepared_division', width: 80, align: "center" },
-			{ name: 'prepared_title', index: 'prepared_title', width: 80, align: "center" },
-		],
-		height: "230px",
-		width:"100%",
-		rowNum: 10,
-		rowList: [10],
-		pager: '#client_list_pager_' + no,
-		sortname: 'client_cd',
-		viewrecords: true,
-		sortorder: "desc",
-		caption: "得意先リスト",
-		onSelectRow: entryList.onSelectClientList
-	});
-	jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false });
-};
-// 得意先選択イベント
-entryList.onSelectClientList = function (rowid) {
-	var no;
-	if (rowid != null) {
-		var row = $("#client_list_" + (entryList.currentClientListTabNo + 1)).getRowData(rowid);
-		entryList.currentClient = row;
-	}
-};
 
 // 得意先選択ダイアログの選択ボタン押下イベント処理
 entryList.selectClient = function () {
-	$("#client_cd").val(entryList.currentClient.client_cd);
-	$("#client_name_1").val(entryList.currentClient.name_1);
-	$("#client_name_2").val(entryList.currentClient.name_2);
-	$("#prepared_division").val(entryList.currentClient.prepared_division);
-	$("#prepared_name").val(entryList.currentClient.prepared_name);
+	$("#client_cd").val(clientList.currentClient.client_cd);
+	$("#client_name").val(clientList.currentClient.name_1);
+	$("#client_division_cd").val(clientList.currentClientDivision.division_cd);
+	$("#client_division_name").val(clientList.currentClientDivision.name);
+	$("#client_person_id").val(clientList.currentClientPerson.person_id);
+	$("#client_person_name").val(clientList.currentClientPerson.name);
 	return true;
 };
 
@@ -432,6 +418,24 @@ entryList.openQuoteDialog = function (event) {
 };
 // クライアント参照ダイアログ表示
 entryList.openClientListDialog = function (event) {
+	$("#client_list_dialog").dialog({
+		buttons: {
+			"選択": function () {
+				if (event.target.id == 'client_name') {
+					if (entryList.selectClient()) {
+						$(this).dialog('close');
+					}
+				} else {
+					if (billingList.selectClient()) {
+						$(this).dialog('close');
+					}
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
 	$("#client_list_dialog").dialog("open");
 };
 // 見積書ダイアログ表示
@@ -572,163 +576,106 @@ entryList.onloadEntryReq = function (e) {
 
 // 案件データをフォームにセットする
 entryList.setEntryForm = function (entry) {
-	$("#entry_no").val(entry.entry_no); // 案件No
-	$("#base_cd").val(entry.base_cd); // 拠点CD
-	$("#entry_title").val(entry.entry_title); // 案件名
-	$("#inquiry_date").val(entry.inquiry_date); // 問合せ日
-	$("#entry_status").val(entry.entry_status); // 案件ステータス
-	$("#quote_no").val(entry.quote_no); // 見積番号
-	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
+	$("#entry_no").val(entry.entry_no);					// 案件No
+	$("#quote_no").val(entry.quote_no);					// 見積番号
+	$("#inquiry_date").val(entry.inquiry_date);			// 問合せ日
+	$("#entry_status").val(entry.entry_status);			// 案件ステータス
+	$("#sales_person_id").val(entry.sales_person_id);	// 案件ステータス
+//	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
+	$("#agent_cd").val(entry.agent_cd);					// 代理店コード
 	$("#client_cd").val(entry.client_cd);				// 得意先コード
 	var name_1 = entry.client_name_1;
 	var name_2 = entry.client_name_2;
-	// 敬称を付ける項目を判定する
-	if ((!entry.prepared_name) || (entry.prepared_name == "")) {
-		if ((entry.compellation) && (entry.compellation != "")) {
-			if ((!entry.client_name_2) || (entry.client_name_2 == ""))
-				name_1 = name_1 + " " + entry.compellation;
-			else
-				name_2 = name_2 + " " + entry.compellation;
-		}
-	}
-	$("#client_name_1").val(name_1 );		// 得意先名1
-	$("#client_name_2").val(name_2);		// 得意先名2
-	$("#client_address_1").val(entry.client_address_1);	// 住所1
-	$("#client_address_2").val(entry.client_address_2);	// 住所2
-	$("#prepared_division").val(entry.prepared_division);		// 所属部署
-	// 担当者名があるときは担当者名に敬称を付ける
-	var pname = "";
-	if ((entry.prepared_name) && (entry.prepared_name != "")) {
-		pname = entry.prepared_name;
-		if ((entry.prepared_compellation) && (entry.prepared_compellation != ""))
-			pname = pname + " " + entry.prepared_compellation;
-	}
-	$("#prepared_name").val(pname);				// 担当者
+	$("#client_name").val(name_1 );								// 得意先名1
+	$("#client_division_cd").val(entry.client_division_cd);		// 所属部署CD
+	$("#client_division_name").val(entry.client_division_name);	// 所属部署名
+	$("#client_person_id").val(entry.client_person_id);			// 担当者ID
+	$("#client_person_name").val(entry.client_person_name);		// 担当者名
+
+	$("#test_large_class_cd").val(entry.test_large_class_cd);		// 試験大分類CD
+	$("#test_large_class_name").val(entry.test_large_class_name);	// 試験大分類名
+	$("#test_middle_class_cd").val(entry.test_middle_class_cd);		// 試験中分類CD
+	$("#test_middle_class_name").val(entry.test_middle_class_name);	// 試験中分類名
+	$("#entry_title").val(entry.entry_title);						// 案件名
+	
 	$("#order_accepted_date").val(entry.order_accepted_date);	// 受注日付
 	$("#order_accept_check").val(entry.order_accept_check);		// 仮受注日チェック
 	$("#acounting_period_no").val(entry.acounting_period_no);	// 会計期No
 	$("#order_type").val(entry.order_type);						// 受託区分
 	$("#contract_type").val(entry.contract_type);				// 契約区分
 	$("#outsourcing_cd").val(entry.outsourcing_cd);				// 委託先CD
-	$("#division").val(entry.division);							// 事業部ID
 	$("#entry_amount_price").val(entry.entry_amount_price);		// 案件合計金額
 	$("#entry_amount_billing").val(entry.entry_amount_price);	// 案件請求合計金額
 	$("#entry_amount_deposit").val(entry.entry_amount_billing); // 案件入金合計金額
-	$("#monitors_cost_prep_limit").val(entry.monitors_cost_prep_limit); // 被験者費用準備期日
-	$("#monitors_cost_prep_comp").val(entry.monitors_cost_prep_comp); // 被験者費用準備完了日
-	$("#drc_substituted_amount").val(entry.drc_substituted_amount); // DRC立替準備金額
-	$("#prior_payment_limit").val(entry.prior_payment_limit); // 事前入金期日
-	$("#prior_payment_accept").val(entry.prior_payment_accept); // 事前入金日
-	$("#pay_planning_date_1").val(entry.pay_planning_date_1);	// 分割請求日1
-	$("#pay_complete_date_1").val(entry.pay_complete_date_1);	// 分割入金日1
-	$("#pay_amount_1").val(entry.pay_amount_1);					// 分割支払合計金額1
-	$("#pay_result_1").val(entry.pay_result_1);					// 分割請求区分1
-	$("#pay_planning_date_2").val(entry.pay_planning_date_2);	// 分割請求日2
-	$("#pay_complete_date_2").val(entry.pay_complete_date_2);	// 分割入金日2
-	$("#pay_amount_2").val(entry.pay_amount_2);					// 分割支払合計金額2
-	$("#pay_result_2").val(entry.pay_result_2);					// 分割請求区分2
-	$("#pay_planning_date_3").val(entry.pay_planning_date_3);	// 分割請求日3
-	$("#pay_complete_date_3").val(entry.pay_complete_date_3);	// 分割入金日3
-	$("#pay_amount_3").val(entry.pay_amount_3);					// 分割支払合計金額3
-	$("#pay_result_3").val(entry.pay_result_3);					// 分割請求区分3
-	$("#pay_planning_date_4").val(entry.pay_planning_date_4);	// 分割請求日4
-	$("#pay_complete_date_4").val(entry.pay_complete_date_4);	// 分割入金日4
-	$("#pay_amount_4").val(entry.pay_amount_4);					// 分割支払合計金額4
-	$("#pay_result_4").val(entry.pay_result_4);					// 分割請求区分4
-	$("#pay_planning_date_5").val(entry.pay_planning_date_5);	// 分割請求日5
-	$("#pay_complete_date_5").val(entry.pay_complete_date_5);	// 分割入金日5
-	$("#pay_amount_5").val(entry.pay_amount_5);					// 分割支払合計金額5
-	$("#pay_result_5").val(entry.pay_result_5);					// 分割請求区分5
-	$("#person_id").val(entry.person_id); // 担当者ID
+	$("#test_person_id").val(entry.test_person_id);				// 試験担当者ID
 	if (entry.delete_check == 1) {
-		$("#delete_check").prop("checked", true); // 削除フラグ
+		$("#delete_check").prop("checked", true);				// 削除フラグ
 	} else {
-		$("#delete_check").prop("checked", false); // 削除フラグ
+		$("#delete_check").prop("checked", false);				// 削除フラグ
 	}
-	$("#delete_reason").val(entry.delete_reason); // 削除理由
-	$("#input_check_date").val(entry.input_check_date); // 入力日
+	$("#delete_reason").val(entry.delete_reason);				// 削除理由
+	$("#input_check_date").val(entry.input_check_date);			// 入力日
 	if (entry.input_check == 1) {
-		$("#input_check").prop("checked",true); // 入力完了チェック
+		$("#input_check").prop("checked",true);					// 入力完了チェック
 	} else {
-		$("#input_check").prop("checked", false); // 入力完了チェック
+		$("#input_check").prop("checked", false);				// 入力完了チェック
 	}
-	$("#input_operator_id").val(entry.input_operator_id); // 入力者ID
-	$("#confirm_check_date").val(entry.confirm_check_date); // 確認日
+	$("#input_operator_id").val(entry.input_operator_id);		// 入力者ID
+	$("#confirm_check_date").val(entry.confirm_check_date);		// 確認日
 	if (entry.confirm_check == 1) {
-		$("#confirm_check").prop("checked",true); // 確認完了チェック
+		$("#confirm_check").prop("checked",true);				// 確認完了チェック
 	} else {
-		$("#confirm_check").prop("checked", false); // 確認完了チェック
+		$("#confirm_check").prop("checked", false);				// 確認完了チェック
 	}
-	$("#confirm_operator_id").val(entry.confirm_operator_id); // 確認者ID
-	$("#created").val(entry.created);						// 作成日
-	$("#created_id").val(entry.created_id); // 作成者ID
-	$("#updated").val(entry.updated);						// 更新日
+	$("#confirm_operator_id").val(entry.confirm_operator_id);	// 確認者ID
+	$("#created").val(entry.created);							// 作成日
+	$("#created_id").val(entry.created_id);						// 作成者ID
+	$("#updated").val(entry.updated);							// 更新日
 	$("#updated_id").val(entry.updated_id);						// 更新者ID
 };
 entryList.clearEntry = function () {
 	var entry = {} ;
-	entry.entry_no = ""; // 案件No
-	entry.base_cd = "01"; // 拠点CD
-	entry.entry_title = ""; // 案件名
-	entry.inquiry_date = ""; // 問合せ日
-	entry.entry_status = "01"; // 案件ステータス
-	entry.quote_no = ""; // 見積番号
-	entry.quote_issue_date = ""; // 見積書発行日
-	entry.client_cd = "";		// 得意先コード
-	entry.client_name_1 = "";	// 得意先名
-	entry.client_name_2 = "";	// 得意先名
+	entry.entry_no = "";			// 案件No
+	entry.entry_title = "";			// 案件名
+	entry.inquiry_date = "";		// 問合せ日
+	entry.entry_status = "01";		// 案件ステータス
+	entry.sales_person_id = "";		// 営業担当者ID
+	entry.quote_no = "";			// 見積番号
+	entry.quote_issue_date = "";	// 見積書発行日
+	entry.agent_cd = "";			// 代理店コード
+	entry.agent_name = "";			// 代理店名
+	entry.client_cd = "";			// 得意先コード
+	entry.client_name_1 = "";		// 得意先名
+	entry.client_name_2 = "";		// 得意先名
 	entry.client_address_1 = "";	// 住所
 	entry.client_address_2 = "";	// 住所
-	entry.prepared_division = "";	// 担当者所属部署
-	entry.prepared_name = "";		// 担当者
+	entry.client_division_cd = "";	// 担当者所属部署
+	entry.client_division_name = "";// 担当者所属部署
+	entry.client_person_id = "";	// 担当者
+	entry.client_person_name = "";	// 担当者
 	entry.order_accepted_date = ""; // 受注日付
-	entry.order_accept_check = 0; // 仮受注日チェック
-	entry.acounting_period_no = 1; // 会計期No
-	entry.order_type = 0; // 受託区分
-	entry.contract_type = 1; // 契約区分
-	entry.outsourcing_cd = ""; // 委託先CD
-	entry.division  = "01"; // 事業部ID
-	entry.entry_amount_price = 0; // 案件合計金額
-	entry.entry_amount_price = 0; // 案件請求合計金額
+	entry.order_accept_check = 0;	// 仮受注日チェック
+	entry.acounting_period_no = 1;	// 会計期No
+	entry.order_type = 0;			// 受託区分
+	entry.contract_type = 1;		// 契約区分
+	entry.outsourcing_cd = "";		// 委託先CD
+	entry.entry_amount_price = 0;	// 案件合計金額
+	entry.entry_amount_price = 0;	// 案件請求合計金額
 	entry.entry_amount_billing = 0; // 案件入金合計金額
-	entry.monitors_cost_prep_limit = ""; // 被験者費用準備期日
-	entry.monitors_cost_prep_comp = ""; // 被験者費用準備完了日
-	entry.drc_substituted_amount = 0; // DRC立替準備金額
-	entry.prior_payment_limit = ""; // 事前入金期日
-	entry.prior_payment_accept = ""; // 事前入金日
-	entry.pay_planning_date_1 = "";	// 分割請求日1
-	entry.pay_complete_date_1 = "";	// 分割入金日1
-	entry.pay_amount_1 = 0;			// 分割支払合計金額1
-	entry.pay_result_1 = 0;			// 分割請求区分1
-	entry.pay_planning_date_2 = "";	// 分割請求日2
-	entry.pay_complete_date_2 = "";	// 分割入金日2
-	entry.pay_amount_2 = 0;			// 分割支払合計金額2
-	entry.pay_result_2 = 0;			// 分割請求区分2
-	entry.pay_planning_date_3 = "";	// 分割請求日3
-	entry.pay_complete_date_3 = "";	// 分割入金日3
-	entry.pay_amount_3 = 0;			// 分割支払合計金額3
-	entry.pay_result_3 = 0;			// 分割請求区分3
-	entry.pay_planning_date_4 = "";	// 分割請求日4
-	entry.pay_complete_date_4 = "";	// 分割入金日4
-	entry.pay_amount_4 = 0;			// 分割支払合計金額4
-	entry.pay_result_4 = 0;			// 分割請求区分4
-	entry.pay_planning_date_5 = "";	// 分割請求日5
-	entry.pay_complete_date_5 = "";	// 分割入金日5
-	entry.pay_amount_5 = 0;			// 分割支払合計金額5
-	entry.pay_result_5 = 0;			// 分割請求区分5
-	entry.person_id = ""; // 担当者ID
-	entry.delete_check = 0; // 削除フラグ
-	entry.delete_reason = ""; // 削除理由
-	entry.input_check_date = ""; // 入力日
-	entry.input_check = 0; // 入力完了チェック
-	entry.input_operator_id = ""; // 入力者ID
-	entry.confirm_check_date = ""; // 確認日
-	entry.confirm_check = 0; // 確認完了チェック
+	entry.test_person_id = "";		// 試験担当者ID
+	entry.entry_memo = "";			// メモ
+	entry.delete_check = 0;			// 削除フラグ
+	entry.delete_reason = "";		// 削除理由
+	entry.input_check_date = "";	// 入力日
+	entry.input_check = 0;			// 入力完了チェック
+	entry.input_operator_id = "";	// 入力者ID
+	entry.confirm_check_date = "";	// 確認日
+	entry.confirm_check = 0;		// 確認完了チェック
 	entry.confirm_operator_id = ""; // 確認者ID
-	entry.created = "";						// 作成日
-	entry.created_id = ""; // 作成者ID
-	entry.updated = "";						// 更新日
-	entry.updated_id = "";						// 更新者ID
+	entry.created = "";				// 作成日
+	entry.created_id = "";			// 作成者ID
+	entry.updated = "";				// 更新日
+	entry.updated_id = "";			// 更新者ID
 	return entry;
 };
 // 編集用画面の表示
@@ -742,7 +689,7 @@ entryList.openEditWindow = function(sender) {
 	var margin_top = $("#overlayer").height() / 2;
 	var margin_left = $("#overlayer").width() / 2;
 	// 表示する内容を読込む
-	$("#overlayer").show().html("<iframe id='entry_modal' src='entry_edit/" + no + "'></iframe>").css({"margin-top":"-" + margin_top + "px","margin-left":"-" + margin_left + "px"});
+	//$("#overlayer").show().html("<iframe id='entry_modal' src='entry_edit/" + no + "'></iframe>").css({"margin-top":"-" + margin_top + "px","margin-left":"-" + margin_left + "px"});
 	//$("#overlayer img.close").click(function(){
 	//	$("#overlayer").hide();
 	//	$("#graylayer").hide();
@@ -763,16 +710,19 @@ entryList.getSelectEntry = function () {
 
 // 案件リストの選択イベント処理
 entryList.onSelectEntry = function (rowid) {
-	var no;
 	if (rowid != null) {
 		var row = $("#entry_list").getRowData(rowid);
-		no = row.entry_no;
+		var no = row.entry_no;
 		entryList.enableQuoteButtons(true);
+		// グリッドの再表示
+		$("#test_list").GridUnload();
+		entryList.createTestGrid(row.entry_no);
+		entryList.currentEntryNo = row.entry_no;
+		entryList.currentEntry = row;
+		// 請求情報表示ボタンを表示する
+		$("#entry_billing").css("visibility","visible");
 	}
-	// グリッドの再表示
-	$("#test_list").GridUnload();
-	entryList.createTestGrid(no);
-	entryList.currentEntryNo = no;
+
 };
 // 明細追加、編集ボタンの表示・非表示
 entryList.enableQuoteButtons = function(enable) {

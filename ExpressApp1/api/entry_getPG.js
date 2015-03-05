@@ -48,31 +48,37 @@ var entry_get_list = function (req, res) {
 		+ 'entry_title,' 
 		+ "to_char(inquiry_date, 'YYYY/MM/DD') AS inquiry_date," 
 		+ 'entry_status,' 
-		+ 'base_cd,' 
-		+ 'person_id,' 
+		+ 'sales_person_id,' 
 		+ 'quote_no,' 
-		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date," 
+//		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date," 
 		+ "entry_info.client_cd," 
 		+ "client_list.name_1 AS client_name_1," 
 		+ "client_list.name_2 AS client_name_2," 
-		+ "client_list.address_1 AS client_address_1," 
-		+ "client_list.address_2 AS client_address_2," 
-		+ "client_list.prepared_division," 
-		+ "client_list.prepared_name," 
-		+ "client_list.compellation," 
-		+ "client_list.prepared_compellation," 
+		+ "client_division_list.address_1 AS client_address_1," 
+		+ "client_division_list.address_2 AS client_address_2," 
+		+ "client_division_list.tel_no AS client_tel_no," 
+		+ "client_division_list.fax_no AS client_fax_no," 
+		+ "client_division_list.division_cd AS client_division_cd," 
+		+ "client_division_list.name AS client_division_name," 
+		+ "client_person_list.person_id AS client_person_id," 
+		+ "client_person_list.name AS client_person_name," 
 		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date," 
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
-		+ 'entry_info.division,' 
-		+ 'division_info.division_name,' 
+		+ 'entry_info.test_large_class_cd,' 
+		+ 'test_large_class.large_class_name AS test_large_class_name,' 
+		+ 'entry_info.test_middle_class_cd,' 
+		+ 'test_middle_class.middle_class_name AS test_middle_class_name,' 
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 		+ 'entry_info.created_id,' 
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
 		+ 'entry_info.updated_id' 
 		+ ' FROM drc_sch.entry_info'
-		+ ' LEFT JOIN drc_sch.division_info ON(entry_info.division = division_info.division)' 
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.large_class_cd)' 
+		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.middle_class_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
+		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
+		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
 		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5) AND entry_info.delete_check = $1 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
@@ -83,35 +89,38 @@ var entry_get_list = function (req, res) {
 var entry_get_list_term = function (req, res) {
 	var sql = 'SELECT ' 
 		+ 'entry_no,' 
+		+ 'client_list.name_1 AS client_name_1,'
+		+ 'client_division_list.name AS client_division_name,'
 		+ 'entry_title,' 
-		+ 'to_char(inquiry_date, \'YYYY/MM/DD\') AS inquiry_date,' 
+		+ 'to_char(inquiry_date, "YYYY/MM/DD") AS inquiry_date,'
 		+ 'entry_status,' 
-		+ 'base_cd,' 
-		+ 'person_id,' 
+		+ 'sales_person_id,' 
 		+ 'quote_no,' 
-		+ 'to_char(quote_issue_date,\'YYYY/MM/DD\') AS quote_issue_date,' 
-		+ "entry_info.client_cd," 
-		+ "client_list.name_1 AS client_name_1," 
-		+ "client_list.name_2 AS client_name_2," 
-		+ "client_list.address_1 AS client_address_1," 
-		+ "client_list.address_2 AS client_address_2," 
-		+ "client_list.prepared_division," 
-		+ "client_list.prepared_name," 
-		+ 'to_char(order_accepted_date,\'YYYY/MM/DD\') AS order_accepted_date,' 
+//		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date," 
+//		+ "entry_info.client_cd," 
+//		+ "client_list.name_2 AS client_name_2," 
+//		+ "client_division_list.address_1 AS client_address_1," 
+//		+ "client_division_list.address_2 AS client_address_2," 
+//		+ "client_person_list.name AS client_person_name," 
+		+ 'to_char(order_accepted_date,"YYYY/MM/DD") AS order_accepted_date,'
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
-		+ 'entry_info.division,' 
-		+ 'division_info.division_name,' 
-		+ 'to_char(prior_payment_limit,\'YYYY/MM/DD\') AS prior_payment_limit,' 
-		+ 'to_char(entry_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'entry_info.test_large_class_cd,' 
+		+ 'test_large_class.large_class_name AS test_large_class_name,' 
+		+ 'entry_info.test_middle_class_cd,' 
+		+ 'test_middle_class.middle_class_name AS test_middle_class_name,' 
+		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 		+ 'entry_info.created_id,' 
-		+ 'to_char(entry_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
 		+ 'entry_info.updated_id' 
 		+ ' FROM drc_sch.entry_info'
-		+ ' LEFT JOIN drc_sch.division_info ON(entry_info.division = division_info.division)'
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.large_class_cd)' 
+		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.middle_class_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
+		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
+		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
 		+ ' WHERE entry_info.delete_check = $1 ' 
-		+ ' AND entry_info.division = $2' 
+		+ ' AND entry_info.test_large_class_cd = $2' 
 		//+ ' AND order_accept_date NOT NULL '
 		+ ' ORDER BY entry_no ASC ';
 	return entry_get_list_for_gantt(res, sql, [0,req.params.test_type]);
@@ -181,75 +190,48 @@ var entry_get_list_for_gantt = function (res, sql, params) {
 // 案件データ（案件No）取得
 var entry_get_detail = function (req, res) {
 	var sql = 'SELECT ' 
-			+ 'entry_no,' // 案件No
-			+ 'base_cd,' // 拠点CD
-			+ 'entry_title,' // 案件名
-			+ 'to_char(inquiry_date,\'YYYY/MM/DD\') AS inquiry_date,' // 問合せ日
-			+ 'entry_status,' // 案件ステータス
-			+ 'quote_no,' // 見積番号
-			+ 'to_char(quote_issue_date,\'YYYY/MM/DD\') AS quote_issue_date,' // 見積書発行日
-			+ "entry_info.client_cd," 
-			+ "client_list.name_1 AS client_name_1," 
-			+ "client_list.name_2 AS client_name_2," 
-			+ "client_list.address_1 AS client_address_1," 
-			+ "client_list.address_2 AS client_address_2," 
-			+ "client_list.prepared_division," 
-			+ "client_list.prepared_name," 
-			+ "client_list.compellation," 
-			+ "client_list.prepared_compellation," 
-			+ 'to_char(order_accepted_date,\'YYYY/MM/DD\') AS order_accepted_date,' // 受注日付
-			+ 'order_accept_check,' // 仮受注日チェック
-			+ 'acounting_period_no,' // 会計期No
-			+ 'order_type,' // 受託区分
-			+ 'contract_type,' // 契約区分
-			+ 'outsourcing_cd,' // 委託先CD
-			+ 'entry_info.division,' 
-			+ 'division_info.division_name,' 
-			+ 'entry_amount_price,' // 案件合計金額
-			+ 'entry_amount_billing,' // 案件請求合計金額
-			+ 'entry_amount_deposit,' // 案件入金合計金額
-			+ 'to_char(monitors_cost_prep_limit,\'YYYY/MM/DD\') AS monitors_cost_prep_limit,' // 被験者費用準備期日
-			+ 'to_char(monitors_cost_prep_comp,\'YYYY/MM/DD\') AS monitors_cost_prep_comp,' // 被験者費用準備完了日
-			+ 'drc_substituted_amount,' // DRC立替準備金額
-			+ 'to_char(prior_payment_limit,\'YYYY/MM/DD\') AS prior_payment_limit,' // 事前入金期日
-			+ 'to_char(prior_payment_accept,\'YYYY/MM/DD\') AS prior_payment_accept,' // 事前入金日
-			+ 'to_char(pay_planning_date_1,\'YYYY/MM/DD\') AS pay_planning_date_1,' 
-			+ 'to_char(pay_planning_date_2,\'YYYY/MM/DD\') AS pay_planning_date_2,' 
-			+ 'to_char(pay_planning_date_3,\'YYYY/MM/DD\') AS pay_planning_date_3,' 
-			+ 'to_char(pay_planning_date_4,\'YYYY/MM/DD\') AS pay_planning_date_4,' 
-			+ 'to_char(pay_planning_date_5,\'YYYY/MM/DD\') AS pay_planning_date_5,' 
-			+ 'to_char(pay_complete_date_1,\'YYYY/MM/DD\') AS pay_complete_date_1,' 
-			+ 'to_char(pay_complete_date_2,\'YYYY/MM/DD\') AS pay_complete_date_2,' 
-			+ 'to_char(pay_complete_date_3,\'YYYY/MM/DD\') AS pay_complete_date_3,' 
-			+ 'to_char(pay_complete_date_4,\'YYYY/MM/DD\') AS pay_complete_date_4,' 
-			+ 'to_char(pay_complete_date_5,\'YYYY/MM/DD\') AS pay_complete_date_5,' 
-			+ 'pay_amount_1,' 
-			+ 'pay_amount_2,' 
-			+ 'pay_amount_3,' 
-			+ 'pay_amount_4,' 
-			+ 'pay_amount_5,' 
-			+ 'pay_result_1,' 
-			+ 'pay_result_2,' 
-			+ 'pay_result_3,' 
-			+ 'pay_result_4,' 
-			+ 'pay_result_5,' 
-			+ 'person_id,' // 担当者ID
-			+ 'entry_info.delete_check,' // 削除フラグ
-			+ 'delete_reason,' // 削除理由
-			+ 'to_char(input_check_date,\'YYYY/MM/DD\') AS input_check_date,' // 入力日
-			+ 'input_check,' // 入力完了チェック
-			+ 'input_operator_id,' // 入力者ID
-			+ 'to_char(confirm_check_date,\'YYYY/MM/DD\') AS confirm_check_date,' // 確認日
-			+ 'confirm_check,' // 確認完了チェック
-			+ 'confirm_operator_id,' // 確認者ID
-			+ 'to_char(entry_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' // 作成日
-			+ 'entry_info.created_id,' // 作成者ID
-			+ 'to_char(entry_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' // 更新日
-			+ 'entry_info.updated_id' // 更新者ID
-			+ ' FROM drc_sch.entry_info'
-			+ ' LEFT JOIN drc_sch.division_info ON(entry_info.division = division_info.division)'
-			+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
-			+ ' WHERE entry_no = $1 ';
+		+ 'entry_no,'															// 案件Ｎｏ
+		+ 'quote_no,'															// 見積番号
+		+ "to_char(inquiry_date, 'YYYY/MM/DD') AS inquiry_date,"				// 問合せ日
+		+ 'entry_status,'														// 案件ステータス
+		+ 'sales_person_id,'													// 営業担当者ID
+//		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date," 
+		+ 'agent_cd,'															// 代理店CD
+		+ "entry_info.client_cd,"												// 得意先CD
+		+ "entry_info.client_division_cd,"										// 得意先部署CD
+		+ "entry_info.client_person_id,"										// 得意先担当者ID
+		+ "client_list.name_1 AS client_name_1,"								// 得意先名１
+		+ "client_list.name_2 AS client_name_2,"								// 得意先名２
+		+ "client_division_list.address_1 AS client_address_1,"					// 得意先部署住所１
+		+ "client_division_list.address_2 AS client_address_2,"					// 得意先部署住所２
+		+ "client_division_list.name AS client_division_name,"					// 得意先部署名
+		+ "client_person_list.name AS client_person_name,"						// 得意先担当者名
+		+ 'entry_info.test_large_class_cd,'										// 試験大分類CD
+		+ 'test_large_class.large_class_name AS test_large_class_name,'			// 試験大分類名
+		+ 'entry_info.test_middle_class_cd,'									// 試験中分類CD
+		+ 'test_middle_class.middle_class_name AS test_middle_class_name,'		// 試験中分類名
+		+ 'entry_title,'														// 試験タイトル
+		+ 'order_type,'															// 受託区分
+		+ 'outsourcing_cd,'														// 受託先CD
+		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date,"	// 受注日
+		+ 'order_accept_check,'													// 仮受注チェック
+		+ 'acounting_period_no,'												// 会計期No
+		+ 'test_person_id,'														// 試験担当者ID
+		+ 'entry_amount_price,'													// 案件合計金額
+		+ 'entry_amount_billing,'												// 案件請求合計金額
+		+ 'entry_amount_deposit,'												// 案件入金合計金額
+		+ 'entry_memo,'															// メモ
+		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"		// 作成日
+		+ 'entry_info.created_id,'												// 作成者ID
+		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"		// 更新日
+		+ 'entry_info.updated_id'												// 更新者ID
+		+ ' FROM drc_sch.entry_info'
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.large_class_cd)' 
+		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.middle_class_cd)' 
+		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
+		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
+		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
+		+ ' WHERE entry_no = $1 ';
 	var entry = {};
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {

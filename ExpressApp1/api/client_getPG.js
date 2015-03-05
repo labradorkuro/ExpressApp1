@@ -6,6 +6,20 @@ exports.client_get = function (req, res) {
 		client_get_list(req, res);
 	}
 };
+exports.client_division_get = function (req, res) {
+	if ((req.params.division_cd != undefined) && (req.params.division_cd != '')) {
+		client_division_get_detail(req, res);
+	} else {
+		client_division_get_list(req, res);
+	}
+};
+exports.client_person_get = function (req, res) {
+	if ((req.params.person_id != undefined) && (req.params.person_id != '')) {
+		client_person_get_detail(req, res);
+	} else {
+		client_person_get_list(req, res);
+	}
+};
 var getPagingParams = function (req) {
 	var pg_param = {};
 	pg_param.sidx = "uid";
@@ -31,7 +45,6 @@ var client_get_list = function (req, res) {
 		+ 'client_cd,' 
 		+ 'name_1,' 
 		+ 'name_2,' 
-		+ "compellation," // 敬称
 		+ "kana," // カナ
 		+ "email," // メールアドレス 
 		+ "zipcode," // 郵便番号
@@ -39,16 +52,6 @@ var client_get_list = function (req, res) {
 		+ "address_2," // 住所２
 		+ "tel_no," // 電話番号
 		+ "fax_no," // FAX番号
-		+ "prepared_name," // 担当者氏名
-		+ "prepared_compellation," // 担当者敬称
-		+ "prepared_division," // 担当部署
-		+ "prepared_title," // 担当者役職名
-		+ "prepared_cellular," // 担当者携帯電話番号
-		+ "prepared_email," // 担当者メールアドレス
-		+ "prepared_telno," // 担当者電話番号
-		+ "prepared_faxno," // 担当者FAX番号
-		+ "to_char(billing_limit,'YYYY/MM/DD') AS billing_limit," // 請求締日
-		+ "to_char(payment_date,'YYYY/MM/DD') AS payment_date," // 支払日
 		+ "memo," 
 		+ 'delete_check,' 
 		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created," 
@@ -60,6 +63,60 @@ var client_get_list = function (req, res) {
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return client_get_list_for_grid(res, sql_count, sql, [req.query.delete_check], pg_params);
+};
+
+// 部署情報リストの取得
+var client_division_get_list = function (req, res) {
+	var pg_params = getPagingParams(req);
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_division_list WHERE client_cd = $1 AND delete_check = $2';
+	var sql = 'SELECT ' 
+		+ 'client_cd,' 
+		+ 'division_cd,' 
+		+ 'name,' 
+		+ "kana," // カナ
+		+ "email," // メールアドレス 
+		+ "zipcode," // 郵便番号
+		+ "address_1," // 住所１
+		+ "address_2," // 住所２
+		+ "tel_no," // 電話番号
+		+ "fax_no," // FAX番号
+		+ "to_char(billing_limit,'YYYY/MM/DD') AS billing_limit," // 請求締日
+		+ "to_char(payment_date,'YYYY/MM/DD') AS payment_date," // 支払日
+		+ "holiday_support,"
+		+ "memo," 
+		+ 'delete_check,' 
+		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created," 
+		+ 'created_id,' 
+		+ "to_char(updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
+		+ 'updated_id' 
+		+ ' FROM drc_sch.client_division_list WHERE client_cd = $1 AND delete_check = $2 ORDER BY ' 
+		+ pg_params.sidx + ' ' + pg_params.sord 
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	return client_get_list_for_grid(res, sql_count, sql, [req.query.client_cd,req.query.delete_check], pg_params);
+};
+// 担当者情報リストの取得
+var client_person_get_list = function (req, res) {
+	var pg_params = getPagingParams(req);
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_person_list WHERE client_cd = $1 AND division_cd = $2 AND delete_check = $3';
+	var sql = 'SELECT ' 
+		+ 'client_cd,' 
+		+ 'division_cd,' 
+		+ 'person_id,' 
+		+ 'name,' 
+		+ "kana,"
+		+ "compellation,"
+		+ "title,"
+		+ "email,"
+		+ "memo," 
+		+ 'delete_check,' 
+		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created," 
+		+ 'created_id,' 
+		+ "to_char(updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
+		+ 'updated_id' 
+		+ ' FROM drc_sch.client_person_list WHERE client_cd = $1 AND division_cd = $2 AND delete_check = $3 ORDER BY ' 
+		+ pg_params.sidx + ' ' + pg_params.sord 
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	return client_get_list_for_grid(res, sql_count, sql, [req.query.client_cd, req.query.division_cd, req.query.delete_check], pg_params);
 };
 var client_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
@@ -101,7 +158,6 @@ var client_get_detail = function (req, res) {
 		+ 'client_cd,' 
 		+ 'name_1,' 
 		+ 'name_2,' 
-		+ "compellation," // 敬称
 		+ "kana," // カナ
 		+ "email," // メールアドレス 
 		+ "zipcode," // 郵便番号
@@ -109,16 +165,6 @@ var client_get_detail = function (req, res) {
 		+ "address_2," // 住所２
 		+ "tel_no," // 電話番号
 		+ "fax_no," // FAX番号
-		+ "prepared_name," // 担当者氏名
-		+ "prepared_compellation," // 担当者敬称
-		+ "prepared_division," // 担当部署
-		+ "prepared_title," // 担当者役職名
-		+ "prepared_cellular," // 担当者携帯電話番号
-		+ "prepared_email," // 担当者メールアドレス
-		+ "prepared_telno," // 担当者電話番号
-		+ "prepared_faxno," // 担当者FAX番号
-		+ "to_char(billing_limit,'YYYY/MM/DD') AS billing_limit," // 請求締日
-		+ "to_char(payment_date,'YYYY/MM/DD') AS payment_date," // 支払日
 		+ "memo," 
 		+ 'delete_check,' 
 		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created," 

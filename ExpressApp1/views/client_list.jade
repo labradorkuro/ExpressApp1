@@ -1,5 +1,5 @@
 ﻿doctype html
-html
+html(ng-app="app")
 	head
 		meta(charset="utf-8")
 		title= title
@@ -9,27 +9,30 @@ html
 		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
 		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
 		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+		script(src="javascripts/angular/angular.js")
+		script(src="javascripts/client_app.js")
 		script(src="javascripts/ScheduleCommon.js")
 		script(src="javascripts/ClientList.js")
+		script(src="javascripts/ClientMaster.js")
 		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
-	body
-		div.titlebar
-			span.titlebar 
-				a(href="portal") Home
-			img.titlebar_logo(src="images/drc_logo.jpg")
-			span.titlebar= title
-		div#tabs
-			ul
-				li
-					a(href="#tabs-0") 顧客管理
-			div#tabs-0
-				div.toolbar
-					a.tool_button_a#add_client 追 加
-					a.tool_button_a#edit_client 編 集
-					input.search_option_check#client_delete_check_disp(type="checkbox") 
-					label.search_option_check(value=1) 削除分を表示
-				div.admin_div
-					include client_list_form
-		div#client_dialog
-			include client_form
+	body(ng-app)
+		div#drc_app
+			div.titlebar
+				span.titlebar 
+					a(href="portal") Home
+				img.titlebar_logo(src="images/drc_logo.jpg")
+				span.titlebar= title
+			div#tabs
+				ul
+					li
+						a(href="#tabs-0") 顧客管理
+				div#tabs-0
+					div.admin_div
+						include client_list_form
+			div#client_dialog
+				include client_form
+			div#client_division_dialog
+				include client_division_form
+			div#client_person_dialog
+				include client_person_form

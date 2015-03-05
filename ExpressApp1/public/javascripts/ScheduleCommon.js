@@ -35,14 +35,16 @@ scheduleCommon.onloadUserReq = function (e) {
 	if (this.status == 200) {
 		var users = this.response;
 		// formに取得したデータを埋め込む
-		$("#person_id").empty();
+		$("#sales_person_id").empty();
+		$("#test_person_id").empty();
 		$("#input_operator_id").empty();
 		$("#confirm_operator_id").empty();
 		scheduleCommon.user_list = new Array();
 		for (var i in users.rows) {
 			var user = users.rows[i].cell;
 			scheduleCommon.user_list.push(user);
-			$("#person_id").append("<option value=" + user.uid + ">" + user.name);
+			$("#sales_person_id").append("<option value=" + user.uid + ">" + user.name);
+			$("#test_person_id").append("<option value=" + user.uid + ">" + user.name);
 			$("#input_operator_id").append("<option value=" + user.uid + ">" + user.name);
 			$("#confirm_operator_id").append("<option value=" + user.uid + ">" + user.name);
 		}
@@ -222,3 +224,16 @@ scheduleCommon.showConfirmDialog = function(target, title, comment, okFunc) {
         }
     });
 }
+scheduleCommon.personFormatter = function (cellval, options, rowObject) {
+	var name = "";
+	if (cellval === "drc_admin") {
+		return "管理者";
+	}
+	for (var i in scheduleCommon.user_list) {
+		if (cellval === scheduleCommon.user_list[i].uid) {
+			name = scheduleCommon.user_list[i].name;
+			break;
+		}
+	}
+	return name;
+};

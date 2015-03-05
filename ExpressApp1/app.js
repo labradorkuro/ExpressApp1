@@ -35,6 +35,8 @@ var login_post = require('./api/login_post');
 var print_pdf = require('./api/print_pdf');
 var client_get = require('./api/client_getPG');
 var client_post = require('./api/client_postPG');
+var billing_post = require('./api/billing_postPG');
+var billing_get = require('./api/billing_getPG');
 mysql = require('mysql');
 pg = require('pg');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
@@ -109,7 +111,13 @@ app.get('/logout', login_post.logout_post);
 app.get('/quote_form', quote_form.form);
 app.post('/print_pdf/:entry_no?', print_pdf.print_pdf);
 app.get('/client_get/:no?', client_get.client_get);
+app.get('/client_division_get', client_get.client_division_get);
+app.get('/client_person_get', client_get.client_person_get);
 app.post('/client_post', client_post.client_post);
+app.post('/client_division_post', client_post.client_division_post);
+app.post('/client_person_post', client_post.client_person_post);
+app.post('/billing_info_post', billing_post.billing_post);
+app.get('/billing_info_get', billing_get.billing_get);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',

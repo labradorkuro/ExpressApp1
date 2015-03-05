@@ -14,6 +14,8 @@ html
 		script(src="javascripts/filesaver.min.js")
 		script(src="javascripts/fabric.min.js")
 		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/BillingList.js")
+		script(src="javascripts/ClientList.js")
 		script(src="javascripts/EntryList.js")
 		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
@@ -32,18 +34,24 @@ html
 				div.toolbar
 					a.tool_button_a#add_entry 追 加
 					a.tool_button_a#edit_entry 編 集
+					a.tool_button_a#entry_billing 請求情報
 					fieldset.search_option_set
-						input.search_option_check#entry_delete_check_disp(type="checkbox") 
-						label.search_option_check#entry_delete_disp(value=1) 削除分を表示
+						label.search_option_check#entry_delete_disp(value=1)
+							input.search_option_check#entry_delete_check_disp(type="checkbox") 
+							| 削除分を表示
 					fieldset.search_option_set
-						input.search_option_check#entry_status_01(type="checkbox") 
-						label.search_option_check#entry_status_01_label(value=1) 引合
-						input.search_option_check#entry_status_02(type="checkbox") 
-						label.search_option_check#entry_status_02_label(value=1) 見積
-						input.search_option_check#entry_status_03(type="checkbox") 
-						label.search_option_check#entry_status_03_label(value=1) 依頼
-						input.search_option_check#entry_status_04(type="checkbox") 
-						label.search_option_check#entry_status_04_label(value=1) 失注
+						label.search_option_check#entry_status_01_label(value=1)
+							input.search_option_check#entry_status_01(type="checkbox") 
+							| 引合
+						label.search_option_check#entry_status_02_label(value=1)
+							input.search_option_check#entry_status_02(type="checkbox") 
+							| 見積
+						label.search_option_check#entry_status_03_label(value=1)
+							input.search_option_check#entry_status_03(type="checkbox") 
+							| 依頼
+						label.search_option_check#entry_status_04_label(value=1)
+							input.search_option_check#entry_status_04(type="checkbox") 
+							| 失注
 				div.admin_div
 					table#entry_list
 					div#entry_pager
@@ -64,6 +72,19 @@ html
 					include quote_form
 				div#client_list_dialog 
 					include client_list_form
+				div#billing_list_dialog 
+					div.toolbar
+						a.tool_button_a#add_billing 追 加
+						a.tool_button_a#edit_billing 編 集
+						fieldset.search_option_set
+							label.search_option_check#billig_delete_disp(value=1)
+								input.search_option_check#billing_delete_check_disp(type="checkbox") 
+								| 削除分を表示
+					div.admin_div
+						table#billing_info_list
+						div#billing_info_list_pager
+				div#billing_form_dialog 
+					include billing_info_form
 				div#message_dialog
 					div
 						span#message 
