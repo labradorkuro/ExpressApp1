@@ -237,3 +237,12 @@ scheduleCommon.personFormatter = function (cellval, options, rowObject) {
 	}
 	return name;
 };
+scheduleCommon.item_typeFormatter = function (cellval, options, rowObject) {
+	var name = "";
+	if (cellval === 1) {
+		name = "大分類";
+	} else if (cellval == 2) {
+		name = "中分類";
+	}
+	return name;
+};

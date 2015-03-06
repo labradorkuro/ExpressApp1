@@ -17,6 +17,7 @@ $(function() {
 	entryList.createQuoteDialog();				// 見積明細用
 	entryList.createQuoteFormDialog();			// 見積書発行用
 	entryList.createClientListDialog();			// 得意先選択用
+	test_itemList.createTestItemSelectDialog();	// 試験分類選択用
 	billingList.createBillingListDialog();		// 請求情報リスト用
 	billingList.createBillingFormDialog();		// 請求情報編集選択用
 	// 検索用オプションの初期化	
@@ -27,6 +28,7 @@ $(function() {
 	// グリッドの生成
 	entryList.createGrid();				// 案件リスト
 	entryList.createTestGrid(0);		// 見積リスト
+	test_itemList.createGrid();				// 試験分類リスト
 	//billingList.createBillingListGrid();	// 請求情報リスト
 	scheduleCommon.changeFontSize('1.1em');
 	// 案件追加ボタンイベント（登録・編集用画面の表示）
@@ -39,9 +41,12 @@ $(function() {
 	$("#edit_quote").bind('click' , {}, entryList.openQuoteDialog);
 	// 見積書発行用フォームを表示する
 	$("#print_quote").bind('click' , {}, entryList.openQuoteFormDialog);
-	// クライアント選択を表示する
+	// クライアント選択ダイアログを表示するイベント処理を登録する
 	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
 	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);
+	// 試験中分類選択ダイアログを表示するイベント処理を登録する
+	$("#test_middle_class_name").bind('click',{}, test_itemList.openTestItemSelectDialog);
+	$("#test_large_class_name").bind('click',{}, test_itemList.openTestItemSelectDialog);
 	// オーバーレイ表示する（元の画面全体をグレー表示にする）	
 //	$("body").append("<div id='graylayer'></div><div id='overlayer'></div>");
 
@@ -346,6 +351,7 @@ entryList.createTestGrid = function (no) {
 		caption: "試験（見積）情報"
 	});
 	jQuery("#test_list").jqGrid('navGrid', '#test_list_pager', { edit: false, add: false, del: false });
+	scheduleCommon.changeFontSize('1.1em');
 };
 
 

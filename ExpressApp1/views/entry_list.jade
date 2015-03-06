@@ -16,6 +16,7 @@ html
 		script(src="javascripts/ScheduleCommon.js")
 		script(src="javascripts/BillingList.js")
 		script(src="javascripts/ClientList.js")
+		script(src="javascripts/TestItemList.js")
 		script(src="javascripts/EntryList.js")
 		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
@@ -85,6 +86,10 @@ html
 						div#billing_info_list_pager
 				div#billing_form_dialog 
 					include billing_info_form
+				div#test_item_list_dialog 
+					div.admin_div
+						table#test_item_list
+						div#test_item_list_pager
 				div#message_dialog
 					div
 						span#message 

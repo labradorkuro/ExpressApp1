@@ -15,8 +15,8 @@ exports.create = function (req, res) {
 			+ "client_cd VARCHAR(8),"				// クライアントCD
 			+ "client_division_cd VARCHAR(8),"		// クライアント部署CD
 			+ "client_person_id VARCHAR(128),"		// クライアント担当者ID
-			+ "test_large_class_cd VARCHAR(2),"		// 試験大分類CD
-			+ "test_middle_class_cd VARCHAR(2),"	// 試験中分類CD
+			+ "test_large_class_cd VARCHAR(4),"		// 試験大分類CD
+			+ "test_middle_class_cd VARCHAR(4),"	// 試験中分類CD
 			+ "entry_title VARCHAR(128),"			// 試験タイトル（案件名）
 			+ "order_type INT2,"					// 受託区分
 			+ "outsourcing_cd VARCHAR(8),"			// 委託先CD
@@ -114,6 +114,19 @@ exports.create = function (req, res) {
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
 			+ ", PRIMARY KEY(division));",
+		// 試験分類マスタ
+		"CREATE TABLE IF NOT EXISTS drc_sch.test_item_list ("
+			+ "item_cd VARCHAR(4),"			// 分類CD
+			+ "item_name VARCHAR(128),"		// 分類名
+			+ "item_type INT2 default 1,"	// 分類区分（1:大分類、2:中分類）
+			+ "memo VARCHAR(128),"			// メモ
+			+ "delete_check INT2," 
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+			+ "created_id VARCHAR(32),"							// 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+			+ "updated_id VARCHAR(32)"							// 更新者ID
+			+ ", PRIMARY KEY(item_cd,item_type));",
+/**
 		// 試験大分類マスタ
 		"CREATE TABLE IF NOT EXISTS drc_sch.test_large_class ("
 			+ "large_class_cd VARCHAR(2),"		// 大分類CD
@@ -135,7 +148,7 @@ exports.create = function (req, res) {
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)"			// 更新者ID
 			+ ", PRIMARY KEY(middle_class_cd));",
-
+**/
 		// 案件番号管理テーブル
 		"CREATE TABLE IF NOT EXISTS drc_sch.entry_number (" 
 			+ "entry_date DATE,"				// 案件登録日付

@@ -66,16 +66,16 @@ var entry_get_list = function (req, res) {
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
 		+ 'entry_info.test_large_class_cd,' 
-		+ 'test_large_class.large_class_name AS test_large_class_name,' 
+		+ 'large_items.item_name AS test_large_class_name,' 
 		+ 'entry_info.test_middle_class_cd,' 
-		+ 'test_middle_class.middle_class_name AS test_middle_class_name,' 
+		+ 'middle_items.item_name AS test_middle_class_name,' 
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 		+ 'entry_info.created_id,' 
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
 		+ 'entry_info.updated_id' 
 		+ ' FROM drc_sch.entry_info'
-		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.large_class_cd)' 
-		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.middle_class_cd)' 
+		+ ' LEFT JOIN drc_sch.test_item_list AS large_items ON(entry_info.test_large_class_cd = large_items.item_cd)' 
+		+ ' LEFT JOIN drc_sch.test_item_list AS middle_items ON(entry_info.test_middle_class_cd = middle_items.item_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
@@ -106,16 +106,16 @@ var entry_get_list_term = function (req, res) {
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
 		+ 'entry_info.test_large_class_cd,' 
-		+ 'test_large_class.large_class_name AS test_large_class_name,' 
+		+ 'large_items.item_name AS test_large_class_name,' 
 		+ 'entry_info.test_middle_class_cd,' 
-		+ 'test_middle_class.middle_class_name AS test_middle_class_name,' 
+		+ 'middle_items.item_name AS test_middle_class_name,' 
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 		+ 'entry_info.created_id,' 
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
 		+ 'entry_info.updated_id' 
 		+ ' FROM drc_sch.entry_info'
-		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.large_class_cd)' 
-		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.middle_class_cd)' 
+		+ ' LEFT JOIN drc_sch.test_item_list AS large_items ON(entry_info.test_large_class_cd = large_items.item_cd)' 
+		+ ' LEFT JOIN drc_sch.test_item_list AS middle_items ON(entry_info.test_middle_class_cd = middle_items.item_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
@@ -207,9 +207,9 @@ var entry_get_detail = function (req, res) {
 		+ "client_division_list.name AS client_division_name,"					// 得意先部署名
 		+ "client_person_list.name AS client_person_name,"						// 得意先担当者名
 		+ 'entry_info.test_large_class_cd,'										// 試験大分類CD
-		+ 'test_large_class.large_class_name AS test_large_class_name,'			// 試験大分類名
+		+ 'large_items.item_name AS test_large_class_name,'						// 試験大分類名
 		+ 'entry_info.test_middle_class_cd,'									// 試験中分類CD
-		+ 'test_middle_class.middle_class_name AS test_middle_class_name,'		// 試験中分類名
+		+ 'middle_items.item_name AS test_middle_class_name,'					// 試験中分類名
 		+ 'entry_title,'														// 試験タイトル
 		+ 'order_type,'															// 受託区分
 		+ 'outsourcing_cd,'														// 受託先CD
@@ -226,8 +226,8 @@ var entry_get_detail = function (req, res) {
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"		// 更新日
 		+ 'entry_info.updated_id'												// 更新者ID
 		+ ' FROM drc_sch.entry_info'
-		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.large_class_cd)' 
-		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.middle_class_cd)' 
+		+ ' LEFT JOIN drc_sch.test_item_list AS large_items ON(entry_info.test_large_class_cd = large_items.item_cd)' 
+		+ ' LEFT JOIN drc_sch.test_item_list AS middle_items ON(entry_info.test_middle_class_cd = middle_items.item_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 

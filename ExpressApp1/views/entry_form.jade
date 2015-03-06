@@ -51,12 +51,8 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 試験大分類
 			td 
-				select#test_large_class_cd(name="test_large_class_cd")
-					option(value="01" selected="true") SPF/PA試験
-					option(value="02") 安全性評価試験
-					option(value="03") 有用性試験
-					option(value="04") 食品ヒト試験
-					option(value="05") in vitro試験
+				input#test_large_class_cd(type="hidden" name="test_large_class_cd")
+				input#test_large_class_name(type="text" name="test_large_class_name" size="12")
 			td.form_title 試験中分類
 			td 
 				input#test_middle_class_cd(type="hidden" name="test_middle_class_cd")

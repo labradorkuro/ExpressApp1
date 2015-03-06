@@ -18,6 +18,7 @@ var admin = require('./routes/admin');
 var entry_edit = require('./routes/entry_edit');
 var entry_list = require('./routes/entry_list');
 var quote_form = require('./routes/quote_form');
+var test_item_list = require('./routes/test_item_list');
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -37,6 +38,8 @@ var client_get = require('./api/client_getPG');
 var client_post = require('./api/client_postPG');
 var billing_post = require('./api/billing_postPG');
 var billing_get = require('./api/billing_getPG');
+var test_item_post = require('./api/test_item_postPG');
+var test_item_get = require('./api/test_item_getPG');
 mysql = require('mysql');
 pg = require('pg');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
@@ -73,6 +76,7 @@ app.get('/index', routes.index);
 app.get('/', routes.index);
 app.get('/client_list', client_list.list);
 app.get('/user_list', user_list.list);
+app.get('/test_item_list', test_item_list.list);
 app.get('/division_list', division_list.list);
 app.get('/schedule', schedule.list);
 app.get('/calendar', calendar.list);
@@ -118,6 +122,8 @@ app.post('/client_division_post', client_post.client_division_post);
 app.post('/client_person_post', client_post.client_person_post);
 app.post('/billing_info_post', billing_post.billing_post);
 app.get('/billing_info_get', billing_get.billing_get);
+app.post('/test_item_post', test_item_post.test_item_post);
+app.get('/test_item_get', test_item_get.test_item_get);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',
