@@ -13,6 +13,8 @@ quoteInfo.currentQuoteRowId = 0;				// 選択中の見積リスト行ID
 quoteInfo.eventBind = function() {
 	$(".add_row_btn").bind("click", quoteInfo.addQuoteRow);
 	$(".del_row_btn").bind("click", quoteInfo.delQuoteRow);
+	// 試験中分類選択ダイアログを表示するイベント処理を登録する
+	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
 }
 
 // 明細入力用ダイアログの生成
@@ -157,31 +159,29 @@ quoteInfo.orderCheckFormatter = function(no) {
 	}
 };
 // 見積明細リストグリッドの生成
-quoteInfo.createQuoteSpecificGrid = function (no) {
+quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
 	// checkboxの状態取得	
 	var delchk = quoteInfo.getQuoteDeleteCheckDispCheck();
 	jQuery("#quote_specific_list").jqGrid({
-		url: '/quote_specific_get/' + no + '/?quote_specific_delete_check=' + delchk,
+		url: '/quote_specific_get/' + entry_no + '/' + quote_no + '/?specific_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','見積番号', '明細番号','','試験中分類名','単位','単価','数量','見積金額','集計チェック','作成日','作成者','更新日','更新者','削除フラグ','削除理由'],
+		colNames: ['案件番号','見積番号', '明細番号','','試験中分類名','単位','単価','数量','見積金額','集計','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" },				// 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
 			{ name: 'quote_detail_no', index: 'quote_detail_no', width: 80, align: "center" },	// 明細番号
-			{ name: 'test_middle_cd', index: 'test_middle_cd', hidden:true },					// 試験中分類CD
-			{ name: 'test_middle_name', index: 'test_middle_name', width: 200 },				// 試験中分類名
+			{ name: 'test_middle_class_cd', index: 'test_middle_class_cd', hidden:true },		// 試験中分類CD
+			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 200 },	// 試験中分類名
 			{ name: 'unit', index: 'unit', width: 60,align:"center" },							// 単位
 			{ name: 'unit_price', index: 'unit_price', width: 60,align:"right" },				// 単価
 			{ name: 'quantity', index: 'quantity', width: 60,align:"right" },					// 数量
-			{ name: 'quote_price', index: 'quote_price', width: 60,align:"right" },				// 見積金額
-			{ name: 'quote_summary_check', index: 'quote_summary_check', width: 120 },			// 集計対象チェック
+			{ name: 'price', index: 'price', width: 60,align:"right" },							// 見積金額
+			{ name: 'summary_check', index: 'summary_check', width: 120 },						// 集計対象チェック
 			{ name: 'created', index: 'created', width: 120 },									// 作成日
 			{ name: 'created_id', index: 'created_id', width: 120 },							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120 },									// 更新日
-			{ name: 'updated_id', index: 'updated_id', width: 120 },							// 更新者ID
-			{ name: 'quote_delete_check', index: 'quote_delete_check', hidden: true },			// 削除フラグ
-			{ name: 'quote_delete_reason', index: 'quote_delete_reason', hidden: true },		// 削除理由
+			{ name: 'updated_id', index: 'updated_id', width: 120 }								// 更新者ID
 		],
 		height: "130px",
 		width:960,
@@ -218,10 +218,12 @@ quoteInfo.openQuoteDialog = function (event) {
 };
 // 見積書ダイアログ表示
 quoteInfo.openQuoteFormDialog = function (event) {
+	// テーブルのクリア
+	quoteInfo.specificTableClear();
 	// 選択中の案件情報を取得する
 	var entry = event.data.entryList.currentEntry;
 	quoteInfo.currentEntry = entry;
-	var quote = {};
+	var quote = quoteInfo.clearQuote();
 	if ($(event.target).attr("id") == "edit_quote") {
 		// 見積の編集ボタン押下時は選択中の見積情報を取得する
 		quote = $("#quote_list").getRowData(quoteInfo.currentQuoteRowId);
@@ -243,7 +245,12 @@ quoteInfo.onSelectQuote = function(rowid) {
 	// 編集ボタンを表示
 	quoteInfo.enableQuoteButtons(true, 2);
 	quoteInfo.currentQuoteRowId = rowid;	
-
+	// 明細グリッドの再表示
+	var entry = quoteInfo.getSelectEntry();
+	var quote = quoteInfo.getSelectQuote();
+	$("#quote_specific_list").GridUnload();
+	quoteInfo.createQuoteSpecificGrid(entry.entry_no, quote.quote_no);
+	
 };
 
 // 明細追加、編集ボタンの表示・非表示
@@ -282,20 +289,18 @@ quoteInfo.getSelectEntry = function () {
 	}
 	return null;
 };
-// 試験（見積）情報の入力フォームをクリアする
-quoteInfo.clearQuoteFormData = function (quote) {
-	$('#estimate_quote_no').val(''); // 見積番号
-	$('#quote_title').val('');				// 試験タイトル
-	$('#estimate_monitors_num').val('');				// 被験者数
-	$('#quote_submit_check_no').prop("checked",true);	// 見積書提出済フラグ
-	$('#order_status_no').prop("checked",true);			// 受注ステータス
-//	$('#unit').val('');						// 単位
-//	$('#unit_price').val('0');				// 単価
-//	$('#quantity').val('0');				// 数量
-//	$('#quote_price').val('0');				// 見積金額
-//	$('#entry_memo').val('');				// 備考
-//	$('#quote_delete_check').prop("checked",false);	// 削除フラグ
+// 見積情報をクリアする
+quoteInfo.clearQuote = function () {
+	var quote = {};
+	quote.quote_no = "";
+	quote.monitors_num = "";
+	quote.quote_date = "";
+	quote.expire_date = "";
+	quote.quote_submit_check = "未提出";
+	quote.order_status = "商談中";
+	return quote;
 };
+
 // 見積書フォームにデータをセットする
 quoteInfo.setQuoteFormData = function (quote) {
 	$('#estimate_quote_no').val(quote.quote_no);		// 見積番号
@@ -367,18 +372,144 @@ quoteInfo.onloadQuoteReq = function (e) {
 	}
 };
 
-// 削除分の表示チェックイベント（明細）
+// 削除分の表示チェックイベント
 quoteInfo.changeQuoteOption = function (event) {
 	var entry = quoteInfo.getSelectEntry();
 	$("#quote_list").GridUnload();
 	quoteInfo.createQuoteInfoGrid(entry.entry_no);
 };
-// 試験（見積）の削除分を表示のチェックボックス情報取得
+// 見積の削除分を表示のチェックボックス情報取得
 quoteInfo.getQuoteDeleteCheckDispCheck = function () {
 	var dc = $("#quote_delete_check_disp").prop("checked");
 	var delchk = (dc) ? 1:0;
 	return delchk;
 };
+
+// 行追加ボタン押下イベント処理
+quoteInfo.addQuoteRow = function(event) {
+	// 現在の行数を取得する（見出し行を含む）
+	var rows = $("#meisai_table tbody").children().length;
+	// 行に必要な要素を生成
+	var row = quoteInfo.addRowCreate(rows);
+	var id = $(event.target).attr("id");
+	if (id != "") {
+		var s = id.split("_");
+		if (s.length == 3) {
+			var no = s[2];
+			var parent_tr = event.target.parentElement.parentElement;
+			$("#meisai_table tbody").append(row);
+			// 行削除ボタンのイベント登録
+			$(".del_row_btn").bind("click",quoteInfo.delQuoteRow);
+			$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
+		}
+	}
+}
+
+// 明細テーブルのクリア
+quoteInfo.specificTableClear = function() {
+	$("#meisai_table tbody").empty();
+	$("#meisai_table tbody").append(quoteInfo.addHeader());
+	$("#meisai_table tbody").append(quoteInfo.addRowCreate(1));
+	$(".add_row_btn").bind("click",quoteInfo.addQuoteRow);
+	$(".del_row_btn").bind("click",quoteInfo.delQuoteRow);
+};
+
+// 明細ヘッダの生成
+quoteInfo.addHeader = function() {
+	var row = $("<tr></tr>");
+	$(row).append("<th>名称</th>");
+	$(row).append("<th>単位</th>");
+	$(row).append("<th>単価</th>");
+	$(row).append("<th>数量</th>");
+	$(row).append("<th>金額</th>");
+	$(row).append("<th>集計</th>");
+	$(row).append("<th>備考</th>");
+	$(row).append("<th><input class='add_row_btn' id='add_row_0' type='button' name='add_row_0' value='行追加')</th>");
+	return row;
+};
+// 明細行の生成
+quoteInfo.addRowCreate = function(no) {
+	// 行に追加する要素
+	var id = "test_middle_class_cd_" + no;
+	var name = $("<td class='name'><input type='hidden' id='quote_detail_no_" + no + "' name='quote_detail_no_" + no + "' value='" + no + "' +/><input type='hidden' id='" + id + "' name='" + id + "'/><input type='text' class='test_middle_class' id='test_middle_class_name_" + no + "' name='test_middle_class_name_" + no + "' size='20' placeholder='試験中分類'/></td>");
+	id = "unit_" + no;
+	var unit = $("<td class='unit'><input type='text' id='" + id + "' name='" + id + "' size='4' placeholder='単位'/></td>");
+	id = "quantity_" + no;
+	var qty = $("<td class='qty'><input type='text' class='" + id + "' id='" + id + "' name='" + id + "' size='4' placeholder='数量'/></td>");
+	var id = "unit_price_" + no;
+	var unit_price = $("<td class='unit_price'><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='9' placeholder='単価'/></td>");
+	var id = "price_" + no;
+	var price = $("<td class='price'><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='12' placeholder='金額'/></td>");
+	var id = "summary_check_" + no;
+	var summary = $("<td class='memo'><label><input type='checkbox' id='" + id + "' name='" + id + "'/>集計する</label></td>");
+	var id = "specific_memo_" + no;
+	var memo = $("<td class='memo'><input type='text' id='" + id + "' name='" + id + "' size='12' placeholder='備考'/></td>");
+	var id = "del_row_btn_" + no;
+	var button = $("<td><input type='button' id='" + id + "' class='del_row_btn' name='" + id + "' value='行削除'/><input type='hidden' id='specific_delete_check_" + no + "' name='specific_delete_check_" + no + "' value='0'/></td>");
+
+	var id = "row_" + no;
+	var row = $("<tr id='" + id + "'></tr>");
+	$(row).append(name);
+	$(row).append(unit);
+	$(row).append(qty);
+	$(row).append(unit_price);
+	$(row).append(price);
+	$(row).append(summary);
+	$(row).append(memo);
+	$(row).append(button);
+	return row;
+};
+// 行削除ボタン押下イベント処理
+quoteInfo.delQuoteRow = function(event) {
+	var no = quoteInfo.getMeisaiNo( $(event.target).attr("id"));
+	var parent_tr = event.target.parentElement.parentElement;
+	// その行を非表示にする
+	$(parent_tr).css("display","none");
+	$("#specific_delete_check_" + no).val("1");
+}
+
+// テーブル行のデータ取得
+quoteInfo.getRowsData = function() {
+	$.each($("#meisai_table tbody").children(),function() {
+	});
+}
+
+// 試験分類参照ダイアログ表示
+quoteInfo.openTestItemSelectDialog = function (event) {
+	$("#test_item_list_dialog").dialog({
+		buttons: {
+			"選択": function () {
+				var id = $(event.target).attr("id");
+				if (quoteInfo.selectMiddleClass(quoteInfo.getMeisaiNo(id))) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+	$("#test_item_list_dialog").dialog("open");
+};
+
+// 明細項目のidから明細行番号を取得する
+quoteInfo.getMeisaiNo = function(id) {
+	var no = "";
+	if (id != "") { 
+		var s = id.split("_");
+		if (s.length > 0) {
+			no = s[s.length - 1];
+		}
+	}
+	return no;
+};
+// 試験中分類の選択データをフォームにセットする
+quoteInfo.selectMiddleClass = function(no) {
+	$("#test_middle_class_cd_" + no).val(test_itemList.currentTestItem.item_cd);
+	$("#test_middle_class_name_" + no).val(test_itemList.currentTestItem.item_name);
+	return true;
+};
+
 
 // 見積書の印刷（PDF生成）
 quoteInfo.printQuote = function (data) {
@@ -529,63 +660,3 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 };
 quoteInfo.onloadPrintPDFReq = function () {
 };
-
-// 行追加ボタン押下イベント処理
-quoteInfo.addQuoteRow = function(event) {
-	// 現在の行数を取得する（見出し行を含む）
-	var rows = $("#meisai_table tbody").children().length;
-	// 行に追加する要素
-	var id = "test_middle_class_cd_" + rows;
-	var name = $("<td class='name'><input type='text' id='" + id + "' name='" + id + "' size='20'/></td>");
-	id = "unit_" + rows;
-	var unit = $("<td class='unit'><input type='text' id='" + id + "' name='" + id + "' size='4'/></td>");
-	id = "qty_" + rows;
-	var qty = $("<td class='qty'><input type='text' class='" + id + "' id='" + id + "' name='qty' size='4'/></td>");
-	var id = "unit_price_" + rows;
-	var unit_price = $("<td class='unit_price'><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='9'/></td>");
-	var id = "price_" + rows;
-	var price = $("<td class='price'><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='12'/></td>");
-	var id = "summary_" + rows;
-	var summary = $("<td class='memo'><label><input type='checkbox' id='" + id + "' name='" + id + "'/>集計する</label></td>");
-	var id = "memo_" + rows;
-	var memo = $("<td class='memo'><input type='text' id='" + id + "' name='" + id + "' size='12'/></td>");
-	var id = "del_row_btn_" + rows;
-	var button = $("<td><input type='button' id='" + id + "' class='del_row_btn' name='" + id + "' value='行削除'/></td>");
-
-	var id = "row_" + rows;
-	var row = $("<tr id='" + id + "'></tr>");
-	$(row).append(name);
-	$(row).append(unit);
-	$(row).append(qty);
-	$(row).append(unit_price);
-	$(row).append(price);
-	$(row).append(summary);
-	$(row).append(memo);
-	$(row).append(button);
-	var id = $(event.target).attr("id");
-	if (id != "") {
-		var s = id.split("_");
-		if (s.length == 3) {
-			var no = s[2];
-			var parent_tr = event.target.parentElement.parentElement;
-			$("#meisai_table tbody").append(row);
-			// 行削除ボタンのイベント登録
-			$(".del_row_btn").bind("click",quoteInfo.delQuoteRow);
-		}
-	}
-}
-
-// 行削除ボタン押下イベント処理
-quoteInfo.delQuoteRow = function(event) {
-	var id = $(event.target).attr("id");
-	var parent_tr = event.target.parentElement.parentElement;
-	// その行を非表示にする
-	$(parent_tr).css("display","none");
-}
-
-// テーブル行のデータ取得
-quoteInfo.getRowsData = function() {
-	$.each($("#meisai_table tbody").children(),function() {
-	});
-}
- 

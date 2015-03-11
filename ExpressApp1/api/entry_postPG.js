@@ -371,7 +371,7 @@ var entry_check = function (entry) {
 	return entry;
 };
 
-// 試験（見積）明細のPOST
+// 見積情報のPOST
 exports.quote_post = function (req, res) {
 	var quote = quote_check(req.body);
 	pg.connect(connectionString,function (err, connection) {
@@ -448,7 +448,7 @@ var getQuoteDetailNo = function (connection, quote, req, res) {
 	});
 };
 
-// 試験（見積）明細データの追加
+// 見積情報の追加
 var insertQuote = function (connection, quote, req, res) {
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var created_id = req.session.uid;
@@ -505,7 +505,7 @@ var insertQuote = function (connection, quote, req, res) {
 	});
 };
 
-// 試験（見積）明細データの更新
+// 見積情報の更新
 var updateQuote = function (connection,quote, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
@@ -533,7 +533,11 @@ var updateQuote = function (connection,quote, req, res) {
 		quote.estimate_quote_no		// 明細番号
 	]);
 	query.on('end', function(result,err) {
-		connection.end();
+//		connection.end();
+
+		// 明細行処理
+		getSpecificInfo(connection,quote,req,res, 1);
+
 		res.send(quote);
 	});
 	query.on('error', function (error) {
@@ -555,4 +559,101 @@ var quote_check = function (quote) {
 	quote.quote_date = dateCheck(quote.quote_date);
 	quote.expire_date = dateCheck(quote.expire_date);
 	return quote;
+};
+
+// 明細行データを取り出して保存処理を行う
+var getSpecificInfo = function(connection,quote, req, res, no) {
+
+	var specific = {entry_no:quote.entry_no,estimate_quote_no:quote.estimate_quote_no};
+	if ("quote_detail_no_" + no in quote) {
+		// 行がある
+		specific.quote_detail_no = quote["quote_detail_no_" + no];
+		specific.test_middle_class_cd = quote["test_middle_class_cd_" + no];
+		specific.unit = quote["unit_" + no];
+		specific.unit_price = quote["unit_price_" + no];
+		specific.quantity = quote["quantity_" + no];
+		specific.price = quote["price_" + no];
+		if ("summary_check_" + no in quote) {
+			specific.summary_check = Number(quote["summary_check_" + no]);
+		} else {
+			specific.summary_check = 0;
+		}
+		specific.specific_memo = quote["specific_memo_" + no];
+		specific.specific_delete_check = Number(quote["specific_delete_check_" + no]);
+		no++;
+		// DBに追加
+		insertQuoteSpecific(connection, quote, specific, req, res, no);
+		return true;
+	} else {
+		return false;
+	}
+};
+// 明細データの追加
+var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
+	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
+	var created_id = req.session.uid;
+	var updated = null;
+	var updated_id = "";
+	var sql = 'INSERT INTO drc_sch.quote_specific_info (' 
+		+ 'entry_no,'				// 案件番号
+		+ 'quote_no,'				// 見積番号
+		+ 'quote_detail_no,'		// 明細番号
+		+ 'test_middle_class_cd,'	// 試験中分類CD
+		+ 'unit,'					// 単位
+		+ 'unit_price,'				// 単価
+		+ 'quantity,'				// 数量
+		+ 'price,'					// 金額
+		+ 'summary_check,'			// 集計対象フラグ
+		+ 'specific_memo,'			// 備考
+		+ "specific_delete_check,"	// 削除フラグ
+		+ "created,"			// 作成日
+		+ "created_id,"			// 作成者ID
+		+ "updated,"			// 更新日
+		+ "updated_id"			// 更新者ID
+		+ ") values (" 
+		+ "$1," // 案件No
+		+ "$2," // 見積番号
+		+ "$3," // 明細番号
+		+ "$4," // 試験中分類CD
+		+ "$5," // 単位
+		+ "$6," // 単価
+		+ "$7," // 数量
+		+ "$8," // 金額
+		+ "$9," // 集計対象フラグ
+		+ "$10," // 備考
+		+ "$11," // 削除フラグ
+		+ "$12," // 作成日
+		+ "$13," // 作成者ID
+		+ "$14," // 更新日
+		+ "$15"  // 更新者ID
+		+ ")";
+	// SQL実行
+	var query = connection.query(sql, [
+		specific.entry_no,				// 案件No
+		specific.estimate_quote_no,		// 見積番号
+		specific.quote_detail_no,		// 明細番号
+		specific.test_middle_class_cd,	// 試験中分類CD
+		specific.unit,					// 単位
+		specific.unit_price,			// 単価
+		specific.quantity,				// 数量
+		specific.price,					// 金額
+		specific.summary_check,			// 集計対象フラグ
+		specific.specific_memo,			// 備考
+		specific.specific_delete_check,	// 備考
+		created,					// 作成日
+		created_id,					// 作成者ID
+		updated,					// 更新日
+		updated_id					// 更新者ID
+	]);
+	query.on('end', function(result,err) {
+		// 次の行があれば処理を続ける
+		if (!getSpecificInfo(connection,quote,req,res, no)) {
+			// 終わり
+			connection.end();
+		}
+
+	});
+	query.on('error', function (error) {
+		console.log(sql + ' ' + error);
+	});
 };

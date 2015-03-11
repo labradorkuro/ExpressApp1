@@ -90,13 +90,14 @@ exports.create = function (req, res) {
 			+ "entry_no VARCHAR(10),"		// 案件No
 			+ "quote_no VARCHAR(3),"		// 見積番号
 			+ "quote_detail_no VARCHAR(3)," // 明細番号
-			+ "test_middle_class_cd VARCHAR(8),"	// 試験中分類CD
+			+ "test_middle_class_cd VARCHAR(4),"	// 試験中分類CD
 			+ "unit VARCHAR(16),"			// 単位
 			+ "unit_price DECIMAL(9,2),"	// 単価
 			+ "quantity INT4,"				// 数量
 			+ "price DECIMAL(9,2),"			// 金額
-			+ "quote_summary_check INT2,"	// 集計対象フラグ
-			+ "quote_delete_check INT2,"	// 削除フラグ
+			+ "summary_check INT2,"	// 集計対象フラグ
+			+ "specific_memo VARCHAR(128)," // 備考
+			+ "specific_delete_check INT2,"	// 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日

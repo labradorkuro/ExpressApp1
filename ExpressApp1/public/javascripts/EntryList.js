@@ -28,7 +28,7 @@ $(function() {
 	// グリッドの生成
 	entryList.createGrid();						// 案件リスト
 	quoteInfo.createQuoteInfoGrid(0);			// 見積リスト
-	quoteInfo.createQuoteSpecificGrid(0);	// 見積明細リスト
+	quoteInfo.createQuoteSpecificGrid(0,0);		// 見積明細リスト
 	test_itemList.createGrid();					// 試験分類リスト
 	//billingList.createBillingListGrid();	// 請求情報リスト
 	scheduleCommon.changeFontSize();

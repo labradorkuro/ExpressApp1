@@ -467,3 +467,63 @@ var quote_get_detail = function (req, res) {
 		});
 	});
 };
+// 見積情報リストの取得
+var quote_specific_get_list = function (req, res) {
+	var pg_params = getPagingParams(req);
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.quote_specific_info WHERE specific_delete_check = $1 AND (entry_no = $2 AND quote_no = $3)';
+	var sql = 'SELECT ' 
+		+ 'entry_no,'
+		+ 'quote_no,'			// 見積番号
+		+ 'quote_detail_no,'
+		+ 'quote_specific_info.test_middle_class_cd,'
+		+ 'test_item_list.item_name AS test_middle_class_name,'
+		+ 'unit,'
+		+ 'unit_price,'
+		+ 'quantity,'
+		+ 'price,'
+		+ 'summary_check,'
+		+ 'specific_memo,'
+		+ 'to_char(quote_specific_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'quote_specific_info.created_id,' 
+		+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ 'quote_specific_info.updated_id' 
+		+ ' FROM drc_sch.quote_specific_info'
+		+ ' LEFT JOIN drc_sch.test_item_list ON (quote_specific_info.test_middle_class_cd = test_item_list.item_cd)'
+		+ ' WHERE specific_delete_check = $1 AND (entry_no = $2 AND quote_no = $3) ORDER BY ' 
+		+ pg_params.sidx + ' ' + pg_params.sord 
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	var result = { page: 1, total: 20, records: 0, rows: [] };
+	// SQL実行
+	var rows = [];
+	var dc = Number(req.query.specific_delete_check);
+	var params = [dc,req.params.entry_no, req.params.quote_no];
+	pg.connect(connectionString, function (err, connection) {
+		// 最初に件数を取得する		
+		connection.query(sql_count, params, function (err, results) {
+			if (err) {
+				console.log(err);
+			} else {
+				// 取得した件数からページ数を計算する
+				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
+				result.page = pg_params.page;
+				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
+				connection.query(sql, params, function (err, results) {
+					if (err) {
+						console.log(err);
+					} else {
+						result.records = results.rows.length;
+						for (var i in results.rows) {
+							var row = { id: '', cell: [] };
+							var quote = [];
+							row.id = (i + 1);
+							row.cell = results.rows[i];
+							result.rows.push(row);
+						}
+						connection.end();
+						res.send(result);
+					}
+				});
+			}
+		});
+	});
+};
