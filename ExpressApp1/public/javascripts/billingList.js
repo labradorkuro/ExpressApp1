@@ -94,7 +94,7 @@ billingList.createBillingListGrid = function () {
 		onSelectRow: billingList.onSelectBillingList
 	});
 	jQuery("#billing_info_list").jqGrid('navGrid', '#billing_info_list_pager', { edit: false, add: false, del: false });
-	scheduleCommon.changeFontSize('1.1em');
+	scheduleCommon.changeFontSize();
 };
 // 請求先選択イベント
 billingList.onSelectBillingList = function (rowid) {

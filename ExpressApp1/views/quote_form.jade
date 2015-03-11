@@ -17,7 +17,7 @@ form#estimateForm(method="post",action="javascript:return false;")
 					input#billing_division(type="text" name="billing_division" size="40" placeholder="請求先部署名")
 			tr
 				td
-					input#billing_prepared(type="text" name="billing_prepared" size="40" placeholder="請求先担当者名")
+					input#billing_person(type="text" name="billing_person" size="40" placeholder="請求先担当者名")
 			tr
 				td
 					span#estimate_title2 下記の通りお見積申し上げます。
@@ -27,27 +27,18 @@ form#estimateForm(method="post",action="javascript:return false;")
 					input#quote_title(type="text" name="quote_title" size="35" placeholder="件名")
 			tr
 				td
-					input#quote_title1(type="text" name="quote_title1" size="40" )
-			tr
-				td
-					input#quote_title2(type="text" name="quote_title2" size="40" )
-			tr
-				td
-					input#quote_title3(type="text" name="quote_title3" size="40" )
-			tr
-				td
 					label 有効期限：
-					input.datepicker#quote_expire(type="text" name="quote_expire" size="31" placeholder="有効期限" )
+					input.datepicker#expire_date(type="text" name="expire_date" size="30" placeholder="日付選択" )
 	div.estimate_billing_right
 		table
 			tr
 				td
 					label 見積日
-					input#billing_date(type="text" name="billing_date" placeholder="請求先会社名")
+					input.datepicker#quote_date(type="text" name="quote_date" placeholder="日付選択")
 			tr
 				td
 					label No.
-					input#quote_no(type="text" name="quote_no" placeholder="見積番号")
+					input#estimate_quote_no(type="text" name="estimate_quote_no" readonly=true placeholder="見積番号")
 			tr
 				td
 					label#drc_adress1 〒530-0044 大阪市北区東天満2-10-31　第9田淵ビル3F
@@ -62,7 +53,7 @@ form#estimateForm(method="post",action="javascript:return false;")
 					label#drc_division_name 試験課
 			tr
 				td
-					label#drc_prepared 担当者：
+					label#drc_test_person 担当者：
 	div.estimate_mid
 		table
 			tr
@@ -73,24 +64,66 @@ form#estimateForm(method="post",action="javascript:return false;")
 						label#quote_total_title 御見積合計金額　
 						input#quote_total_price(type="text" name="quote_total_price" size="19" placeholder="見積合計金額")
 	div.estimate_meisai
-		table.estimate_meisai_table
+		table.estimate_meisai_table#meisai_table
+			tbody
+				tr
+					th 名称
+					th 単位
+					th 数量
+					th 単価
+					th 金額
+					th 集計
+					th 備考
+					th 
+						input.add_row_btn#add_row_0(type="button" name="add_row_0" value="行追加")
+				tr#row_1
+					td.name
+						input#test_middle_class_cd_1(type="text" name="test_middle_class_cd_1" size="20" placeholder="名称")
+					td.unit
+						input#unit_1(type="text" name="unit_1" size="4" placeholder="単位")
+					td.qty
+						input.num_type#qty_1(type="text" name="qty_1" size="4" placeholder="数量")
+					td.unit_price
+						input.num_type#unit_price_1(type="text" name="unit_price_1" size="9" placeholder="単価")
+					td.price
+						input.num_type#price_1(type="text" name="price_1" size="12" placeholder="金額")
+					td.memo
+						label
+							input#summary_1(type="checkbox" name="summary_1"  )
+							| 集計する
+					td.memo
+						input#memo_1(type="text" name="memo_1" size="12" placeholder="備考")
+					td
+						input.del_row_btn#del_row_btn_1(type="button" name="del_row_btn_1" value="行削除")
+		hr
+		table.quoto_info_table
 			tr
-				th 名称
-				th 単位
-				th 数量
-				th 単価
-				th 金額
-				th 備考
+				td.form_title 見積書PDF発行状況
+				td
+					label
+						input#quote_submit_check_no(type="radio" name="quote_submit_check" value="1" checked="true")
+						| 未発行（情報登録のみ）
+					label
+						input#quote_submit_check_yes(type="radio" name="quote_submit_check" value="2")
+						| 発行済
 			tr
-				td.name
-					input#name_1(type="text" name="name_1" size="30" placeholder="名称")
-				td.unit
-					input#unit_1(type="text" name="unit_1" size="4" placeholder="単位")
-				td.qty
-					input.num_type#qty_1(type="text" name="qty_1" size="4" placeholder="数量")
-				td.unit_price
-					input.num_type#unit_price_1(type="text" name="unit_price_1" size="9" placeholder="単価")
-				td.price
-					input.num_type#price_1(type="text" name="price_1" size="12" placeholder="金額")
-				td.memo
-					input#memo_1(type="text" name="memo_1" size="12" placeholder="備考")
+				td.form_title 受注ステータス
+				td
+					label
+						input#order_status_no(type="radio" name="order_status" value="1" checked="true")
+						| 商談中
+					label
+						input#order_status_yes(type="radio" name="order_status" value="2")
+						| 受注確定
+			tr
+				td.form_title 被験者数
+				td
+					input.num_type#estimate_monitors_num(type="text" name="estimate_monitors_num" size="5")
+		hr
+		table
+			tr
+				td.form_title_s 削除フラグ
+				td
+					label
+						input#estimate_delete_check(type="checkbox" name="estimate_delete_check" value="0")
+						| 削除

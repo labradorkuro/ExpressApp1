@@ -72,6 +72,7 @@
     <Compile Include="public\javascripts\ClientList.js" />
     <Compile Include="public\javascripts\DivisionList.js" />
     <Compile Include="public\javascripts\Entry.js" />
+    <Compile Include="public\javascripts\Quote.js" />
     <Compile Include="public\javascripts\EntryList.js" />
     <Compile Include="public\javascripts\fabric.min.js" />
     <Compile Include="public\javascripts\FileSaver.min.js" />

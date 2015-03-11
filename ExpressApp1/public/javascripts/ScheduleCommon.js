@@ -73,7 +73,8 @@ scheduleCommon.onloadDivisionReq = function (e) {
 };
 
 // jqgridのフォントサイズを変える
-scheduleCommon.changeFontSize = function(size){
+scheduleCommon.changeFontSize = function(){
+	var size = '1.1em';
     $('div.ui-jqgrid').css('font-size', size);
 	$('div.ui-jqgrid-view').css('font-size', size);
     $('table.ui-jqgrid-htable th').css('font-size', size);

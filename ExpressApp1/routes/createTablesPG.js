@@ -27,6 +27,12 @@ exports.create = function (req, res) {
 			+ "entry_amount_price DECIMAL(9),"		// 案件合計金額
 			+ "entry_amount_billing DECIMAL(9),"	// 案件請求合計金額
 			+ "entry_amount_deposit DECIMAL(9),"	// 案件入金合計金額
+			+ "report_limit_date DATE,"				// 報告書提出期限
+			+ "report_submit_date DATE,"			// 報告書提出日
+			+ "prompt_report_limit_date_1 DATE,"	// 速報提出期限１
+			+ "prompt_report_submit_date_1 DATE,"	// 速報提出日１
+			+ "prompt_report_limit_date_2 DATE,"	// 速報提出期限２
+			+ "prompt_report_submit_date_2 DATE,"	// 速報提出日２
 			+ "entry_memo VARCHAR(1024),"			// メモ		
 			+ "delete_check INT2,"					// 削除フラグ
 			+ "delete_reason VARCHAR(255),"			// 削除理由
@@ -58,43 +64,45 @@ exports.create = function (req, res) {
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
-			+ "updated_id VARCHAR(32)"							// 更新者ID
-			+ ", PRIMARY KEY(entry_no,billing_no));",
-
-		// 試験明細情報
+			+ "updated_id VARCHAR(32))",						// 更新者ID
+//			+ ", PRIMARY KEY(entry_no,billing_no));",
+//		"CREATE INDEX drc_sch.billing_info_index ON drc_sch.billing_info(entry_no,billing_no);",
+		// 見積情報
 		"CREATE TABLE IF NOT EXISTS drc_sch.quote_info ("
 			+ "entry_no VARCHAR(10),"		// 案件No
 			+ "quote_no VARCHAR(3),"		// 見積番号
-			+ "quote_detail_no VARCHAR(7)," // 明細番号
-			+ "test_item_cd VARCHAR(3),"	// 試験項目CD
-			+ "test_item VARCHAR(255),"		// 試験項目名
-			+ "sample_name VARCHAR(255),"	// 試料名
-			+ "arrive_date DATE,"			// 到着日
-			+ "test_planning_no VARCHAR(12)," // 試験計画書番号
+			+ "quote_date DATE,"			// 見積日
+//			+ "entry_title VARCHAR(128),"	// 試験タイトル
 			+ "monitors_num INT4,"			// 被験者数
-			+ "sample_volume INT4,"			// 検体数
-			+ "final_report_no VARCHAR(12),"// 報告書番号
-			+ "final_report_limit DATE,"	// 報告書提出期限
-			+ "final_report_date DATE,"		// 報告書提出日
-			+ "quick_report_limit1 DATE,"	// 速報提出期限1
-			+ "quick_report_date1 DATE,"	// 速報提出日1
-			+ "quick_report_limit2 DATE,"	// 速報提出期限2
-			+ "quick_report_date2 DATE,"	// 速報提出日2
-			+ "expect_value DECIMAL(9,2),"	// 期待値・設定値
-			+ "descript_value VARCHAR(255),"// 値説明
-			+ "unit_cd VARCHAR(5),"			// 単位CD
-			+ "unit VARCHAR(5),"			// 単位
+			+ "quote_submit_check INT2,"	// 見積書提出済フラグ	
+			+ "order_status INT2,"			// 受注ステータス
+			+ "expire_date DATE,"			// 見積有効期限
+			+ "quote_delete_check INT2,"	// 削除フラグ
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+			+ "created_id VARCHAR(32),"							// 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+			+ "updated_id VARCHAR(32))",						// 更新者ID
+//			+ ", PRIMARY KEY(entry_no,quote_no));",
+//		"CREATE INDEX drc_sch.quote_info_index ON drc_sch.quote_info(entry_no,quote_no);",
+
+		// 見積明細情報
+		"CREATE TABLE IF NOT EXISTS drc_sch.quote_specific_info ("
+			+ "entry_no VARCHAR(10),"		// 案件No
+			+ "quote_no VARCHAR(3),"		// 見積番号
+			+ "quote_detail_no VARCHAR(3)," // 明細番号
+			+ "test_middle_class_cd VARCHAR(8),"	// 試験中分類CD
+			+ "unit VARCHAR(16),"			// 単位
 			+ "unit_price DECIMAL(9,2),"	// 単価
-			+ "quantity INT4," // 数量
-			+ "quote_price DECIMAL(9,2)," // 見積金額
-			+ "test_memo VARCHAR(128)," // 備考
-			+ "quote_delete_check INT2," // 削除フラグ
-			+ "quote_delete_reason VARCHAR(255)," // 削除理由
-			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
-			+ "created_id VARCHAR(32)," // 作成者ID
-			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
-			+ "updated_id VARCHAR(32)" // 更新者ID
-			+ ", PRIMARY KEY(entry_no,quote_detail_no));",
+			+ "quantity INT4,"				// 数量
+			+ "price DECIMAL(9,2),"			// 金額
+			+ "quote_summary_check INT2,"	// 集計対象フラグ
+			+ "quote_delete_check INT2,"	// 削除フラグ
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+			+ "created_id VARCHAR(32),"							// 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+			+ "updated_id VARCHAR(32))",						// 更新者ID
+//			+ ", PRIMARY KEY(entry_no,quote_no,quote_detail_no));",
+//		"CREATE INDEX drc_sch.quote_specific_info_index ON drc_sch.quote_specific_info(entry_no,quote_no,quote_detail_no);",
 
 		"CREATE TABLE IF NOT EXISTS drc_sch.base_info (" // 拠点マスタ
 			+ "base_cd VARCHAR(2)," // 拠点CD

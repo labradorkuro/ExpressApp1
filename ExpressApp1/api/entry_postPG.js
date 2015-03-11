@@ -103,6 +103,12 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ 'entry_amount_price,'				// 案件合計金額
 			+ 'entry_amount_billing,'			// 案件請求合計金額
 			+ 'entry_amount_deposit,'			// 案件入金合計金額
+			+ 'report_limit_date,'				// 報告書提出期限
+			+ 'report_submit_date,'				// 報告書提出日
+			+ 'prompt_report_limit_date_1,'		// 速報提出期限１
+			+ 'prompt_report_submit_date_1,'	// 速報提出日１
+			+ 'prompt_report_limit_date_2,'		// 速報提出期限２
+			+ 'prompt_report_submit_date_2,'	// 速報提出日２
 			+ 'entry_memo,'						// メモ
 			+ 'delete_check,'					// 削除フラグ
 			+ 'delete_reason,'					// 削除理由
@@ -138,19 +144,25 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ '$19,'	// 案件合計金額
 			+ '$20,'	// 案件請求合計金額
 			+ '$21,'	// 案件入金合計金額
-			+ '$22,'	// メモ
-			+ '$23,'	// 削除フラグ
-			+ '$24,'	// 削除理由
-			+ '$25,'	// 入力日
-			+ '$26,'	// 入力完了チェック
-			+ '$27,'	// 入力者ID
-			+ '$28,'	// 確認日
-			+ '$29,'	// 確認完了チェック
-			+ '$30,'	// 確認者ID
-			+ '$31,'	// 作成日
-			+ '$32,'	// 作成者ID
-			+ '$33,'	// 更新日
-			+ '$34'		// 更新者ID
+			+ '$22,'	// 報告書提出期限
+			+ '$23,'	// 報告書提出日
+			+ '$24,'	// 速報提出期限１
+			+ '$25,'	// 速報提出日１
+			+ '$26,'	// 速報提出期限２
+			+ '$27,'	// 速報提出日２
+			+ '$28,'	// メモ
+			+ '$29,'	// 削除フラグ
+			+ '$30,'	// 削除理由
+			+ '$31,'	// 入力日
+			+ '$32,'	// 入力完了チェック
+			+ '$33,'	// 入力者ID
+			+ '$34,'	// 確認日
+			+ '$35,'	// 確認完了チェック
+			+ '$36,'	// 確認者ID
+			+ '$37,'	// 作成日
+			+ '$38,'	// 作成者ID
+			+ '$39,'	// 更新日
+			+ '$40'		// 更新者ID
 			+ ')'
 			;
 	// SQL実行
@@ -176,6 +188,12 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			entry.entry_amount_price,		// 案件合計金額
 			entry.entry_amount_billing,		// 案件請求合計金額
 			entry.entry_amount_deposit,		// 案件入金合計金額
+			entry.report_limit_date,		// 報告書提出期限
+			entry.report_submit_date,		// 報告書提出日
+			entry.prompt_report_limit_date_1,	// 速報提出期限１
+			entry.prompt_report_submit_date_1,	// 速報提出日１
+			entry.prompt_report_limit_date_2,	// 速報提出期限２
+			entry.prompt_report_submit_date_2,	// 速報提出日２
 			entry.entry_memo,				// メモ
 			entry.delete_check,				// 削除フラグ
 			entry.delete_reason,			// 削除理由
@@ -224,18 +242,24 @@ var updateEntryInfo = function(entry, req, res) {
 			+ 'entry_amount_price = $18,'			// 案件合計金額
 			+ 'entry_amount_billing = $19,'			// 案件請求合計金額
 			+ 'entry_amount_deposit = $20,'			// 案件入金合計金額
-			+ 'entry_memo = $21,'					// メモ
-			+ 'delete_check = $22,'					// 削除フラグ
-			+ 'delete_reason = $23,'				// 削除理由
-			+ 'input_check_date = $24,'				// 入力日
-			+ 'input_check = $25,'					// 入力完了チェック
-			+ 'input_operator_id = $26,'			// 入力者ID
-			+ 'confirm_check_date = $27,'			// 確認日
-			+ 'confirm_check = $28,'				// 確認完了チェック
-			+ 'confirm_operator_id = $29,'			// 確認者ID
-			+ 'updated = $30,'						// 更新日
-			+ 'updated_id = $31'					// 更新者ID
-			+ ' WHERE entry_no = $32';
+			+ 'report_limit_date = $21,'			// 報告書提出期限
+			+ 'report_submit_date = $22,'			// 報告書提出日
+			+ 'prompt_report_limit_date_1 = $23,'	// 速報提出期限１
+			+ 'prompt_report_submit_date_1 = $24,'	// 速報提出日１
+			+ 'prompt_report_limit_date_2 = $25,'	// 速報提出期限２
+			+ 'prompt_report_submit_date_2 = $26,'	// 速報提出日２
+			+ 'entry_memo = $27,'					// メモ
+			+ 'delete_check = $28,'					// 削除フラグ
+			+ 'delete_reason = $29,'				// 削除理由
+			+ 'input_check_date = $30,'				// 入力日
+			+ 'input_check = $31,'					// 入力完了チェック
+			+ 'input_operator_id = $32,'			// 入力者ID
+			+ 'confirm_check_date = $33,'			// 確認日
+			+ 'confirm_check = $34,'				// 確認完了チェック
+			+ 'confirm_operator_id = $35,'			// 確認者ID
+			+ 'updated = $36,'						// 更新日
+			+ 'updated_id = $37'					// 更新者ID
+			+ ' WHERE entry_no = $38';
 
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
@@ -260,6 +284,12 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.entry_amount_price,		// 案件合計金額
 			entry.entry_amount_billing,		// 案件請求合計金額
 			entry.entry_amount_deposit,		// 案件入金合計金額
+			entry.report_limit_date,		// 報告書提出期限
+			entry.report_submit_date,		// 報告書提出日
+			entry.prompt_report_limit_date_1,		// 速報提出期限１
+			entry.prompt_report_submit_date_1,	// 速報提出日１
+			entry.prompt_report_limit_date_2,		// 速報提出期限２
+			entry.prompt_report_submit_date_2,	// 速報提出日２
 			entry.entry_memo,				// メモ
 			entry.delete_check,				// 削除フラグ
 			entry.delete_reason,			// 削除理由
@@ -318,6 +348,12 @@ var entry_check = function (entry) {
 	entry.prior_payment_accept = dateCheck(entry.prior_payment_accept);
 	entry.input_check_date = dateCheck(entry.input_check_date);
 	entry.confirm_check_date = dateCheck(entry.confirm_check_date);
+	entry.report_limit_date = dateCheck(entry.report_limit_date);
+	entry.report_submit_date = dateCheck(entry.report_submit_date);
+	entry.prompt_report_limit_date_1 = dateCheck(entry.prompt_report_limit_date_1);
+	entry.prompt_report_submit_date_1 = dateCheck(entry.prompt_report_submit_date_1);
+	entry.prompt_report_limit_date_2 = dateCheck(entry.prompt_report_limit_date_2);
+	entry.prompt_report_submit_date_2 = dateCheck(entry.prompt_report_submit_date_2);
 	// 数値変換
 	entry.order_accept_check = Number(entry.order_accept_check);
 	entry.acounting_period_no = Number(entry.acounting_period_no);
@@ -339,55 +375,29 @@ var entry_check = function (entry) {
 exports.quote_post = function (req, res) {
 	var quote = quote_check(req.body);
 	pg.connect(connectionString,function (err, connection) {
-		if (quote.quote_detail_no === '') {
-			// 試験（見積）明細データのDB追加
-			// 試験（見積）明細番号を取得してデータを追加する
-			getQuoteDetailNo(connection, quote, req, res);
+		if (quote.estimate_quote_no === '') {
+			// 見積データのDB追加
+			// 見積番号を取得してデータを追加する
+			getQuoteNo(connection, quote, req, res);
 		} else {
-			// 案件データの更新
+			// 見積データの更新
 			updateQuote(connection, quote, req, res);
 		}
 	});
 };
 
-// 試験（見積）明細の追加（見積番号が未取得の場合）
+// 見積情報の追加（見積番号が未取得の場合）
 var getQuoteNo = function(connection, quote, req, res) {
-	var rtn = "";
-	var count = 1;
-	var now = tools.getToday("{0}/{1}/{2}");
-	var sql = 'SELECT quote_count FROM drc_sch.quote_number WHERE quote_date = $1';
+	var sql = 'SELECT entry_no FROM drc_sch.quote_info WHERE entry_no = $1';
 	var rows = [];	
 	// SQL実行（見積Noを決めるため）
-	var query = connection.query(sql, [now]);
+	var query = connection.query(sql, [quote.entry_no]);
 	query.on('row' , function (row) {
 		rows.push(row);
 	});
 	query.on('end', function (result, err) {
-		if (rows.length === 0) {
-			// その日の見積登録カウントが未登録なら追加する
-			sql = 'INSERT INTO drc_sch.quote_number (quote_date,quote_count) VALUES ($1,$2)';
-			query = connection.query(sql, [now,count]);
-			query.on('end', function (result, err) {
-				// 見積番号の生成				
-				quote.quote_no = getDateNo(count, '');
-				// 試験（見積）明細番号を取得してデータを追加する
-				getQuoteDetailNo(connection, quote, req, res);
-			});
-			query.on('error', function (error) {
-				console.log(sql + ' ' + error);
-			});
-		} else {
-			// 見積カウントの登録あり
-			for (var i in rows) {
-				count = rows[i].quote_count;
-			}
-			// 見積カウントの更新
-			count++;
-			// 見積番号の生成				
-			quote.quote_no = getDateNo(count, '');
-			// 試験（見積）明細番号を取得してデータを追加する
-			getQuoteDetailNo(connection, quote, req, res);
-		}
+		quote.estimate_quote_no = ('000' + (rows.length + 1)).slice(-3);
+		insertQuote(connection, quote, req, res)
 	});
 	query.on('error', function (error) {
 		console.log(sql + ' ' + error);
@@ -439,113 +449,54 @@ var getQuoteDetailNo = function (connection, quote, req, res) {
 };
 
 // 試験（見積）明細データの追加
-var insertQuote = function (connection, quote, count, req, res) {
-	quote.quote_detail_no = ('000' + count).slice(-3);
+var insertQuote = function (connection, quote, req, res) {
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
 	var sql = 'INSERT INTO drc_sch.quote_info (' 
-			+ "entry_no," // 案件No
-			+ "quote_no," // 見積番号
-			+ "quote_detail_no," // 明細番号
-			+ "test_item_cd," // 試験項目CD
-			+ "test_item,"		// 試験項目名
-			+ "sample_name," // 試料名
-			+ "arrive_date," // 到着日
-			+ "test_planning_no," // 試験計画書番号
-			+ "monitors_num," // 被験者数
-			+ "sample_volume," // 検体数
-			+ "final_report_no," // 報告書番号
-			+ "final_report_limit," // 報告書提出期限
-			+ "final_report_date," // 報告書提出日
-			+ "quick_report_limit1," // 速報提出期限1
-			+ "quick_report_date1," // 速報提出日1
-			+ "quick_report_limit2," // 速報提出期限2
-			+ "quick_report_date2," // 速報提出日2
-			+ "expect_value," // 期待値・設定値
-			+ "descript_value," // 値説明
-			+ "unit_cd," // 単位CD
-			+ "unit," // 単位
-			+ "unit_price," // 単価
-			+ "quantity," // 数量
-			+ "quote_price," // 見積金額
-			+ "test_memo," // 備考
-			+ "quote_delete_check," // 削除フラグ
-			+ "quote_delete_reason," // 削除理由
-			+ "created," // 作成日
-			+ "created_id," // 作成者ID
-			+ "updated," // 更新日
-			+ "updated_id" // 更新者ID
-			+ ") values (" 
-			+ "$1," // 案件No
-			+ "$2," // 見積番号
-			+ "$3," // 明細番号
-			+ "$4," // 試験項目CD
-			+ "$5," // 試験項目名
-			+ "$6," // 試料名
-			+ "$7," // 到着日
-			+ "$8," // 試験計画書番号
-			+ "$9," // 被験者数
-			+ "$10," // 検体数
-			+ "$11," // 報告書番号
-			+ "$12," // 報告書提出期限
-			+ "$13," // 報告書提出日
-			+ "$14," // 速報提出期限1
-			+ "$15," // 速報提出日1
-			+ "$16," // 速報提出期限2
-			+ "$17," // 速報提出日2
-			+ "$18," // 期待値・設定値
-			+ "$19," // 値説明
-			+ "$20," // 単位CD
-			+ "$21," // 単位
-			+ "$22," // 単価
-			+ "$23," // 数量
-			+ "$24," // 見積金額
-			+ "$25," // 備考
-			+ "$26," // 削除フラグ
-			+ "$27," // 削除理由
-			+ "$28," // 作成日
-			+ "$29," // 作成者ID
-			+ "$30," // 更新日
-			+ "$31" // 更新者ID
-			+ ")";
+		+ 'entry_no,'			// 案件番号
+		+ 'quote_no,'			// 見積番号
+		+ 'quote_date,'			// 見積日
+		+ 'expire_date,'		// 有効期限
+		+ 'monitors_num,'		// 被験者数
+		+ 'quote_submit_check,'	// 見積書提出済フラグ
+		+ 'order_status,'		// 受注ステータス
+		+ "quote_delete_check," // 削除フラグ
+		+ "created,"			// 作成日
+		+ "created_id,"			// 作成者ID
+		+ "updated,"			// 更新日
+		+ "updated_id"			// 更新者ID
+		+ ") values (" 
+		+ "$1," // 案件No
+		+ "$2," // 見積番号
+		+ "$3," // 見積日
+		+ "$4," // 有効期限
+		+ "$5," // 被験者数
+		+ "$6," // 見積書提出済フラグ
+		+ "$7," // 受注ステータス
+		+ "$8," // 削除フラグ
+		+ "$9," // 作成日
+		+ "$10," // 作成者ID
+		+ "$11," // 更新日
+		+ "$12"  // 更新者ID
+		+ ")";
 	// SQL実行
 	var query = connection.query(sql, [
-			quote.entry_no, // 案件No
-			quote.quote_no, // 見積番号
-			quote.quote_detail_no, // 明細番号
-			quote.test_item_cd, // 試験項目CD
-			quote.test_item,	// 試験項目名
-			quote.sample_name,	// 試料名
-			quote.arrive_date, // 到着日
-			quote.test_planning_no, // 試験計画書番号
-			quote.monitors_num, // 被験者数
-			quote.sample_volume, // 検体数
-			quote.final_report_no, // 報告書番号
-			quote.final_report_limit, // 報告書提出期限
-			quote.final_report_date, // 報告書提出日
-			quote.quick_report_limit1, // 速報提出期限1
-			quote.quick_report_date1, // 速報提出日1
-			quote.quick_report_limit2, // 速報提出期限2
-			quote.quick_report_date2, // 速報提出日2
-			quote.expect_value, // 期待値・設定値
-			quote.descript_value, // 値説明
-			quote.unit_cd, // 単位CD
-			quote.unit, // 単位
-			quote.unit_price, // 単価
-			quote.quantity, // 数量
-			quote.quote_price, // 見積金額
-			quote.test_memo, // 備考
-			quote.quote_delete_check, // 削除フラグ
-			quote.quote_delete_reason, // 削除理由
-			created, // 作成日
-			created_id, // 作成者ID
-			updated, // 更新日
-			updated_id // 更新者ID
+			quote.entry_no,				// 案件No
+			quote.estimate_quote_no,	// 見積番号
+			quote.quote_date,			// 見積日
+			quote.expire_date,			// 見積日
+			quote.estimate_monitors_num,// 被験者数
+			quote.quote_submit_check,	// 見積書提出済フラグ
+			quote.order_status,			// 受注ステータス
+			quote.estimate_delete_check,// 削除フラグ
+			created,					// 作成日
+			created_id,					// 作成者ID
+			updated,					// 更新日
+			updated_id					// 更新者ID
 		]);
 	query.on('end', function(result,err) {
-//		console.log(result);
 		connection.end();
 		res.send(quote);
 	});
@@ -556,65 +507,32 @@ var insertQuote = function (connection, quote, count, req, res) {
 
 // 試験（見積）明細データの更新
 var updateQuote = function (connection,quote, req, res) {
+	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.quote_info SET ' 
-			+ "test_item_cd  = $1," // 試験項目CD
-			+ "test_item = $2," // 試験項目名
-			+ "sample_name = $3," // 試料名
-			+ "arrive_date = $4," // 到着日
-			+ "test_planning_no = $5," // 試験計画書番号
-			+ "monitors_num = $6," // 被験者数
-			+ "sample_volume = $7," // 検体数
-			+ "final_report_no = $8," // 報告書番号
-			+ "final_report_limit = $9," // 報告書提出期限
-			+ "final_report_date = $10," // 報告書提出日
-			+ "quick_report_limit1 = $11," // 速報提出期限1
-			+ "quick_report_date1 = $12," // 速報提出日1
-			+ "quick_report_limit2 = $13," // 速報提出期限2
-			+ "quick_report_date2 = $14," // 速報提出日2
-			+ "expect_value = $15," // 期待値・設定値
-			+ "descript_value = $16," // 値説明
-			+ "unit_cd = $17," // 単位CD
-			+ "unit = $18," // 単位
-			+ "unit_price = $19," // 単価
-			+ "quantity = $20," // 数量
-			+ "quote_price = $21," // 見積金額
-			+ "test_memo = $22," // 備考
-			+ "quote_delete_check = $23," // 削除フラグ
-			+ "quote_delete_reason = $24," // 削除理由
-			+ "updated_id = $25 WHERE entry_no = $26 AND quote_detail_no = $27"; // 更新者ID
+		+ 'quote_date = $1,'			// 見積日
+		+ 'expire_date = $2,'			// 有効期限
+		+ 'monitors_num = $3,'			// 被験者数
+		+ 'quote_submit_check = $4,'	// 見積書提出済フラグ
+		+ 'order_status = $5,'			// 受注ステータス
+		+ "quote_delete_check = $6,"	// 削除フラグ
+		+ "updated = $7,"				// 更新日
+		+ "updated_id = $8"				// 更新者ID
+		+ " WHERE entry_no = $9 AND quote_no = $10";
 	// SQL実行
 	var query = connection.query(sql, [
-			quote.test_item_cd, // 試験項目CD
-			quote.test_item,	// 試験項目名
-			quote.sample_name,	// 試料名
-			quote.arrive_date, // 到着日
-			quote.test_planning_no, // 試験計画書番号
-			quote.monitors_num, // 被験者数
-			quote.sample_volume, // 検体数
-			quote.final_report_no, // 報告書番号
-			quote.final_report_limit, // 報告書提出期限
-			quote.final_report_date, // 報告書提出日
-			quote.quick_report_limit1, // 速報提出期限1
-			quote.quick_report_date1, // 速報提出日1
-			quote.quick_report_limit2, // 速報提出期限2
-			quote.quick_report_date2, // 速報提出日2
-			quote.expect_value, // 期待値・設定値
-			quote.descript_value, // 値説明
-			quote.unit_cd, // 単位CD
-			quote.unit, // 単位
-			quote.unit_price, // 単価
-			quote.quantity, // 数量
-			quote.quote_price, // 見積金額
-			quote.test_memo, // 備考
-			quote.quote_delete_check, // 削除フラグ
-			quote.quote_delete_reason, // 削除理由
-			updated_id, // 更新者ID
-			quote.entry_no,				// 見積番号
-			quote.quote_detail_no		// 明細番号
-		]);
+		quote.quote_date,			// 見積日
+		quote.expire_date,			// 有効期限
+		quote.estimate_monitors_num,// 被験者数
+		quote.quote_submit_check,	// 見積書提出済フラグ
+		quote.order_status,			// 受注ステータス
+		quote.estimate_delete_check,// 削除フラグ
+		updated,					// 更新日
+		updated_id,					// 更新者ID
+		quote.entry_no,				// 見積番号
+		quote.estimate_quote_no		// 明細番号
+	]);
 	query.on('end', function(result,err) {
-//		console.log(result);
 		connection.end();
 		res.send(quote);
 	});
@@ -624,19 +542,17 @@ var updateQuote = function (connection,quote, req, res) {
 };
 
 var quote_check = function (quote) {
-	quote.arrive_date = dateCheck(quote.arrive_date); // 到着日
-	quote.monitors_num = Number(quote.monitors_num); // 被験者数
-	quote.sample_volume = Number(quote.sample_volume); // 検体数
-	quote.final_report_limit = dateCheck(quote.final_report_limit); // 報告書提出期限
-	quote.final_report_date = dateCheck(quote.final_report_date); // 報告書提出日
-	quote.quick_report_limit1 = dateCheck(quote.quick_report_limit1); // 速報提出期限1
-	quote.quick_report_date1 = dateCheck(quote.quick_report_date1); // 速報提出日1
-	quote.quick_report_limit2 = dateCheck(quote.quick_report_limit2); // 速報提出期限2
-	quote.quick_report_date2 = dateCheck(quote.quick_report_date2); // 速報提出日2
-	quote.expect_value = Number(quote.expect_value); // 期待値・設定値
-	quote.unit_price = Number(quote.unit_price); // 単価
-	quote.quantity = Number(quote.quantity); // 数量
-	quote.quote_price = Number(quote.quote_price); // 見積金額
-	quote.quote_delete_check = Number(quote.quote_delete_check); // 削除フラグ
+	// 数値
+	quote.monitors_num = Number(quote.estimate_monitors_num);	// 被験者数
+	quote.quote_submit_check = Number(quote.quote_submit_check);	// 見積書提出済フラグ
+	quote.order_status = Number(quote.order_status);	// 受注ステータス
+//	quote.unit_price = Number(quote.unit_price);		// 単価
+//	quote.quantity = Number(quote.quantity);			// 数量
+//	quote.quote_price = Number(quote.quote_price);		// 見積金額
+//	quote.summary_check = Number(quote.summary_check); // 削除フラグ
+//	quote.quote_delete_check = Number(quote.quote_delete_check); // 削除フラグ
+	// 日付
+	quote.quote_date = dateCheck(quote.quote_date);
+	quote.expire_date = dateCheck(quote.expire_date);
 	return quote;
 };

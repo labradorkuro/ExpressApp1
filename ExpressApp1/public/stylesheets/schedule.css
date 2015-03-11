@@ -1277,7 +1277,7 @@ div.estimate_billing_right {
 }
 div.estimate_mid {
     position:absolute;
-    top:380px;
+    top:300px;
     width:90%;
     height:200px;
     text-align:left;
@@ -1285,7 +1285,7 @@ div.estimate_mid {
 }
 div.estimate_meisai {
     position:absolute;
-    top:440px;
+    top:400px;
     width:90%;
     height:600px;
     text-align:left;
@@ -1299,7 +1299,7 @@ input#billing_company_name_2 {
 input#billing_division {
     font-size: 16px;
 }
-input#billing_prepared {
+input#billing_person {
     font-size: 16px;
 }
 input#quote_title {
@@ -1442,4 +1442,16 @@ a.template_select_button:active {
 
 div.select_template {
     overflow:auto;
+}
+
+div.left_grid {
+    position:relative;
+    float:left;
+    width:400px;
+}
+div.right_grid {
+    position:relative;
+    float:left;
+    padding-left:10px;
+    width:900px;
 }

@@ -10,7 +10,6 @@ $(function () {
 	divisionList.createDivisionDialog();
 	divisionList.createMessageDialog();
 	divisionList.createGrid();
-	scheduleCommon.changeFontSize('1.0em');
 	// 事業部追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_division").bind('click' , {}, divisionList.openDivisionDialog);
 	// 事業部編集ボタンイベント（登録・編集用画面の表示）
@@ -88,6 +87,7 @@ divisionList.createGrid = function () {
 		onSelectRow: divisionList.onSelectuser
 	});
 	jQuery("#division_list").jqGrid('navGrid', '#division_pager', { edit: false, add: false, del: false });
+	scheduleCommon.changeFontSize();
 };
 
 // 編集用ダイアログの表示

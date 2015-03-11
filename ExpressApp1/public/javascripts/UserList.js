@@ -11,7 +11,6 @@ $(function () {
 	// 編集用ダイアログの設定
 	userList.createUserDialog();
 	userList.createGrid();
-	scheduleCommon.changeFontSize('1.0em');
 	// 社員情報追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_user").bind('click' , {}, userList.openUserDialog);
 	// 社員情報編集ボタンイベント（登録・編集用画面の表示）
@@ -82,6 +81,7 @@ userList.createGrid = function () {
 		onSelectRow: userList.onSelectUser
 	});
 	jQuery("#user_list").jqGrid('navGrid', '#user_pager', { edit: false, add: false, del: false });
+	scheduleCommon.changeFontSize();
 };
 
 // 編集用ダイアログの表示

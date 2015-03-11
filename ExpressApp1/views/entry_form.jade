@@ -6,10 +6,10 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title_s 案件番号
 			td 
-				input#entry_no(type="text" name="entry_no" value=no readonly="true" placeholder="案件番号" size="12")
+				input#entry_no(type="text" name="entry_no" value=no readonly="true" placeholder="自動採番" size="12")
 			td.form_title_s 見積番号
 			td 
-				input#quote_no(type="text" name="quote_no" size="15")
+				input#quote_no(type="text" name="quote_no" readonly="true" placeholder="自動採番" size="15")
 			td.form_title_s 営業担当者
 			td 
 				select#sales_person_id(name="sales_person_id")
@@ -17,7 +17,7 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title_s 問合せ日
 			td 
-				input.datepicker#inquiry_date(type="text" name="inquiry_date" placeholder="問合せ日" size="12")
+				input.datepicker#inquiry_date(type="text" name="inquiry_date" placeholder="日付選択" size="12")
 			td.form_title_s ステータス
 			td(colspan=3) 
 				select#entry_status(name="entry_status")
@@ -28,7 +28,7 @@ form#entryForm(method="post",action="javascript:return false;")
 			td.form_title_ss 代理店
 			td(colspan=4)
 				input#agent_cd(type="hidden" name="agent_cd")
-				input#agent_name(type="text" name="agent_name" size="16")
+				input#agent_name(type="text" name="agent_name" size="16" placeholder="クライアント選択")
 	hr
 	table
 		tr
@@ -37,7 +37,7 @@ form#entryForm(method="post",action="javascript:return false;")
 			td.form_title_ss 社名
 			td
 				input#client_cd(type="hidden" name="client_cd")
-				input#client_name(type="text" name="client_name" size="16")
+				input#client_name(type="text" name="client_name" size="16" placeholder="クライアント選択")
 			td.form_title_ss 部署
 			td
 				input#client_division_cd(type="hidden" name="client_division_cd")
@@ -52,11 +52,11 @@ form#entryForm(method="post",action="javascript:return false;")
 			td.form_title 試験大分類
 			td 
 				input#test_large_class_cd(type="hidden" name="test_large_class_cd")
-				input#test_large_class_name(type="text" name="test_large_class_name" size="12")
+				input#test_large_class_name(type="text" name="test_large_class_name" placeholder="分類選択" size="12")
 			td.form_title 試験中分類
 			td 
 				input#test_middle_class_cd(type="hidden" name="test_middle_class_cd")
-				input#test_middle_class_name(type="text" name="test_middle_class_name" size="12")
+				input#test_middle_class_name(type="text" name="test_middle_class_name" placeholder="分類選択" size="12")
 			td
 				textarea#test_middle_class_list(cols="16" rows="2")
 	table
@@ -86,7 +86,7 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title_ss 受注日
 			td 
-				input.datepicker#order_accepted_date(type="text" name="order_accepted_date" size="12")
+				input.datepicker#order_accepted_date(type="text" name="order_accepted_date" placeholder="日付選択" size="12")
 			td.form_title_m 仮受注チェック
 			td
 				label
@@ -121,6 +121,29 @@ form#entryForm(method="post",action="javascript:return false;")
 	hr
 	table
 		tr
+			td.form_title 報告書提出期限
+			td 
+				input.datepicker#report_limit_date(type="text" name="report_limit_date" placeholder="日付選択" size="12")
+			td.form_title 報告書提出日
+			td 
+				input.datepicker#report_submit_date(type="text" name="report_submit_date" placeholder="日付選択" size="12")
+		tr
+			td.form_title 速報提出期限1
+			td 
+				input.datepicker#prompt_report_limit_date_1(type="text" name="prompt_report_limit_date_1" placeholder="日付選択" size="12")
+			td.form_title 速報提出日1
+			td 
+				input.datepicker#prompt_report_submit_date_1(type="text" name="prompt_report_submit_date_1" placeholder="日付選択" size="12")
+		tr
+			td.form_title 速報提出期限2
+			td 
+				input.datepicker#prompt_report_limit_date_2(type="text" name="prompt_report_limit_date_2" placeholder="日付選択" size="12")
+			td.form_title 速報提出日2
+			td 
+				input.datepicker#prompt_report_submit_date_2(type="text" name="prompt_report_submit_date_2" placeholder="日付選択" size="12")
+	hr
+	table
+		tr
 			td.form_title_ss 備考
 			td
 				textarea#entry_memo(name="entry_memo" cols="60" rows="2")
@@ -139,7 +162,7 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title_ss 入力日
 			td
-				input.datepicker#input_check_date(type="text" name="input_check_date" size="10")
+				input.datepicker#input_check_date(type="text" name="input_check_date" placeholder="日付選択" size="10")
 			td.form_title_s 入力者ID
 			td
 				select#input_operator_id(name="input_operator_id")
@@ -151,7 +174,7 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title_ss 確認日
 			td
-				input.datepicker#confirm_check_date(type="text" name="confirm_check_date" size="10")
+				input.datepicker#confirm_check_date(type="text" name="confirm_check_date" placeholder="日付選択" size="10")
 			td.form_title_s 確認者ID
 			td
 				select#confirm_operator_id(name="confirm_operator_id")

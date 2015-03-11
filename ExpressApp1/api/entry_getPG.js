@@ -69,6 +69,7 @@ var entry_get_list = function (req, res) {
 		+ 'large_items.item_name AS test_large_class_name,' 
 		+ 'entry_info.test_middle_class_cd,' 
 		+ 'middle_items.item_name AS test_middle_class_name,' 
+		+ 'test_person_id,'
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 		+ 'entry_info.created_id,' 
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
@@ -220,7 +221,21 @@ var entry_get_detail = function (req, res) {
 		+ 'entry_amount_price,'													// 案件合計金額
 		+ 'entry_amount_billing,'												// 案件請求合計金額
 		+ 'entry_amount_deposit,'												// 案件入金合計金額
+		+ 'to_char(report_limit_date,\'YYYY/MM/DD\') AS report_limit_date,'							// 報告書提出期限
+		+ 'to_char(report_submit_date,\'YYYY/MM/DD\') AS report_submit_date,'						// 報告書提出日
+		+ 'to_char(prompt_report_limit_date_1,\'YYYY/MM/DD\') AS prompt_report_limit_date_1,'		// 速報提出期限１
+		+ 'to_char(prompt_report_submit_date_1,\'YYYY/MM/DD\') AS prompt_report_submit_date_1,'		// 速報提出日１
+		+ 'to_char(prompt_report_limit_date_2,\'YYYY/MM/DD\') AS prompt_report_limit_date_2,'		// 速報提出期限２
+		+ 'to_char(prompt_report_submit_date_2,\'YYYY/MM/DD\') AS prompt_report_submit_date_2,'		// 速報提出日２
 		+ 'entry_memo,'															// メモ
+		+ "entry_info.delete_check,"													// 削除フラグ
+		+ "entry_info.delete_reason,"													// 削除理由
+		+ "to_char(entry_info.input_check_date,'YYYY/MM/DD') AS input_check_date,"		// 入力日
+		+ "entry_info.input_check,"														// 入力完了チェック
+		+ "entry_info.input_operator_id,"												// 入力者ID
+		+ "to_char(entry_info.confirm_check_date,'YYYY/MM/DD') AS confirm_check_date,"	// 確認日
+		+ "entry_info.confirm_check,"													// 確認完了チェック
+		+ "entry_info.confirm_operator_id,"												// 確認者ID
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"		// 作成日
 		+ 'entry_info.created_id,'												// 作成者ID
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"		// 更新日
@@ -253,61 +268,57 @@ var entry_get_detail = function (req, res) {
 	});
 };
 
-// 試験（見積）明細データの取得
+// 見積情報データの取得
 exports.quote_get = function (req, res) {
-	// noは明細番号
 	if ((req.params.entry_no != undefined) && (req.params.entry_no != '')) {
-		if ((req.params.quote_detail_no != undefined) && (req.params.quote_detail_no != '')) {
-			
+		if ((req.params.quote_no != undefined) && (req.params.quote_no != '')) {
+			// 案件番号と見積番号に該当する情報を取得する
 			quote_get_detail(req, res);
 		} else {
+			// 案件に含まれる見積のリストを取得する
 			quote_get_list(req, res);
 		}
 	}
 };
-// 試験（見積）明細データの取得（ガントチャート用）
+// 見積明細データの取得
+exports.quote_specific_get = function (req, res) {
+	if ((req.params.entry_no != undefined) && (req.params.entry_no != '')) {
+		if ((req.params.quote_no != undefined) && (req.params.quote_no != '')) {
+			if ((req.params.quote_detail_no != undefined) && (req.params.quote_detail_no != '')) {
+				// 見積の中の明細情報を取得する			
+				quote_specific_get_detail(req, res);
+			} else {
+				// 見積の中の明細情報のリストを取得する
+				quote_specific_get_list(req, res);
+			}
+		}
+	}
+};
+// データの取得（ガントチャート用）
 exports.quote_gantt = function (req, res) {
 	quote_get_list_for_gantt(req, res);
 };
 
-// 試験（見積）明細リストの取得
+// 見積情報リストの取得
 var quote_get_list = function (req, res) {
 	var pg_params = getPagingParams(req);
 	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.quote_info WHERE quote_delete_check = $1 AND entry_no = $2';
 	var sql = 'SELECT ' 
-		+ 'quote_no,' // 見積番号
-		+ 'quote_detail_no,' // 明細番号
-		+ 'test_item_cd,' // 試験項目CD
-		+ 'test_item,' // 試験項目名
-		+ 'sample_name,' // 試料名
-		+ 'to_char(arrive_date,\'YYYY/MM/DD\') AS arrive_date,' // 到着日
-		+ 'test_planning_no,' // 試験計画書番号
-		+ 'monitors_num,' // 被験者数
-		+ 'sample_volume,' // 検体数
-		+ 'final_report_no,' // 報告書番号
-		+ 'to_char(final_report_limit,\'YYYY/MM/DD\') AS final_report_limit,' // 報告書提出期限
-		+ 'to_char(final_report_date,\'YYYY/MM/DD\') AS final_report_date,' // 報告書提出日
-		+ 'to_char(quick_report_limit1,\'YYYY/MM/DD\') AS quick_report_limit1,' // 速報提出期限1
-		+ 'to_char(quick_report_date1,\'YYYY/MM/DD\') AS quick_report_date1,' // 速報提出日1
-		+ 'to_char(quick_report_limit2,\'YYYY/MM/DD\') AS quick_report_limit2,' // 速報提出期限2
-		+ 'to_char(quick_report_date2,\'YYYY/MM/DD\') AS quick_report_date2,' // 速報提出日2
-		+ 'expect_value,' // 期待値・設定値
-		+ 'descript_value,' // 値説明
-		+ 'unit_cd,' // 単位CD
-		+ 'unit,' // 単位
-		+ 'unit_price,' // 単価
-		+ 'quantity,' // 数量
-		+ 'quote_price,' // 見積金額
-		+ 'test_memo,' // 備考
+		+ 'quote_info.entry_no,'
+		+ 'quote_no,'			// 見積番号
+		+ 'to_char(quote_date,\'YYYY/MM/DD\') AS quote_date,'	// 見積日
+		+ 'to_char(expire_date,\'YYYY/MM/DD\') AS expire_date,'	// 有効期限
+		+ 'monitors_num,'		// 被験者数
+		+ 'quote_submit_check,'	// 見積書提出済フラグ
+		+ 'order_status,'		// 受注ステータス
 		+ 'quote_delete_check,' // 削除フラグ
-		+ 'quote_delete_reason,' // 削除理由
-		+ 'to_char(created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
-		+ 'created_id,' 
-		+ 'to_char(updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
-		+ 'updated_id,' 
-		+ 'quote_delete_check,' 
-		+ 'quote_delete_reason' 
-		+ ' FROM drc_sch.quote_info WHERE quote_delete_check = $1 AND entry_no = $2 ORDER BY ' 
+		+ 'to_char(quote_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'quote_info.created_id,' 
+		+ 'to_char(quote_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ 'quote_info.updated_id,' 
+		+ 'quote_delete_check' 
+		+ ' FROM drc_sch.quote_info'
+		+ ' WHERE quote_delete_check = $1 AND quote_info.entry_no = $2 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	var result = { page: 1, total: 20, records: 0, rows: [] };
@@ -334,6 +345,9 @@ var quote_get_list = function (req, res) {
 							var row = { id: '', cell: [] };
 							var quote = [];
 							row.id = (i + 1);
+							row.cell = results.rows[i];
+							result.rows.push(row);
+/**
 							row.cell.push(req.params.entry_no);					// 案件番号
 							row.cell.push(results.rows[i].quote_no);			// 見積番号
 							row.cell.push(results.rows[i].quote_detail_no);		// 明細番号
@@ -365,7 +379,7 @@ var quote_get_list = function (req, res) {
 							row.cell.push(results.rows[i].updated_id);
 							row.cell.push(results.rows[i].quote_delete_check);	// 削除フラグ
 							row.cell.push(results.rows[i].quote_delete_reason);	// 削除理由
-							result.rows.push(row);
+							result.rows.push(row);**/
 						}
 						connection.end();
 						res.send(result);
@@ -380,37 +394,19 @@ var quote_get_list = function (req, res) {
 // 試験（見積）明細リストの取得（ガントチャート用）
 var quote_get_list_for_gantt = function (req, res) {
 	var sql = 'SELECT ' 
-		+ 'quote_no,' // 見積番号
-		+ 'quote_detail_no,' // 明細番号
-		+ 'test_item_cd,' // 試験項目CD
-		+ 'test_item,' // 試験項目名
-		+ 'sample_name,' // 試料名
-		+ 'to_char(arrive_date,\'YYYY/MM/DD\') AS arrive_date,' // 到着日
-		+ 'test_planning_no,' // 試験計画書番号
-		+ 'monitors_num,' // 被験者数
-		+ 'sample_volume,' // 検体数
-		+ 'final_report_no,' // 報告書番号
-		+ 'to_char(final_report_limit,\'YYYY/MM/DD\') AS final_report_limit,' // 報告書提出期限
-		+ 'to_char(final_report_date,\'YYYY/MM/DD\') AS final_report_date,' // 報告書提出日
-		+ 'to_char(quick_report_limit1,\'YYYY/MM/DD\') AS quick_report_limit1,' // 速報提出期限1
-		+ 'to_char(quick_report_date1,\'YYYY/MM/DD\') AS quick_report_date1,' // 速報提出日1
-		+ 'to_char(quick_report_limit2,\'YYYY/MM/DD\') AS quick_report_limit2,' // 速報提出期限2
-		+ 'to_char(quick_report_date2,\'YYYY/MM/DD\') AS quick_report_date2,' // 速報提出日2
-		+ 'expect_value,' // 期待値・設定値
-		+ 'descript_value,' // 値説明
-		+ 'unit_cd,' // 単位CD
-		+ 'unit,' // 単位
-		+ 'unit_price,' // 単価
-		+ 'quantity,' // 数量
-		+ 'quote_price,' // 見積金額
-		+ 'test_memo,' // 備考
+		+ 'quote_no,'			// 見積番号
+		+ 'to_char(quote_date,\'YYYY/MM/DD HH24:MI:SS\') AS quote_date,'	// 見積日
+		+ 'to_char(expire_date,\'YYYY/MM/DD HH24:MI:SS\') AS expire_date,'	// 有効期限
+		+ 'quote_info.entry_title,'		// 試験タイトル
+		+ 'monitors_num,'		// 被験者数
 		+ 'quote_delete_check,' // 削除フラグ
-		+ 'quote_delete_reason,' // 削除理由
-		+ 'to_char(created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
-		+ 'created_id,' 
-		+ 'to_char(updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
-		+ 'updated_id' 
-		+ ' FROM drc_sch.quote_info WHERE quote_delete_check = $1 AND entry_no = $2 ORDER BY quote_detail_no ASC';
+		+ 'to_char(quote_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'quote_info.created_id,' 
+		+ 'to_char(quote_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ 'quote_info.updated_id' 
+		+ ' FROM drc_sch.quote_info'
+		+ ' LEFT JOIN drc_sch.entry_info ON(quote_info.entry_no = entry_info.entry_no)'
+		+ ' WHERE quote_delete_check = $1 AND quote_info.entry_no = $2 ORDER BY  quote_detail_no ASC' 
 	// SQL実行
 	var result = [];
 	var rows = [];
@@ -433,46 +429,28 @@ var quote_get_list_for_gantt = function (req, res) {
 	});
 };
 
-// 試験（見積）明細データ取得
+// 見積情報データ取得
 var quote_get_detail = function (req, res) {
 	var sql = 'SELECT ' 
-		+ 'entry_no,' // 案件番号
-		+ 'quote_no,' // 見積番号
-		+ 'quote_detail_no,' // 明細番号
-		+ 'test_item_cd,' // 試験項目CD
-		+ 'test_item,' // 試験項目名
-		+ 'sample_name,' // 試料名
-		+ 'arrive_date,' // 到着日
-		+ 'test_planning_no,' // 試験計画書番号
-		+ 'monitors_num,' // 被験者数
-		+ 'sample_volume,' // 検体数
-		+ 'final_report_no,' // 報告書番号
-		+ 'to_char(final_report_limit,\'YYYY/MM/DD\') AS final_report_limit,' // 報告書提出期限
-		+ 'to_char(final_report_date,\'YYYY/MM/DD\') AS final_report_date,' // 報告書提出日
-		+ 'to_char(quick_report_limit1,\'YYYY/MM/DD\') AS quick_report_limit1,' // 速報提出期限1
-		+ 'to_char(quick_report_date1,\'YYYY/MM/DD\') AS quick_report_date1,' // 速報提出日1
-		+ 'to_char(quick_report_limit2,\'YYYY/MM/DD\') AS quick_report_limit2,' // 速報提出期限2
-		+ 'to_char(quick_report_date2,\'YYYY/MM/DD\') AS quick_report_date2,' // 速報提出日2
-		+ 'expect_value,' // 期待値・設定値
-		+ 'descript_value,' // 値説明
-		+ 'unit_cd,' // 単位CD
-		+ 'unit,' // 単位
-		+ 'unit_price,' // 単価
-		+ 'quantity,' // 数量
-		+ 'quote_price,' // 見積金額
-		+ 'test_memo,' // 備考
+		+ 'entry_no,'			// 案件番号
+		+ 'quote_no,'			// 見積番号
+		+ 'to_char(quote_date,\'YYYY/MM/DD HH24:MI:SS\') AS quote_date,'	// 見積日
+		+ 'to_char(expire_date,\'YYYY/MM/DD HH24:MI:SS\') AS expire_date,'	// 有効期限
+		+ 'monitors_num,'		// 被験者数
+		+ 'quote_submit_check,'	// 見積書提出済フラグ
+		+ 'order_status,'		// 受注ステータス
 		+ 'quote_delete_check,' // 削除フラグ
-		+ 'quote_delete_reason,' // 削除理由
-		+ 'to_char(created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
-		+ 'created_id,' 
-		+ 'to_char(updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
-		+ 'updated_id' 
-		+ ' FROM drc_sch.quote_info WHERE entry_no = $1 AND quote_detail_no = $2';
+		+ 'to_char(quote_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'quote_info.created_id,' 
+		+ 'to_char(quote_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ 'quote_info.updated_id' 
+		+ ' FROM drc_sch.quote_info'
+		+ ' WHERE quote_info.entry_no = $1 AND quote_no = $2';
 	var entry = {};
 	var rows = [];
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
-		var query = connection.query(sql, [req.params.entry_no, req.params.quote_detail_no]);
+		var query = connection.query(sql, [req.params.entry_no, req.params.quote_no]);
 		query.on('row', function (row) {
 			rows.push(row);
 		});
