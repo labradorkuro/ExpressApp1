@@ -10,11 +10,14 @@ var quoteInfo = quoteInfo || {};
 quoteInfo.currentEntry = {};			// 案件リストで選択中の案件情報
 quoteInfo.currentQuoteRowId = 0;				// 選択中の見積リスト行ID
 // イベント処理のバインド
-quoteInfo.eventBind = function() {
-	$(".add_row_btn").bind("click", quoteInfo.addQuoteRow);
+quoteInfo.eventBind = function(kind) {
+	if (kind == "add_row_btn") {
+		$(".add_row_btn").bind("click", quoteInfo.addQuoteRow);
+	}
 	$(".del_row_btn").bind("click", quoteInfo.delQuoteRow);
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
+	$(".summary_target").bind('change',{}, quoteInfo.calcSummary);
 }
 
 // 明細入力用ダイアログの生成
@@ -55,19 +58,14 @@ quoteInfo.createQuoteFormDialog = function () {
 		modal: true,
 		buttons: {
 			"PDF出力後に登録": function () {
-				// 印刷用データを作成する
-				var data = quoteInfo.printDataSetup();
-				// データを渡してPDFを生成する
-				if (quoteInfo.printQuote(data)) {
-					// データの保存
-					if (quoteInfo.saveQuote()) {
-						$(this).dialog('close');
-					}
+				// データの保存
+				if (quoteInfo.saveQuote("print")) {
+					$(this).dialog('close');
 				}
 			},
 			"登録": function () {
 				// データの保存
-				if (quoteInfo.saveQuote()) {
+				if (quoteInfo.saveQuote("")) {
 					$(this).dialog('close');
 				}
 			},
@@ -77,37 +75,6 @@ quoteInfo.createQuoteFormDialog = function () {
 		}
 	});
 };
-// 見積書用データの生成
-quoteInfo.printDataSetup = function () {
-	// 印刷用データ
-	var data = {
-		title: '御 見 積 書',
-		quote_issue_date: $("#billing_date").val(),
-		quote_no: $("#quote_no").val(),
-		drc_address1: '〒530-0044 大阪市北区東天満2-10-31　第9田淵ビル3F',
-		drc_tel: 'TEL：06-6882-8201',
-		drc_fax: 'FAX：06-6882-8202',
-		drc_name: 'DRC株式会社',
-		drc_division_name: $("#drc_division_name").text(),
-		drc_prepared: $("#drc_prepared").text(),
-		client_name_1: $("#billing_company_name_1").val(),	// 請求先情報
-		client_name_2: $("#billing_company_name_2").val(),	// 請求先情報
-		prepared_division: $("#billing_division").val(),	// 請求先情報
-		prepared_name: $("#prepared_name").val(),			// 請求先情報
-		quote_title: $("#quote_title").val(),
-		quote_title1: $("#quote_title1").val(),
-		quote_title2: $("#quote_title2").val(),
-		quote_title3: $("#quote_title3").val(),
-		quote_expire: $("#quote_expire").val(),
-		quote_total_price: $("#quote_total_price").val(),
-		rows: [{ name: '試験明細データ', unit: '1式', quantity: '    20', unit_price: '     1,000', price: '  20,000', memo: '特になし' }]
-	};
-	// 明細データの生成
-	// ここに処理をかく
-
-	return data;
-};
-
 // 見積情報リストグリッドの生成(noは案件番号）
 quoteInfo.createQuoteInfoGrid = function (no) {
 	
@@ -117,7 +84,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		url: '/quote_get/' + no + '/?quote_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','見積書提出','受注ステータス','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','PDF発行','受注ステータス','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" },				// 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
@@ -144,13 +111,15 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 	jQuery("#quote_list").jqGrid('navGrid', '#quote_list_pager', { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize();
 };
+// グリッド表示用（見積書提出フラグ）
 quoteInfo.submitCheckFormatter = function(no) {
 	if (no == 1) {
-		return "未提出";
+		return "未";
 	} else {
-		return "提出済";
+		return "済";
 	}
 };
+// グリッド表示用（受注ステータス）
 quoteInfo.orderCheckFormatter = function(no) {
 	if (no == 1) {
 		return "商談中";
@@ -158,12 +127,20 @@ quoteInfo.orderCheckFormatter = function(no) {
 		return "受注確定";
 	}
 };
+// グリッド表示用（集計対象フラグ）
+quoteInfo.summaryCheckFormatter = function(no) {
+	if (no == 0) {
+		return "しない";
+	} else {
+		return "する";
+	}
+};
 // 見積明細リストグリッドの生成
 quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
 	// checkboxの状態取得	
-	var delchk = quoteInfo.getQuoteDeleteCheckDispCheck();
+	var delchk = quoteInfo.getQuoteSpecificDeleteCheckDispCheck();
 	jQuery("#quote_specific_list").jqGrid({
-		url: '/quote_specific_get/' + entry_no + '/' + quote_no + '/?specific_delete_check=' + delchk,
+		url: '/quote_specific_get_grid/' + entry_no + '/' + quote_no + '/?specific_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
 		colNames: ['案件番号','見積番号', '明細番号','','試験中分類名','単位','単価','数量','見積金額','集計','作成日','作成者','更新日','更新者'],
@@ -177,7 +154,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
 			{ name: 'unit_price', index: 'unit_price', width: 60,align:"right" },				// 単価
 			{ name: 'quantity', index: 'quantity', width: 60,align:"right" },					// 数量
 			{ name: 'price', index: 'price', width: 60,align:"right" },							// 見積金額
-			{ name: 'summary_check', index: 'summary_check', width: 120 },						// 集計対象チェック
+			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:quoteInfo.summaryCheckFormatter },						// 集計対象チェック
 			{ name: 'created', index: 'created', width: 120 },									// 作成日
 			{ name: 'created_id', index: 'created_id', width: 120 },							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120 },									// 更新日
@@ -228,7 +205,10 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		// 見積の編集ボタン押下時は選択中の見積情報を取得する
 		quote = $("#quote_list").getRowData(quoteInfo.currentQuoteRowId);
 		quoteInfo.setQuoteFormData(quote);
+		// 見積明細データの取得とセット
+		quoteInfo.searchSpecificInfo(entry.entry_no,quote.quote_no);
 	} else {
+		quoteInfo.setQuoteFormData(quote);
 	}
 	$("#billing_company_name_1").val(entry.client_name_1);
 	$("#billing_company_name_2").val(entry.client_name_2);
@@ -237,9 +217,43 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	$("#drc_division_name").text("  試験課 " + entry.test_large_class_name);
 	$("#drc_test_person").text("  担当者 " + entry.test_person_id);
 	$("#quote_title").val(entry.entry_title);
+	// イベント設定
+	quoteInfo.eventBind("");
+
 	$("#quoteForm_dialog").dialog("open");
 };
-
+// 見積明細の検索とテーブル設定
+quoteInfo.searchSpecificInfo = function(entry_no,quote_no) {
+	$.ajax({
+		url: '/quote_specific_get_list/' + entry_no + '/' + quote_no, 
+		cache: false,
+		dataType: 'json',
+		success: function (specific_list) {
+			quoteInfo.addSpecificInfoToTable(specific_list);
+		}
+	});
+};
+// 明細テーブルへ明細データをセットする
+quoteInfo.addSpecificInfoToTable = function(specific_list) {
+	if (specific_list != null) {
+		var rows = specific_list.rows;
+		for (var i in rows) {
+			var no = Number(i) + 1;
+			if (no > 1) {
+				// 行追加
+				$("#meisai_table tbody").append(quoteInfo.addRowCreate(no));
+			}
+			$("#test_middle_class_cd_" + no).val(rows[i].test_middle_class_cd);
+			$("#test_middle_class_name_" + no).val(rows[i].test_middle_class_name);
+			$("#unit_" + no).val(rows[i].unit);
+			$("#unit_price_" + no).val(rows[i].unit_price);
+			$("#quantity_" + no).val(rows[i].quantity);
+			$("#price_" + no).val(rows[i].price);
+			$("#summary_check_" + no).prop("checked",(rows[i].summary_check == 1));
+			$("#specific_memo_" + no).val(rows[i].specific_memo);
+		}
+	}
+};
 // 見積の選択イベント処理
 quoteInfo.onSelectQuote = function(rowid) {
 	// 編集ボタンを表示
@@ -296,7 +310,7 @@ quoteInfo.clearQuote = function () {
 	quote.monitors_num = "";
 	quote.quote_date = "";
 	quote.expire_date = "";
-	quote.quote_submit_check = "未提出";
+	quote.quote_submit_check = "未";
 	quote.order_status = "商談中";
 	return quote;
 };
@@ -307,9 +321,9 @@ quoteInfo.setQuoteFormData = function (quote) {
 	$('#estimate_monitors_num').val(quote.monitors_num);// 被験者数
 	$('#quote_date').val(quote.quote_date);				// 見積日
 	$('#expire_date').val(quote.expire_date);			// 有効期限
-	if (quote.quote_submit_check == "未提出") {
+	if (quote.quote_submit_check == "未") {
 		$('#quote_submit_check_no').prop("checked",true);	// 見積書提出済フラグ
-	} else if (quote.quote_submit_check == "提出済"){
+	} else if (quote.quote_submit_check == "済"){
 		$('#quote_submit_check_yes').prop("checked",true);
 	}
 	if (quote.order_status == "商談中") {
@@ -317,21 +331,11 @@ quoteInfo.setQuoteFormData = function (quote) {
 	} else if (quote.order_status == "受注確定") {
 		$('#order_status_yes').prop("checked",true);
 	}
-//	$('#unit').val(quote.unit);							// 単位
-//	$('#unit_price').val(quote.unit_price);				// 単価
-//	$('#quantity').val(quote.quantity);					// 数量
-//	$('#quote_price').val(quote.quote_price);			// 見積金額
-//	$('#entry_memo').val(quote.entry_memo);				// 備考
-//	if (quote.quote_delete_check == 1) {
-//		$('#quote_delete_check').prop("checked", true);		// 削除フラグ
-//	} else {
-//		$('#quote_delete_check').prop("checked", false);	// 削除フラグ
-//	}
 };
 // 試験（見積）データの保存
-quoteInfo.saveQuote = function () {
+quoteInfo.saveQuote = function (kind) {
 	// 入力値チェック
-	if (!quoteInfo.quoteInputCheck()) {
+	if (!quoteInfo.quoteInputCheck(kind)) {
 		return false;
 	}
 	// formデータの取得
@@ -339,12 +343,20 @@ quoteInfo.saveQuote = function () {
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/quote_post', true);
 	xhr.responseType = 'json';
-	xhr.onload = quoteInfo.onloadQuoteReq;
+	if (kind == "print") {
+		xhr.onload = quoteInfo.onloadQuoteReqAfterPrint;
+	} else {
+		xhr.onload = quoteInfo.onloadQuoteReq;
+	}
 	xhr.send(form);
 	return true;
 };
-quoteInfo.quoteInputCheck = function () {
+quoteInfo.quoteInputCheck = function (kind) {
 	var result = true;
+	if (kind == "print") {
+		// PDF発行済フラグを発行済にする
+		$("#quote_submit_check_yes").prop("checked",true);
+	}
 	if (!result) {
 		$("#message_dialog").dialog("option", { title: "入力エラー" });
 		$("#message_dialog").dialog("open");
@@ -364,11 +376,23 @@ quoteInfo.getQuoteFormData = function () {
 quoteInfo.onloadQuoteReq = function (e) {
 	if (this.status == 200) {
 		var quote = this.response;
-		$('#quote_no').val(quote.quote_no);
+		$('#estimate_quote_no').val(quote.estimate_quote_no);
 		// グリッドの再表示
 		$("#quote_list").GridUnload();
 		quoteInfo.createQuoteInfoGrid(quoteInfo.currentEntry.entry_no);
 
+	}
+};
+quoteInfo.onloadQuoteReqAfterPrint = function (e) {
+	if (this.status == 200) {
+		var quote = this.response;
+		$('#estimate_quote_no').val(quote.estimate_quote_no);
+		// グリッドの再表示
+		$("#quote_list").GridUnload();
+		quoteInfo.createQuoteInfoGrid(quoteInfo.currentEntry.entry_no);
+		// 印刷用PDFの生成
+		var data = quoteInfo.printDataSetup();
+		quoteInfo.printQuote(data);
 	}
 };
 
@@ -381,6 +405,12 @@ quoteInfo.changeQuoteOption = function (event) {
 // 見積の削除分を表示のチェックボックス情報取得
 quoteInfo.getQuoteDeleteCheckDispCheck = function () {
 	var dc = $("#quote_delete_check_disp").prop("checked");
+	var delchk = (dc) ? 1:0;
+	return delchk;
+};
+// 見積明細の削除分を表示のチェックボックス情報取得
+quoteInfo.getQuoteSpecificDeleteCheckDispCheck = function () {
+	var dc = $("#quote_specific_delete_check_disp").prop("checked");
 	var delchk = (dc) ? 1:0;
 	return delchk;
 };
@@ -398,14 +428,31 @@ quoteInfo.addQuoteRow = function(event) {
 			var no = s[2];
 			var parent_tr = event.target.parentElement.parentElement;
 			$("#meisai_table tbody").append(row);
-			// 行削除ボタンのイベント登録
-			$(".del_row_btn").bind("click",quoteInfo.delQuoteRow);
-			$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
+			// イベント設定
+			quoteInfo.eventBind("");
 		}
 	}
 }
 
-// 明細テーブルのクリア
+// 合計金額計算
+quoteInfo.calcSummary = function(event) {
+	// 現在の行数を取得する（見出し行を含む）
+	var rows = $("#meisai_table tbody").children().length;
+	var total = 0;
+	for(var i = 1;i <= rows - 1;i++) {
+		var price = 0;
+		if ($("#specific_delete_check_" + i).val() == "0") {
+			var p = $("#price_" + i).val();
+			if (p != "") {
+				price = Number(p);
+			}
+			total += price;
+		}
+	}
+	$("#quote_total_price").val(total);
+};
+
+// 明細テーブルのクリア（再生成）
 quoteInfo.specificTableClear = function() {
 	$("#meisai_table tbody").empty();
 	$("#meisai_table tbody").append(quoteInfo.addHeader());
@@ -434,14 +481,14 @@ quoteInfo.addRowCreate = function(no) {
 	var name = $("<td class='name'><input type='hidden' id='quote_detail_no_" + no + "' name='quote_detail_no_" + no + "' value='" + no + "' +/><input type='hidden' id='" + id + "' name='" + id + "'/><input type='text' class='test_middle_class' id='test_middle_class_name_" + no + "' name='test_middle_class_name_" + no + "' size='20' placeholder='試験中分類'/></td>");
 	id = "unit_" + no;
 	var unit = $("<td class='unit'><input type='text' id='" + id + "' name='" + id + "' size='4' placeholder='単位'/></td>");
-	id = "quantity_" + no;
-	var qty = $("<td class='qty'><input type='text' class='" + id + "' id='" + id + "' name='" + id + "' size='4' placeholder='数量'/></td>");
 	var id = "unit_price_" + no;
 	var unit_price = $("<td class='unit_price'><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='9' placeholder='単価'/></td>");
+	id = "quantity_" + no;
+	var qty = $("<td class='qty'><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='4' placeholder='数量'/></td>");
 	var id = "price_" + no;
-	var price = $("<td class='price'><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='12' placeholder='金額'/></td>");
+	var price = $("<td class='price'><input type='text' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額'/></td>");
 	var id = "summary_check_" + no;
-	var summary = $("<td class='memo'><label><input type='checkbox' id='" + id + "' name='" + id + "'/>集計する</label></td>");
+	var summary = $("<td class='memo'><label><input type='checkbox' id='" + id + "' name='" + id + "' checked='true'/>集計する</label></td>");
 	var id = "specific_memo_" + no;
 	var memo = $("<td class='memo'><input type='text' id='" + id + "' name='" + id + "' size='12' placeholder='備考'/></td>");
 	var id = "del_row_btn_" + no;
@@ -451,8 +498,8 @@ quoteInfo.addRowCreate = function(no) {
 	var row = $("<tr id='" + id + "'></tr>");
 	$(row).append(name);
 	$(row).append(unit);
-	$(row).append(qty);
 	$(row).append(unit_price);
+	$(row).append(qty);
 	$(row).append(price);
 	$(row).append(summary);
 	$(row).append(memo);
@@ -466,6 +513,8 @@ quoteInfo.delQuoteRow = function(event) {
 	// その行を非表示にする
 	$(parent_tr).css("display","none");
 	$("#specific_delete_check_" + no).val("1");
+	// 合計金額再計算
+	quoteInfo.calcSummary(null);
 }
 
 // テーブル行のデータ取得
@@ -511,6 +560,35 @@ quoteInfo.selectMiddleClass = function(no) {
 };
 
 
+// 見積書用データの生成
+quoteInfo.printDataSetup = function () {
+	var entry = quoteInfo.getSelectEntry();
+	// 印刷用データ
+	var data = {
+		title: '御 見 積 書',
+		quote_issue_date: $("#quote_date").val(),
+		quote_no: entry.entry_no + "-" + $("#estimate_quote_no").val(),
+		drc_address1: '〒530-0044 大阪市北区東天満2-10-31　第9田淵ビル3F',
+		drc_tel: 'TEL：06-6882-8201',
+		drc_fax: 'FAX：06-6882-8202',
+		drc_name: 'DRC株式会社',
+		drc_division_name: $("#drc_division_name").text(),
+		drc_prepared: $("#drc_test_person").text(),
+		client_name_1: $("#billing_company_name_1").val(),	// 請求先情報
+		client_name_2: $("#billing_company_name_2").val(),	// 請求先情報
+		prepared_division: $("#billing_division").val(),	// 請求先情報
+		prepared_name: $("#billing_person").val(),			// 請求先情報
+		quote_title: $("#quote_title").val(),
+		quote_expire: $("#expire_date").val(),
+		quote_total_price: $("#quote_total_price").val(),
+		rows: [{ name: '試験明細データ', unit: '1式', quantity: '    20', unit_price: '     1,000', price: '  20,000', memo: '特になし' }]
+	};
+	// 明細データの生成
+	// ここに処理をかく
+
+	return data;
+};
+
 // 見積書の印刷（PDF生成）
 quoteInfo.printQuote = function (data) {
 	var canvas = new fabric.Canvas('canvas', { backgroundColor : "#fff" });
@@ -539,12 +617,12 @@ quoteInfo.printQuote = function (data) {
 		quoteInfo.outputText(canvas, data.prepared_name, font_size, left, top);
 	// 見積内容	
 	top += font_size + 10;
-	quoteInfo.outputText(canvas, "下記の通りお見積申し上げます。", font_size, left, top);
-	top += font_size + 2;
+	quoteInfo.outputText(canvas, "次の通りお見積申し上げます。", font_size, left, top);
+	top += font_size + 10;
 	quoteInfo.outputText(canvas, "件名：" + data.quote_title, font_size, left, top);
-	top += font_size + 3;
+	top += font_size + 4;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
-
+/**
 	quoteInfo.outputText(canvas, data.quote_title1, font_size, left, top);
 	top += font_size + 3;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
@@ -556,13 +634,14 @@ quoteInfo.printQuote = function (data) {
 	quoteInfo.outputText(canvas, data.quote_title3, font_size, left, top);
 	top += font_size + 3;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
-	top += 10;
+**/
+	top += 20;
 	quoteInfo.outputText(canvas, "有効期限：" + data.quote_expire, font_size, left, top);
-	top += font_size + 3;
+	top += font_size + 4;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
 	font_size = 18;
 	quoteInfo.outputText(canvas, "御見積合計金額　" + data.quote_total_price, font_size, left, top);
-	top += font_size + 3;
+	top += font_size + 4;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 2 }));
 	// 見積情報
 	font_size = 16;
@@ -638,6 +717,7 @@ quoteInfo.printQuote = function (data) {
 	xhr.onload = quoteInfo.onloadPrintPDFReq;
 	xhr.send();
  * **/
+	return true;
 };
 
 // canvasにテキストを出力

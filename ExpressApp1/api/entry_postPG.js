@@ -547,14 +547,14 @@ var updateQuote = function (connection,quote, req, res) {
 
 var quote_check = function (quote) {
 	// 数値
-	quote.monitors_num = Number(quote.estimate_monitors_num);	// 被験者数
+	quote.estimate_monitors_num = Number(quote.estimate_monitors_num);	// 被験者数
 	quote.quote_submit_check = Number(quote.quote_submit_check);	// 見積書提出済フラグ
 	quote.order_status = Number(quote.order_status);	// 受注ステータス
 //	quote.unit_price = Number(quote.unit_price);		// 単価
 //	quote.quantity = Number(quote.quantity);			// 数量
 //	quote.quote_price = Number(quote.quote_price);		// 見積金額
 //	quote.summary_check = Number(quote.summary_check); // 削除フラグ
-//	quote.quote_delete_check = Number(quote.quote_delete_check); // 削除フラグ
+	quote.estimate_delete_check = Number(quote.estimate_delete_check); // 削除フラグ
 	// 日付
 	quote.quote_date = dateCheck(quote.quote_date);
 	quote.expire_date = dateCheck(quote.expire_date);
@@ -574,20 +574,38 @@ var getSpecificInfo = function(connection,quote, req, res, no) {
 		specific.quantity = quote["quantity_" + no];
 		specific.price = quote["price_" + no];
 		if ("summary_check_" + no in quote) {
-			specific.summary_check = Number(quote["summary_check_" + no]);
+			specific.summary_check = 1;
 		} else {
 			specific.summary_check = 0;
 		}
 		specific.specific_memo = quote["specific_memo_" + no];
 		specific.specific_delete_check = Number(quote["specific_delete_check_" + no]);
 		no++;
-		// DBに追加
-		insertQuoteSpecific(connection, quote, specific, req, res, no);
+		rows = [];
+		var sql = "SELECT entry_no,quote_no,quote_detail_no FROM drc_sch.quote_specific_info WHERE entry_no = $1 AND quote_no = $2 AND quote_detail_no = $3";
+		var query = connection.query(sql, [specific.entry_no,specific.estimate_quote_no,specific.quote_detail_no]);
+		query.on('row', function (row) {
+			rows.push(row);
+		});
+		query.on('end',function(results,err) {
+			if (rows.length == 0) {
+				// DBに追加
+				insertQuoteSpecific(connection, quote, specific, req, res, no);
+			} else {
+				// DB更新
+				updateQuoteSpecific(connection, quote, specific, req, res, no);
+			}
+		});
+		query.on('error', function (error) {
+			console.log(sql + ' ' + error);
+		});
+		
 		return true;
 	} else {
 		return false;
 	}
 };
+
 // 明細データの追加
 var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
@@ -644,6 +662,50 @@ var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
 		created_id,					// 作成者ID
 		updated,					// 更新日
 		updated_id					// 更新者ID
+	]);
+	query.on('end', function(result,err) {
+		// 次の行があれば処理を続ける
+		if (!getSpecificInfo(connection,quote,req,res, no)) {
+			// 終わり
+			connection.end();
+		}
+
+	});
+	query.on('error', function (error) {
+		console.log(sql + ' ' + error);
+	});
+};
+// 明細データの追加
+var updateQuoteSpecific = function (connection,quote, specific, req, res, no) {
+	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
+	var updated_id = req.session.uid;
+	var sql = 'UPDATE drc_sch.quote_specific_info SET ' 
+		+ 'test_middle_class_cd = $1,'	// 試験中分類CD
+		+ 'unit = $2,'					// 単位
+		+ 'unit_price = $3,'			// 単価
+		+ 'quantity = $4,'				// 数量
+		+ 'price = $5,'					// 金額
+		+ 'summary_check = $6,'			// 集計対象フラグ
+		+ 'specific_memo = $7,'			// 備考
+		+ "specific_delete_check = $8,"	// 削除フラグ
+		+ "updated = $9,"				// 更新日
+		+ "updated_id = $10"			// 更新者ID
+		+ " WHERE entry_no = $11 AND quote_no = $12 AND quote_detail_no = $13"
+	// SQL実行
+	var query = connection.query(sql, [
+		specific.test_middle_class_cd,	// 試験中分類CD
+		specific.unit,					// 単位
+		specific.unit_price,			// 単価
+		specific.quantity,				// 数量
+		specific.price,					// 金額
+		specific.summary_check,			// 集計対象フラグ
+		specific.specific_memo,			// 備考
+		specific.specific_delete_check,	// 備考
+		updated,						// 更新日
+		updated_id,						// 更新者ID
+		specific.entry_no,				// 案件No
+		specific.estimate_quote_no,		// 見積番号
+		specific.quote_detail_no		// 明細番号
 	]);
 	query.on('end', function(result,err) {
 		// 次の行があれば処理を続ける

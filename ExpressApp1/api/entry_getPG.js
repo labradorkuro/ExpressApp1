@@ -280,8 +280,8 @@ exports.quote_get = function (req, res) {
 		}
 	}
 };
-// 見積明細データの取得
-exports.quote_specific_get = function (req, res) {
+// 見積明細データの取得(グリッド用）
+exports.quote_specific_get_grid = function (req, res) {
 	if ((req.params.entry_no != undefined) && (req.params.entry_no != '')) {
 		if ((req.params.quote_no != undefined) && (req.params.quote_no != '')) {
 			if ((req.params.quote_detail_no != undefined) && (req.params.quote_detail_no != '')) {
@@ -291,6 +291,15 @@ exports.quote_specific_get = function (req, res) {
 				// 見積の中の明細情報のリストを取得する
 				quote_specific_get_list(req, res);
 			}
+		}
+	}
+};
+// 見積明細データの取得(フォーム用）
+exports.quote_specific_get_list = function (req, res) {
+	if ((req.params.entry_no != undefined) && (req.params.entry_no != '')) {
+		if ((req.params.quote_no != undefined) && (req.params.quote_no != '')) {
+			// 見積の中の明細情報のリストを取得する
+			quote_specific_get_list2(req, res);
 		}
 	}
 };
@@ -347,39 +356,6 @@ var quote_get_list = function (req, res) {
 							row.id = (i + 1);
 							row.cell = results.rows[i];
 							result.rows.push(row);
-/**
-							row.cell.push(req.params.entry_no);					// 案件番号
-							row.cell.push(results.rows[i].quote_no);			// 見積番号
-							row.cell.push(results.rows[i].quote_detail_no);		// 明細番号
-							row.cell.push(results.rows[i].test_item_cd);		// 試験項目CD
-							row.cell.push(results.rows[i].test_item);			// 試験項目名
-							row.cell.push(results.rows[i].sample_name);			// 試料名
-							row.cell.push(results.rows[i].arrive_date);			// 到着日
-							row.cell.push(results.rows[i].test_planning_no);	// 試験計画書番号
-							row.cell.push(results.rows[i].monitors_num);		// 被験者数
-							row.cell.push(results.rows[i].sample_volume);		// 検体数
-							row.cell.push(results.rows[i].final_report_no);		// 報告書番号
-							row.cell.push(results.rows[i].final_report_limit);	// 報告書提出期限
-							row.cell.push(results.rows[i].final_report_date);	// 報告書提出日
-							row.cell.push(results.rows[i].quick_report_limit1); // 速報提出期限1
-							row.cell.push(results.rows[i].quick_report_date1);	// 速報提出日1
-							row.cell.push(results.rows[i].quick_report_limit2); // 速報提出期限2
-							row.cell.push(results.rows[i].quick_report_date2);	// 速報提出日2
-							row.cell.push(results.rows[i].expect_value);		// 期待値・設定値
-							row.cell.push(results.rows[i].descript_value);		// 値説明
-							row.cell.push(results.rows[i].unit_cd);				// 単位
-							row.cell.push(results.rows[i].unit);				// 単位
-							row.cell.push(results.rows[i].unit_price);			// 単価
-							row.cell.push(results.rows[i].quantity);				// 数量
-							row.cell.push(results.rows[i].quote_price);			// 見積金額
-							row.cell.push(results.rows[i].test_memo);			// 備考
-							row.cell.push(results.rows[i].created);
-							row.cell.push(results.rows[i].created_id);
-							row.cell.push(results.rows[i].updated);
-							row.cell.push(results.rows[i].updated_id);
-							row.cell.push(results.rows[i].quote_delete_check);	// 削除フラグ
-							row.cell.push(results.rows[i].quote_delete_reason);	// 削除理由
-							result.rows.push(row);**/
 						}
 						connection.end();
 						res.send(result);
@@ -467,7 +443,7 @@ var quote_get_detail = function (req, res) {
 		});
 	});
 };
-// 見積情報リストの取得
+// 見積情報リストの取得（グリッド用）
 var quote_specific_get_list = function (req, res) {
 	var pg_params = getPagingParams(req);
 	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.quote_specific_info WHERE specific_delete_check = $1 AND (entry_no = $2 AND quote_no = $3)';
@@ -524,6 +500,48 @@ var quote_specific_get_list = function (req, res) {
 					}
 				});
 			}
+		});
+	});
+};
+// 見積情報リストの取得（フォーム用）
+var quote_specific_get_list2 = function (req, res) {
+	var sql = 'SELECT ' 
+		+ 'entry_no,'
+		+ 'quote_no,'			// 見積番号
+		+ 'quote_detail_no,'
+		+ 'quote_specific_info.test_middle_class_cd,'
+		+ 'test_item_list.item_name AS test_middle_class_name,'
+		+ 'unit,'
+		+ 'unit_price,'
+		+ 'quantity,'
+		+ 'price,'
+		+ 'summary_check,'
+		+ 'specific_memo,'
+		+ 'to_char(quote_specific_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'quote_specific_info.created_id,' 
+		+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ 'quote_specific_info.updated_id' 
+		+ ' FROM drc_sch.quote_specific_info'
+		+ ' LEFT JOIN drc_sch.test_item_list ON (quote_specific_info.test_middle_class_cd = test_item_list.item_cd)'
+		+ ' WHERE specific_delete_check = 0 AND (entry_no = $1 AND quote_no = $2) ORDER BY quote_detail_no' 
+	// SQL実行
+	var params = [req.params.entry_no, req.params.quote_no];
+	var result = { page: 1, total: 20, records: 0, rows: [] };
+	var rows = [];
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		var query = connection.query(sql, params);
+		query.on('row', function (row) {
+			rows.push(row);
+		});
+		query.on('end',function(results,err) {
+			result.records = rows.length;
+			result.rows = rows;
+			res.send(result);
+			connection.end();
+		});
+		query.on('error', function (error) {
+			console.log(sql + ' ' + error);
 		});
 	});
 };

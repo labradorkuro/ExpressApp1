@@ -62,7 +62,7 @@ form#estimateForm(method="post",action="javascript:return false;")
 				td
 					div.quote_total
 						label#quote_total_title 御見積合計金額　
-						input#quote_total_price(type="text" name="quote_total_price" size="19" placeholder="見積合計金額")
+						input#quote_total_price(type="text" class="num_type" name="quote_total_price" size="19" placeholder="見積合計金額")
 	div.estimate_meisai
 		table.estimate_meisai_table#meisai_table
 			tbody
@@ -96,5 +96,5 @@ form#estimateForm(method="post",action="javascript:return false;")
 				td.form_title_s 削除フラグ
 				td
 					label
-						input#estimate_delete_check(type="checkbox" name="estimate_delete_check" value="0")
+						input#estimate_delete_check(type="checkbox" name="estimate_delete_check" value="1")
 						| 削除

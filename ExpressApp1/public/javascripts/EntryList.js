@@ -11,7 +11,7 @@ $(function() {
 	entryList.createMessageDialog();
 	// 必要な情報をDBから取得する
 	scheduleCommon.getUserInfo();
-	scheduleCommon.getDivisionInfo();
+	//scheduleCommon.getDivisionInfo();
 	// 編集用ダイアログの設定
 	entryList.createEntryDialog();				// 案件入力用
 	quoteInfo.createQuoteDialog();				// 見積明細用
