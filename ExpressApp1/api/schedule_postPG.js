@@ -9,10 +9,10 @@ exports.schedule_post = function (req, res) {
 	var schedule = schedule_check(req.body);
 	if (schedule.schedule_id === "0") {
 		// スケジュールのDB追加
-		insertSchedule(schedule, res);
+		insertSchedule(schedule, req, res);
 	} else {
 		// スケジュールの更新
-		updateSchedule(schedule, res);
+		updateSchedule(schedule, req, res);
 	}
 };
 
@@ -31,45 +31,48 @@ var schedule_check = function (schedule) {
 	}
 	return schedule;
 };
-var insertSchedule = function (schedule, res) {
+var insertSchedule = function (schedule, req, res) {
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
-	var created_id = "tanaka";
+	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
 	var sql = 'INSERT INTO drc_sch.test_schedule(' 
-			+ 'entry_no,' // 案件No
-			+ 'quote_detail_no,' // 明細番号
-			+ 'start_date,' // 開始日付
-			+ 'end_date,' // 終了日付
-			+ 'start_time,' // 開始時間
-			+ 'end_time,' // 終了時間
-			+ 'am_pm,' // AM/PM
-			+ 'patch_no,' // パッチ番号	
-			+ 'delete_check,' // 削除フラグ
-			+ 'created,' // 作成日
-			+ 'created_id,' // 作成者ID
-			+ 'updated,' // 
-			+ 'updated_id' // 更新者ID
+			+ 'entry_no,'		// 案件No
+			+ 'quote_no,'		// 見積番号
+			+ 'quote_detail_no,'// 明細番号
+			+ 'start_date,'		// 開始日付
+			+ 'end_date,'		// 終了日付
+			+ 'start_time,'		// 開始時間
+			+ 'end_time,'		// 終了時間
+			+ 'am_pm,'			// AM/PM
+			+ 'patch_no,'		// パッチ番号	
+			+ 'delete_check,'	// 削除フラグ
+			+ 'created,'		// 作成日
+			+ 'created_id,'		// 作成者ID
+			+ 'updated,'		// 
+			+ 'updated_id'		// 更新者ID
 			+ ') values (' 
 			+ '$1,' // 案件No
-			+ '$2,' // 明細番号
-			+ '$3,' // 開始日付
-			+ '$4,' // 終了日付
-			+ '$5,' // 開始時間
-			+ '$6,' // 終了時間
-			+ '$7,' // AMPM
-			+ '$8,' // パッチ番号
-			+ '$9,' // 削除フラグ
-			+ '$10,' // 作成日
-			+ '$11,' // 作成者ID
-			+ '$12,' // 更新日
-			+ '$13' // 更新者ID
+			+ '$2,' // 見積番号
+			+ '$3,' // 明細番号
+			+ '$4,' // 開始日付
+			+ '$5,' // 終了日付
+			+ '$6,' // 開始時間
+			+ '$7,' // 終了時間
+			+ '$8,' // AMPM
+			+ '$9,' // パッチ番号
+			+ '$10,' // 削除フラグ
+			+ '$11,' // 作成日
+			+ '$12,' // 作成者ID
+			+ '$13,' // 更新日
+			+ '$14' // 更新者ID
 			+ ')'
 			;
 	pg.connect(connectionString, function (err, connection) {
 		// SQL実行
 		var query = connection.query(sql, [
 			schedule.entry_no,	// 案件No
+			schedule.quote_no,
 			schedule.quote_detail_no,
 			schedule.start_date,
 			schedule.end_date,
@@ -92,25 +95,27 @@ var insertSchedule = function (schedule, res) {
 		});
 	});
 };
-var updateSchedule = function (schedule, res) {
+var updateSchedule = function (schedule, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
-	var updated_id = "tanaka";
+	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.test_schedule SET ' 
-			+ 'entry_no = $1,' // 案件No
-			+ 'quote_detail_no = $2,' // 明細番号
-			+ 'start_date = $3,' // 開始日付
-			+ 'end_date = $4,' // 終了日付
-			+ 'start_time = $5,' // 開始時間
-			+ 'end_time = $6,' // 終了時間
-			+ 'am_pm = $7,' // AM/PM
-			+ 'patch_no = $8,' // パッチ番号	
-			+ 'delete_check = $9,' // 削除フラグ
-			+ 'updated_id = $10' // 更新者ID
-			+ " WHERE schedule_id = $11";
+			+ 'entry_no = $1,'			// 案件No
+			+ 'quote_no = $2,'			// 見積番号
+			+ 'quote_detail_no = $3,'	// 明細番号
+			+ 'start_date = $4,'		// 開始日付
+			+ 'end_date = $5,'			// 終了日付
+			+ 'start_time = $6,'		// 開始時間
+			+ 'end_time = $7,'			// 終了時間
+			+ 'am_pm = $8,'				// AM/PM
+			+ 'patch_no = $9,'			// パッチ番号	
+			+ 'delete_check = $10,'		// 削除フラグ
+			+ 'updated_id = $11'		// 更新者ID
+			+ " WHERE schedule_id = $12";
 	pg.connect(connectionString, function (err, connection) {
 		// SQL実行
 		var query = connection.query(sql, [
 			schedule.entry_no,	// 案件No
+			schedule.quote_no,
 			schedule.quote_detail_no,
 			schedule.start_date,
 			schedule.end_date,

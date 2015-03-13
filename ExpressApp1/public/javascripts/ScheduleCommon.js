@@ -40,6 +40,11 @@ scheduleCommon.onloadUserReq = function (e) {
 		$("#input_operator_id").empty();
 		$("#confirm_operator_id").empty();
 		scheduleCommon.user_list = new Array();
+		// 先頭に空行を入れる
+		$("#sales_person_id").append("<option value=''></option>");
+		$("#test_person_id").append("<option value=''></option>");
+		$("#input_operator_id").append("<option value=''></option>");
+		$("#confirm_operator_id").append("<option value=''></option>");
 		for (var i in users.rows) {
 			var user = users.rows[i].cell;
 			scheduleCommon.user_list.push(user);

@@ -226,8 +226,8 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 
         var rows = entry_list.rows;
 		for (var i in rows) {
-			var date_infos = [rows[i].inquiry_date, rows[i].quote_issue_date, rows[i].order_accepted_date,rows[i].prior_payment_limit];
-			var date_captions = ['問合せ日', '見積発行日', '受注日','事前入金期日'];
+			var date_infos = [rows[i].inquiry_date, rows[i].quote_issue_date, rows[i].order_accepted_date];
+			var date_captions = ['問合せ日', '見積発行日', '受注日'];
 			// 表示に必要な行数（高さ）を算出する
 			var lines = GanttTable.checkDateSpan(date_infos);
 //			if (lines === 1) lines = 2;
@@ -299,7 +299,7 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 					$(right_row).append(GanttTable.milestone((j % lines), ganttData, date_infos[j], date_captions[j], color));
 				}
 			}
-			// 試験（見積）明細データの検索とマイルストーン表示、作業項目表示
+			// 報告書期限情報のマイルストーン表示、作業項目表示
 			GanttTable.searchData(ganttData, rows[i].entry_no, rows[i].entry_title,left_row, right_row, dateCount, lines);
         }
     }
@@ -307,17 +307,17 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 //
 // 表示データの検索
 GanttTable.searchData = function (ganttData, entry_no, entry_title, left_row, right_row, dateCount, exist_lines) {
-	// 表示する試験（見積）明細データの検索
-	var quote_list = $.get('/quote_gantt/' + entry_no, {});
+	// 案件の報告書期限データの検索
+	var report_list = $.get('/report_gantt/' + entry_no, {});
 	// マイルストーンデータの検索
 	var workitem_milestone_list = $.get('/workitem_get/' + entry_no + '/' + 1, {});
 	// 作業項目データの検索
 	var workitem_list = $.get('/workitem_get/' + entry_no + '/' + 0, {});
 	
-	$.when(quote_list, workitem_list, workitem_milestone_list)
-    .done(function (quote_listResponse, workitem_listResponse, workitem_milestoneResponse) {
-		// 明細データのマイルストーン表示
-		var lines = GanttTable.createQuoteRows(ganttData, quote_listResponse[0], left_row, right_row, dateCount, exist_lines);
+	$.when(report_list, workitem_list, workitem_milestone_list)
+    .done(function (report_listResponse, workitem_listResponse, workitem_milestoneResponse) {
+		// 報告書期限データのマイルストーン表示
+		var lines = GanttTable.createReportRows(ganttData, report_listResponse[0], left_row, right_row, dateCount, exist_lines);
 		// 項目追加したマイルストーンの表示		
 		lines = lines + GanttTable.createWorkitemMilestoneRows(ganttData, workitem_milestoneResponse[0], left_row, right_row, dateCount, exist_lines + lines);
 		// 作業項目の表示		
@@ -334,22 +334,22 @@ GanttTable.searchData = function (ganttData, entry_no, entry_title, left_row, ri
 };
 
 // 
-// 試験（見積）明細データからマイルストーンを表示する行の生成
-GanttTable.createQuoteRows = function (ganttData, quote_list, left_row, right_row, dateCount, exist_lines) {
+// 案件データの報告書期限情報をマイルストーン表示する行の生成
+GanttTable.createReportRows = function (ganttData, report_list, left_row, right_row, dateCount, exist_lines) {
 	var total_lines = 0;
-	if (quote_list != null) {
+	if (report_list != null) {
 		var w1 = GanttTable.dateWidth * dateCount;
 		
-		var rows = quote_list;
+		var rows = report_list;
 		for (var i = 0;i < rows.length;i++) {
-			var date_infos = [rows[i].arrive_date, rows[i].final_report_limit, rows[i].quick_report_limit1, rows[i].quick_report_limit2];
-			var date_captions = ['到着日', '最終報告書期限', '速報提出期限１','速報提出期限２'];
+			var date_infos = [rows[i].report_limit_date, rows[i].prompt_report_limit_date_1, rows[i].prompt_report_limit_date_2];
+			var date_captions = ['報告書期限', '速報提出期限１','速報提出期限２'];
 			// 表示に必要な行数（高さ）を算出する
 			var lines = GanttTable.checkDateSpan(date_infos);
 			// 項目名の表示
 			//var left_row = $("<div class='gt_left_row_div'></div>");
 			var cate1 = $("<div class='gt_category1_div'><label class='gt_label'></lebel></div>");
-			var cate2 = $("<div class='gt_category2_div'><label class='gt_label'>" + rows[i].test_item + "</label></div>");
+			var cate2 = $("<div class='gt_category2_div'><label class='gt_label'>" + rows[i].title + "</label></div>");
 			var height1 = (GanttTable.rowHeight * (total_lines + lines + exist_lines)) + "px"; // 高さを調整する
 			var height2 = (GanttTable.rowHeight * lines) + "px"; // 高さを調整する
 			var top = (GanttTable.rowHeight * (exist_lines + i)) + "px"; // 表示位置を調整する

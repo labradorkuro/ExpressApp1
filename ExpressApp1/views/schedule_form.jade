@@ -10,11 +10,15 @@ form#scheduleForm(method="post",action="javascript:return false;")
 			td 
 				input#entry_title(type="text" name="entry_title" readonly="true" placeholder="案件名" size="20")
 		tr
-			td.form_title 試験明細番号
+			td.form_title 見積番号
 			td 
-				input#quote_detail_no(type="text" name="quote_detail_no" placeholder="試験明細番号" size="20")
+				input#quote_no(type="text" name="quote_no" placeholder="見積番号" size="20")
+			td.form_title 明細番号
+			td 
+				input#quote_detail_no(type="text" name="quote_detail_no" placeholder="明細番号" size="20")
+		tr
 			td.form_title 試験項目名
-			td 
+			td(colspan="3") 
 				input#test_item(type="text" name="test_item" readonly="true" placeholder="試験項目名" size="20")
 		tr
 			td.form_title 

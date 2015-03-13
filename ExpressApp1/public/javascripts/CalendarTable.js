@@ -145,6 +145,7 @@ CalendarTable.setFormData = function(data) {
 	// 初期化
 	$("#entry_no").val("");
 	$("#entry_title").val("");
+	$("#quote_no").val("");
 	$("#quote_detail_no").val("");
 	$("#test_item").val("");
 	$("#start_date").val("");
@@ -184,6 +185,9 @@ CalendarTable.setFormData = function(data) {
 	if (data.entry_title) {
 		$("#entry_title").val(data.entry_title);
 	}
+	if (data.quote_no) {
+		$("#quote_no").val(data.quote_no);
+	}
 	if (data.quote_detail_no) {
 		$("#quote_detail_no").val(data.quote_detail_no);
 	}
@@ -217,7 +221,7 @@ CalendarTable.searchScheduleData = function (start,end,base_cd,test_type, callba
 		url: '/schedule_get/term/' 
 			+ scheduleCommon.getDateString(start, "{0}-{1}-{2}") + '/' 
 			+ scheduleCommon.getDateString(end, "{0}-{1}-{2}") + '/' 
-			+ base_cd + '/' 
+//			+ base_cd + '/' 
 			+ test_type,
 		cache: false,
 		dataType: 'json',
@@ -243,11 +247,11 @@ CalendarTable.addScheduleData = function (schedule_list) {
 			var left = (start_time.getTime() - base_time.getTime()) / 60000;
 			left = left / 15;
 			// テーブルを作成時に保存してある表示幅を取得して時間に合わせて幅を算出する
-			$(sch).css("width", ((time * CalendarTable.width_15[rows[i].division]) + (time - 1) ) +  "px");
-			$(sch).css("left", ((left * CalendarTable.width_15[rows[i].division]) + (left - 1) ) + "px");
+			$(sch).css("width", ((time * CalendarTable.width_15[CalendarTable.current_test_type]) + (time - 1) ) +  "px");
+			$(sch).css("left", ((left * CalendarTable.width_15[CalendarTable.current_test_type]) + (left - 1) ) + "px");
 			var sd = scheduleCommon.dateSeparatorChange(rows[i].start_date, "-");
 			// スケジュールを表示する要素のIDを生成する
-			var id = "#cal_day_times_" + sd + "-" + rows[i].division; 
+			var id = "#cal_day_times_" + sd + "-" + CalendarTable.current_test_type; 
 			$(id).append(sch);
 			// 要素のカスタムデータとしてデータを追加
 			$("#" + rows[i].schedule_id).data('schedule', rows[i]);
@@ -268,9 +272,9 @@ CalendarTable.drop = function (event, ui) {
 	data.start_date = $(event.target).data('date');
 	// 横方向の移動位置の判定（時間の変更）
 	// 移動した位置から１５分単位の位置を求めて表示位置を合わせる	
-	left = Math.round(left / (CalendarTable.width_15[data.division] + 1));
+	left = Math.round(left / (CalendarTable.width_15[CalendarTable.current_test_type] + 1));
 	var min = left * 15 * 60000;	// 分単位の時間を求めておく
-	left = (left * CalendarTable.width_15[data.division]) + (left - 1);
+	left = (left * CalendarTable.width_15[CalendarTable.current_test_type]) + (left - 1);
 	$("#" + data.schedule_id).css("left", left);
 	// 現在のデータから作業時間の長さを求める
 	var start_time = scheduleCommon.dateStringToDate(data.start_date + " " + data.start_time);
@@ -368,7 +372,7 @@ CalendarTable.searchQuoteData = function () {
 	$("#ref_entry_title").val(entry_title);
 
 	$.ajax({
-		url: '/quote_get/' + entry_no,
+		url: '/quote_specific_get_list/' + entry_no,
 		cache: false,
 		dataType: 'json',
 		success: function (quote_list) {
@@ -384,10 +388,10 @@ CalendarTable.setEntryList = function (entry_list,base_cd) {
 	if (entry_list != null) {
 		var rows = entry_list.rows;
 		for (var i in rows) {
-			if (base_cd === rows[i].base_cd) {
+//			if (base_cd === rows[i].base_cd) {
 				var op = $("<option value=" + rows[i].entry_no + ">" + rows[i].entry_title + "</option>");
 				$("#entry_list").append(op);
-			}
+//			}
 		}
 	}
 	// ダイアログ表示
@@ -398,8 +402,9 @@ CalendarTable.setQuoteList = function (quote_list) {
 	$("#quote_list").empty();
 	if (quote_list != null) {
 		var rows = quote_list.rows;
+		$("#ref_quote_no").val(rows[0].quote_no);
 		for (var i in rows) {
-			var op = $("<option value=" + rows[i].cell[2]  + ">" + rows[i].cell[4] + "</option>");
+			var op = $("<option value=" + rows[i].quote_detail_no  + ">" + rows[i].test_middle_class_name + "</option>");
 			$("#quote_list").append(op);
 
 		}
@@ -419,6 +424,7 @@ CalendarTable.selectEntryData = function () {
 	// 参照画面で選択した情報を設定する
 	$("#entry_no").val($("#ref_entry_no").val());
 	$("#entry_title").val($("#ref_entry_title").val());
+	$("#quote_no").val($("#ref_quote_no").val());
 	$("#quote_detail_no").val($("#ref_quote_detail_no").val());
 	$("#test_item").val($("#ref_test_item").val());
 };

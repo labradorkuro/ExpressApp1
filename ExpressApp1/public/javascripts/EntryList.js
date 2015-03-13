@@ -9,8 +9,6 @@ $(function() {
 	// 日付選択用設定
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 	entryList.createMessageDialog();
-	// 必要な情報をDBから取得する
-	scheduleCommon.getUserInfo();
 	//scheduleCommon.getDivisionInfo();
 	// 編集用ダイアログの設定
 	entryList.createEntryDialog();				// 案件入力用
@@ -67,17 +65,6 @@ $(function() {
 	$("#entry_status_02").bind('change', entryList.changeEntryOption);
 	$("#entry_status_03").bind('change', entryList.changeEntryOption);
 	$("#entry_status_04").bind('change', entryList.changeEntryOption);
-
-	// 得意先リスト画面生成
-	clientList.init(false);
-	// 得意先選択ダイアログ用のタブ生成
-	clientList.createClientListTabs();
-	// 得意先,部署、担当者グリッドの生成
-	for (var i = 1; i <= 12; i++) {
-		clientList.createClientListGrid(i);
-		clientList.createClientDivisionListGrid(i, "0");
-		clientList.createClientPersonListGrid(i, "0", "0");
-	}
 	// 見積書関連のイベント処理登録
 	quoteInfo.eventBind();
 });
@@ -221,7 +208,18 @@ entryList.createGrid = function () {
 	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize();
 };
-
+entryList.createClientList = function() {
+	// 得意先リスト画面生成
+	clientList.init(false);
+	// 得意先選択ダイアログ用のタブ生成
+	clientList.createClientListTabs();
+	// 得意先,部署、担当者グリッドの生成
+	for (var i = 1; i <= 12; i++) {
+		clientList.createClientListGrid(i);
+		clientList.createClientDivisionListGrid(i, "0");
+		clientList.createClientPersonListGrid(i, "0", "0");
+	}
+}
 
 // 得意先選択ダイアログの選択ボタン押下イベント処理
 entryList.selectClient = function () {
@@ -257,6 +255,10 @@ entryList.statusFormatter = function (cellval, options, rowObject) {
 };
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {
+	// 社員マスタからリストを取得する
+	if ($("#sales_person_id").children().length == 0) {
+		scheduleCommon.getUserInfo();
+	}
 	// フォームをクリアする
 	var entry = entryList.clearEntry();
 	entryList.setEntryForm(entry);
@@ -275,6 +277,7 @@ entryList.openEntryDialog = function (event) {
 };
 // クライアント参照ダイアログ表示
 entryList.openClientListDialog = function (event) {
+	entryList.createClientList();
 	$("#client_list_dialog").dialog({
 		buttons: {
 			"選択": function () {

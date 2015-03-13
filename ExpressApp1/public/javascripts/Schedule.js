@@ -231,12 +231,12 @@ workitemEdit.selectDate = function () {
 	workitemEdit.ganttTableInit();
 };
 workitemEdit.ganttTableInit = function () {
-	GanttTable.Init("ganttTable_div1", "01", 1);
-	GanttTable.Init("ganttTable_div2", "02", 1);
-	GanttTable.Init("ganttTable_div3", "03", 1);
-	GanttTable.Init("ganttTable_div4", "04", 1);
-	GanttTable.Init("ganttTable_div5", "05", 1);
-	GanttTable.Init("ganttTable_div6", "06", 1);
+	GanttTable.Init("ganttTable_div1", "L01", 1);
+	GanttTable.Init("ganttTable_div2", "L02", 1);
+	GanttTable.Init("ganttTable_div3", "L03", 1);
+	GanttTable.Init("ganttTable_div4", "L04", 1);
+	GanttTable.Init("ganttTable_div5", "L05", 1);
+	GanttTable.Init("ganttTable_div6", "L06", 1);
 };
 
 // テンプレート選択ボタンイベント

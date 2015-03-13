@@ -11,37 +11,37 @@
 			switch (ui.tab.index()) {
 				case 0:
 					CalendarTable.current_div = "calendar_div1";
-					CalendarTable.current_test_type = "01";
+					CalendarTable.current_test_type = "L01";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
 				case 1:
 					CalendarTable.current_div = "calendar_div2_1";
-					CalendarTable.current_test_type = "02";
+					CalendarTable.current_test_type = "L02";
 					CalendarTable.current_base_cd = "01";
 					CalendarTableForPatchTest.init();	// 年、月、拠点CD
 					break;
 				case 2:
 					CalendarTable.current_div = "calendar_div3";
-					CalendarTable.current_test_type = "03";
+					CalendarTable.current_test_type = "L03";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
 				case 3:
 					CalendarTable.current_div = "calendar_div4";
-					CalendarTable.current_test_type = "04";
+					CalendarTable.current_test_type = "L04";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
 				case 4:
 					CalendarTable.current_div = "calendar_div5";
-					CalendarTable.current_test_type = "05";
+					CalendarTable.current_test_type = "L05";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
 				case 5:
 					CalendarTable.current_div = "calendar_div6";
-					CalendarTable.current_test_type = "06";
+					CalendarTable.current_test_type = "L06";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
@@ -53,37 +53,37 @@
 			switch (ui.newTab.index()) {
 				case 0:
 					CalendarTable.current_div = "calendar_div1";
-					CalendarTable.current_test_type = "01";
+					CalendarTable.current_test_type = "L01";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
 				case 1:
 					CalendarTable.current_div = "calendar_div2_1";
-					CalendarTable.current_test_type = "02";
+					CalendarTable.current_test_type = "L02";
 					CalendarTable.current_base_cd = "01";
 					CalendarTableForPatchTest.init();	// 年、月、拠点CD
 					break;
 				case 2:
 					CalendarTable.current_div = "calendar_div3";
-					CalendarTable.current_test_type = "03";
+					CalendarTable.current_test_type = "L03";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
 				case 3:
 					CalendarTable.current_div = "calendar_div4";
-					CalendarTable.current_test_type = "04";
+					CalendarTable.current_test_type = "L04";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
 				case 4:
 					CalendarTable.current_div = "calendar_div5";
-					CalendarTable.current_test_type = "05";
+					CalendarTable.current_test_type = "L05";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
 				case 5:
 					CalendarTable.current_div = "calendar_div6";
-					CalendarTable.current_test_type = "06";
+					CalendarTable.current_test_type = "L06";
 					CalendarTable.current_base_cd = "01";
 					CalendarTable.init();
 					break;
@@ -100,13 +100,13 @@
 			switch (ui.newTab.index()) {
 				case 0:
 					CalendarTable.current_div = "calendar_div2_1";
-					CalendarTable.current_test_type = "02";
+					CalendarTable.current_test_type = "L02";
 					CalendarTable.current_base_cd = "01";
 					CalendarTableForPatchTest.init();	// 年、月、拠点CD
 					break;					
 				case 1:
 					CalendarTable.current_div = "calendar_div2_2";
-					CalendarTable.current_test_type = "02";
+					CalendarTable.current_test_type = "L02";
 					CalendarTable.current_base_cd = "02";
 					CalendarTableForPatchTest.init();	// 年、月、拠点CD
 					break;

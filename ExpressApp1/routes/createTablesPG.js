@@ -201,7 +201,8 @@ exports.create = function (req, res) {
 		"CREATE TABLE IF NOT EXISTS drc_sch.test_schedule (" 
 			+ "schedule_id SERIAL,"				// スケジュールID
 			+ "entry_no VARCHAR(10) NOT NULL,"	// 案件No
-			+ "quote_detail_no VARCHAR(7),"		// 明細番号
+			+ "quote_no VARCHAR(3),"			// 見積番号
+			+ "quote_detail_no VARCHAR(3),"		// 明細番号
 			+ "start_date DATE,"				// 開始日付
 			+ "end_date DATE,"					// 開始日付
 			+ "start_time TIME,"				// 開始時間
