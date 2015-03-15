@@ -333,7 +333,22 @@ exports.create = function (req, res) {
 			+ "created_id VARCHAR(32),"		// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
-			+ ", PRIMARY KEY(template_id,template_name));"
+			+ ", PRIMARY KEY(template_id,template_name));",
+
+		// 動作設定情報
+		"CREATE TABLE IF NOT EXISTS drc_sch.configuration (" 
+			+ "id SERIAL,"					// ID
+			+ "drc_name VARCHAR(256),"		// 自社会社名
+			+ "drc_address1 VARCHAR(128),"	// 住所１
+			+ "drc_address2 VARCHAR(128),"	// 住所２
+			+ "drc_telno VARCHAR(16),"		// 電話番号
+			+ "drc_faxno VARCHAR(16),"		// FAX番号
+			+ "consumption_tax INT2,"		// 消費税率
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+			+ "created_id VARCHAR(32),"							// 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+			+ "updated_id VARCHAR(32)"							// 更新者ID
+			+ ", PRIMARY KEY(id));"
   	];
 	pg.connect(connectionString, function (err, connection) {
 		for (var i = 0; i < sql.length; i++) {

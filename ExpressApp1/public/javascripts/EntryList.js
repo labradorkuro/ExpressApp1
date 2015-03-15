@@ -3,6 +3,8 @@
 // 案件リスト画面の処理
 //
 $(function() {
+	// 自社情報の取得
+	quoteInfo.getMyInfo();
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	// 案件リストのタブ生成
 	$("#tabs").tabs();
@@ -308,20 +310,25 @@ entryList.requestEntryData = function (no) {
 };
 // 案件データの保存
 entryList.saveEntry = function () {
-	// 入力値チェック
-	if (!entryList.entryInputCheck()) {
+	if ($('#entryForm')[0].checkValidity()) {
+		// 入力値チェック
+		if (!entryList.entryInputCheck()) {
+			return false;
+		}
+		// checkboxのチェック状態確認と値設定
+		entryList.checkCheckbox();
+		// formデータの取得
+		var form = entryList.getFormData();
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/entry_post', true);
+		xhr.responseType = 'json';
+		xhr.onload = entryList.onloadEntrySave;
+		xhr.send(form);
+		return true;
+	} else {
+		$("#entryForm").submit();
 		return false;
 	}
-	// checkboxのチェック状態確認と値設定
-	entryList.checkCheckbox();
-	// formデータの取得
-	var form = entryList.getFormData();
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/entry_post', true);
-	xhr.responseType = 'json';
-	xhr.onload = entryList.onloadEntrySave;
-	xhr.send(form);
-	return true;
 };
 
 // checkboxのチェック状態確認と値設定

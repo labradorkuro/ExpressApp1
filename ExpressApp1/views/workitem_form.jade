@@ -14,7 +14,7 @@
 				input#work_item_id(type="hidden" name="work_item_id" )
 			td.form_title 作業進捗度(%)
 			td 
-				input#progress(type="text" name="progress" placeholder="作業進捗度")
+				input.num_type#progress(type="number" max=100 min=0 name="progress" placeholder="作業進捗度")
 		tr
 			td.form_title 種別
 			td(colspan="3") 

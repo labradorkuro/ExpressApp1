@@ -19,6 +19,7 @@ var entry_edit = require('./routes/entry_edit');
 var entry_list = require('./routes/entry_list');
 var quote_form = require('./routes/quote_form');
 var test_item_list = require('./routes/test_item_list');
+var configuration = require('./routes/configuration');
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -40,6 +41,8 @@ var billing_post = require('./api/billing_postPG');
 var billing_get = require('./api/billing_getPG');
 var test_item_post = require('./api/test_item_postPG');
 var test_item_get = require('./api/test_item_getPG');
+var config_post = require('./api/configuration_postPG');
+var config_get = require('./api/configuration_getPG');
 mysql = require('mysql');
 pg = require('pg');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
@@ -88,6 +91,7 @@ app.get('/dbinit', db.create);
 //app.get('/db', db.list);
 //app.post('/dbpost',db.post);
 app.get('/admin',admin.list);
+app.get('/configuration',configuration.list);
 app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
 app.post('/entry_post', entry_post.entry_post);
@@ -126,6 +130,8 @@ app.post('/billing_info_post', billing_post.billing_post);
 app.get('/billing_info_get', billing_get.billing_get);
 app.post('/test_item_post', test_item_post.test_item_post);
 app.get('/test_item_get', test_item_get.test_item_get);
+app.post('/config_post/:id', config_post.configuration_post);
+app.get('/config_get/:id', config_get.configuration_get);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',

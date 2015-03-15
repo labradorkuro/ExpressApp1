@@ -497,7 +497,9 @@ var insertQuote = function (connection, quote, req, res) {
 			updated_id					// 更新者ID
 		]);
 	query.on('end', function(result,err) {
-		connection.end();
+//		connection.end();
+		// 明細行処理
+		getSpecificInfo(connection,quote,req,res, 1);
 		res.send(quote);
 	});
 	query.on('error', function (error) {

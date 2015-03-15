@@ -8,7 +8,29 @@
 //
 var quoteInfo = quoteInfo || {};
 quoteInfo.currentEntry = {};			// 案件リストで選択中の案件情報
-quoteInfo.currentQuoteRowId = 0;				// 選択中の見積リスト行ID
+quoteInfo.currentQuoteRowId = 0;		// 選択中の見積リスト行ID
+quoteInfo.drc_info = {
+	address1:"",
+	address2:"",
+	telno:"",
+	faxno:"",
+	name:"DRC株式会社",
+	consumption_tax:8
+};
+quoteInfo.getMyInfo = function() {
+	var config = $.get('/config_get/1', {});
+	$.when(config)
+	.done(function (config_response) {
+//		configuration = config_response;
+		quoteInfo.drc_info.name = config_response.drc_name;
+		quoteInfo.drc_info.address1 = config_response.drc_address1;
+		quoteInfo.drc_info.address2 = config_response.drc_address2;
+		quoteInfo.drc_info.telno = "TEL : " + config_response.drc_telno;
+		quoteInfo.drc_info.faxno = "FAX : " + config_response.drc_faxno;
+		quoteInfo.drc_info.consumption_tax = config_response.consumption_tax;
+		
+	});
+};
 // イベント処理のバインド
 quoteInfo.eventBind = function(kind) {
 	if (kind == "add_row_btn") {
@@ -17,8 +39,8 @@ quoteInfo.eventBind = function(kind) {
 	$(".del_row_btn").bind("click", quoteInfo.delQuoteRow);
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
-	$(".summary_target").bind('change',{}, quoteInfo.calcSummary);
-}
+	$(".summary_target").bind('input',{}, quoteInfo.calcSummary);
+};
 
 // 明細入力用ダイアログの生成
 quoteInfo.createQuoteDialog = function () {
@@ -49,6 +71,7 @@ quoteInfo.createQuoteDialog = function () {
 
 // 見積書用ダイアログの生成
 quoteInfo.createQuoteFormDialog = function () {
+
 	$('#quoteForm_dialog').dialog({
 		autoOpen: false,
 		width: 910,
@@ -195,6 +218,10 @@ quoteInfo.openQuoteDialog = function (event) {
 };
 // 見積書ダイアログ表示
 quoteInfo.openQuoteFormDialog = function (event) {
+	// 自社情報のセット
+	$("#drc_address1").text(quoteInfo.drc_info.address1);
+	$("#drc_address2").text(quoteInfo.drc_info.telno + " " + quoteInfo.drc_info.faxno);
+	$("#drc_name").text(quoteInfo.drc_info.name);
 	// テーブルのクリア
 	quoteInfo.specificTableClear();
 	// 選択中の案件情報を取得する
@@ -217,8 +244,6 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	$("#drc_division_name").text("  試験課 " + entry.test_large_class_name);
 	$("#drc_test_person").text("  担当者 " + entry.test_person_id);
 	$("#quote_title").val(entry.entry_title);
-	// イベント設定
-	quoteInfo.eventBind("");
 
 	$("#quoteForm_dialog").dialog("open");
 };
@@ -252,6 +277,9 @@ quoteInfo.addSpecificInfoToTable = function(specific_list) {
 			$("#summary_check_" + no).prop("checked",(rows[i].summary_check == 1));
 			$("#specific_memo_" + no).val(rows[i].specific_memo);
 		}
+		// イベント設定
+		quoteInfo.eventBind("");
+		quoteInfo.calcSummary();
 	}
 };
 // 見積の選択イベント処理
@@ -312,6 +340,7 @@ quoteInfo.clearQuote = function () {
 	quote.expire_date = "";
 	quote.quote_submit_check = "未";
 	quote.order_status = "商談中";
+	quote.quote_total_price = "";
 	return quote;
 };
 
@@ -321,6 +350,8 @@ quoteInfo.setQuoteFormData = function (quote) {
 	$('#estimate_monitors_num').val(quote.monitors_num);// 被験者数
 	$('#quote_date').val(quote.quote_date);				// 見積日
 	$('#expire_date').val(quote.expire_date);			// 有効期限
+	$('#quote_total_price').val(quote.quote_total_price);	// 見積金額合計
+
 	if (quote.quote_submit_check == "未") {
 		$('#quote_submit_check_no').prop("checked",true);	// 見積書提出済フラグ
 	} else if (quote.quote_submit_check == "済"){
@@ -391,7 +422,7 @@ quoteInfo.onloadQuoteReqAfterPrint = function (e) {
 		$("#quote_list").GridUnload();
 		quoteInfo.createQuoteInfoGrid(quoteInfo.currentEntry.entry_no);
 		// 印刷用PDFの生成
-		var data = quoteInfo.printDataSetup();
+		var data = quoteInfo.printDataSetup(quote);
 		quoteInfo.printQuote(data);
 	}
 };
@@ -449,7 +480,8 @@ quoteInfo.calcSummary = function(event) {
 			total += price;
 		}
 	}
-	$("#quote_total_price").val(total);
+	var tax = total * (quoteInfo.drc_info.consumption_tax / 100);
+	$("#quote_total_price").val(total + tax);
 };
 
 // 明細テーブルのクリア（再生成）
@@ -561,17 +593,17 @@ quoteInfo.selectMiddleClass = function(no) {
 
 
 // 見積書用データの生成
-quoteInfo.printDataSetup = function () {
+quoteInfo.printDataSetup = function (quote) {
 	var entry = quoteInfo.getSelectEntry();
 	// 印刷用データ
 	var data = {
 		title: '御 見 積 書',
-		quote_issue_date: $("#quote_date").val(),
-		quote_no: entry.entry_no + "-" + $("#estimate_quote_no").val(),
-		drc_address1: '〒530-0044 大阪市北区東天満2-10-31　第9田淵ビル3F',
-		drc_tel: 'TEL：06-6882-8201',
-		drc_fax: 'FAX：06-6882-8202',
-		drc_name: 'DRC株式会社',
+		quote_issue_date: quote.quote_date,
+		quote_no: entry.entry_no + "-" + quote.estimate_quote_no,
+		drc_address1: quoteInfo.drc_info.address1,
+		drc_tel: quoteInfo.drc_info.telno,
+		drc_fax: quoteInfo.drc_info.faxno,
+		drc_name:quoteInfo.drc_info.name,
 		drc_division_name: $("#drc_division_name").text(),
 		drc_prepared: $("#drc_test_person").text(),
 		client_name_1: $("#billing_company_name_1").val(),	// 請求先情報
@@ -581,11 +613,29 @@ quoteInfo.printDataSetup = function () {
 		quote_title: $("#quote_title").val(),
 		quote_expire: $("#expire_date").val(),
 		quote_total_price: $("#quote_total_price").val(),
-		rows: [{ name: '試験明細データ', unit: '1式', quantity: '    20', unit_price: '     1,000', price: '  20,000', memo: '特になし' }]
+		rows: []
 	};
 	// 明細データの生成
-	// ここに処理をかく
-
+	var no = 1;
+	while ("quote_detail_no_" + no in quote) {
+		// 行がある
+		var specific = {};
+		specific.quote_detail_no = quote["quote_detail_no_" + no];
+		specific.test_middle_class_name = quote["test_middle_class_name_" + no];
+		specific.unit = quote["unit_" + no];
+		specific.unit_price = quote["unit_price_" + no];
+		specific.quantity = quote["quantity_" + no];
+		specific.price = quote["price_" + no];
+		if ("summary_check_" + no in quote) {
+			specific.summary_check = 1;
+		} else {
+			specific.summary_check = 0;
+		}
+		specific.specific_memo = quote["specific_memo_" + no];
+		specific.specific_delete_check = Number(quote["specific_delete_check_" + no]);
+		data.rows.push(specific);
+		no++;
+	}
 	return data;
 };
 
@@ -729,12 +779,12 @@ quoteInfo.outputText = function (canvas, text,font_size,left, top) {
 quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	for (var i in data.rows) {
 		var row = data.rows[i];
-		quoteInfo.outputText(canvas, row.name, font_size, 65, top);			// 件名
-		quoteInfo.outputText(canvas, row.unit, font_size, 295, top);		// 単位
-		quoteInfo.outputText(canvas, row.quantity, font_size, 370, top);	// 数量
-		quoteInfo.outputText(canvas, row.unit_price, font_size, 470, top);	// 単価
-		quoteInfo.outputText(canvas, row.price, font_size, 575, top);		// 金額
-		quoteInfo.outputText(canvas, row.memo, font_size, 670, top);		// 備考
+		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);			// 試験中分類名
+		quoteInfo.outputText(canvas, row.unit, font_size, 295, top);				// 単位
+		quoteInfo.outputText(canvas, row.quantity, font_size, 370, top);			// 数量
+		quoteInfo.outputText(canvas, row.unit_price, font_size, 470, top);			// 単価
+		quoteInfo.outputText(canvas, row.price, font_size, 575, top);				// 金額
+		quoteInfo.outputText(canvas, row.specific_memo, font_size, 670, top);		// 備考
 		top += 20;
 	}
 };

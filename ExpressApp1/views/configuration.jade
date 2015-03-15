@@ -1,0 +1,55 @@
+﻿extends layout
+
+block head
+	link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+	script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+	script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+	script(src="javascripts/Configuration.js")
+	link(rel="stylesheet" ,href="stylesheets/schedule.css")
+
+block content
+		div.titlebar
+			span.titlebar 
+				a(href="portal") Home
+			img.titlebar_logo(src="images/drc_logo.jpg")
+			span.titlebar= title
+			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。" 
+		div#tabs
+			ul
+				li
+					a(href="#tabs-0") 動作設定
+			div#tabs-0
+				div.toolbar
+					a.tool_button_a#post_config 更新
+				form#configForm(method="post",action="javascript:return false;")
+					table
+						tr
+							td.form_title_s 自社名
+							td
+								input#drc_name(type="text" name="drc_name" size="80" placeholder="自社名")
+						tr
+							td.form_title_s 自社住所１
+							td
+								input#drc_address1(type="text" name="drc_address1" size="80" placeholder="自社住所１")
+						tr
+							td.form_title_s 自社住所２
+							td
+								input#drc_address2(type="text" name="drc_address2" size="80" placeholder="自社住所２")
+						tr
+							td.form_title_s 自社電話番号
+							td
+								input#drc_telno(type="tel" name="drc_telno" size="40" placeholder="自社電話番号")
+						tr
+							td.form_title_s 自社FAX番号
+							td
+								input#drc_faxno(type="tel" name="drc_faxno" size="40" placeholder="自社FAX番号")
+					hr
+					table
+						tr
+							td.form_title_s 消費税率
+							td
+								input.num_type#consumption_tax(type="number" min="0" max="100" name="consumption_tax" size="40" placeholder="消費税率" value="8")
+								label  %
+		div#message_dialog
+			div
+				span#message 

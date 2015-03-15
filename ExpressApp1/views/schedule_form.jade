@@ -12,10 +12,10 @@ form#scheduleForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 見積番号
 			td 
-				input#quote_no(type="text" name="quote_no" placeholder="見積番号" size="20")
+				input#quote_no(type="text" name="quote_no" readonly = "true" placeholder="見積番号" size="20")
 			td.form_title 明細番号
 			td 
-				input#quote_detail_no(type="text" name="quote_detail_no" placeholder="明細番号" size="20")
+				input#quote_detail_no(type="text" name="quote_detail_no" readonly = "true" placeholder="明細番号" size="20")
 		tr
 			td.form_title 試験項目名
 			td(colspan="3") 
@@ -28,7 +28,7 @@ form#scheduleForm(method="post",action="javascript:return false;")
 			td.form_title
 				label#start_time_label 開始時間
 			td 
-				input#start_time(type="text" name="start_time" placeholder="開始時間" size="10")
+				input#start_time(type="time" step="900" name="start_time" placeholder="開始時間" size="10")
 		tr
 			td.form_title 
 				label#end_date_label 終了日 
@@ -37,7 +37,7 @@ form#scheduleForm(method="post",action="javascript:return false;")
 			td.form_title 
 				label#end_time_label 終了時間
 			td 
-				input#end_time(type="text" name="end_time" placeholder="終了時間" size="10")
+				input#end_time(type="time" step="900" name="end_time" placeholder="終了時間" size="10")
 		tr#test_02_row
 			td.form_title
 				label#ampm_label AM/PM 

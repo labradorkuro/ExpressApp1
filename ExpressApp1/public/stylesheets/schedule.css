@@ -1455,3 +1455,8 @@ div.right_grid {
     padding-left:10px;
     width:900px;
 }
+
+/* 動作設定*/
+form#configForm {
+    font-size:1.2em;
+}
