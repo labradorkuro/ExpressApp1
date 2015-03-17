@@ -6,6 +6,8 @@ $(function() {
 	// 自社情報の取得
 	quoteInfo.getMyInfo();
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
+	// 社員マスタからリストを取得する
+	scheduleCommon.getUserInfo();
 	// 案件リストのタブ生成
 	$("#tabs").tabs();
 	// 日付選択用設定
@@ -165,7 +167,7 @@ entryList.createGrid = function () {
 		url: '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01 + '&entry_status_02=' + sts02 + '&entry_status_03=' + sts03 + '&entry_status_04=' + sts04,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件No','','クライアント名','','クライアント部署','','','','','','クライアント担当者','試験タイトル','問合せ日', '案件ステータス', '営業担当者','見積番号'
+		colNames: ['案件No','','クライアント名','','クライアント部署','','','','','','クライアント担当者','','試験タイトル','問合せ日', '案件ステータス', '営業担当者','見積番号'
 				,'受注日','仮受注チェック','受託区分', '試験大分類', '試験中分類','試験担当者','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
@@ -179,6 +181,7 @@ entryList.createGrid = function () {
 			{ name: 'client_fax_no', index: '', hidden:true },
 			{ name: 'client_person_id', index: '', hidden:true },
 			{ name: 'client_person_name', index: 'client_person_name', width: 200, align: "center" },
+			{ name: 'client_person_compellation', index: 'client_person_compellation', hidden:true},
 			{ name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
 			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
 			{ name: 'entry_status', index: 'entry_status', width: 100 ,formatter: entryList.statusFormatter},
@@ -257,10 +260,6 @@ entryList.statusFormatter = function (cellval, options, rowObject) {
 };
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {
-	// 社員マスタからリストを取得する
-	if ($("#sales_person_id").children().length == 0) {
-		scheduleCommon.getUserInfo();
-	}
 	// フォームをクリアする
 	var entry = entryList.clearEntry();
 	entryList.setEntryForm(entry);
@@ -308,6 +307,30 @@ entryList.requestEntryData = function (no) {
 	xhr.onload = entryList.onloadEntryReq;
 	xhr.send();
 };
+// 受注確定になっている見積情報を取得する
+entryList.requestQuoteInfo = function(entry_no) {
+	$.ajax({
+		url: '/quote_specific_get_list/' + entry_no,
+		cache: false,
+		dataType: 'json',
+		success: function (quote_list) {
+			entryList.setQuoteInfo(quote_list);
+		}
+	});
+
+};
+entryList.setQuoteInfo = function (quote_list) {
+	if (quote_list != null) {
+		var rows = quote_list.rows;
+		$("#quote_no").val(rows[0].quote_no);
+		var list = "";
+		for (var i = 0;i <  rows.length;i++) {
+			list += rows[i].test_middle_class_name + "\n";
+		}
+		$("#test_middle_class_list").text(list);
+	}
+};
+
 // 案件データの保存
 entryList.saveEntry = function () {
 	if ($('#entryForm')[0].checkValidity()) {
@@ -383,7 +406,10 @@ entryList.onloadEntryReq = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
 		// formに取得したデータを埋め込む
-		entryList.setEntryForm(entry);				
+		entryList.setEntryForm(entry);
+		$("#entry_memo_ref").text(entry.entry_memo);		
+		// 見積情報の取得
+		entryList.requestQuoteInfo(entry.entry_no);		
 	}
 };
 
@@ -531,6 +557,7 @@ entryList.onSelectEntry = function (rowid) {
 		entryList.currentEntry = row;
 		// 請求情報表示ボタンを表示する
 		$("#entry_billing").css("visibility","visible");
+		entryList.requestEntryData(row.entry_no);
 	}
 
 };

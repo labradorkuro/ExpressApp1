@@ -563,6 +563,25 @@ var quote_check = function (quote) {
 	return quote;
 };
 
+// 明細データのチェック
+var quote_specific_check = function(specific) {
+	if (specific.unit_price && specific.unit_price != "") {
+		specific.unit_price = Number(specific.unit_price);
+	} else {
+		specific.unit_price = 0;
+	}
+	if (specific.quantity && specific.quantity != "") {
+		specific.quantity = Number(specific.quantity);
+	} else {
+		specific.quantity = 0;
+	}
+	if (specific.price && specific.price != "") {
+		specific.price = Number(specific.price);
+	} else {
+		specific.price = 0;
+	}
+	return specific;
+};
 // 明細行データを取り出して保存処理を行う
 var getSpecificInfo = function(connection,quote, req, res, no) {
 
@@ -582,6 +601,7 @@ var getSpecificInfo = function(connection,quote, req, res, no) {
 		}
 		specific.specific_memo = quote["specific_memo_" + no];
 		specific.specific_delete_check = Number(quote["specific_delete_check_" + no]);
+		specific = quote_specific_check(specific);
 		no++;
 		rows = [];
 		var sql = "SELECT entry_no,quote_no,quote_detail_no FROM drc_sch.quote_specific_info WHERE entry_no = $1 AND quote_no = $2 AND quote_detail_no = $3";

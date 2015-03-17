@@ -62,6 +62,7 @@ var entry_get_list = function (req, res) {
 		+ "client_division_list.name AS client_division_name," 
 		+ "client_person_list.person_id AS client_person_id," 
 		+ "client_person_list.name AS client_person_name," 
+		+ "client_person_list.compellation AS client_person_compellation," 
 		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date," 
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
@@ -122,7 +123,7 @@ var entry_get_list_term = function (req, res) {
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
 		+ ' LEFT JOIN drc_sch.quote_info ON(entry_info.entry_no = quote_info.entry_no AND quote_info.order_status = 2)'
 		+ ' WHERE entry_info.delete_check = $1 ' 
-		+ ' AND entry_info.test_large_class_cd = $2' 
+		+ ' AND entry_info.test_large_class_cd = $2 AND quote_info.quote_delete_check = 0' 
 		//+ ' AND order_accept_date NOT NULL '
 		+ ' ORDER BY entry_no ASC ';
 	return entry_get_list_for_gantt(res, sql, [0,req.params.test_type]);
@@ -564,7 +565,7 @@ var quote_specific_get_list_for_calendar = function (req, res) {
 		+ ' FROM drc_sch.quote_specific_info'
 		+ ' LEFT JOIN drc_sch.test_item_list ON (quote_specific_info.test_middle_class_cd = test_item_list.item_cd)'
 		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no)'
-		+ ' WHERE specific_delete_check = 0 AND (quote_specific_info.entry_no = $1 AND quote_info.order_status = 2) ORDER BY quote_detail_no' 
+		+ ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_specific_info.entry_no = $1 AND quote_info.order_status = 2) ORDER BY quote_detail_no' 
 	// SQL実行
 	var params = [req.params.entry_no];
 	var result = { page: 1, total: 20, records: 0, rows: [] };

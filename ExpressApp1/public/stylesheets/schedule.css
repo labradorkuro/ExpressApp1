@@ -1355,18 +1355,6 @@ table.estimate_meisai_table th {
   color: #666;
 }
 
-table.estimate_meisai_table td.course {
-  text-align: center;
-  font-size: 200%;
-  font-weight: bolder;
-}
-
-table.estimate_meisai_table td.qty,
-table.estimate_meisai_table td.price,
-table.estimate_meisai_table td.unit_price {
-  text-align: right;
-  white-space: nowrap;
-}
 table.client_list {
     /*height:400px;*/
     width:80%;

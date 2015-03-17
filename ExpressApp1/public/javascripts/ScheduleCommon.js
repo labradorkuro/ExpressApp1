@@ -252,3 +252,17 @@ scheduleCommon.item_typeFormatter = function (cellval, options, rowObject) {
 	}
 	return name;
 };
+
+// 数値のカンマ区切り
+scheduleCommon.numFormatter = function(num,keta) {
+	var sp = "";
+	for(var i = 0;i < keta - 1;i++) sp += " ";
+	return (sp + String(num).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,' )).slice(-keta);
+}
+// 数値（数字）チェック
+scheduleCommon.isNumber = function(x) {
+	if( typeof(x) != 'number' && typeof(x) != 'string' )
+		return false;
+	else 
+		return (x == parseFloat(x) && isFinite(x));
+};
