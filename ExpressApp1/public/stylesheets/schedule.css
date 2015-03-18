@@ -1,4 +1,8 @@
-﻿table.login_table {
+﻿div.grid_pager {
+    text-align:left;
+
+}
+table.login_table {
     margin-left:auto;
     margin-right:auto;
 }

@@ -122,6 +122,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 			{ name: 'updated_id', index: 'updated_id', width: 120 }								// 更新者ID
 		],
 		height: "115px",
+		shrinkToFit:false,
 		rowNum: 5,
 		rowList: [5],
 		pager: '#quote_list_pager',
@@ -178,7 +179,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
 			{ name: 'test_middle_class_cd', index: 'test_middle_class_cd', hidden:true },		// 試験中分類CD
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 200 },	// 試験中分類名
 			{ name: 'unit', index: 'unit', width: 60,align:"center" },							// 単位
-			{ name: 'unit_price', index: 'unit_price', width: 60,align:"right",formatter:quoteInfo.numFormatter },				// 単価
+			{ name: 'unit_price', index: 'unit_price', width: 120,align:"right",formatter:quoteInfo.numFormatter },				// 単価
 			{ name: 'quantity', index: 'quantity', width: 60,align:"right" },					// 数量
 			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:quoteInfo.numFormatter},							// 見積金額
 			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:quoteInfo.summaryCheckFormatter },						// 集計対象チェック
@@ -188,7 +189,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
 			{ name: 'updated_id', index: 'updated_id', width: 120 }								// 更新者ID
 		],
 		height: "130px",
-		width:960,
+		//width:960,
 		shrinkToFit:false,
 		rowNum: 6,
 		rowList: [6],

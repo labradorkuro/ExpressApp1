@@ -59,14 +59,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.cookieParser('secret', 'drc_secreted_key'));
 app.use(express.session({ key: 'session_id' }));
-
-app.use(express.favicon());
 var logs = fs.createWriteStream('./access.log', {flags: 'w'});
 app.use(express.logger({
   format: 'default',
   stream: logs
 }));
-//app.use(express.logger('default'));
+
+app.use(express.favicon(path.join(__dirname, 'public/favicon.ico')));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.bodyParser());

@@ -199,7 +199,7 @@ entryList.createGrid = function () {
 			{ name: 'updated_id', index: 'updated_id', formatter: entryList.personFormatter  },
 		],
 		height:"230px",
-		width:960,
+		//width:960,
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10],
