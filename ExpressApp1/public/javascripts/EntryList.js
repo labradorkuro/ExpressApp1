@@ -285,15 +285,18 @@ entryList.openClientListDialog = function (event) {
 				if (event.target.id == 'client_name') {
 					if (entryList.selectClient()) {
 						$(this).dialog('close');
+						scheduleCommon.changeFontSize();
 					}
 				} else {
 					if (billingList.selectClient()) {
 						$(this).dialog('close');
+						scheduleCommon.changeFontSize();
 					}
 				}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
+				scheduleCommon.changeFontSize();
 			}
 		}
 	});
@@ -333,7 +336,6 @@ entryList.setQuoteInfo = function (quote_list) {
 
 // 案件データの保存
 entryList.saveEntry = function () {
-	if ($('#entryForm')[0].checkValidity()) {
 		// 入力値チェック
 		if (!entryList.entryInputCheck()) {
 			return false;
@@ -348,10 +350,6 @@ entryList.saveEntry = function () {
 		xhr.onload = entryList.onloadEntrySave;
 		xhr.send(form);
 		return true;
-	} else {
-		$("#entryForm").submit();
-		return false;
-	}
 };
 
 // checkboxのチェック状態確認と値設定
@@ -367,11 +365,41 @@ entryList.checkCheckbox = function () {
 	}
 };
 entryList.entryInputCheck = function () {
-	var result = true;
-	if ($("#entry_title").val() == "") {
-		// 案件名
-		$("#message").text("案件名が未入力です。");
-		result = false;
+	var result = false;
+	var err = "";
+	if (! $("#entryForm")[0].checkValidity) {
+		return true;
+	}
+	// HTML5のバリデーションチェック
+	if ($("#entryForm")[0].checkValidity()) {
+		result = true;
+	} else {
+		var ctrls = $("#entryForm input");
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (! ctl.validity.valid) {
+				if (ctl.id == "entry_title") {
+					err = "試験タイトルの入力値を確認して下さい";
+				} else if (ctl.id == "entry_amount_price") {
+					err = "合計金額の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "entry_amount_billing") {
+					err = "請求合計の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "entry_amount_deposit") {
+					err = "入金合計の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "entry_memo") {
+					err = "備考の文字数を確認して下さい";
+					break;
+				}
+			}
+		}
+	}
+	if (!result) {
+		$("#message").text(err);
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
 	}
 	return result;
 };
@@ -444,8 +472,8 @@ entryList.setEntryForm = function (entry) {
 	$("#contract_type").val(entry.contract_type);				// 契約区分
 	$("#outsourcing_cd").val(entry.outsourcing_cd);				// 委託先CD
 	$("#entry_amount_price").val(entry.entry_amount_price);		// 案件合計金額
-	$("#entry_amount_billing").val(entry.entry_amount_price);	// 案件請求合計金額
-	$("#entry_amount_deposit").val(entry.entry_amount_billing); // 案件入金合計金額
+	$("#entry_amount_billing").val(entry.entry_amount_billing);	// 案件請求合計金額
+	$("#entry_amount_deposit").val(entry.entry_amount_deposit); // 案件入金合計金額
 	$("#test_person_id").val(entry.test_person_id);				// 試験担当者ID
 	
 	$("#report_limit_date").val(entry.report_limit_date);		// 報告書提出期限

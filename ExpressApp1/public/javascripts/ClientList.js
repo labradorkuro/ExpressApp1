@@ -71,6 +71,7 @@ clientList.createListGrid = function(target, kind, no) {
 	// ページャ用
 	var div = $("<div id='" + kind + "_list_pager_" + no + "'></div");
 	$(target).append(div);
+	$(target).append($("<p></p>"));
 };
 
 // 得意先リストのタブ生成と選択イベントの設定
@@ -120,7 +121,7 @@ clientList.createClientListGrid = function (no) {
 		onSelectRow: clientList.onSelectClientList
 	});
 	jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false });
-	scheduleCommon.changeFontSize();
+	scheduleCommon.changeFontSize("1.0em");
 };
 // 得意先選択イベント
 clientList.onSelectClientList = function (rowid) {
@@ -178,7 +179,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		onSelectRow: clientList.onSelectClientDivisionList
 	});
 	jQuery("#client_division_list_" + no).jqGrid('navGrid', '#client_division_list_pager_' + no, { edit: false, add: false, del: false });
-	scheduleCommon.changeFontSize();
+	scheduleCommon.changeFontSize("1.0em");
 };
 // 部署リスト選択イベント処理
 clientList.onSelectClientDivisionList = function (rowid) {
@@ -229,7 +230,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		onSelectRow: clientList.onSelectClientPersonList
 	});
 	jQuery("#client_person_list_" + no).jqGrid('navGrid', '#client_person_list_pager_' + no, { edit: false, add: false, del: false });
-	scheduleCommon.changeFontSize();
+	scheduleCommon.changeFontSize("1.0em");
 };
 // 担当者リストの選択イベント処理
 clientList.onSelectClientPersonList = function (rowid) {
@@ -261,6 +262,7 @@ clientList.createClientDialog = function (kind, title, saveFunc) {
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
+				scheduleCommon.changeFontSize();
 			}
 		}
 	});

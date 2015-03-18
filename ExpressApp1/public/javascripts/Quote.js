@@ -404,39 +404,28 @@ quoteInfo.quoteInputCheck = function (kind) {
 		}
 		result = true;
 	} else {
-//		var ctrls = $("#estimateForm .test_middle_class");
 		var ctrls = $("#estimateForm input");
-//		for(var i = 0; i < ctrls.length;i++) {
-//			var ctl = ctrls[i];
-//			if (! ctl.validity.valid) {
-//				err = "試験中分類を入力して下さい";
-//				break;
-//			}
-//		}
-//		if (err == "") {
-//			ctrls = $("#estimateForm .num_type");
-			for(var i = 0; i < ctrls.length;i++) {
-				var ctl = ctrls[i];
-				if (! ctl.validity.valid) {
-					if (ctl.id.indexOf("price_") == 0) {
-						err = "金額の入力値を確認して下さい";
-						break;
-					} else	if (ctl.id.indexOf("unit_price_") == 0) {
-						err = "単価の入力値を確認して下さい";
-						break;
-					} else	if (ctl.id.indexOf("quantity_") == 0) {
-						err = "数量の入力値を確認して下さい";
-						break;
-					} else if (ctl.id == "estimate_monitors_num") {
-						err = "被験者数の入力値を確認して下さい";
-						break;
-					} else if (! ctl.validity.valid) {
-						err = "試験中分類を入力して下さい";
-						break;
-					}
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (! ctl.validity.valid) {
+				if (ctl.id.indexOf("price_") == 0) {
+					err = "金額の入力値を確認して下さい";
+					break;
+				} else	if (ctl.id.indexOf("test_middle_class_name_") == 0) {
+					err = "試験中分類名の入力値を確認して下さい";
+					break;
+				} else	if (ctl.id.indexOf("unit_price_") == 0) {
+					err = "単価の入力値を確認して下さい";
+					break;
+				} else	if (ctl.id.indexOf("quantity_") == 0) {
+					err = "数量の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "estimate_monitors_num") {
+					err = "被験者数の入力値を確認して下さい";
+					break;
 				}
 			}
-//		}
+		}
 	}
 	if (!result) {
 		$("#message").text(err);
@@ -576,7 +565,7 @@ quoteInfo.addRowCreate = function(no) {
 	var unit = $("<td><input type='text' id='" + id + "' name='" + id + "' size='4' placeholder='単位'/></td>");
 
 	id = "unit_price_" + no;
-	var unit_price = $("<td><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='9' placeholder='単価' pattern='[0-9]{1,4}'/></td>");
+	var unit_price = $("<td><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='9' placeholder='単価' pattern='[0-9]{1,8}'/></td>");
 	
 	id = "quantity_" + no;
 	var qty = $("<td><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='4' placeholder='数量'  pattern='[0-9]{1,4}'/></td>");
@@ -834,7 +823,7 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		var row = data.rows[i];
 		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);			// 試験中分類名
 		quoteInfo.outputText(canvas, row.unit, font_size, 295, top);							// 単位
-		quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(row.unit_price,8), font_size, 365, top);			// 単価
+		quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(row.unit_price,10), font_size, 350, top);			// 単価
 		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row.quantity,5), font_size, 470, top);			// 数量
 		quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(Math.round(row.price),10), font_size, 550, top);				// 金額
 		quoteInfo.outputText(canvas, row.specific_memo, font_size, 670, top);		// 備考
