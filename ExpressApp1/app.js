@@ -61,7 +61,7 @@ app.use(express.cookieParser('secret', 'drc_secreted_key'));
 app.use(express.session({ key: 'session_id' }));
 
 app.use(express.favicon());
-app.use(express.logger('dev'));
+app.use(express.logger('default'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.bodyParser());
