@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+var fs = require('fs');
 var express = require('express');
 var routes = require('./routes');
 var client_list = require('./routes/client_list');
@@ -61,7 +61,12 @@ app.use(express.cookieParser('secret', 'drc_secreted_key'));
 app.use(express.session({ key: 'session_id' }));
 
 app.use(express.favicon());
-app.use(express.logger('default'));
+var logs = fs.createWriteStream('./access.log', {flags: 'w'});
+app.use(express.logger({
+  format: 'default',
+  stream: logs
+}));
+//app.use(express.logger('default'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.bodyParser());
