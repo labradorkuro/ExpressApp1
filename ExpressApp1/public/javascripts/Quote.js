@@ -240,6 +240,9 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		quoteInfo.searchSpecificInfo(entry.entry_no,quote.quote_no);
 	} else {
 		quoteInfo.setQuoteFormData(quote);
+		// イベント設定
+		quoteInfo.eventBind("");
+		quoteInfo.calcSummary();
 	}
 	$("#billing_company_name_1").val(entry.client_name_1);
 	$("#billing_company_name_2").val(entry.client_name_2);
@@ -401,16 +404,17 @@ quoteInfo.quoteInputCheck = function (kind) {
 		}
 		result = true;
 	} else {
-		var ctrls = $("#estimateForm .test_middle_class");
-		for(var i = 0; i < ctrls.length;i++) {
-			var ctl = ctrls[i];
-			if (! ctl.validity.valid) {
-				err = "試験中分類を入力して下さい";
-				break;
-			}
-		}
-		if (err == "") {
-			ctrls = $("#estimateForm .num_type");
+//		var ctrls = $("#estimateForm .test_middle_class");
+		var ctrls = $("#estimateForm input");
+//		for(var i = 0; i < ctrls.length;i++) {
+//			var ctl = ctrls[i];
+//			if (! ctl.validity.valid) {
+//				err = "試験中分類を入力して下さい";
+//				break;
+//			}
+//		}
+//		if (err == "") {
+//			ctrls = $("#estimateForm .num_type");
 			for(var i = 0; i < ctrls.length;i++) {
 				var ctl = ctrls[i];
 				if (! ctl.validity.valid) {
@@ -426,10 +430,13 @@ quoteInfo.quoteInputCheck = function (kind) {
 					} else if (ctl.id == "estimate_monitors_num") {
 						err = "被験者数の入力値を確認して下さい";
 						break;
+					} else if (! ctl.validity.valid) {
+						err = "試験中分類を入力して下さい";
+						break;
 					}
 				}
 			}
-		}
+//		}
 	}
 	if (!result) {
 		$("#message").text(err);
