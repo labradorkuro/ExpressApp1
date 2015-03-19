@@ -107,7 +107,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		url: '/quote_get/' + no + '/?quote_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','PDF発行','受注ステータス','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','PDF発行','受注ステータス','備考','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" },				// 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
@@ -116,6 +116,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 			{ name: 'monitors_num', index: 'monitors_num', width: 80,align:"right" },			// 被験者数
 			{ name: 'quote_submit_check', index: 'quote_submit_check', width: 120,align:"center",formatter:quoteInfo.submitCheckFormatter },			// 受注ステータス
 			{ name: 'order_status', index: 'order_status', width: 120,align:"center",formatter:quoteInfo.orderCheckFormatter },			// 受注ステータス
+			{ name: 'quote_form_memo' , index: 'quote_form_memo', width: 120, align: "left" },	// 見積備考
 			{ name: 'created', index: 'created', width: 120, align: "center" },					// 作成日
 			{ name: 'created_id', index: 'created_id', width: 120 },							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120, align: "center" },					// 更新日
@@ -163,6 +164,9 @@ quoteInfo.summaryCheckFormatter = function(no) {
 quoteInfo.numFormatter = function(num) {
 	return Math.round(num);
 };
+quoteInfo.numFormatterC = function(num) {
+	return scheduleCommon.numFormatter( Math.round(num), 10);
+};
 // 見積明細リストグリッドの生成
 quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
 	// checkboxの状態取得	
@@ -179,9 +183,9 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
 			{ name: 'test_middle_class_cd', index: 'test_middle_class_cd', hidden:true },		// 試験中分類CD
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 200 },	// 試験中分類名
 			{ name: 'unit', index: 'unit', width: 60,align:"center" },							// 単位
-			{ name: 'unit_price', index: 'unit_price', width: 120,align:"right",formatter:quoteInfo.numFormatter },				// 単価
+			{ name: 'unit_price', index: 'unit_price', width: 120,align:"right",formatter:quoteInfo.numFormatterC },				// 単価
 			{ name: 'quantity', index: 'quantity', width: 60,align:"right" },					// 数量
-			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:quoteInfo.numFormatter},							// 見積金額
+			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:quoteInfo.numFormatterC},							// 見積金額
 			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:quoteInfo.summaryCheckFormatter },						// 集計対象チェック
 			{ name: 'created', index: 'created', width: 120 },									// 作成日
 			{ name: 'created_id', index: 'created_id', width: 120 },							// 作成者ID
@@ -225,7 +229,8 @@ quoteInfo.openQuoteDialog = function (event) {
 quoteInfo.openQuoteFormDialog = function (event) {
 	// 自社情報のセット
 	$("#drc_address1").text(quoteInfo.drc_info.address1);
-	$("#drc_address2").text(quoteInfo.drc_info.telno + " " + quoteInfo.drc_info.faxno);
+	$("#drc_address2").text(quoteInfo.drc_info.address2);
+	$("#drc_tel_fax").text(quoteInfo.drc_info.telno + " " + quoteInfo.drc_info.faxno);
 	$("#drc_name").text(quoteInfo.drc_info.name);
 	// テーブルのクリア
 	quoteInfo.specificTableClear();
@@ -349,6 +354,7 @@ quoteInfo.clearQuote = function () {
 	quote.quote_submit_check = "未";
 	quote.order_status = "商談中";
 	quote.quote_total_price = "";
+	quote.quote_form_memo = "";
 	return quote;
 };
 
@@ -370,6 +376,7 @@ quoteInfo.setQuoteFormData = function (quote) {
 	} else if (quote.order_status == "受注確定") {
 		$('#order_status_yes').prop("checked",true);
 	}
+	$("#quote_form_memo").text(quote.quote_form_memo);	// 見積書備考
 };
 // 見積データの保存
 quoteInfo.saveQuote = function (kind) {
@@ -513,7 +520,7 @@ quoteInfo.calcSummary = function(event) {
 	for(var i = 1;i <= rows - 1;i++) {
 		var price = 0;
 		if ($("#specific_delete_check_" + i).val() == "0") {
-			var p = $("#price_" + i).val();
+			var p = $("#price_" + i).val().replace(',','');
 			// 数値チェックしてから変換して合計する
 			if (scheduleCommon.isNumber( p )) {
 				price = Number(p);
@@ -522,7 +529,9 @@ quoteInfo.calcSummary = function(event) {
 		}
 	}
 	var tax = Math.round(total * (quoteInfo.drc_info.consumption_tax / 100));
-	$("#quote_total_price").val(total + tax);
+	$("#sum").val(scheduleCommon.numFormatter( total, 10))
+	$("#consumption").val(scheduleCommon.numFormatter( tax, 10))
+	$("#quote_total_price").val(scheduleCommon.numFormatter( total + tax, 10));
 };
 
 // 明細テーブルのクリア（再生成）
@@ -655,6 +664,7 @@ quoteInfo.printDataSetup = function (quote) {
 		quote_issue_date: quote.quote_date,
 		quote_no: entry.entry_no + "-" + quote.estimate_quote_no,
 		drc_address1: quoteInfo.drc_info.address1,
+		drc_address2: quoteInfo.drc_info.address2,
 		drc_tel: quoteInfo.drc_info.telno,
 		drc_fax: quoteInfo.drc_info.faxno,
 		drc_name:quoteInfo.drc_info.name,
@@ -667,6 +677,7 @@ quoteInfo.printDataSetup = function (quote) {
 		quote_title: $("#quote_title").val(),
 		quote_expire: $("#expire_date").val(),
 		quote_total_price: $("#quote_total_price").val(),
+		memo: $("#quote_form_memo").val(),
 		rows: []
 	};
 	// 明細データの生成
@@ -703,7 +714,7 @@ quoteInfo.printQuote = function (data) {
 	var top = 100;
 	var font_size = 25;
 	// タイトル	
-	quoteInfo.outputText(canvas, data.title, font_size, 80, 40);
+	quoteInfo.outputText(canvas, data.title, font_size, 330, 40);
 	// 請求先情報	
 	font_size = 16;
 	var left = 60;
@@ -737,7 +748,7 @@ quoteInfo.printQuote = function (data) {
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 2 }));
 	// 見積情報
 	font_size = 16;
-	left = 340;
+	left = 460;
 	top = 100;
 	if (data.quote_issue_date != null)
 		quoteInfo.outputText(canvas, "見積日：" + data.quote_issue_date, font_size, left, top);
@@ -747,6 +758,8 @@ quoteInfo.printQuote = function (data) {
 	// 自社情報
 	top += font_size + 2;
 	quoteInfo.outputText(canvas, data.drc_address1, font_size, left, top);
+	top += font_size + 2;
+	quoteInfo.outputText(canvas, data.drc_address2, font_size, left, top);
 	top += font_size + 2;
 	quoteInfo.outputText(canvas, data.drc_name, font_size, left, top);
 	top += font_size + 2;
@@ -768,9 +781,11 @@ quoteInfo.printQuote = function (data) {
 	
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h,fill:'none', stroke:'black', strokeWidth:2, opacity:0.7}));
 	h = 1;	
+	var sw = 1;
 	for (var i = 0; i < 31; i++) {
 		top += 20;
-		canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+		if (i >= 29) sw = 2;
+		canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'none', stroke: 'black', strokeWidth: sw, opacity: 0.7 }));
 	}
 	top = 400;
 	h = 620;
@@ -791,6 +806,12 @@ quoteInfo.printQuote = function (data) {
 	// 印鑑枠	
 	canvas.add(new fabric.Rect({ top : 300, left : 530, width : 210, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
 	canvas.add(new fabric.Rect({ top : 300, left : 600, width : 70, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	// 備考
+	canvas.add(new fabric.Rect({ top : 1040, left : left, width : w, height : 40, fill: 'none', stroke: 'black',strokeWidth: 2, opacity: 1 }));
+	quoteInfo.outputText(canvas, "備  考", font_size, 70, 1045);
+	quoteInfo.outputText(canvas, data.memo, font_size, 160, 1045);
+
+
 	// 明細データの出力
 	quoteInfo.outputQuoteList(canvas, data, 420, 16);
 
@@ -820,6 +841,7 @@ quoteInfo.outputText = function (canvas, text,font_size,left, top) {
 // 見積明細データの出力
 quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	var total = 0;
+	var top_wk = top;
 	for (var i in data.rows) {
 		var row = data.rows[i];
 		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);			// 試験中分類名
@@ -831,6 +853,7 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		top += 20;
 		total += Number(row.price);
 	}
+	top = top_wk + (27 * 20);
 	var tax = total * (quoteInfo.drc_info.consumption_tax / 100);
 	quoteInfo.outputText(canvas, "（合計）", font_size, 460, top);
 	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(total,10), font_size, 550, top);		 

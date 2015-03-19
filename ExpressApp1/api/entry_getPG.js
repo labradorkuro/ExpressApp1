@@ -355,6 +355,7 @@ var quote_get_list = function (req, res) {
 		+ 'monitors_num,'		// 被験者数
 		+ 'quote_submit_check,'	// 見積書提出済フラグ
 		+ 'order_status,'		// 受注ステータス
+		+ 'quote_form_memo,'	// 見積書備考
 		+ 'quote_delete_check,' // 削除フラグ
 		+ 'to_char(quote_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
 		+ 'quote_info.created_id,' 
@@ -412,6 +413,7 @@ var quote_get_detail = function (req, res) {
 		+ 'monitors_num,'		// 被験者数
 		+ 'quote_submit_check,'	// 見積書提出済フラグ
 		+ 'order_status,'		// 受注ステータス
+		+ 'quote_form_memo,'	// 見積書備考
 		+ 'quote_delete_check,' // 削除フラグ
 		+ 'to_char(quote_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
 		+ 'quote_info.created_id,' 

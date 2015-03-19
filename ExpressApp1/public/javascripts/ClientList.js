@@ -210,7 +210,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 			{ name: 'kana', index: 'kana', width: 100 , align: "left" },
 			{ name: 'compellation', index: 'compellation', width: 80 , align: "left" },
 			{ name: 'title', index: 'title', width: 80 , align: "left" },
-			{ name: 'email', index: 'email', width: 80 , align: "center"  },
+			{ name: 'email', index: 'email', width: 160 , align: "center"  },
 			{ name: 'memo', index: 'memo', width: 100 , align: "center"  },
 			{ name: 'created', index: 'created', width: 130, align: "center" },
 			{ name: 'created_id', index: 'created_id' , formatter: scheduleCommon.personFormatter },

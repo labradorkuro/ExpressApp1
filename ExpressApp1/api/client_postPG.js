@@ -230,14 +230,14 @@ var insertClientDivision = function (connection, division, req, res) {
 	var query = connection.query(sql, [
 		division.division_client_cd,// クライアントCD	
 		division.division_cd,		// 部署CD
-		division.division_name,				// 部署名
-		division.division_kana,				// カナ
-		division.division_email,				// メールアドレス 
-		division.division_zipcode,			// 郵便番号
-		division.division_address_1,			// 住所１
-		division.division_address_2,			// 住所２
-		division.division_tel_no,			// 電話番号
-		division.division_fax_no,			// FAX番号
+		division.division_name,		// 部署名
+		division.division_kana,		// カナ
+		division.division_email,	// メールアドレス 
+		division.division_zipcode,	// 郵便番号
+		division.division_address_1,// 住所１
+		division.division_address_2,// 住所２
+		division.division_tel_no,	// 電話番号
+		division.division_fax_no,	// FAX番号
 		division.billing_limit,		// 請求締日
 		division.payment_date,		// 支払日
 		division.holiday_support,	// 休日対応
@@ -285,18 +285,18 @@ var updateClientDivison = function (connection, division, req, res) {
 	var query = connection.query(sql, [
 		division.division_client_cd,// クライアントCD	
 		division.division_cd,		// 部署CD
-		division.division_name,				// 部署名
-		division.division_kana,				// カナ
-		division.division_email,				// メールアドレス 
-		division.division_zipcode,			// 郵便番号
-		division.division_address_1,			// 住所１
-		division.division_address_2,			// 住所２
-		division.division_tel_no,			// 電話番号
-		division.division_fax_no,			// FAX番号
+		division.division_name,		// 部署名
+		division.division_kana,		// カナ
+		division.division_email,	// メールアドレス 
+		division.division_zipcode,	// 郵便番号
+		division.division_address_1,// 住所１
+		division.division_address_2,// 住所２
+		division.division_tel_no,	// 電話番号
+		division.division_fax_no,	// FAX番号
 		division.billing_limit,		// 請求締日
 		division.payment_date,		// 支払日
 		division.holiday_support,	// 休日対応
-		division.division_memo,				// メモ
+		division.division_memo,		// メモ
 		division.division_delete_check,		// 削除フラグ
 		updated_id,					// 更新者ID
 		updated,					// 更新日
@@ -343,13 +343,13 @@ var insertClientPerson = function (connection, person, req, res) {
 		person.person_client_cd,	// クライアントCD	
 		person.person_division_cd,	// 部署CD
 		person.person_id,			// 担当者ID
-		person.person_name,				// 担当者名
-		person.person_kana,				// カナ
+		person.person_name,			// 担当者名
+		person.person_kana,			// カナ
 		person.compellation,		// 敬称
 		person.title,				// 役職名
-		person.person_email,				// メールアドレス 
-		person.person_memo,				// メモ
-		person.person_delete_check,		// 削除フラグ
+		person.person_email,		// メールアドレス 
+		person.person_memo,			// メモ
+		person.person_delete_check,	// 削除フラグ
 		created,					// 作成日
 		created_id,					// 作成者ID
 		updated,					// 更新日

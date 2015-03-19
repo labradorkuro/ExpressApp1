@@ -47,6 +47,9 @@ form#estimateForm(method="post",action="javascript:return false;")
 					label#drc_address2
 			tr
 				td
+					label#drc_tel_fax
+			tr
+				td
 					label#drc_name
 			tr
 				td
@@ -66,6 +69,15 @@ form#estimateForm(method="post",action="javascript:return false;")
 	div.estimate_meisai
 		table.estimate_meisai_table#meisai_table
 			tbody
+		table
+			tr
+				td.form_title 合計
+				td
+					input.num_type#sum(type'text' name='sum' readonly='true')
+			tr
+				td.form_title 消費税
+				td
+					input.num_type#consumption(type'text' name='consumption' readonly='true')
 		hr
 		table.quoto_info_table
 			tr
@@ -90,6 +102,11 @@ form#estimateForm(method="post",action="javascript:return false;")
 				td.form_title 被験者数
 				td
 					input.num_type#estimate_monitors_num(type="text" name="estimate_monitors_num" size="5" pattern="[0-9]{1,3}")
+		table
+			tr
+				td.form_title 備考
+				td
+					textarea#quote_form_memo(name="quote_form_memo" cols="80" rows="2" maxlength="128")
 		hr
 		table
 			tr
