@@ -38,12 +38,15 @@ var insertConfig = function (connection, config, req, res) {
 			+ 'drc_telno,'
 			+ 'drc_faxno,'
 			+ 'consumption_tax,'
+			+ 'quote_form_memo_define_1,' 
+			+ 'quote_form_memo_define_2,' 
+			+ 'quote_form_memo_define_3,' 
 			+ 'created,' // 作成日
 			+ 'created_id,' // 作成者ID
 			+ 'updated,' // 
 			+ 'updated_id' // 更新者ID
 			+ ') values (' 
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10)'
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)'
 			;
 	// SQL実行
 	var query = connection.query(sql, [
@@ -53,6 +56,9 @@ var insertConfig = function (connection, config, req, res) {
 		config.drc_telno,
 		config.drc_faxno,
 		config.consumption_tax,
+		config.quote_form_memo_define_1,
+		config.quote_form_memo_define_2,
+		config.quote_form_memo_define_3,
 		created,			// 作成日
 		created_id,			// 作成者ID
 		updated,
@@ -78,9 +84,12 @@ var updateConfig = function (connection, config, req, res) {
 			+ 'drc_telno = $4,'
 			+ 'drc_faxno = $5,'
 			+ 'consumption_tax = $6,'
-			+ 'updated_id = $7,' // 更新者ID
-			+ 'updated = $8'
-			+ " WHERE id = $9";
+			+ 'quote_form_memo_define_1 = $7,' 
+			+ 'quote_form_memo_define_2 = $8,' 
+			+ 'quote_form_memo_define_3 = $9,' 
+			+ 'updated_id = $10,' // 更新者ID
+			+ 'updated = $11'
+			+ " WHERE id = $12";
 		// SQL実行
 	var query = connection.query(sql, [
 		config.drc_name,
@@ -89,6 +98,9 @@ var updateConfig = function (connection, config, req, res) {
 		config.drc_telno,
 		config.drc_faxno,
 		config.consumption_tax,
+		config.quote_form_memo_define_1,
+		config.quote_form_memo_define_2,
+		config.quote_form_memo_define_3,
 		updated_id,			// 更新者ID
 		updated,
 		req.params.id

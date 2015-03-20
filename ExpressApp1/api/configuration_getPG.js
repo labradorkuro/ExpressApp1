@@ -9,6 +9,9 @@ exports.configuration_get = function (req, res) {
 			+ 'drc_telno,' 
 			+ 'drc_faxno,' 
 			+ 'consumption_tax,' 
+			+ 'quote_form_memo_define_1,' 
+			+ 'quote_form_memo_define_2,' 
+			+ 'quote_form_memo_define_3,' 
 			+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 			+ 'created_id,' 
 			+ "to_char(updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 

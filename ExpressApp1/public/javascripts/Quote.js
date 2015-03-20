@@ -28,7 +28,12 @@ quoteInfo.getMyInfo = function() {
 		quoteInfo.drc_info.telno = "TEL : " + config_response.drc_telno;
 		quoteInfo.drc_info.faxno = "FAX : " + config_response.drc_faxno;
 		quoteInfo.drc_info.consumption_tax = config_response.consumption_tax;
-		
+		quoteInfo.drc_info.quote_form_memo_1 = config_response.quote_form_memo_define_1;
+		quoteInfo.drc_info.quote_form_memo_2 = config_response.quote_form_memo_define_2;
+		quoteInfo.drc_info.quote_form_memo_3 = config_response.quote_form_memo_define_3;
+		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_1 + "'>" + quoteInfo.drc_info.quote_form_memo_1 + "</option>")); 
+		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_2 + "'>" + quoteInfo.drc_info.quote_form_memo_2 + "</option>")); 
+		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_3 + "'>" + quoteInfo.drc_info.quote_form_memo_3 + "</option>")); 
 	});
 };
 // イベント処理のバインド
@@ -40,6 +45,7 @@ quoteInfo.eventBind = function(kind) {
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
 	$(".summary_target").bind('input',{}, quoteInfo.calcSummary);
+	$(".calc_price").bind('input',{}, quoteInfo.calcPrice);
 };
 
 // 明細入力用ダイアログの生成
@@ -71,7 +77,6 @@ quoteInfo.createQuoteDialog = function () {
 
 // 見積書用ダイアログの生成
 quoteInfo.createQuoteFormDialog = function () {
-
 	$('#quoteForm_dialog').dialog({
 		autoOpen: false,
 		width: 910,
@@ -118,9 +123,9 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 			{ name: 'order_status', index: 'order_status', width: 120,align:"center",formatter:quoteInfo.orderCheckFormatter },			// 受注ステータス
 			{ name: 'quote_form_memo' , index: 'quote_form_memo', width: 120, align: "left" },	// 見積備考
 			{ name: 'created', index: 'created', width: 120, align: "center" },					// 作成日
-			{ name: 'created_id', index: 'created_id', width: 120 },							// 作成者ID
+			{ name: 'created_id', index: 'created_id', width: 120 , align: "center",formatter: entryList.personFormatter},							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120, align: "center" },					// 更新日
-			{ name: 'updated_id', index: 'updated_id', width: 120 }								// 更新者ID
+			{ name: 'updated_id', index: 'updated_id', width: 120 , align: "center",formatter: entryList.personFormatter}								// 更新者ID
 		],
 		height: "115px",
 		shrinkToFit:false,
@@ -188,9 +193,9 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
 			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:quoteInfo.numFormatterC},							// 見積金額
 			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:quoteInfo.summaryCheckFormatter },						// 集計対象チェック
 			{ name: 'created', index: 'created', width: 120 },									// 作成日
-			{ name: 'created_id', index: 'created_id', width: 120 },							// 作成者ID
+			{ name: 'created_id', index: 'created_id', width: 120, align: "center",formatter: entryList.personFormatter },							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120 },									// 更新日
-			{ name: 'updated_id', index: 'updated_id', width: 120 }								// 更新者ID
+			{ name: 'updated_id', index: 'updated_id', width: 120, align: "center",formatter: entryList.personFormatter }								// 更新者ID
 		],
 		height: "130px",
 		//width:960,
@@ -350,7 +355,7 @@ quoteInfo.clearQuote = function () {
 	quote.quote_no = "";
 	quote.monitors_num = "";
 	quote.quote_date = "";
-	quote.expire_date = "";
+	quote.expire_date = "見積発行から60日";
 	quote.quote_submit_check = "未";
 	quote.order_status = "商談中";
 	quote.quote_total_price = "";
@@ -376,7 +381,7 @@ quoteInfo.setQuoteFormData = function (quote) {
 	} else if (quote.order_status == "受注確定") {
 		$('#order_status_yes').prop("checked",true);
 	}
-	$("#quote_form_memo").text(quote.quote_form_memo);	// 見積書備考
+	$("#quote_form_memo").val(quote.quote_form_memo);	// 見積書備考
 };
 // 見積データの保存
 quoteInfo.saveQuote = function (kind) {
@@ -459,6 +464,8 @@ quoteInfo.onloadQuoteReq = function (e) {
 		// グリッドの再表示
 		$("#quote_list").GridUnload();
 		quoteInfo.createQuoteInfoGrid(quoteInfo.currentEntry.entry_no);
+		$("#quote_specific_list").GridUnload();
+		quoteInfo.createQuoteSpecificGrid(quoteInfo.currentEntry.entry_no,quote.estimate_quote_no);
 
 	}
 };
@@ -469,6 +476,8 @@ quoteInfo.onloadQuoteReqAfterPrint = function (e) {
 		// グリッドの再表示
 		$("#quote_list").GridUnload();
 		quoteInfo.createQuoteInfoGrid(quoteInfo.currentEntry.entry_no);
+		$("#quote_specific_list").GridUnload();
+		quoteInfo.createQuoteSpecificGrid(quoteInfo.currentEntry.entry_no,quote.estimate_quote_no);
 		// 印刷用PDFの生成
 		var data = quoteInfo.printDataSetup(quote);
 		quoteInfo.printQuote(data);
@@ -534,6 +543,25 @@ quoteInfo.calcSummary = function(event) {
 	$("#quote_total_price").val(scheduleCommon.numFormatter( total + tax, 10));
 };
 
+// 単価＊数量＝金額の計算
+quoteInfo.calcPrice = function(event) {
+	var unit_price = 0;
+	var quantity = 0;
+	var no = "1";
+	if (event.target.id.indexOf("unit_price_") == 0) {
+		no = event.target.id.split("_")[2];
+		unit_price = event.target.value;
+		quantity = $("#quantity_" + no).val();
+	} else if (event.target.id.indexOf("quantity_") == 0) {
+		no = event.target.id.split("_")[1];
+		quantity = event.target.value;
+		unit_price = $("#unit_price_" + no).val();
+	}
+	var price = unit_price * quantity;
+	$("#price_" + no).val(price);
+	quoteInfo.calcSummary();
+};
+
 // 明細テーブルのクリア（再生成）
 quoteInfo.specificTableClear = function() {
 	$("#meisai_table tbody").empty();
@@ -575,13 +603,13 @@ quoteInfo.addRowCreate = function(no) {
 	var unit = $("<td><input type='text' id='" + id + "' name='" + id + "' size='4' placeholder='単位'/></td>");
 
 	id = "unit_price_" + no;
-	var unit_price = $("<td><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='9' placeholder='単価' pattern='[0-9]{1,8}'/></td>");
+	var unit_price = $("<td><input type='number' min='0' max='99999999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='9' placeholder='単価' pattern='[0-9]{1,8}'/></td>");
 	
 	id = "quantity_" + no;
-	var qty = $("<td><input type='text' class='num_type' id='" + id + "' name='" + id + "' size='4' placeholder='数量'  pattern='[0-9]{1,4}'/></td>");
+	var qty = $("<td><input type='number'  min='0' max='9999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='4' placeholder='数量'  pattern='[0-9]{1,4}'/></td>");
 
 	id = "price_" + no;
-	var price = $("<td><input type='text' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' pattern='[0-9]{1,8}'/></td>");
+	var price = $("<td><input type='number'  min='0' max='99999999' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' pattern='[0-9]{1,8}'/></td>");
 
 	id = "summary_check_" + no;
 	var summary = $("<td><label><input type='checkbox' id='" + id + "' name='" + id + "' checked='true'/>集計する</label></td>");
@@ -807,9 +835,10 @@ quoteInfo.printQuote = function (data) {
 	canvas.add(new fabric.Rect({ top : 300, left : 530, width : 210, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
 	canvas.add(new fabric.Rect({ top : 300, left : 600, width : 70, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
 	// 備考
+	font_size = 10;
 	canvas.add(new fabric.Rect({ top : 1040, left : left, width : w, height : 40, fill: 'none', stroke: 'black',strokeWidth: 2, opacity: 1 }));
 	quoteInfo.outputText(canvas, "備  考", font_size, 70, 1045);
-	quoteInfo.outputText(canvas, data.memo, font_size, 160, 1045);
+	quoteInfo.outputText(canvas, data.memo, font_size, 80, 1060);
 
 
 	// 明細データの出力

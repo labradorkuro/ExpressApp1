@@ -37,6 +37,8 @@ config_form.getConfig = function() {
 		$("#drc_telno").val(config_response.drc_telno);
 		$("#drc_faxno").val(config_response.drc_faxno);
 		$("#consumption_tax").val(config_response.consumption_tax);
-		
+		$("#quote_form_memo_define_1").val(config_response.quote_form_memo_define_1);
+		$("#quote_form_memo_define_2").val(config_response.quote_form_memo_define_2);
+		$("#quote_form_memo_define_3").val(config_response.quote_form_memo_define_3);
 	});
 };

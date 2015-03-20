@@ -76,7 +76,7 @@ exports.create = function (req, res) {
 			+ "monitors_num INT4,"			// 被験者数
 			+ "quote_submit_check INT2,"	// 見積書提出済フラグ	
 			+ "order_status INT2,"			// 受注ステータス
-			+ "expire_date DATE,"			// 見積有効期限
+			+ "expire_date VARCHAR(128),"		// 見積有効期限
 			+ "quote_form_memo VARCHAR(128),"	// 見積書備考
 			+ "quote_delete_check INT2,"	// 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
@@ -345,6 +345,9 @@ exports.create = function (req, res) {
 			+ "drc_telno VARCHAR(16),"		// 電話番号
 			+ "drc_faxno VARCHAR(16),"		// FAX番号
 			+ "consumption_tax INT2,"		// 消費税率
+			+ "quote_form_memo_define_1 VARCHAR(128),"		// 見積書備考
+			+ "quote_form_memo_define_2 VARCHAR(128),"		// 見積書備考
+			+ "quote_form_memo_define_3 VARCHAR(128),"		// 見積書備考
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日

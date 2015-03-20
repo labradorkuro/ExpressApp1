@@ -27,6 +27,7 @@ $(function() {
 	$("#entry_status_02").prop("checked", true);
 	$("#entry_status_03").prop("checked", true);
 	$("#entry_status_04").prop("checked", true);
+	$("#entry_status_05").prop("checked", true);
 	// グリッドの生成
 	entryList.createGrid();						// 案件リスト
 	quoteInfo.createQuoteInfoGrid(0);			// 見積リスト
@@ -69,6 +70,7 @@ $(function() {
 	$("#entry_status_02").bind('change', entryList.changeEntryOption);
 	$("#entry_status_03").bind('change', entryList.changeEntryOption);
 	$("#entry_status_04").bind('change', entryList.changeEntryOption);
+	$("#entry_status_05").bind('change', entryList.changeEntryOption);
 	// 見積書関連のイベント処理登録
 	quoteInfo.eventBind();
 });
@@ -162,9 +164,10 @@ entryList.createGrid = function () {
 	var sts02 = ($("#entry_status_02").prop("checked")) ? '02':'0';
 	var sts03 = ($("#entry_status_03").prop("checked")) ? '03':'0';
 	var sts04 = ($("#entry_status_04").prop("checked")) ? '04':'0';
+	var sts05 = ($("#entry_status_05").prop("checked")) ? '05':'0';
 	// 案件リストのグリッド
 	jQuery("#entry_list").jqGrid({
-		url: '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01 + '&entry_status_02=' + sts02 + '&entry_status_03=' + sts03 + '&entry_status_04=' + sts04,
+		url: '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01 + '&entry_status_02=' + sts02 + '&entry_status_03=' + sts03 + '&entry_status_04=' + sts04 + '&entry_status_05=' + sts05,
 		altRows: true,
 		datatype: "json",
 		colNames: ['案件No','','クライアント名','','クライアント部署','','','','','','クライアント担当者','','試験タイトル','問合せ日', '案件ステータス', '営業担当者','見積番号'
@@ -194,9 +197,9 @@ entryList.createGrid = function () {
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 100, align: "center" },
 			{ name: 'test_person_id', index: 'test_person_id', width: 100, align: "center", formatter: entryList.personFormatter },
 			{ name: 'created', index: 'created', width: 130, align: "center" },
-			{ name: 'created_id', index: 'created_id' , formatter: entryList.personFormatter },
+			{ name: 'created_id', index: 'created_id' , align: "center", formatter: entryList.personFormatter },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
-			{ name: 'updated_id', index: 'updated_id', formatter: entryList.personFormatter  },
+			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: entryList.personFormatter  },
 		],
 		height:"230px",
 		//width:960,
@@ -325,12 +328,14 @@ entryList.requestQuoteInfo = function(entry_no) {
 entryList.setQuoteInfo = function (quote_list) {
 	if (quote_list != null) {
 		var rows = quote_list.rows;
-		$("#quote_no").val(rows[0].quote_no);
-		var list = "";
-		for (var i = 0;i <  rows.length;i++) {
-			list += rows[i].test_middle_class_name + "\n";
+		if (rows.length > 0) {
+			$("#quote_no").val(rows[0].quote_no);
+			var list = "";
+			for (var i = 0;i <  rows.length;i++) {
+				list += rows[i].test_middle_class_name + "\n";
+			}
+			$("#test_middle_class_list").text(list);
 		}
-		$("#test_middle_class_list").text(list);
 	}
 };
 
@@ -581,6 +586,8 @@ entryList.onSelectEntry = function (rowid) {
 		// グリッドの再表示
 		$("#quote_list").GridUnload();
 		quoteInfo.createQuoteInfoGrid(row.entry_no);
+		$("#quote_specific_list").GridUnload();
+		quoteInfo.createQuoteSpecificGrid(row.entry_no,0);
 		entryList.currentEntryNo = row.entry_no;
 		entryList.currentEntry = row;
 		// 請求情報表示ボタンを表示する

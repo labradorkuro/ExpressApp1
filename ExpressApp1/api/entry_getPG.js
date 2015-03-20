@@ -42,7 +42,7 @@ var getPagingParams = function (req) {
 // 案件リストの取得
 var entry_get_list = function (req, res) {
 	var pg_params = getPagingParams(req);
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.entry_info WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5) AND delete_check = $1';
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.entry_info WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND delete_check = $1';
 	var sql = 'SELECT ' 
 		+ 'entry_no,' 
 		+ 'entry_title,' 
@@ -81,10 +81,10 @@ var entry_get_list = function (req, res) {
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
-		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5) AND entry_info.delete_check = $1 ORDER BY ' 
+		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND entry_info.delete_check = $1 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04], pg_params);
+	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
 };
 
 // 案件リストの取得（ガントチャート用）
@@ -351,7 +351,7 @@ var quote_get_list = function (req, res) {
 		+ 'quote_info.entry_no,'
 		+ 'quote_no,'			// 見積番号
 		+ 'to_char(quote_date,\'YYYY/MM/DD\') AS quote_date,'	// 見積日
-		+ 'to_char(expire_date,\'YYYY/MM/DD\') AS expire_date,'	// 有効期限
+		+ 'expire_date,'		// 有効期限
 		+ 'monitors_num,'		// 被験者数
 		+ 'quote_submit_check,'	// 見積書提出済フラグ
 		+ 'order_status,'		// 受注ステータス
@@ -409,7 +409,7 @@ var quote_get_detail = function (req, res) {
 		+ 'entry_no,'			// 案件番号
 		+ 'quote_no,'			// 見積番号
 		+ 'to_char(quote_date,\'YYYY/MM/DD HH24:MI:SS\') AS quote_date,'	// 見積日
-		+ 'to_char(expire_date,\'YYYY/MM/DD HH24:MI:SS\') AS expire_date,'	// 有効期限
+		+ 'expire_date,'		// 有効期限
 		+ 'monitors_num,'		// 被験者数
 		+ 'quote_submit_check,'	// 見積書提出済フラグ
 		+ 'order_status,'		// 受注ステータス

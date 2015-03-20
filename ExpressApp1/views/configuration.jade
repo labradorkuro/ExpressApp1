@@ -50,6 +50,18 @@ block content
 							td
 								input.num_type#consumption_tax(type="number" min="0" max="100" name="consumption_tax" size="40" placeholder="消費税率" value="8")
 								label  %
+						tr
+							td.form_title_s 見積書備考１
+							td
+								input#quote_form_memo_define_1(type="text" maxlength="64" name="quote_form_memo_define_1" size="80" placeholder="備考")
+						tr
+							td.form_title_s 見積書備考２
+							td
+								input#quote_form_memo_define_2(type="text" maxlength="64" name="quote_form_memo_define_2" size="80" placeholder="備考")
+						tr
+							td.form_title_s 見積書備考３
+							td
+								input#quote_form_memo_define_3(type="text" maxlength="64" name="quote_form_memo_define_3" size="80" placeholder="備考")
 		div#message_dialog
 			div
 				span#message 
