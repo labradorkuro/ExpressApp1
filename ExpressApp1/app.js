@@ -133,7 +133,7 @@ app.post('/client_person_post', client_post.client_person_post);
 app.post('/billing_info_post', billing_post.billing_post);
 app.get('/billing_info_get', billing_get.billing_get);
 app.post('/test_item_post', test_item_post.test_item_post);
-app.get('/test_item_get', test_item_get.test_item_get);
+app.get('/test_item_get/:class', test_item_get.test_item_get);
 app.post('/config_post/:id', config_post.configuration_post);
 app.get('/config_get/:id', config_get.configuration_get);
 /** mysql -> pg �ɕύX 2014.11.13

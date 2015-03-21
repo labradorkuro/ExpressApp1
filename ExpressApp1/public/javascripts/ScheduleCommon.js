@@ -76,6 +76,20 @@ scheduleCommon.onloadDivisionReq = function (e) {
 	}
 
 };
+// jqgridのユーザ表示用
+scheduleCommon.personFormatter = function (cellval, options, rowObject) {
+	var name = "";
+	if (cellval === "drc_admin") {
+		return "管理者";
+	}
+	for (var i in scheduleCommon.user_list) {
+		if (cellval === scheduleCommon.user_list[i].uid) {
+			name = scheduleCommon.user_list[i].name;
+			break;
+		}
+	}
+	return name;
+};
 
 // jqgridのフォントサイズを変える
 scheduleCommon.changeFontSize = function(s){

@@ -26,14 +26,23 @@ html
 					a(href="#tabs-0") 試験分類リスト
 			div#tabs-0
 				div.toolbar
-					a.tool_button_a#add_test_item 追 加
-					a.tool_button_a#edit_test_item 編 集
+					a.tool_button_a#add_test_item_large 追 加
+					a.tool_button_a#edit_test_item_large 編 集
 					label.search_option_check(value=1)
-						input.search_option_check#delete_check_disp(type="checkbox") 
+						input.search_option_check#test_large_delete_check_disp(type="checkbox") 
 						| 削除分を表示
 				div.admin_div
-					table#test_item_list
-					div#test_item_list_pager
+					table#test_item_list_large
+					div#test_item_list_large_pager
 				p
+				div.toolbar
+					a.tool_button_a#add_test_item_middle 追 加
+					a.tool_button_a#edit_test_item_middle 編 集
+					label.search_option_check(value=1)
+						input.search_option_check#test_middle_delete_check_disp(type="checkbox") 
+						| 削除分を表示
+				div.admin_div
+					table#test_item_list_middle
+					div#test_item_list_middle_pager
 				div#test_item_dialog 
 					include test_item_form

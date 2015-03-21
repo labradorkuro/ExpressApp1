@@ -31,6 +31,7 @@ quoteInfo.getMyInfo = function() {
 		quoteInfo.drc_info.quote_form_memo_1 = config_response.quote_form_memo_define_1;
 		quoteInfo.drc_info.quote_form_memo_2 = config_response.quote_form_memo_define_2;
 		quoteInfo.drc_info.quote_form_memo_3 = config_response.quote_form_memo_define_3;
+		$("#quote_form_memo").append($("<option value=''></option>")); 
 		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_1 + "'>" + quoteInfo.drc_info.quote_form_memo_1 + "</option>")); 
 		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_2 + "'>" + quoteInfo.drc_info.quote_form_memo_2 + "</option>")); 
 		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_3 + "'>" + quoteInfo.drc_info.quote_form_memo_3 + "</option>")); 
@@ -173,11 +174,11 @@ quoteInfo.numFormatterC = function(num) {
 	return scheduleCommon.numFormatter( Math.round(num), 10);
 };
 // 見積明細リストグリッドの生成
-quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no) {
+quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) {
 	// checkboxの状態取得	
 	var delchk = quoteInfo.getQuoteSpecificDeleteCheckDispCheck();
 	jQuery("#quote_specific_list").jqGrid({
-		url: '/quote_specific_get_grid/' + entry_no + '/' + quote_no + '/?specific_delete_check=' + delchk,
+		url: '/quote_specific_get_grid/' + entry_no + '/' + quote_no + '/?specific_delete_check=' + delchk + '&large_item_cd=' + large_item_cd,
 		altRows: true,
 		datatype: "json",
 		colNames: ['案件番号','見積番号', '明細番号','','試験中分類名','単位','単価','数量','見積金額','集計','作成日','作成者','更新日','更新者'],
@@ -248,7 +249,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		quote = $("#quote_list").getRowData(quoteInfo.currentQuoteRowId);
 		quoteInfo.setQuoteFormData(quote);
 		// 見積明細データの取得とセット
-		quoteInfo.searchSpecificInfo(entry.entry_no,quote.quote_no);
+		quoteInfo.searchSpecificInfo(entry.entry_no,quote.quote_no, entry.test_large_class_cd);
 	} else {
 		quoteInfo.setQuoteFormData(quote);
 		// イベント設定
@@ -266,9 +267,9 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	$("#quoteForm_dialog").dialog("open");
 };
 // 見積明細の検索とテーブル設定
-quoteInfo.searchSpecificInfo = function(entry_no,quote_no) {
+quoteInfo.searchSpecificInfo = function(entry_no,quote_no,large_item_cd) {
 	$.ajax({
-		url: '/quote_specific_get_list/' + entry_no + '/' + quote_no, 
+		url: '/quote_specific_get_list/' + entry_no + '/' + quote_no + '?large_item_cd=' + large_item_cd, 
 		cache: false,
 		dataType: 'json',
 		success: function (specific_list) {
@@ -309,7 +310,7 @@ quoteInfo.onSelectQuote = function(rowid) {
 	var entry = quoteInfo.getSelectEntry();
 	var quote = quoteInfo.getSelectQuote();
 	$("#quote_specific_list").GridUnload();
-	quoteInfo.createQuoteSpecificGrid(entry.entry_no, quote.quote_no);
+	quoteInfo.createQuoteSpecificGrid(entry.entry_no, quote.quote_no, entry.test_large_class_cd);
 	
 };
 
@@ -465,7 +466,7 @@ quoteInfo.onloadQuoteReq = function (e) {
 		$("#quote_list").GridUnload();
 		quoteInfo.createQuoteInfoGrid(quoteInfo.currentEntry.entry_no);
 		$("#quote_specific_list").GridUnload();
-		quoteInfo.createQuoteSpecificGrid(quoteInfo.currentEntry.entry_no,quote.estimate_quote_no);
+		quoteInfo.createQuoteSpecificGrid(quoteInfo.currentEntry.entry_no,quote.estimate_quote_no, quoteInfo.currentEntry.test_large_class_cd);
 
 	}
 };
@@ -477,7 +478,7 @@ quoteInfo.onloadQuoteReqAfterPrint = function (e) {
 		$("#quote_list").GridUnload();
 		quoteInfo.createQuoteInfoGrid(quoteInfo.currentEntry.entry_no);
 		$("#quote_specific_list").GridUnload();
-		quoteInfo.createQuoteSpecificGrid(quoteInfo.currentEntry.entry_no,quote.estimate_quote_no);
+		quoteInfo.createQuoteSpecificGrid(quoteInfo.currentEntry.entry_no,quote.estimate_quote_no, quoteInfo.currentEntry.test_large_class_cd);
 		// 印刷用PDFの生成
 		var data = quoteInfo.printDataSetup(quote);
 		quoteInfo.printQuote(data);
@@ -648,6 +649,11 @@ quoteInfo.getRowsData = function() {
 
 // 試験分類参照ダイアログ表示
 quoteInfo.openTestItemSelectDialog = function (event) {
+	$("#test_item_list_large").GridUnload();
+	test_itemList.createTestLargeGrid();
+	$("#test_item_list_middle").GridUnload();
+	test_itemList.createTestMiddleGrid(0);
+
 	$("#test_item_list_dialog").dialog({
 		buttons: {
 			"選択": function () {
@@ -677,8 +683,8 @@ quoteInfo.getMeisaiNo = function(id) {
 };
 // 試験中分類の選択データをフォームにセットする
 quoteInfo.selectMiddleClass = function(no) {
-	$("#test_middle_class_cd_" + no).val(test_itemList.currentTestItem.item_cd);
-	$("#test_middle_class_name_" + no).val(test_itemList.currentTestItem.item_name);
+	$("#test_middle_class_cd_" + no).val(test_itemList.currentTestItemMiddle.item_cd);
+	$("#test_middle_class_name_" + no).val(test_itemList.currentTestItemMiddle.item_name);
 	return true;
 };
 

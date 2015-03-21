@@ -6,23 +6,15 @@ form#test_itemForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 試験項目CD
 			td 
-				input#item_cd(type="text" name="item_cd" placeholder="項目CD")
+				input#large_item_cd(type="hidden")
+				input#item_cd(type="text" name="item_cd" maxlength="4" placeholder="項目CD")
 			td.form_title 名前
 			td 
-				input#item_name(type="text" name="item_name" placeholder="項目名")
-		tr
-			td.form_title_s 分類区分
-			td
-				label
-					input#item_type_1(type="radio" name="item_type" value="1" checked="true")
-					| 大分類
-				label
-					input#item_type_2(type="radio" name="item_type" value="2")
-					| 中分類
+				input#item_name(type="text" name="item_name" maxlength="128" placeholder="項目名")
 		tr
 			td.form_title 備考
 			td(colspan="3") 
-				textarea#memo(name="memo" placeholder="メモ" cols="30" rows="4")
+				textarea#memo(name="memo" placeholder="メモ" maxlength="128" cols="30" rows="4")
 	hr
 	table
 		tr

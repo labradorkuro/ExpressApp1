@@ -124,6 +124,7 @@ exports.create = function (req, res) {
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
 			+ ", PRIMARY KEY(division));",
+/**
 		// 試験分類マスタ
 		"CREATE TABLE IF NOT EXISTS drc_sch.test_item_list ("
 			+ "item_cd VARCHAR(4),"			// 分類CD
@@ -136,35 +137,40 @@ exports.create = function (req, res) {
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
 			+ "updated_id VARCHAR(32)"							// 更新者ID
 			+ ", PRIMARY KEY(item_cd,item_type));",
-/**
+**/
 		// 試験大分類マスタ
 		"CREATE TABLE IF NOT EXISTS drc_sch.test_large_class ("
-			+ "large_class_cd VARCHAR(2),"		// 大分類CD
-			+ "large_class_name VARCHAR(32),"	// 大分類名
+			+ "id SERIAL,"
+			+ "item_cd VARCHAR(4),"		// 大分類CD
+			+ "item_name VARCHAR(128),"	// 大分類名
+			+ "memo VARCHAR(128),"		// メモ
 			+ "delete_check INT2," 
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32),"			// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)"			// 更新者ID
-			+ ", PRIMARY KEY(large_class_cd));",
+			+ ", PRIMARY KEY(item_cd));",
 
 		// 試験中分類マスタ
 		"CREATE TABLE IF NOT EXISTS drc_sch.test_middle_class ("
-			+ "middle_class_cd VARCHAR(2),"		// 中分類CD
-			+ "middle_class_name VARCHAR(32),"	// 中分類名
+			+ "id SERIAL,"
+			+ "large_item_cd VARCHAR(4),"	// 大分類CD
+			+ "item_cd VARCHAR(4),"			// 中分類CD
+			+ "item_name VARCHAR(128),"		// 中分類名
+			+ "memo VARCHAR(128),"			// メモ
 			+ "delete_check INT2," 
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32),"			// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)"			// 更新者ID
-			+ ", PRIMARY KEY(middle_class_cd));",
-**/
+			+ ", PRIMARY KEY(id));",
+
 		// 案件番号管理テーブル
 		"CREATE TABLE IF NOT EXISTS drc_sch.entry_number (" 
 			+ "entry_date DATE,"				// 案件登録日付
 			+ "entry_count INT4"				// 案件登録数
 			+ ", PRIMARY KEY(entry_date));",
-	
+/**	
 		// 試験（見積）番号管理テーブル
 		"CREATE TABLE IF NOT EXISTS drc_sch.quote_number (" 
 			+ "quote_date DATE,"				// 試験（見積）登録日付
@@ -177,7 +183,7 @@ exports.create = function (req, res) {
 			+ "quote_detail_count INT4,"		// 試験（見積）明細登録数
 			+ "entry_no VARCHAR(10)" 
 			+ ", PRIMARY KEY(entry_no));",
-
+**/
 		// ガントチャート作業項目テーブル
 		"CREATE TABLE IF NOT EXISTS drc_sch.workitem_schedule (" 
 			+ "work_item_id SERIAL,"			// 作業項目ID

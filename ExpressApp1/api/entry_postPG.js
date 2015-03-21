@@ -386,6 +386,7 @@ exports.quote_post = function (req, res) {
 	});
 };
 
+
 // 見積情報の追加（見積番号が未取得の場合）
 var getQuoteNo = function(connection, quote, req, res) {
 	var sql = 'SELECT entry_no FROM drc_sch.quote_info WHERE entry_no = $1';
@@ -403,7 +404,7 @@ var getQuoteNo = function(connection, quote, req, res) {
 		console.log(sql + ' ' + error);
 	});
 };
-
+/**
 // 試験（見積）明細番号の取得とデータの追加
 var getQuoteDetailNo = function (connection, quote, req, res) {
 	var count = 1;
@@ -447,7 +448,7 @@ var getQuoteDetailNo = function (connection, quote, req, res) {
 	query.on('error', function (err) {
 	});
 };
-
+**/
 // 見積情報の追加
 var insertQuote = function (connection, quote, req, res) {
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
