@@ -93,7 +93,7 @@ var billing_get_list_for_grid = function (res, sql_count, sql, params, pg_params
 		});
 	});
 };
-// 社員データの取得
+// 請求先データの取得
 var billing_get_detail = function (req, res) {
 	var sql = 'SELECT ' 
 		+ 'entry_no,' 

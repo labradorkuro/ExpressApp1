@@ -115,6 +115,7 @@
     <Compile Include="routes\user_list.js" />
     <Compile Include="tools\tool.js" />
     <Content Include="package.json" />
+    <Content Include="public\favicon.ico" />
     <Content Include="public\images\drc_logo.jpg" />
     <Content Include="public\images\milestone_red.png" />
     <Content Include="public\images\milestone_yellow.png" />

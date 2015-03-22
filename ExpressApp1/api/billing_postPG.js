@@ -35,10 +35,10 @@ var billing_check = function (billing) {
 	billing.pay_planning_date = tools.dateCheck(billing.pay_planning_date);
 	billing.pay_complete_date = tools.dateCheck(billing.pay_complete_date);
 	// 数値変換
-	if (billing.delete_check) {
-		billing.delete_check = Number(billing.delete_check);
+	if (billing.billing_delete_check) {
+		billing.billing_delete_check = Number(billing.billing_delete_check);
 	} else {
-		billing.delete_check = 0;
+		billing.billing_delete_check = 0;
 	}
 	if (billing.billing_no) {
 		billing.billing_no = Number(billing.billing_no);
@@ -91,7 +91,7 @@ var insertBilling = function (connection, billing, req, res) {
 			billing.billing_client_division_cd,		// クライアント部署CD
 			billing.billing_client_person_id,		// クライアント担当者ID
 			billing.billing_memo,					// 備考
-			billing.delete_check,			// 削除フラグ
+			billing.billing_delete_check,			// 削除フラグ
 			created,						// 作成日
 			created_id,						// 作成者ID
 			updated,						// 更新日
@@ -136,7 +136,7 @@ var updateBilling = function (connection, billing, req, res) {
 			billing.billing_client_division_cd,		// クライアント部署CD
 			billing.billing_client_person_id,		// クライアント担当者ID
 			billing.billing_memo,					// 備考
-			billing.delete_check,			// 削除フラグ
+			billing.billing_delete_check,			// 削除フラグ
 			updated,						// 更新日
 			updated_id,						// 更新者ID
 			billing.billing_entry_no,

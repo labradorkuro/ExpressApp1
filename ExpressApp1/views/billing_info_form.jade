@@ -29,7 +29,7 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 				input.datepicker#pay_planning_date(name="pay_planning_date")
 			td.form_title_s 請求金額
 			td 
-				input.num_type#pay_amount(type="text" name="pay_amount" size="15")
+				input.num_type#pay_amount(type="number" pattern="[0-9]{1,8}" name="pay_amount" size="15")
 			td.form_title_s 入金日
 			td 
 				input.datepicker#pay_complete_date(name="pay_complete_date")

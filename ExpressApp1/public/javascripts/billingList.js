@@ -48,6 +48,7 @@ billingList.createBillingFormDialog = function () {
 
 // 請求情報リストの生成
 billingList.createBillingListGrid = function () {
+	$("#billing_delete_check_disp").bind('change', billingList.changeOption);
 	// checkboxの状態取得	
 	var delchk = billingList.getBillingDeleteCheckDispCheck();
 	var entry_no = $("#billing_entry_no").val();
@@ -63,17 +64,17 @@ billingList.createBillingListGrid = function () {
 			{ name: 'pay_planning_date', index: 'pay_planning_date', width: 80, align: "center" },
 			{ name: 'pay_amount', index: 'pay_amount', width: 80, align: "right" },
 			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
-			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" },
+			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
 			{ name: 'client_cd', index: '', hidden:true },
-			{ name: 'client_name', index: 'client_name', width: 200 ,align:"left" },
+			{ name: 'client_name', index: 'client_name', width: 200 , align: "center" },
 			{ name: 'client_division_cd', index: '', hidden:true },
-			{ name: 'client_division_name', index: 'client_division_name', width: 200 ,align:"left" },
+			{ name: 'client_division_name', index: 'client_division_name', width: 200 , align: "center" },
 			{ name: 'client_address_1', index: '', hidden:true },
 			{ name: 'client_address_2', index: '', hidden:true },
 			{ name: 'client_tel_no', index: '', hidden:true },
 			{ name: 'client_fax_no', index: '', hidden:true },
 			{ name: 'client_person_id', index: '', hidden:true },
-			{ name: 'client_person_name', index: 'client_person_name', width: 100 ,align:"left" },
+			{ name: 'client_person_name', index: 'client_person_name', width: 120 , align: "center" },
 //			{ name: 'client_info', index: 'client_info', width: 200, align: "left"},
 			{ name: 'memo', index: 'memo', width: 100, align: "center" },
 			{ name: 'created', index: 'created', width: 120 }, // 作成日
@@ -82,7 +83,7 @@ billingList.createBillingListGrid = function () {
 			{ name: 'updated_id', index: 'updated_id', width: 120 },			// 更新者ID
 		],
 		height: "230px",
-		width:"800",
+		//width:"800",
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10],
@@ -114,8 +115,27 @@ billingList.openBillingFormDialog = function (event) {
 	// フォームをクリアする
 	var billing = billingList.clearBilling();
 	billingList.setBillingForm(billing);
+	var address1 = billingList.currentEntry.currentEntry.client_address_1;
+	if (billingList.currentEntry.currentEntry.client_division_address_1 != "") {
+		address1 = billingList.currentEntry.currentEntry.client_division_address_1;
+	}
+	var address2 = billingList.currentEntry.currentEntry.client_address_2;
+	if (billingList.currentEntry.currentEntry.client_division_address_2 != "") {
+		address2 = billingList.currentEntry.currentEntry.client_division_address_2;
+	}
+	var tel =billingList.currentEntry.currentEntry.client_tel_no;
+	if (billingList.currentEntry.currentEntry.client_division_tel_no != "") {
+		tel = billingList.currentEntry.currentEntry.client_division_tel_no;
+	}
+	var fax =billingList.currentEntry.currentEntry.client_fax_no;
+	if (billingList.currentEntry.currentEntry.client_division_fax_no != "") {
+		fax = billingList.currentEntry.currentEntry.client_division_fax_no;
+	}
+	var client_info = "住所1" + address1 + " \n住所2" + address2
+					+ " \ntel:" + tel + " \nfax:" + fax
 	if ($(event.target).attr('id') == 'edit_billing') {
 		// 編集ボタンから開いた場合
+		billingList.currentBilling.client_info = client_info;
 		billingList.setBillingForm(billingList.currentBilling);	
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
@@ -135,10 +155,7 @@ billingList.openBillingFormDialog = function (event) {
 			client_division_name:billingList.currentEntry.currentEntry.client_division_name,
 			client_person_id:billingList.currentEntry.currentEntry.client_person_id,
 			client_person_name:billingList.currentEntry.currentEntry.client_person_name,
-			client_info:"住所1" + billingList.currentEntry.currentEntry.client_address_1 
-				+ " \n住所2" + billingList.currentEntry.currentEntry.client_address_2
-				+ " \ntel:" + billingList.currentEntry.currentEntry.client_tel_no
-				+ " \nfax:" + billingList.currentEntry.currentEntry.client_fax_no
+			client_info: client_info
 		}
 		billingList.setBillingForm(billing);		
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
@@ -166,7 +183,7 @@ billingList.setBillingForm = function(billing) {
 	$("#billing_client_division_name").val(billing.client_division_name);
 	$("#billing_client_person_id").val(billing.client_person_id);
 	$("#billing_client_person_name").val(billing.client_person_name);
-	$("#billing_client_info").val(billing.client_address_1 + "\n" + billing.client_address_2);
+	$("#billing_client_info").val(billing.client_info);
 	$("#billing_memo").val(billing.memo);
 };
 billingList.getBillingDeleteCheckDispCheck = function () {
@@ -222,4 +239,8 @@ billingList.onloadBillingSave = function (e) {
 			billingList.createBillingListGrid();
 		}
 	}
+};
+billingList.changeOption = function (event) {
+	$("#billing_info_list").GridUnload();
+	billingList.createBillingListGrid();
 };

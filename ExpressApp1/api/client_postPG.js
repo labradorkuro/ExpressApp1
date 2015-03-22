@@ -47,7 +47,7 @@ exports.client_division_post = function (req, res) {
 						insertClientDivision(connection, division, req, res);
 					} else {
 						// 部署データの更新
-						updateClientDIvision(connection, division, req, res);
+						updateClientDivision(connection, division, req, res);
 					}
 				}
 			});
@@ -259,7 +259,7 @@ var insertClientDivision = function (connection, division, req, res) {
 	});
 };
 // 得意先情報の更新
-var updateClientDivison = function (connection, division, req, res) {
+var updateClientDivision = function (connection, division, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.client_division_list SET ' 

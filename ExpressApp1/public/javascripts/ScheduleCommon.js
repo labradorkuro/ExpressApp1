@@ -90,7 +90,13 @@ scheduleCommon.personFormatter = function (cellval, options, rowObject) {
 	}
 	return name;
 };
+scheduleCommon.pay_resultFormatter = function(cellval, options, rowObject) {
+	if (cellval == 0) return "";
+	if (cellval == 1) return "請求可";
+	if (cellval == 2) return "請求済";
+	if (cellval == 3) return "入金確認済";
 
+};
 // jqgridのフォントサイズを変える
 scheduleCommon.changeFontSize = function(s){
 	var size = '1.1em';
