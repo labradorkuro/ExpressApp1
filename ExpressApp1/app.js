@@ -43,7 +43,7 @@ var test_item_post = require('./api/test_item_postPG');
 var test_item_get = require('./api/test_item_getPG');
 var config_post = require('./api/configuration_postPG');
 var config_get = require('./api/configuration_getPG');
-mysql = require('mysql');
+//mysql = require('mysql');
 pg = require('pg');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
 
