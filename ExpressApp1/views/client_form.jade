@@ -6,25 +6,25 @@ form#clientForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 得意先コード(半角英数カナ)
 			td(colspan="3") 
-				input#client_cd(type="text" name="client_cd" placeholder="得意先コード(半角英数カナ)")
+				input#client_cd(type="text" name="client_cd" maxlength="8" placeholder="得意先コード(半角英数カナ)")
 		tr
 			td.form_title 得意先名１
 			td 
-				input#name_1(type="text" name="name_1" placeholder="得意先名１")
+				input#name_1(type="text" name="name_1" maxlength="64" placeholder="得意先名１")
 			td.form_title 得意先名２
 			td 
-				input#name_2(type="text" name="name_2" placeholder="得意先名２")
+				input#name_2(type="text" name="name_2" maxlength="64" placeholder="得意先名２")
 		tr
 			td.form_title カナ
 			td 
-				input#kana(type="text" name="kana" placeholder="カナ")
+				input#kana(type="text" name="kana" maxlength="64" placeholder="カナ")
 		tr
 			td.form_title 郵便番号
 			td 
-				input#zipcode(type="text" name="zipcode" placeholder="郵便番号")
+				input#zipcode(type="text" name="zipcode" pattern="/^[0-9]{3}[\-]?[0-9]{4}$/" placeholder="郵便番号")
 			td.form_title メールアドレス
 			td 
-				input#email(type="text" name="email" placeholder="メールアドレス")
+				input#email(type="email" name="email" placeholder="メールアドレス")
 		tr
 			td.form_title 住所１
 			td 

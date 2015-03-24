@@ -1,7 +1,7 @@
 ﻿//
 // クライアント部署情報フォーム
 //
-form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascript:return false;",ng-controller="client_controller", novalidate)
+form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascript:return false;")
 	table
 		tr
 			td.form_title 得意先名
@@ -11,24 +11,21 @@ form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascri
 		tr
 			td.form_title 部署コード
 			td
-				input#division_cd(type="text" name="division_cd" ng-model="division.division_cd" placeholder="部署コード" ng-required="true")
-				span(ng-show="clientDivisionForm.division_cd.$error.required") 必須です
+				input#division_cd(type="text" name="division_cd" placeholder="部署コード" maxlength="8" required="true")
 		tr
 			td.form_title 部署名
 			td 
-				input#division_name(type="text" name="division_name" placeholder="部署名")
+				input#division_name(type="text" name="division_name" maxlength="128" placeholder="部署名")
 			td.form_title カナ
 			td 
-				input#division_kana(type="text" name="division_kana" placeholder="カナ")
+				input#division_kana(type="text" name="division_kana" maxlength="512" placeholder="カナ")
 		tr
 			td.form_title 郵便番号
 			td 
-				input#division_zipcode(type="text" name="division_zipcode" ng-model="division.zipcode" ng-pattern="/^[0-9]{3}[\-]?[0-9]{4}$/" placeholder="郵便番号")
-				span(ng-show="clientDivisionForm.division_zipcode.$error.pattern") 郵便番号が不正です
+				input#division_zipcode(type="text" name="division_zipcode"  pattern="/^[0-9]{3}[\-]?[0-9]{4}$/" placeholder="郵便番号")
 			td.form_title メールアドレス
 			td 
-				input#division_email(type="email" name="division_email" ng-model="division.email" placeholder="{{division.email}}")
-				span(ng-show="clientDivisionForm.division_email.$error.email") メールアドレスが不正です
+				input#division_email(type="email" name="division_email" placeholder="メールアドレス")
 		tr
 			td.form_title 住所１
 			td 

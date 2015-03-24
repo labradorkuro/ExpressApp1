@@ -15,27 +15,27 @@ form#clientPersonForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 担当者ID
 			td 
-				input#person_id(type="text" name="person_id" placeholder="担当者ID")
+				input#person_id(type="text" name="person_id" maxlength="32" placeholder="担当者ID")
 			td.form_title 担当者名
 			td 
-				input#person_name(type="text" name="person_name" placeholder="担当者名")
+				input#person_name(type="text" name="person_name" maxlength="128" placeholder="担当者名")
 		tr
 			td.form_title カナ
 			td 
-				input#person_kana(type="text" name="person_kana" placeholder="カナ")
+				input#person_kana(type="text" name="person_kana" maxlength="512" placeholder="カナ")
 			td.form_title 敬称
 			td 
-				input#compellation(type="text" name="compellation" placeholder="敬称")
+				input#compellation(type="text" name="compellation" maxlength="8" placeholder="敬称")
 		tr
 			td.form_title メールアドレス
 			td(colspan="3")
-				input#person_email(type="mail" name="person_email" placeholder="メールアドレス")
+				input#person_email(type="email" name="person_email" placeholder="メールアドレス")
 	hr
 	table
 		tr
 			td.form_title 役職名
 			td 
-				input#title(type="text" name="title" placeholder="役職名")
+				input#title(type="text" name="title" maxlength="8" placeholder="役職名")
 		tr
 			td.form_title メモ
 			td 
