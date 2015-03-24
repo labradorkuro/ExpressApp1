@@ -88,7 +88,7 @@
     <Compile Include="public\javascripts\Portal.js" />
     <Compile Include="public\javascripts\SalesEdit.js" />
     <Compile Include="public\javascripts\SalesManagement.js" />
-    <Compile Include="public\javascripts\Schedule.js" />
+    <Compile Include="public\javascripts\WorkItem.js" />
     <Compile Include="public\javascripts\ScheduleCommon.js" />
     <Compile Include="public\javascripts\ScheduleTable.js" />
     <Compile Include="public\javascripts\TestItemMaster.js" />

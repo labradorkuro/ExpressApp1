@@ -1,4 +1,7 @@
-﻿$(function() {
+﻿//
+// ガントチャートに表示する項目の処理
+//
+$(function() {
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
 	$( "#tabs" ).tabs();
 					
@@ -16,7 +19,10 @@
 	workitemEdit.createTemplateNameDialog();
 	workitemEdit.createEntryDialog();
 });
+
 var workitemEdit = workitemEdit || {};
+
+// 作業項目のダイアログ生成
 workitemEdit.createWorkitemDialog = function () {
 	$('#workitem_dialog').dialog({
 		autoOpen: false,
@@ -59,6 +65,8 @@ workitemEdit.createWorkitemDialog = function () {
 		]
 	});
 };
+
+// テンプレート選択用ダイアログ生成
 workitemEdit.createTemplateSelectDialog = function () {
 	$('#select_template_dialog').dialog({
 		autoOpen: false,
@@ -78,6 +86,8 @@ workitemEdit.createTemplateSelectDialog = function () {
 		]
 	});
 };
+
+// テンプレート保存用ダイアログ生成
 workitemEdit.createTemplateNameDialog = function () {
 	$('#template_name_dialog').dialog({
 		autoOpen: false,
@@ -106,6 +116,8 @@ workitemEdit.createTemplateNameDialog = function () {
 		]
 	});
 };
+
+// 作業項目ダイアログに値をセットする
 workitemEdit.setFormData = function (workitem) {
 	// eventに渡されたデータをフォームにセットする
 	$("#entry_no").val(workitem.entry_no);
@@ -126,6 +138,8 @@ workitemEdit.setFormData = function (workitem) {
 		$("#item_type2").prop("checked", true);
 	}
 };
+
+// 作業項目ダイアログの表示
 workitemEdit.openDialog = function (event) {
 	var target = event.target;
 	// マイルストーンのimgがtargetになっている時は親のa要素からデータを取得するようにする
@@ -258,8 +272,13 @@ workitemEdit.selectTemplate = function (entry_no, template_name) {
 	.done(function (entry_Response,template_response) {
 		var temp = template_response[0];
 		for (var i = 0; i < temp.length; i++) {
-			// 案件の受注日を起点の日とする
+			// 案件の受注日を起点日とする
 			var base_date = entry_Response[0].order_accepted_date;
+			if (base_date == "") {
+				// 受注日が未入力の場合、ガントチャートの開始日を起点日とする
+				base_date = GanttTable.start_date;
+			}
+
 			// 作業項目の開始日などの日付と起点の日の日数を求める
 			var start_offset = scheduleCommon.calcDateCount("2000/01/01", temp[i].start_date) - 1;
 			var end_offset = scheduleCommon.calcDateCount("2000/01/01", temp[i].end_date) - 1;
@@ -309,9 +328,16 @@ workitemEdit.saveTemplate = function (template_name, entry_no) {
 			var workitem = list[i];
 			// 案件の受注日を起点の日とする
 			var base_date = entry_Response[0].order_accepted_date;
+			if (base_date == "") {
+				// 受注日が未入力の場合
+				base_date = workitem.start_date;
+			}
 			// 作業項目の開始日などの日付と起点の日の日数を求める
 			var start_offset = scheduleCommon.calcDateCount(base_date, workitem.start_date) - 1;
-			var end_offset = scheduleCommon.calcDateCount(base_date, workitem.end_date) - 1;
+			var end_offset = start_offset;
+			if (workitem.end_date != null) {
+				end_offset = scheduleCommon.calcDateCount(base_date, workitem.end_date) - 1;
+			}
 			// テンプレート化する時は起点の日を2000年1月1日とする
 			var template = {
 				template_id: -1, 
