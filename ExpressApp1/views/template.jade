@@ -1,0 +1,34 @@
+﻿// ガントチャートのテンプレート編集画面
+
+doctype html
+html
+	head
+		meta(charset="utf-8")
+		title= title
+		link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+		script(src="javascripts/Template.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/GanttTemplate.js")
+		script(src="javascripts/holiday.min.js")
+		link(rel="stylesheet" ,href="stylesheets/schedule.css")
+	body
+		div.titlebar
+			span.titlebar 
+				a(href="portal") Home
+			img.titlebar_logo(src="images/drc_logo.jpg")
+			span.titlebar= title
+			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。" 
+		div#tabs
+			ul
+				li
+					a(href="#tabs-1") ガントチャートのテンプレート
+			div#tabs-1
+				div#ganttTemplate
+		div#workitem_dialog
+			include template_form
+		div#template_name_dialog
+			include template_name_form
+		div#messageDlg

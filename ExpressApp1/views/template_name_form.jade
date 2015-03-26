@@ -2,7 +2,10 @@
 form#templateNameForm(method="post",action="javascript:return false;")
 	table
 		tr
+			td.form_title テンプレートCD
+			td 
+				input#template_cd_nf(type="text" name="template_cd_nf" maxlength="8" size="12" pattern="[a-zA-Z0-9]{1,8}" placeholder="テンプレートCD")
 			td.form_title テンプレート名
 			td 
-				input#template_name(type="text" name="template_name" placeholder="テンプレート名")
+				input#template_name_nf(type="text" name="template_name_nf" size="12" placeholder="テンプレート名")
 				input#entry_no(type="hidden" name="entry_no")

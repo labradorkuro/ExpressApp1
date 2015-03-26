@@ -10,6 +10,7 @@ var client_list = require('./routes/client_list');
 var user_list = require('./routes/user_list');
 var division_list = require('./routes/division_list');
 var schedule = require('./routes/schedule');
+var template = require('./routes/template');
 var calendar = require('./routes/calendar');
 var login = require('./routes/login');
 var portal = require('./routes/portal');
@@ -81,12 +82,13 @@ if ('development' == app.get('env')) {
 
 app.get('/index', routes.index);
 app.get('/', routes.index);
-app.get('/client_list', client_list.list);
-app.get('/user_list', user_list.list);
-app.get('/test_item_list', test_item_list.list);
-app.get('/division_list', division_list.list);
-app.get('/schedule', schedule.list);
-app.get('/calendar', calendar.list);
+app.get('/client_list', client_list.list);			// 顧客マスタ
+app.get('/user_list', user_list.list);				// 社員マスタ
+app.get('/test_item_list', test_item_list.list);	// 試験分類リスト
+app.get('/division_list', division_list.list);		// 部門リスト
+app.get('/schedule', schedule.list);				// ガントチャート
+app.get('/template', template.list);				// ガントチャートのテンプレート
+app.get('/calendar', calendar.list);				// 試験スケジュール
 app.post('/login',login.login);
 app.post('/portal',portal.portal);
 app.get('/portal',portal.portal);
@@ -102,6 +104,8 @@ app.post('/entry_post', entry_post.entry_post);
 app.post('/quote_post', entry_post.quote_post);
 app.post('/workitem_post', workitem_post.workitem_post);
 app.post('/template_post', template_post.template_post);
+app.post('/template_update', template_post.template_update);
+app.post('/template_delete', template_post.template_delete);
 app.post('/schedule_post', schedule_post.schedule_post);
 app.post('/user_post', user_post.user_post);
 app.post('/password_post', user_post.password_post);
@@ -113,9 +117,10 @@ app.get('/report_gantt/:entry_no?', entry_get.report_gantt);
 app.get('/quote_specific_get_grid/:entry_no/:quote_no', entry_get.quote_specific_get_grid);
 app.get('/quote_specific_get_list/:entry_no/:quote_no?', entry_get.quote_specific_get_list);
 app.get('/workitem_get/:entry_no/:item_type', workitem_get.workitem_get);
-app.get('/template_get_all', template_get.template_get_all);
-app.get('/template_get/list/:template_name/:item_type', template_get.template_get);
+app.get('/template_get_all/:item_type?', template_get.template_get_all);
+app.get('/template_get_list/:template_cd/:item_type?', template_get.template_get_list);
 app.get('/template_get/:template_id', template_get.template_get);
+app.get('/template_name_list', template_get.template_name_list);
 app.get('/schedule_get/:schedule_id?', schedule_get.schedule_get);
 app.get('/schedule_get/term/:start/:end/:test_type', schedule_get.schedule_get);
 app.get('/user_get/:uid?', user_get.user_get);

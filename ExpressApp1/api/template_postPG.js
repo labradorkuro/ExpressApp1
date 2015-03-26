@@ -2,7 +2,7 @@
 // ガントチャートテンプレートのPOSTを処理する
 //
 var tools = require('../tools/tool');
-// 作業項目データのPOST
+// テンプレート作業項目データのPOST
 exports.template_post = function (req, res) {
 	var template = template_check(req.body);
 	if (template.delete_check === '1') {
@@ -18,6 +18,56 @@ exports.template_post = function (req, res) {
 		update_template(template, req, res);
 	}
 };
+exports.template_update = function(req, res) {
+	var template = req.body;
+	var updated_id = req.session.uid;
+	var sql = 'UPDATE drc_sch.workitem_template SET ' 
+			+ "template_name = $1,"	// テンプレート名
+			+ "updated_id = $2"		// 更新者ID
+			+ " WHERE template_cd = $3";
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		var query = connection.query(sql, [
+			template.template_name,
+			updated_id, // 更新者ID
+			template.template_cd
+		]);
+		query.on('end', function (result, err) {
+			connection.end();
+			res.send(template);
+		});
+		query.on('error', function (error) {
+			console.log(sql + ' ' + error);
+		});
+	});
+};
+
+// テンプレートの削除（削除フラグのセット）
+// 同一CDのすべての項目の削除フラグを立てる
+exports.template_delete  = function(req, res) {
+	var template = req.body;
+	var updated_id = req.session.uid;
+	var sql = 'UPDATE drc_sch.workitem_template SET ' 
+			+ "delete_check = $1," // 削除フラグ
+			+ "updated_id = $2" // 更新者ID
+			+ " WHERE template_cd = $3";
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		var query = connection.query(sql, [
+			1,
+			updated_id, // 更新者ID
+			template.template_cd
+		]);
+		query.on('end', function (result, err) {
+			connection.end();
+			res.send(template);
+		});
+		query.on('error', function (error) {
+			console.log(sql + ' ' + error);
+		});
+	});
+	
+};
 
 // 作業項目データの追加
 var insert_template = function (template, req, res) {
@@ -26,33 +76,36 @@ var insert_template = function (template, req, res) {
 	var updated = null;
 	var updated_id = "";
 	var sql = 'INSERT INTO drc_sch.workitem_template (' 
-			+ "template_name," // テンプレート名称
-			+ "work_title," // 作業項目名称
-			+ "start_date," // 作業開始予定日
-			+ "end_date," // 作業終了予定日
+			+ "template_cd,"	// テンプレートCD
+			+ "template_name,"	// テンプレート名称
+			+ "work_title,"		// 作業項目名称
+			+ "start_date,"		// 作業開始予定日
+			+ "end_date,"		// 作業終了予定日
 			+ "priority_item_id," // 先行（優先）項目
-			+ "item_type," // 種別
-			+ "delete_check," // 削除フラグ
-			+ "created," // 作成日
-			+ "created_id," // 作成者ID
-			+ "updated," // 更新日
-			+ "updated_id" // 更新者ID
+			+ "item_type,"		// 種別
+			+ "delete_check,"	// 削除フラグ
+			+ "created,"		// 作成日
+			+ "created_id,"		// 作成者ID
+			+ "updated,"		// 更新日
+			+ "updated_id"		// 更新者ID
 			+ ") values (" 
-			+ "$1," // テンプレート名称
-			+ "$2," // 作業項目名称
-			+ "$3," // 作業開始予定日
-			+ "$4," // 作業終了予定日
-			+ "$5," // 先行項目
-			+ "$6," // 種別
-			+ "$7," // 削除フラグ
-			+ "$8," // 作成日
-			+ "$9," // 作成者ID
-			+ "$10," // 更新日
-			+ "$11" // 更新者ID
+			+ "$1," // テンプレートCD
+			+ "$2,"	// テンプレート名称
+			+ "$3," // 作業項目名称
+			+ "$4," // 作業開始予定日
+			+ "$5," // 作業終了予定日
+			+ "$6," // 先行項目
+			+ "$7," // 種別
+			+ "$8," // 削除フラグ
+			+ "$9," // 作成日
+			+ "$10," // 作成者ID
+			+ "$11," // 更新日
+			+ "$12" // 更新者ID
 			+ ")";
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
 		var query = connection.query(sql, [
+			template.template_cd,
 			template.template_name,
 			template.work_title,
 			template.start_date,
@@ -78,17 +131,19 @@ var insert_template = function (template, req, res) {
 var update_template = function (template, req, res) {
 	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.workitem_template SET ' 
-			+ "template_name = $1," // テンプレート名称
-			+ "work_title = $2," // 作業項目名称
-			+ "start_date = $3," // 作業開始予定日
-			+ "end_date = $4," // 作業終了予定日
-			+ "priority_item_id = $5," // 先行（優先）項目
-			+ "item_type = $6," // 種別
-			+ "updated_id = $7" // 更新者ID
-			+ " WHERE template_id = $8";
+			+ "template_cd = $1,"	// テンプレートCD
+			+ "template_name = $2," // テンプレート名称
+			+ "work_title = $3,"	// 作業項目名称
+			+ "start_date = $4,"	// 作業開始予定日
+			+ "end_date = $5,"		// 作業終了予定日
+			+ "priority_item_id = $6," // 先行（優先）項目
+			+ "item_type = $7,"		// 種別
+			+ "updated_id = $8"		// 更新者ID
+			+ " WHERE template_id = $9";
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
 		var query = connection.query(sql, [
+			template.template_cd,
 			template.template_name,
 			template.work_title,
 			template.start_date,
@@ -149,6 +204,7 @@ var template_check = function (template) {
 	// 数値変換
 	template.template_id = Number(template.template_id);
 	template.priority_item_id = Number(template.priority_item_id);
+	template.delete_check = Number(template.delete_check);
 	return template;
 };
 

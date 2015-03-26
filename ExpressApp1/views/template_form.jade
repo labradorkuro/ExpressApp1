@@ -1,0 +1,32 @@
+﻿form#templateForm(method="post",action="javascript:return false;")
+	table
+		tr
+			td.form_title 項目名称
+			td
+				input#work_title(type="text" name="work_title" placeholder="作業項目名称")
+				input#template_cd(type="hidden" name="template_cd" )
+				input#template_name(type="hidden" name="template_name" )
+				input#template_id(type="hidden" name="template_id" )
+		tr
+			td.form_title 種別
+			td(colspan="3") 
+				label
+					input#item_type1(type="radio" name="item_type" value="0" checked="true")
+					| 作業項目
+				label
+					input#item_type2(type="radio" name="item_type" value="1")
+					| マイルストーン
+		tr
+			td.form_title 開始予定日
+			td 
+				input.datepicker#start_date(type="text" name="start_date" placeholder="開始予定日")
+			td.form_title 終了予定日
+			td 
+				input.datepicker#end_date(type="text" name="end_date" placeholder="終了予定日")
+		tr
+			td.form_title 先行項目
+			td 
+				input#priority_item_id(type="text" name="priority_item_id" placeholder="先行項目")
+			td.form_title 後続項目
+			td 
+				input#subsequent_item_id(type="text" name="subsequent_item_id" placeholder="後続項目")

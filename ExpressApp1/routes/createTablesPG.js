@@ -329,13 +329,14 @@ exports.create = function (req, res) {
 		// 作業項目テンプレートテーブル
 		"CREATE TABLE IF NOT EXISTS drc_sch.workitem_template (" 
 			+ "template_id SERIAL,"			// テンプレートID
+			+ "template_cd VARCHAR(8),"		// テンプレートCD
 			+ "template_name VARCHAR(256),"	// テンプレート名
 			+ "work_title VARCHAR(128),"	// 項目名称
 			+ "start_date DATE,"			// 作業開始予定日
 			+ "end_date DATE,"				// 作業終了予定日
 			+ "priority_item_id INT4,"		// 先行（優先）項目
 			+ "item_type VARCHAR(1) default 0," // 種別 0:作業項目、1:マイルストーン
-			+ "delete_check VARCHAR(1)," // 削除フラグ
+			+ "delete_check INT2 default 0," // 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32),"		// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日

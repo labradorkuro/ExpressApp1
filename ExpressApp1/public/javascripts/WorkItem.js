@@ -91,7 +91,7 @@ workitemEdit.createTemplateSelectDialog = function () {
 workitemEdit.createTemplateNameDialog = function () {
 	$('#template_name_dialog').dialog({
 		autoOpen: false,
-		width: '510px',
+		width: '600px',
 		title: 'テンプレートの保存',
 		closeOnEscape: false,
 		modal: true,
@@ -102,7 +102,7 @@ workitemEdit.createTemplateNameDialog = function () {
 				click: function () {
 					// 保存処理
 					// テンプレート名の入力ダイアログを表示する
-					workitemEdit.saveTemplate($("#template_name").val(), $("#entry_no").val());
+					workitemEdit.saveTemplate($("#template_name_nf").val(), $("#entry_no_nf").val());
 					$(this).dialog('close');
 				}
 			},
@@ -267,7 +267,8 @@ workitemEdit.onSelectTemplate = function (event) {
 // 選択されたテンプレートを指定された案件の作業項目として追加する
 workitemEdit.selectTemplate = function (entry_no, template_name) {
 	var entry = $.get('/entry_get/' + entry_no, {});
-	var template = $.get('/template_get/list/' + template_name + '/' + 2 + '?delete_check=' + 0, {});
+//	var template = $.get('/template_get/list/' + template_name + '/' + 2 + '?delete_check=' + 0, {});
+	var template = $.get('/template_get/list/' + template_name + '?delete_check=' + 0, {});
 	$.when(entry,template)
 	.done(function (entry_Response,template_response) {
 		var temp = template_response[0];
@@ -310,6 +311,7 @@ workitemEdit.selectTemplate = function (entry_no, template_name) {
 // テンプレートとして保存ボタンイベント
 workitemEdit.onSaveToTemplate = function (event) {
 	var workitem = $(event.target).data("workitem");
+	$('#template_cd').val("");
 	$('#template_name').val(workitem.entry_title);
 	$('#entry_no').val(workitem.entry_no);
 	workitemEdit.openTemplateNameDialog();
