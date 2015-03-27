@@ -45,10 +45,12 @@ form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascri
 		tr
 			td.form_title 請求締日
 			td 
-				input.datepicker#billing_limit(type="text" name="billing_limit" placeholder="請求締日")
+				input#billing_limit(type="number" min="1" max="31" name="billing_limit" placeholder="請求締日")
+				label 日
 			td.form_title 支払日
 			td 
-				input.datepicker#payment_date(type="text" name="payment_date" placeholder="支払日")
+				input#payment_date(type="number" min="1" max="31" name="payment_date" placeholder="支払日")
+				label 日
 		tr
 			td.form_title 休日対応
 			td 

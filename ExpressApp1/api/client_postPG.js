@@ -82,8 +82,8 @@ exports.client_person_post = function (req, res) {
 
 var client_check = function (client) {
 	// 日付項目チェック
-	client.billing_limit = tools.dateCheck(client.billing_limit);
-	client.payment_date = tools.dateCheck(client.payment_date);
+	//client.billing_limit = tools.dateCheck(client.billing_limit);
+	//client.payment_date = tools.dateCheck(client.payment_date);
 	// 数値変換
 	if (client.delete_check) {
 		client.delete_check = Number(client.delete_check);

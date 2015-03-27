@@ -260,22 +260,22 @@ workitemEdit.onSelectTemplate = function (event) {
 		$("#select_template_dialog").dialog("close");
 		var workitem = $(event.target).data("workitem");
 		// 案件の作業項目として追加する
-		workitemEdit.selectTemplate(workitem.entry_no, workitem.template_name);
+		workitemEdit.selectTemplate(workitem.entry_no, workitem.template_cd);
 	});
 };
 
 // 選択されたテンプレートを指定された案件の作業項目として追加する
-workitemEdit.selectTemplate = function (entry_no, template_name) {
+workitemEdit.selectTemplate = function (entry_no, template_cd) {
 	var entry = $.get('/entry_get/' + entry_no, {});
 //	var template = $.get('/template_get/list/' + template_name + '/' + 2 + '?delete_check=' + 0, {});
-	var template = $.get('/template_get/list/' + template_name + '?delete_check=' + 0, {});
+	var template = $.get('/template_get_list/' + template_cd + '?delete_check=' + 0, {});
 	$.when(entry,template)
 	.done(function (entry_Response,template_response) {
 		var temp = template_response[0];
 		for (var i = 0; i < temp.length; i++) {
 			// 案件の受注日を起点日とする
 			var base_date = entry_Response[0].order_accepted_date;
-			if (base_date == "") {
+			if ((base_date == null) || (base_date == "")) {
 				// 受注日が未入力の場合、ガントチャートの開始日を起点日とする
 				base_date = GanttTable.start_date;
 			}
@@ -407,28 +407,32 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 		var temp = template_response;
 		if (temp.length > 0) {
 			// 同一テンプレート名毎の件数を取得する
+			var prev_cd = temp[0].template_cd;
 			var prev_name = temp[0].template_name;
 			var name_count = [];
 			var count = 0;
 			for (var i = 0; i < temp.length; i++) {
-				if (temp[i].template_name != prev_name) {
+				if (temp[i].template_cd != prev_cd) {
 					// 名前と件数を保存する
-					name_count.push({ name: prev_name, count: count });
+					name_count.push({ cd:prev_cd, name: prev_name, count: count });
+					prev_cd = temp[i].template_cd;
 					prev_name = temp[i].template_name;
 					count = 0;
 				}
 				count++;
 			}
 			// 名前と件数を保存する
-			name_count.push({ name: prev_name, count: count });
+			name_count.push({ cd:prev_cd, name: prev_name, count: count });
 			// テーブル行を作成する
 			var offset = 0;
 			for (var j = 0; j < name_count.length; j++) {
+				var cd = name_count[j].cd;
 				var name = name_count[j].name;
 				var count = name_count[j].count;
 				var td_name = $("<td rowspan=" + count + ">" + name + "</td>");
 				var sel_btn = $("<a class='template_select_button'>選択</a>");
 				// 選択ボタン押下処理にバインド
+				workitem.template_cd = cd;
 				workitem.template_name = name;
 				$(sel_btn).data('workitem', workitem);
 				$(sel_btn).bind("click",workitemEdit.onSelectTemplate);

@@ -229,7 +229,7 @@ entryList.createClientList = function() {
 	// 得意先選択ダイアログ用のタブ生成
 	clientList.createClientListTabs();
 	// 得意先,部署、担当者グリッドの生成
-	for (var i = 1; i <= 12; i++) {
+	for (var i = 1; i <= 1; i++) {
 		clientList.createClientListGrid(i);
 		clientList.createClientDivisionListGrid(i, "0");
 		clientList.createClientPersonListGrid(i, "0", "0");

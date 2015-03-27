@@ -19,10 +19,12 @@
 		tr
 			td.form_title 開始予定日
 			td 
-				input.datepicker#start_date(type="text" name="start_date" placeholder="開始予定日")
+				input#start_date(type="number" min="1" max="365" name="start_date" placeholder="日" value="1")
+				label （始めからの日数）
 			td.form_title 終了予定日
 			td 
-				input.datepicker#end_date(type="text" name="end_date" placeholder="終了予定日")
+				input#end_date(type="number" min="1" max="365" name="end_date" placeholder="日" value="1")
+				label （始めからの日数）
 		tr
 			td.form_title 先行項目
 			td 

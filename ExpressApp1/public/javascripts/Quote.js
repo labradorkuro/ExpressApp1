@@ -473,6 +473,7 @@ quoteInfo.onloadQuoteReq = function (e) {
 quoteInfo.onloadQuoteReqAfterPrint = function (e) {
 	if (this.status == 200) {
 		var quote = this.response;
+		var entry = quoteInfo.getSelectEntry();
 		$('#estimate_quote_no').val(quote.estimate_quote_no);
 		// グリッドの再表示
 		$("#quote_list").GridUnload();
@@ -480,7 +481,7 @@ quoteInfo.onloadQuoteReqAfterPrint = function (e) {
 		$("#quote_specific_list").GridUnload();
 		quoteInfo.createQuoteSpecificGrid(quoteInfo.currentEntry.entry_no,quote.estimate_quote_no, quoteInfo.currentEntry.test_large_class_cd);
 		// 印刷用PDFの生成
-		var data = quoteInfo.printDataSetup(quote);
+		var data = quoteInfo.printDataSetup(entry,quote);
 		quoteInfo.printQuote(data);
 	}
 };
@@ -690,8 +691,7 @@ quoteInfo.selectMiddleClass = function(no) {
 
 
 // 見積書用データの生成
-quoteInfo.printDataSetup = function (quote) {
-	var entry = quoteInfo.getSelectEntry();
+quoteInfo.printDataSetup = function (entry,quote) {
 	// 印刷用データ
 	var data = {
 		title: '御 見 積 書',

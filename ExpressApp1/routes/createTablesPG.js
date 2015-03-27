@@ -106,23 +106,23 @@ exports.create = function (req, res) {
 //			+ ", PRIMARY KEY(entry_no,quote_no,quote_detail_no));",
 //		"CREATE INDEX drc_sch.quote_specific_info_index ON drc_sch.quote_specific_info(entry_no,quote_no,quote_detail_no);",
 
-		"CREATE TABLE IF NOT EXISTS drc_sch.base_info (" // 拠点マスタ
-			+ "base_cd VARCHAR(2)," // 拠点CD
-			+ "base_name VARCHAR(32)," // 拠点名
-			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
-			+ "created_id VARCHAR(32)," // 作成者ID
-			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
-			+ "updated_id VARCHAR(32)" // 更新者ID
+		"CREATE TABLE IF NOT EXISTS drc_sch.base_info ("		// 拠点マスタ
+			+ "base_cd VARCHAR(2),"								// 拠点CD
+			+ "base_name VARCHAR(32),"							// 拠点名
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+			+ "created_id VARCHAR(32),"							// 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+			+ "updated_id VARCHAR(32)"							// 更新者ID
 			+ ", PRIMARY KEY(base_cd));",
 
-		"CREATE TABLE IF NOT EXISTS drc_sch.division_info (" // 事業部マスタ
-			+ "division VARCHAR(2)," // 事業部ID
-			+ "division_name VARCHAR(32)," // 事業部名
+		"CREATE TABLE IF NOT EXISTS drc_sch.division_info ("	// 事業部マスタ
+			+ "division VARCHAR(2),"							// 事業部ID
+			+ "division_name VARCHAR(32),"						// 事業部名
 			+ "delete_check INT2," 
-			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
-			+ "created_id VARCHAR(32)," // 作成者ID
-			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
-			+ "updated_id VARCHAR(32)" // 更新者ID
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+			+ "created_id VARCHAR(32),"							// 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+			+ "updated_id VARCHAR(32)"							// 更新者ID
 			+ ", PRIMARY KEY(division));",
 /**
 		// 試験分類マスタ
@@ -297,8 +297,8 @@ exports.create = function (req, res) {
 			+ "address_2 VARCHAR(255),"			// 住所２
  			+ "tel_no VARCHAR(16),"				// 電話番号
  			+ "fax_no VARCHAR(16),"				// FAX番号
- 			+ "billing_limit DATE,"				// 請求締日
- 			+ "payment_date DATE,"				// 支払日
+ 			+ "billing_limit VARCHAR(8),"		// 請求締日
+ 			+ "payment_date VARCHAR(8),"		// 支払日
 			+ "holiday_support VARCHAR(128),"	// 休日対応
 			+ "memo VARCHAR(128),"				// メモ
 			+ "delete_check INT2 DEFAULT 0,"	// 削除フラグ

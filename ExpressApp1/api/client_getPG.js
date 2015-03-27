@@ -80,8 +80,8 @@ var client_division_get_list = function (req, res) {
 		+ "address_2," // 住所２
 		+ "tel_no," // 電話番号
 		+ "fax_no," // FAX番号
-		+ "to_char(billing_limit,'YYYY/MM/DD') AS billing_limit," // 請求締日
-		+ "to_char(payment_date,'YYYY/MM/DD') AS payment_date," // 支払日
+		+ "billing_limit," // 請求締日
+		+ "payment_date," // 支払日
 		+ "holiday_support,"
 		+ "memo," 
 		+ 'delete_check,' 

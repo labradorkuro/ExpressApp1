@@ -199,12 +199,23 @@ var dateCheck = function (dt) {
 
 var template_check = function (template) {
 	// 日付項目チェック
-	template.start_date = dateCheck(template.start_date);
-	template.end_date = dateCheck(template.end_date);
+//	var d = new Date(2000, 0,1 ,0,0,0,0);
+//	var sd = template_addDate(d, Number(template.start_date));
+//	var ed = template_addDate(d, Number(template.end_date));
+	template.start_date = dateCheck(template.start_date_date);
+	template.end_date = dateCheck(template.end_date_date);
+	//template.start_date = sd;
+	//template.end_date = ed;
 	// 数値変換
 	template.template_id = Number(template.template_id);
 	template.priority_item_id = Number(template.priority_item_id);
 	template.delete_check = Number(template.delete_check);
 	return template;
 };
-
+var template_addDate = function (start_date, count) {
+	var t = start_date.getTime();
+	t = t + (count * 86400000);
+	var d = new Date();
+	d.setTime(t);
+	return d;
+};

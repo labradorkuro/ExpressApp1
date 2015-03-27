@@ -22,7 +22,6 @@ clientList.init = function(toolbar) {
 			if (toolbar)
 			clientList.createToolbar(target, "client_person", i);
 		clientList.createListGrid(target, "client_person", i);
-		
 		if (toolbar) {
 			// クライアント情報追加ボタンイベント（登録・編集用画面の表示）
 			$("#add_client_" + i).bind('click' , {}, clientList.openClientDialog);
@@ -46,6 +45,13 @@ clientList.init = function(toolbar) {
 			$("#client_person_delete_check_disp_" + i).bind('change', clientList.changeClientPersonOption);
 		}
 	}
+};
+
+clientList.initSub = function(i,toolbar) {
+	var target = "#tabs-" + i;
+	clientList.createListGrid(target, "client", i);
+	clientList.createListGrid(target, "client_division", i);
+	clientList.createListGrid(target, "client_person", i);
 };
 
 // 各リストのツールバーを生成する
@@ -78,7 +84,11 @@ clientList.createListGrid = function(target, kind, no) {
 clientList.createClientListTabs = function () {
 	$("#tabs-client").tabs({
 		activate: function (event, ui) {
+			var no = ui.newTab.index() + 1;
 			clientList.currentClientListTabNo = ui.newTab.index();
+			clientList.createClientListGrid(no);
+			clientList.createClientDivisionListGrid(no);
+			clientList.createClientPersonListGrid(no);
 		}
 	});
 };

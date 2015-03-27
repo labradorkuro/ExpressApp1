@@ -196,6 +196,7 @@ test_itemList.openFormDialog = function (event) {
 
 //	データの保存
 test_itemList.save = function () {
+	var title = $("#test_item_dialog").dialog("option","title");
 	// checkboxのチェック状態確認と値設定
 	test_itemList.checkCheckbox();
 	// formデータの取得
@@ -203,7 +204,13 @@ test_itemList.save = function () {
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/test_item_post', true);
 	xhr.responseType = 'json';
-	xhr.onload = test_itemList.onloadSave;
+	if (title == "試験大分類") {
+		// 大分類
+		xhr.onload = test_itemList.onloadSaveLarge;
+	} else {
+		// 中分類
+		xhr.onload = test_itemList.onloadSaveMiddle;
+	}
 	xhr.send(form);
 };
 
@@ -225,7 +232,7 @@ test_itemList.getFormData = function () {
 };
 
 // データ保存後のコールバック
-test_itemList.onloadSave = function (e) {
+test_itemList.onloadSaveLarge = function (e) {
 	if (this.status == 200) {
 		var test_item = this.response;
 		if (test_item.error_msg) {
@@ -233,6 +240,19 @@ test_itemList.onloadSave = function (e) {
 		} else {
 			$("#test_item_list_large").GridUnload();
 			test_itemList.createTestLargeGrid();
+			$("#test_item_list_middle").GridUnload();
+			test_itemList.createTestMiddleGrid(test_item.large_item_cd);
+			test_itemList.buttonEnabledForLarge(0);
+			test_itemList.buttonEnabledForMiddle(0);
+		}
+	}
+};
+test_itemList.onloadSaveMiddle = function (e) {
+	if (this.status == 200) {
+		var test_item = this.response;
+		if (test_item.error_msg) {
+			alert(test_item.error_msg);
+		} else {
 			$("#test_item_list_middle").GridUnload();
 			test_itemList.createTestMiddleGrid(test_item.large_item_cd);
 		}

@@ -12,6 +12,8 @@ $(function() {
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd",defaultDate:"2000/01/01" });
 	templateEdit.createWorkitemDialog();
 	templateEdit.createTemplateNameDialog();
+	$("#start_date").bind('change',templateEdit.changeStart_date);
+	$("#end_date").bind('change',templateEdit.changeEnd_date);
 });
 
 var templateEdit = templateEdit || {};
@@ -116,8 +118,10 @@ templateEdit.setFormData = function (workitem) {
 	$("#template_cd").val(workitem.template_cd);		// hidden項目
 	$("#template_name").val(workitem.template_name);	// hidden項目
 	$("#work_title").val(workitem.work_title);
-	$("#start_date").val(workitem.start_date);
-	$("#end_date").val(workitem.end_date);
+	var sd = scheduleCommon.calcDateCount("2000/01/01",workitem.start_date);
+	$("#start_date").val(sd);
+	var ed = scheduleCommon.calcDateCount("2000/01/01",workitem.end_date);
+	$("#end_date").val(ed);
 	$("#priority_item_id").val("");
 	$("#subsequent_item_id").val("");
 	if (workitem.item_type == 0) {
@@ -162,6 +166,7 @@ templateEdit.openDialog = function (event) {
 templateEdit.addItem = function () {
 	// formデータの取得
 	var form = templateEdit.getFormData();
+	templateEdit.exchangeDayCountToDateString(form);
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/template_post', true);
 	xhr.responseType = 'json';
@@ -172,6 +177,7 @@ templateEdit.addItem = function () {
 templateEdit.updateItem = function (refresh) {
 	// formデータの取得
 	var form = templateEdit.getFormData();
+	templateEdit.exchangeDayCountToDateString(form);
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/template_post', true);
 	xhr.responseType = 'json';
@@ -180,6 +186,18 @@ templateEdit.updateItem = function (refresh) {
 	}
 	xhr.send(form);
 };
+templateEdit.exchangeDayCountToDateString = function(form) {
+	var sd = $("#start_date").val();
+	if (sd == "") sd = 1; else sd = Number(sd);
+	var start_date = scheduleCommon.addDate(new Date(2000,0,1,0,0,0,0),sd - 1);
+	form.append("start_date_date",scheduleCommon.getDateString(start_date,"{0}/{1}/{2}"));
+	var ed = $("#end_date").val();
+	if (ed == "") ed = 1; else ed = Number(ed);
+	var end_date = scheduleCommon.addDate(new Date(2000,0,1,0,0,0,0),ed - 1);
+	form.append("end_date_date",scheduleCommon.getDateString(end_date,"{0}/{1}/{2}"));
+	
+};
+ 
 // テンプレートの削除確認ダイアログ表示
 templateEdit.deleteTemplateConfirm = function () {
 	scheduleCommon.showConfirmDialog("#messageDlg", "テンプレートの削除", "このテンプレートを削除しますか？", templateEdit.deleteTemplate);
@@ -281,4 +299,14 @@ templateEdit.openTemplateNameDialog = function (event) {
 	$("#template_name_dialog").dialog("open");
 };
 
-
+// 開始日の変更イベント
+templateEdit.changeStart_date = function(event) {
+	var sd = $("#start_date").val();
+	var ed = $("#end_date").val();
+	$("#end_date").attr("min",sd);
+};
+templateEdit.changeEnd_date = function(event) {
+	var sd = $("#start_date").val();
+	var ed = $("#end_date").val();
+	$("#start_date").attr("max",ed);
+};
