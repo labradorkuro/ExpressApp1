@@ -233,6 +233,9 @@ CalendarTable.searchScheduleData = function (start,end,base_cd,test_type, callba
 // スケジュールデータを表示用テーブルに追加する
 CalendarTable.addScheduleData = function (schedule_list) {
 	if (schedule_list != null) {
+		var prev_date = "";
+		var prev_start_time = new Date(2000,0,1,0,0,0,0);
+		var prev_end_time = prev_start_time;
 		var rows = schedule_list.rows;
 		for (var i in rows) {		
 			var sch = $("<a class='schedule_band'></>");
@@ -259,6 +262,21 @@ CalendarTable.addScheduleData = function (schedule_list) {
 			$("#" + rows[i].schedule_id).bind('click', CalendarTable.openDialog);
 			// Drag&Drop
 			$("#" + rows[i].schedule_id).draggable({ revert:false,zIndex: 1000 });
+			if (prev_date == rows[i].start_date) {
+				// 同一日に複数の予定が入っている場合
+				if (start_time.getTime() < prev_end_time.getTime()) {
+					// 重なり
+					$(id).css('height',82);
+					var parent = $(id).parent(); 
+					$(parent).css('height',82);
+					var siblings = $(id).siblings();
+					$(siblings).css('height',76);
+					$(sch).css('top',38);
+				}
+			}
+			prev_date = rows[i].start_date;
+			prev_start_time = start_time;
+			prev_end_time = end_time;
 		}
 
 	}

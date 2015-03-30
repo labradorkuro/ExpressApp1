@@ -570,11 +570,12 @@ var quote_specific_get_list_for_calendar = function (req, res) {
 		+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
 		+ 'quote_specific_info.updated_id' 
 		+ ' FROM drc_sch.quote_specific_info'
-		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = $2)'
-		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no AND quote_info.entry_no = $1)'
+		+ ' LEFT JOIN drc_sch.entry_info ON (entry_info.entry_no = $1)'
+		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
+		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no AND quote_info.entry_no = $1 AND quote_info.order_status = 2)'
 		+ ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_specific_info.entry_no = $1 AND quote_info.order_status = 2) ORDER BY quote_detail_no' 
 	// SQL実行
-	var params = [req.params.entry_no, req.query.large_item_cd];
+	var params = [req.params.entry_no];
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	var rows = [];
 	// SQL実行

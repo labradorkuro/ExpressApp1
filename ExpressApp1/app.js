@@ -122,7 +122,7 @@ app.get('/template_get_list/:template_cd/:item_type?', template_get.template_get
 app.get('/template_get/:template_id', template_get.template_get);
 app.get('/template_name_list', template_get.template_name_list);
 app.get('/schedule_get/:schedule_id?', schedule_get.schedule_get);
-app.get('/schedule_get/term/:start/:end/:test_type', schedule_get.schedule_get);
+app.get('/schedule_get/term/:start/:end/:test_large_item_cd', schedule_get.schedule_get);
 app.get('/user_get/:uid?', user_get.user_get);
 app.get('/division_get/:division?', division_get.division_get);
 app.post('/', login_post.login_post);

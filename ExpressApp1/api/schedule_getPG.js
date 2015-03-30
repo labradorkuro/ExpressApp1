@@ -28,18 +28,18 @@ var schedule_get_list_term = function (req, res) {
 		+ 'am_pm,' 
 		+ 'patch_no,' 
 		+ 'entry_info.entry_title,'					// 案件情報テーブルから案件名を取得する 
-		+ 'test_item_list.item_name AS test_item,'				// 試験項目名を取得する
+		+ 'test_middle_class.item_name AS test_item,'				// 試験項目名を取得する
 		+ 'test_schedule.created_id,' 
 		+ 'to_char(test_schedule.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
 		+ 'test_schedule.updated_id' 
 		+ ' FROM drc_sch.test_schedule'
 		+ ' LEFT JOIN drc_sch.entry_info ON (test_schedule.entry_no = entry_info.entry_no)' 
-		+ ' LEFT JOIN drc_sch.test_item_list ON (entry_info.test_middle_class_cd = test_item_list.item_cd)' 
+		+ ' LEFT JOIN drc_sch.quote_specific_info ON (quote_specific_info.quote_no = test_schedule.quote_no AND quote_specific_info.quote_detail_no = test_schedule.quote_detail_no AND quote_specific_info.entry_no = test_schedule.entry_no)' 
+		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = $4)' 
 		+ ' WHERE test_schedule.delete_check = $1' 
-		+ ' AND (test_schedule.start_date >= $2 AND test_schedule.start_date <= $3)' 
-		+ ' AND entry_info.test_large_class_cd = $4' 
+		+ ' AND (test_schedule.start_date >= $2 AND test_schedule.start_date <= $3) AND entry_info.test_large_class_cd = $4' 
 		+ ' ORDER BY test_schedule.start_date ASC';
-	return schedule_get_list_for_table(res, sql, ['0',req.params.start, req.params.end, req.params.test_type]);
+	return schedule_get_list_for_table(res, sql, ['0',req.params.start, req.params.end, req.params.test_large_item_cd]);
 };
 
 var schedule_get_list_for_table = function (res, sql, params) {

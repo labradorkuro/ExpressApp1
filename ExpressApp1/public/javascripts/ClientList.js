@@ -520,7 +520,7 @@ clientList.setClientDivisionForm = function (division) {
 	$("#division_memo").val(division.memo);
 	$("#billing_limit").val(division.billing_limit);
 	$("#payment_date").val(division.payment_date);
-	$("#holiday_support").val(division.payment_date);
+	$("#holiday_support").val(division.holiday_support);
 	$("#division_delete_check").val(division.delete_check);
 };
 // 担当者情報をフォームにセットする

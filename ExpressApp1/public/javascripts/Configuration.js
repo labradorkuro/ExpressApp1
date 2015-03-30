@@ -7,6 +7,8 @@ $(function () {
 	// 更新ボタンイベント
 	$("#post_config").bind('click' , {}, config_form.postConfig);
 	config_form.getConfig();
+	config_form.createMessageDialog();
+
 });
 
 // 動作設定画面処理
@@ -23,6 +25,9 @@ config_form.postConfig = function() {
 	xhr.send(form);
 };
 config_form.onloadConfigSave = function() {
+	$("#message_dialog").dialog("option", { title: "動作設定" });
+	$("#message").text("更新されました。");
+	$("#message_dialog").dialog("open");
 };
 
 // 動作設定の読込み
@@ -40,5 +45,21 @@ config_form.getConfig = function() {
 		$("#quote_form_memo_define_1").val(config_response.quote_form_memo_define_1);
 		$("#quote_form_memo_define_2").val(config_response.quote_form_memo_define_2);
 		$("#quote_form_memo_define_3").val(config_response.quote_form_memo_define_3);
+	});
+};
+// メッセージ表示用ダイアログ
+config_form.createMessageDialog = function () {
+	$('#message_dialog').dialog({
+		autoOpen: false,
+		width: 400,
+		height: 180,
+		title: 'メッセージ',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
 	});
 };
