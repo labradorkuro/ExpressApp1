@@ -38,7 +38,7 @@ var schedule_get_list_term = function (req, res) {
 		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = $4)' 
 		+ ' WHERE test_schedule.delete_check = $1' 
 		+ ' AND (test_schedule.start_date >= $2 AND test_schedule.start_date <= $3) AND entry_info.test_large_class_cd = $4' 
-		+ ' ORDER BY test_schedule.start_date ASC';
+		+ ' ORDER BY test_schedule.start_date ASC, test_schedule.start_time ASC';
 	return schedule_get_list_for_table(res, sql, ['0',req.params.start, req.params.end, req.params.test_large_item_cd]);
 };
 

@@ -233,10 +233,12 @@ CalendarTable.searchScheduleData = function (start,end,base_cd,test_type, callba
 // スケジュールデータを表示用テーブルに追加する
 CalendarTable.addScheduleData = function (schedule_list) {
 	if (schedule_list != null) {
+		var prev_id = "";
 		var prev_date = "";
 		var prev_start_time = new Date(2000,0,1,0,0,0,0);
 		var prev_end_time = prev_start_time;
 		var rows = schedule_list.rows;
+		var count = 1;
 		for (var i in rows) {		
 			var sch = $("<a class='schedule_band'></>");
 			$(sch).attr("id", rows[i].schedule_id);
@@ -263,21 +265,27 @@ CalendarTable.addScheduleData = function (schedule_list) {
 			// Drag&Drop
 			$("#" + rows[i].schedule_id).draggable({ revert:false,zIndex: 1000 });
 			if (prev_date == rows[i].start_date) {
-				// 同一日に複数の予定が入っている場合
+				// 同一日に複数の予定が入っている場合に時間が重なっていたら行の高さを調整して上下に表示する
 				if (start_time.getTime() < prev_end_time.getTime()) {
 					// 重なり
-					$(id).css('height',82);
-					var parent = $(id).parent(); 
-					$(parent).css('height',82);
-					var siblings = $(id).siblings();
-					$(siblings).css('height',76);
-					$(sch).css('top',38);
+					$(sch).css('top',count * 38);				// 予定の表示位置（top）を調整
+					count++;
 				}
+			} else {
+				$(prev_id).css('height',count * 41);			// 追加する要素
+				$(prev_id).parent().css('height',count * 41);	// 親要素
+				$(prev_id).siblings().css('height',count * 38);	// 兄弟要素		
+				count = 1;
 			}
+			// チェック用にデータを保存
+			prev_id = id;
 			prev_date = rows[i].start_date;
 			prev_start_time = start_time;
 			prev_end_time = end_time;
 		}
+		$(prev_id).css('height',count * 41);				// 追加する要素
+		$(prev_id).parent().css('height',count * 41);		// 親要素
+		$(prev_id).siblings().css('height',count * 38);		// 兄弟要素		
 
 	}
 };
@@ -314,11 +322,46 @@ CalendarTable.drop = function (event, ui) {
 	// ドラッグした要素をターゲットの子要素として追加する
 	$(ui.draggable).css('top', 0);	
 	$(event.target).append(ui.draggable);
+	// 高さ、表示位置調整が必要か確認して必要なら調整する（移動元、移動先）
+	CalendarTable.checkCalRow(event.target, ui.draggable);
 	// 更新されたデータでDBのデータを更新する
-	CalendarTable.setFormData(data);	// 入力フォームにデータを入れて
+	CalendarTable.setFormData(data);			// 入力フォームにデータを入れて
 	CalendarTable.updateSchedule(false);		// 更新処理を実行する（ダイアログから更新する処理を利用）
 };
 
+// カレンダーに追加する（ドロップする）時に行の高さ、表示位置を調整する
+CalendarTable.checkCalRow = function(target, draggable) {
+	var children = $(target).children();
+	var count = 1;
+	// 一旦すべてのtopを0にしておく
+	for(var i = 0;i < children.length;i++) {
+		var child_i = children[i];
+		$(child_i).css('top',0);
+	}
+	// 全ての組み合わせで重なりを確認する
+	for(var i = 0;i < children.length;i++) {
+		var child_i = children[i];
+		var data = $(child_i).data('schedule');
+		var start_time_i = scheduleCommon.dateStringToDate(data.start_date + " " + data.start_time);
+		var end_time_i = scheduleCommon.dateStringToDate(data.start_date + " " + data.end_time);
+		for(var j = i + 1;j < children.length;j++) {
+			// 子要素の確認
+			var child_j = children[j];
+			var data = $(child_j).data('schedule');
+			var start_time_j = scheduleCommon.dateStringToDate(data.start_date + " " + data.start_time);
+			var end_time_j = scheduleCommon.dateStringToDate(data.start_date + " " + data.end_time);
+			if ((start_time_j.getTime() < end_time_i.getTime()) && (end_time_j.getTime() > start_time_i.getTime())) {
+				$(child_j).css('top',count * 38);
+				count++;
+			}
+		}
+	}
+	// 親、兄弟の要素の高さを調整する
+	$(target).css('height',count * 41);
+	$(target).parent().css('height',count * 41);
+	$(target).siblings().css('height',count * 38);
+};
+ 
 // 試験スケジュールのDB追加
 CalendarTable.addSchedule = function () {
 	var form = new FormData(document.querySelector("#scheduleForm"));
@@ -356,10 +399,10 @@ CalendarTable.deleteSchedule = function () {
 
 // DB追加後のコールバック
 CalendarTable.onloadAddSchedule = function (schedule) {
-	if (CalendarTable.current_test_type != "02") {
+	if (CalendarTable.current_test_type != "L02") {
 		CalendarTable.init();
 	} else {
-		CalendarTableForPatchTest.init();	// 年、月、拠点CD
+		CalendarTableForPatchTest.init();
 	}
 };
 
