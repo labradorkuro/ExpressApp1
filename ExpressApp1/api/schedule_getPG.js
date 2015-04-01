@@ -27,6 +27,7 @@ var schedule_get_list_term = function (req, res) {
 		+ 'to_char(test_schedule.end_time, \'HH24:MI\') AS end_time,' 
 		+ 'am_pm,' 
 		+ 'patch_no,' 
+		+ 'test_schedule.memo,'
 		+ 'entry_info.entry_title,'					// 案件情報テーブルから案件名を取得する 
 		+ 'test_middle_class.item_name AS test_item,'				// 試験項目名を取得する
 		+ 'test_schedule.created_id,' 

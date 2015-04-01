@@ -1452,3 +1452,20 @@ div.right_grid {
 form#configForm {
     font-size:1.2em;
 }
+
+/* ツールチップ*/
+div.tooltip {  
+    width: 120px;
+    position: absolute;  
+    left: -9999px;
+    background: white;  
+    padding: 1px;  
+    border: 1px solid #AAA;  
+}  
+  
+div.tooltip p{  
+    color: black;  
+    background: white;  
+    padding: 4px 4px;
+    word-wrap:break-word;
+}  

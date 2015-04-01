@@ -216,6 +216,7 @@ exports.create = function (req, res) {
 			+ "end_time TIME,"					// 開始時間
 			+ "am_pm VARCHAR(2),"				// 午前午後
 			+ "patch_no INT2,"					// 検体番号(1～30)
+			+ "memo VARCHR(128),"				// 備考
 			+ "delete_check VARCHAR(1),"		// 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32)," // 作成者ID

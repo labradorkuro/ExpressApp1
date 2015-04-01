@@ -14,6 +14,7 @@ CalendarTable.width_15 = [];
 
 // 初期化
 CalendarTable.init = function() {
+	CalendarTable.hideMemo();
 	var ymd = CalendarTable.start_date.split("/");
 	var year = ymd[0];
 	var month = ymd[1];
@@ -151,9 +152,10 @@ CalendarTable.setFormData = function(data) {
 	$("#start_date").val("");
 	$("#end_date").val("");
 	$("#start_time").val("09:00");
-	$("#end_time").val("09:00");
+	$("#end_time").val("10:00");
 	$("#patch_no").val("1");
 	$("#am_pm").val("0");
+	$("#memo").val("");
 	// 安全性試験の時はAMPMの選択とパッチ番号の選択を表示する。それ以外は非表示にする。
 	if (data.test_type === "02") {
 		// 安全性試験の場合
@@ -214,6 +216,7 @@ CalendarTable.setFormData = function(data) {
 	}
 	$("#patch_no").val(data.patch_no);
 	$("#am_pm").val(data.am_pm);
+	$("#memo").val(data.memo);
 };
 // スケジュールデータの検索
 CalendarTable.searchScheduleData = function (start,end,base_cd,test_type, callback) {
@@ -262,6 +265,7 @@ CalendarTable.addScheduleData = function (schedule_list) {
 			$("#" + rows[i].schedule_id).data('schedule', rows[i]);
 			// クリックイベント処理登録
 			$("#" + rows[i].schedule_id).bind('click', CalendarTable.openDialog);
+			$("#" + rows[i].schedule_id).mousemove(CalendarTable.dispMemo).mouseout(CalendarTable.hideMemo);
 			// Drag&Drop
 			$("#" + rows[i].schedule_id).draggable({ revert:false,zIndex: 1000 });
 			if (prev_date == rows[i].start_date) {
@@ -274,7 +278,7 @@ CalendarTable.addScheduleData = function (schedule_list) {
 			} else {
 				$(prev_id).css('height',count * 41);			// 追加する要素
 				$(prev_id).parent().css('height',count * 41);	// 親要素
-				$(prev_id).siblings().css('height',count * 35);	// 兄弟要素		
+				$(prev_id).siblings().css('height',count * 35 + ((count - 1) * 6));	// 兄弟要素		
 				count = 1;
 			}
 			// チェック用にデータを保存
@@ -285,7 +289,7 @@ CalendarTable.addScheduleData = function (schedule_list) {
 		}
 		$(prev_id).css('height',count * 41);				// 追加する要素
 		$(prev_id).parent().css('height',count * 41);		// 親要素
-		$(prev_id).siblings().css('height',count * 35);		// 兄弟要素		
+		$(prev_id).siblings().css('height',count * 35 + ((count - 1) * 6));		// 兄弟要素		
 
 	}
 };
@@ -359,7 +363,7 @@ CalendarTable.checkCalRow = function(target, draggable) {
 	// 親、兄弟の要素の高さを調整する
 	$(target).css('height',count * 41);
 	$(target).parent().css('height',count * 41);
-	$(target).siblings().css('height',count * 35);
+	$(target).siblings().css('height',count * 35 + ((count - 1) * 6));
 };
  
 // 試験スケジュールのDB追加
@@ -488,4 +492,34 @@ CalendarTable.selectEntryData = function () {
 	$("#quote_no").val($("#ref_quote_no").val());
 	$("#quote_detail_no").val($("#ref_quote_detail_no").val());
 	$("#test_item").val($("#ref_test_item").val());
+};
+
+CalendarTable.hideMemo = function() {
+	$("#popupMessage").css({left:"-9999px"});     
+};
+CalendarTable.dispMemo = function(kmouse) {
+	var data = $(kmouse.target).data('schedule');
+	if (data.memo == null) data.memo = "";	
+	$("#msg_str").text(data.memo);
+	var my_tooltip = $("#popupMessage");
+    var border_top = $(window).scrollTop();   
+    var border_right = $(window).width();  
+    var left_pos;  
+    var top_pos;  
+    var offset = 20;  
+    if(border_right - (offset *2) >= my_tooltip.width() + kmouse.pageX){  
+        left_pos = kmouse.pageX+offset;  
+    } else{  
+        left_pos = border_right-my_tooltip.width()-offset;  
+    }  
+                      
+    if(border_top + (offset *2)>= kmouse.pageY - my_tooltip.height()){  
+        top_pos = border_top +offset;  
+    } else{  
+        top_pos = kmouse.pageY-my_tooltip.height()-offset;  
+    }     
+                  
+                  
+    my_tooltip.css({left:left_pos, top:top_pos});  
+	
 };
