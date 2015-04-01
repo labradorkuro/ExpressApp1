@@ -150,8 +150,8 @@ CalendarTable.setFormData = function(data) {
 	$("#test_item").val("");
 	$("#start_date").val("");
 	$("#end_date").val("");
-	$("#start_time").val("");
-	$("#end_time").val("");
+	$("#start_time").val("09:00");
+	$("#end_time").val("09:00");
 	$("#patch_no").val("1");
 	$("#am_pm").val("0");
 	// 安全性試験の時はAMPMの選択とパッチ番号の選択を表示する。それ以外は非表示にする。
