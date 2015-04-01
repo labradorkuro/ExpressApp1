@@ -274,7 +274,7 @@ CalendarTable.addScheduleData = function (schedule_list) {
 			} else {
 				$(prev_id).css('height',count * 41);			// 追加する要素
 				$(prev_id).parent().css('height',count * 41);	// 親要素
-				$(prev_id).siblings().css('height',count * 38);	// 兄弟要素		
+				$(prev_id).siblings().css('height',count * 35);	// 兄弟要素		
 				count = 1;
 			}
 			// チェック用にデータを保存
@@ -285,7 +285,7 @@ CalendarTable.addScheduleData = function (schedule_list) {
 		}
 		$(prev_id).css('height',count * 41);				// 追加する要素
 		$(prev_id).parent().css('height',count * 41);		// 親要素
-		$(prev_id).siblings().css('height',count * 38);		// 兄弟要素		
+		$(prev_id).siblings().css('height',count * 35);		// 兄弟要素		
 
 	}
 };
@@ -359,7 +359,7 @@ CalendarTable.checkCalRow = function(target, draggable) {
 	// 親、兄弟の要素の高さを調整する
 	$(target).css('height',count * 41);
 	$(target).parent().css('height',count * 41);
-	$(target).siblings().css('height',count * 38);
+	$(target).siblings().css('height',count * 35);
 };
  
 // 試験スケジュールのDB追加
