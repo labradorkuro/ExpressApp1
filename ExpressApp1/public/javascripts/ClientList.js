@@ -132,6 +132,10 @@ clientList.createClientListGrid = function (no) {
 	});
 	jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize("1.0em");
+	// ツールバーボタンの制御
+	clientList.buttonEnabledForTop(no,0);
+	clientList.buttonEnabledForMiddle(no,0);
+	clientList.buttonEnabledForBottom(no,0);
 };
 // 得意先選択イベント
 clientList.onSelectClientList = function (rowid) {
@@ -145,6 +149,8 @@ clientList.onSelectClientList = function (rowid) {
 		clientList.createClientDivisionListGrid(tabNo, row.client_cd);
 		// 担当者リストのクリア
 		clientList.reloadPersonGrid(tabNo,"0");
+		// ツールバーボタンの制御
+		clientList.buttonEnabledForTop(tabNo,1);
 	}
 };
 // 得意先部署リストの生成
@@ -190,6 +196,8 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 	});
 	jQuery("#client_division_list_" + no).jqGrid('navGrid', '#client_division_list_pager_' + no, { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize("1.0em");
+	// ツールバーボタンの制御
+	clientList.buttonEnabledForMiddle(no,1);
 };
 // 部署リスト選択イベント処理
 clientList.onSelectClientDivisionList = function (rowid) {
@@ -201,6 +209,8 @@ clientList.onSelectClientDivisionList = function (rowid) {
 		var tabNo = (clientList.currentClientListTabNo + 1);
 		$("#client_person_list_" + tabNo).GridUnload();
 		clientList.createClientPersonListGrid(tabNo, clientList.currentClient.client_cd, row.division_cd);
+		// ツールバーボタンの制御
+		clientList.buttonEnabledForMiddle(tabNo,2);
 	}
 };
 // 得意先担当者リストの生成
@@ -241,13 +251,17 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 	});
 	jQuery("#client_person_list_" + no).jqGrid('navGrid', '#client_person_list_pager_' + no, { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize("1.0em");
+	// ツールバーボタンの制御
+	clientList.buttonEnabledForBottom(no,1);
 };
 // 担当者リストの選択イベント処理
 clientList.onSelectClientPersonList = function (rowid) {
-	var no;
+	var no = (clientList.currentClientListTabNo + 1);
 	if (rowid != null) {
-		var row = $("#client_person_list_" + (clientList.currentClientListTabNo + 1)).getRowData(rowid);
+		var row = $("#client_person_list_" + no).getRowData(rowid);
 		clientList.currentClientPerson = row;
+		// ツールバーボタンの制御
+		clientList.buttonEnabledForBottom(no,2);
 	}
 };
 // 得意先情報入力用ダイアログの生成
@@ -538,4 +552,41 @@ clientList.setClientPersonForm = function (person) {
 	$("#person_email").val(person.email);
 	$("#person_memo").val(person.memo);
 	$("#person_delete_check").val(person.delete_check);
+};
+// 一番上のツールバーのボタン制御
+clientList.buttonEnabledForTop = function(tab_no, kind) {
+	if (kind == 0) {
+		$("#edit_client_" + tab_no).css("display","none");
+	} else if (kind == 1) {
+		$("#edit_client_" + tab_no).css("display","inline");
+	}
+};
+// 真ん中のツールバーのボタン制御
+clientList.buttonEnabledForMiddle = function(tab_no, kind ) {
+	if (kind == 0) {
+		// 全て非表示
+		$("#add_client_division_" + tab_no).css("display","none");
+		$("#edit_client_division_" + tab_no).css("display","none");
+	} else if (kind == 1) {
+		// 追加だけ表示
+		$("#edit_client_division_" + tab_no).css("display","none");
+		$("#add_client_division_" + tab_no).css("display","inline");
+	} else if (kind == 2) {
+		// 編集を表示
+		$("#edit_client_division_" + tab_no).css("display","inline");
+	}
+};
+clientList.buttonEnabledForBottom = function(tab_no, kind ) {
+	if (kind == 0) {
+		// 全て非表示
+		$("#add_client_person_" + tab_no).css("display","none");
+		$("#edit_client_person_" + tab_no).css("display","none");
+	} else if (kind == 1) {
+		// 追加だけ表示
+		$("#edit_client_person_" + tab_no).css("display","none");
+		$("#add_client_person_" + tab_no).css("display","inline");
+	} else if (kind == 2) {
+		// 編集を表示
+		$("#edit_client_person_" + tab_no).css("display","inline");
+	}
 };

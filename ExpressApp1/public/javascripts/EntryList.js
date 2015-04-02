@@ -335,14 +335,18 @@ entryList.requestQuoteInfo = function(entry_no, large_item_cd) {
 };
 entryList.setQuoteInfo = function (quote_list) {
 	if (quote_list != null) {
+		var total_price = 0;
 		var rows = quote_list.rows;
 		if (rows.length > 0) {
 			$("#quote_no").val(rows[0].quote_no);
 			var list = "";
 			for (var i = 0;i <  rows.length;i++) {
 				list += rows[i].test_middle_class_name + "\n";
+				total_price += Number(rows[i].price);
 			}
 			$("#test_middle_class_list").text(list);
+			tax = total_price * (quoteInfo.drc_info.consumption_tax / 100);
+			$("#entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));
 		}
 	}
 };
