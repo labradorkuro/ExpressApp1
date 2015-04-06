@@ -8,6 +8,21 @@ GanttTemplate.disp_span = 1;		// 表示期間（1：１ヶ月、3：3ヶ月、6�
 GanttTemplate.dateWidth = 100;
 GanttTemplate.rowHeight = 32;
 GanttTemplate.dateCount = 0;
+GanttTemplate.writtable = false;	// 追加、更新権限
+// 権限チェック
+GanttTemplate.checkAuth = function() {
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f05") {
+			if (auth.value == 2) {
+				GanttTemplate.writtable = true;
+			} else {
+				GanttTemplate.writtable = false;
+			}
+		}
+	}
+};
 // 初期化
 GanttTemplate.Init = function (id){
 	$('#' + id).empty();
@@ -34,7 +49,10 @@ GanttTemplate.createGanttTemplate = function (target_id,ganttData) {
 	// ボタン押下イベント設定
 	$(add_template_button).bind('click',templateEdit.openTemplateNameDialog);
 	var left_top1 = $('<div class="gt_left_top1_div"></div>');
-	$(left_top1).append(add_template_button);
+	// 権限チェック
+	if (GanttTemplate.writtable) {
+		$(left_top1).append(add_template_button);
+	}
 	var left_top2 = $('<div class="gt_left_top2_div"></div>');
 		
 	var category1 = $('<div class="gt_category1_div"><label class="gt_label">' + ganttData.name + '</label></div>');
@@ -195,14 +213,20 @@ GanttTemplate.addTemplateRow = function(temp, left_row, right_row,lines) {
 	var cate2 = $("<div class='gt_category2_div'><label class='gt_label'></label></div>");
 	$(title).css("top", 4);
 	$(title).data("template", template);
-	$(title).bind('click', templateEdit.openTemplateNameDialog);
+	// 権限チェック
+	if (GanttTemplate.writtable) {
+		$(title).bind('click', templateEdit.openTemplateNameDialog);
+	}
 	// 作業項目追加ボタン作成
-	var add_button = $('<a class="gt_workitem_button" id="addbutton_' + temp.template_cd + '">項目追加</a>');
+	var add_button = $('<a class="gt_workitem_button workitem_add_btn" id="addbutton_' + temp.template_cd + '">項目追加</a>');
 	// 作業項目の追加ボタンの押下イベント処理定義
 	$(add_button).css("top", 4);
 	$(add_button).data("template", template);
-	$(add_button).bind('click', templateEdit.openDialog);
-	$(cate2).append(add_button);
+	// 権限チェック
+	if (GanttTemplate.writtable) {
+		$(add_button).bind('click', templateEdit.openDialog);
+		$(cate2).append(add_button);
+	}
 	var height = (GanttTemplate.rowHeight * lines) + "px"; // 高さを調整する
 	$(left_row).attr("id", "template_left_" + template.template_cd);
 	$(left_row).css("height", height);
@@ -326,8 +350,11 @@ GanttTemplate.createTemplateMilestoneRows = function (ganttData, template_list, 
 GanttTemplate.milestoneBind = function (ms,template, ganttData) {
 	$(ms).data("template", template);
 	$(ms).data("ganttdata", ganttData);
-	$(ms).bind('click', templateEdit.openDialog);
-	$(ms).draggable({ revert: false, zIndex: 1000, axis: "x" , start: GanttTemplate.dragStart });
+	// 権限チェック
+	if (GanttTemplate.writtable) {
+		$(ms).bind('click', templateEdit.openDialog);
+		$(ms).draggable({ revert: false, zIndex: 1000, axis: "x" , start: GanttTemplate.dragStart });
+	}
 };
 //
 // 作業項目の表示行生成
@@ -458,8 +485,11 @@ GanttTemplate.template_band = function (top, GanttData, template, color) {
 	// 要素のカスタムデータとして保存する
 	$(ms).data("template", template);
 	$(ms).data("ganttdata", GanttData);
-	$(ms).bind('click', templateEdit.openDialog);
-	$(ms).draggable({ revert: false, zIndex: 1000,axis:"x" ,start:GanttTemplate.dragStart});
+	// 権限チェック
+	if (GanttTemplate.writtable) {
+		$(ms).bind('click', templateEdit.openDialog);
+		$(ms).draggable({ revert: false, zIndex: 1000,axis:"x" ,start:GanttTemplate.dragStart});
+	}
 	return ms;
 };
 

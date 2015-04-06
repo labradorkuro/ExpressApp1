@@ -5,6 +5,9 @@
 $(function () {
 	$("#tabs").tabs();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
+	$("div.toolbar").css("display","none");
+	// 権限チェック
+	test_itemList.checkAuth();
 	// 社員マスタからリストを取得する
 	scheduleCommon.getUserInfo();
 	// 編集用ダイアログの設定

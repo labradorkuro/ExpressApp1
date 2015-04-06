@@ -21,6 +21,7 @@ var entry_list = require('./routes/entry_list');
 var quote_form = require('./routes/quote_form');
 var test_item_list = require('./routes/test_item_list');
 var configuration = require('./routes/configuration');
+var auth_settings = require('./routes/auth_settings');
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -44,6 +45,8 @@ var test_item_post = require('./api/test_item_postPG');
 var test_item_get = require('./api/test_item_getPG');
 var config_post = require('./api/configuration_postPG');
 var config_get = require('./api/configuration_getPG');
+var auth_settings_post = require('./api/auth_settings_postPG');
+var auth_settings_get = require('./api/auth_settings_getPG');
 //mysql = require('mysql');
 pg = require('pg');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
@@ -98,6 +101,7 @@ app.get('/dbinit', db.create);
 //app.post('/dbpost',db.post);
 app.get('/admin',admin.list);
 app.get('/configuration',configuration.list);
+app.get('/auth_settings',auth_settings.list);
 app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
 app.post('/entry_post', entry_post.entry_post);
@@ -141,6 +145,9 @@ app.post('/test_item_post', test_item_post.test_item_post);
 app.get('/test_item_get/:class', test_item_get.test_item_get);
 app.post('/config_post/:id', config_post.configuration_post);
 app.get('/config_get/:id', config_get.configuration_get);
+app.post('/auth_post', auth_settings_post.auth_settings_post);
+app.get('/auth_get_all', auth_settings_get.auth_settings_get_all);
+app.get('/auth_get/:pno', auth_settings_get.auth_settings_get);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',

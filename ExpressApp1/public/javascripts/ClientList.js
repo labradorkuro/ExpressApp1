@@ -8,6 +8,22 @@ clientList.currentClient = {};			// 選択中の得意先情報
 clientList.currentClientDivision = {};	// 選択中の得意先部署情報
 clientList.currentClientPerson = {};	// 選択中の得意先担当者情報
 
+// 権限チェック
+clientList.checkAuth = function() {
+	$("#post_config").css('display','none');
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f01") {
+			if (auth.value == 2) {
+				clientList.init(true);
+			} else {
+				clientList.init(false);
+			}
+		}
+	}
+};
+
 // リスト画面の生成（初期化）
 clientList.init = function(toolbar) {
 	for(var i = 1;i <= 12;i++) {

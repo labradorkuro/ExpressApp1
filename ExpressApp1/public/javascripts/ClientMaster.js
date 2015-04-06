@@ -4,8 +4,10 @@
 //
 $(function () {
 	$("#tabs").tabs();
+	// 権限チェック
+	clientList.checkAuth();
 	// リスト画面生成
-	clientList.init(true);
+	//clientList.init(true);　// 権限チェック処理の中へ移動
 	// 得意先選択ダイアログ用のタブ生成
 	clientList.createClientListTabs();
 	// 得意先,部署、担当者グリッドの生成

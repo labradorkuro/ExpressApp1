@@ -41,7 +41,9 @@
     <Compile Include="api\billing_postPG.js" />
     <Compile Include="api\client_getPG.js" />
     <Compile Include="api\client_postPG.js" />
+    <Compile Include="api\auth_settings_getPG.js" />
     <Compile Include="api\configuration_getPG.js" />
+    <Compile Include="api\auth_settings_postPG.js" />
     <Compile Include="api\configuration_postPG.js" />
     <Compile Include="api\division_getPG.js" />
     <Compile Include="api\division_postPG.js" />
@@ -74,10 +76,12 @@
     <Compile Include="public\javascripts\CalendarTable.js" />
     <Compile Include="public\javascripts\CalendarTableForPatchTest.js" />
     <Compile Include="public\javascripts\ClientList.js" />
+    <Compile Include="public\javascripts\Auth_settings.js" />
     <Compile Include="public\javascripts\Configuration.js" />
     <Compile Include="public\javascripts\DivisionList.js" />
     <Compile Include="public\javascripts\Entry.js" />
     <Compile Include="public\javascripts\GanttTemplate.js" />
+    <Compile Include="public\javascripts\jquery.cookie.js" />
     <Compile Include="public\javascripts\Quote.js" />
     <Compile Include="public\javascripts\EntryList.js" />
     <Compile Include="public\javascripts\fabric.min.js" />
@@ -100,6 +104,7 @@
     <Compile Include="routes\admin.js" />
     <Compile Include="routes\calendar.js" />
     <Compile Include="routes\client_list.js" />
+    <Compile Include="routes\auth_settings.js" />
     <Compile Include="routes\configuration.js" />
     <Compile Include="routes\createTables.js" />
     <Compile Include="routes\createTablesPG.js" />
@@ -136,6 +141,7 @@
     <Content Include="views\client_list.jade" />
     <Content Include="views\client_list_form.jade" />
     <Content Include="views\client_person_form.jade" />
+    <Content Include="views\auth_settings.jade" />
     <Content Include="views\configuration.jade" />
     <Content Include="views\division_form.jade" />
     <Content Include="views\division_list.jade" />

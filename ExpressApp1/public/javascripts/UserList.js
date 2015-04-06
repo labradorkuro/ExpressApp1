@@ -5,6 +5,8 @@
 $(function () {
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	$("#tabs").tabs();
+	$("div.toolbar").css("display","none");
+	userList.checkAuth();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 	// 必要な情報をDBから取得する
 	scheduleCommon.getDivisionInfo();
@@ -15,12 +17,27 @@ $(function () {
 	$("#add_user").bind('click' , {}, userList.openUserDialog);
 	// 社員情報編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_user").bind('click' , {}, userList.openUserDialog);
+	$("#edit_user").css("display","none");
 	// 削除分を表示のチェックイベント
 	$("#delete_check_disp").bind('change', userList.changeOption);
 });
 
 // 社員情報リスト処理
 var userList = userList || {};
+// 権限チェック
+userList.checkAuth = function() {
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f03") {
+			if (auth.value == 2) {
+				$("div.toolbar").css("display","block");
+			} else {
+				$("div.toolbar").css("display","none");
+			}
+		}
+	}
+};
 
 // 社員情報入力用ダイアログの生成
 userList.createUserDialog = function () {
@@ -82,8 +99,11 @@ userList.createGrid = function () {
 	});
 	jQuery("#user_list").jqGrid('navGrid', '#user_pager', { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize();
+	$("#edit_user").css("display","none");
 };
-
+userList.onSelectUser = function(event) {
+	$("#edit_user").css("display","inline");
+};
 // 編集用ダイアログの表示
 userList.openUserDialog = function (event) {
 	
@@ -169,6 +189,7 @@ userList.setUserForm = function (user) {
 	$("#division").val(user.division);		// 事業部ID
 	$("#telno").val(user.telno); // 内線
 	$("#title").val(user.title); // 役職名
+	$("#auth_no").val(user.auth_no); // 権限設定
 	// 削除フラグ
 	if (user.delete_check == 1) {
 		$("#delete_check").attr("checked", true);
@@ -191,6 +212,7 @@ userList.clearUser = function () {
 	user.division = '';		// 事業部ID
 	user.telno = ''; // 内線
 	user.title = ''; // 役職名
+	user.auth_no = 'p05';	// 権限設定
 	user.delete_check = '';	// 削除フラグ
 	user.created = "";		// 作成日
 	user.created_id = "";   // 作成者ID

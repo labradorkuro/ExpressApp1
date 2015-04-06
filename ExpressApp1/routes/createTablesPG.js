@@ -234,26 +234,30 @@ exports.create = function (req, res) {
 			+ "base_cd VARCHAR(2)," 
 			+ "division VARCHAR(2)," 
 			+ "telno VARCHAR(16)," 
-			+ "title VARCHAR(128)," 
-			+ "delete_check INT2," 
-			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
-			+ "created_id VARCHAR(32)," // 作成者ID
-			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
-			+ "updated_id VARCHAR(32)" // 更新者ID
+			+ "title VARCHAR(128),"
+			+ "auth_no INT2,"									// 権限パターン番号
+			+ "delete_check INT2,"								// 削除フラグ
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+			+ "created_id VARCHAR(32),"							// 作成者ID
+			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+			+ "updated_id VARCHAR(32)"							// 更新者ID
 			+ ", PRIMARY KEY (uid));",
 
 		// 権限マスタ
-		"CREATE TABLE IF NOT EXISTS drc_sch.role_master (" 
-			+ "rid VARCHAR(32) NOT NULL," 
-			+ "name VARCHAR(128)," 
-			+ "memo VARCHAR(128)," 
+		"CREATE TABLE IF NOT EXISTS drc_sch.auth_settings (" 
+			+ "id SERIAL," 
+			+ "name VARCHAR(128),"								// 機能名
+			+ "code VARCHAR(3),"								// 機能コード
+			+ "auth_no VARCHAR(3),"								// 権限パターン番号
+			+ "auth_value INT2,"								// 権限設定値 0:なし、1:R、2:RW 
+			+ "memo VARCHAR(128),"	
 			+ "delete_check INT2," 
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32)," // 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
-			+ ", PRIMARY KEY (rid));",
-
+			+ ", PRIMARY KEY (id));",
+/**
 		// 権限設定リスト
 		"CREATE TABLE IF NOT EXISTS drc_sch.role_list (" 
 			+ "rid VARCHAR(32) NOT NULL," 
@@ -265,7 +269,7 @@ exports.create = function (req, res) {
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
 			+ "updated_id VARCHAR(32)" // 更新者ID
 			+ ", PRIMARY KEY (rid));",
-
+**/
 		// 得意先リスト
 		"CREATE TABLE IF NOT EXISTS drc_sch.client_list (" 
 			+ "client_cd VARCHAR(8) NOT NULL,"	// 得意先コード 

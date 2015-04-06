@@ -42,7 +42,16 @@ form#userForm(method="post",action="javascript:return false;")
 	hr
 	table
 		tr
+			td.form_title 権限設定
+			td 
+				select#auth_no(name="auth_no")
+					option(value="p01") admin
+					option(value="p02") 課長
+					option(value="p03") 営業
+					option(value="p04") 主任
+					option(value="p05" selected="true") 一般社員
+					option(value="p06") 派遣・アルバイト
 			td.form_title 削除フラグ
-			td(colspan="3")
+			td
 				input#delete_check(type="checkbox" name="delete_check" value="0")
 				label 削除

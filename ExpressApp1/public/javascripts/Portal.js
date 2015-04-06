@@ -1,4 +1,7 @@
 ﻿$(function () {
+	portal.clearDisp();
+	// ログインユーザの権限をCookieから取得して画面表示を制御する
+	portal.checkAuth();
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	// 編集用ダイアログの設定
 	portal.createPasswordDialog();
@@ -7,12 +10,78 @@
 	// パスワード変更ボタンイベント（登録・編集用画面の表示）
 	$("#edit_password").bind('click' , {}, portal.openPasswordDialog);
 	//$("#logout").bind('click' , {}, portal.logout);
-
 });
 
 // 事業部リスト処理
 var portal = portal || {};
 
+// 最低権限の表示に初期化する
+portal.clearDisp = function() {
+	$("#entry_menu").css('display','none');
+	$("#admin_client_menu").css('display','none');
+	$("#admin_division_menu").css('display','none');
+	$("#admin_user_menu").css('display','none');
+	$("#admin_testitem_menu").css('display','none');
+	$("#admin_template_menu").css('display','none');
+	$("#admin_config_menu").css('display','none');
+	$("#admin_menu").css('display','none');
+	$("#auth_menu").css('display','none');
+	$("#auth_settings_menu").css('display','none');
+
+};
+// ユーザ権限をチェックして権限のないメニューを非表示にする
+portal.checkAuth = function() {
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	var disp_count = 0;
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f01") {
+			if (auth.value >= 1) {
+				$("#admin_client_menu").css('display','inline');
+				disp_count++;
+			}
+		} else if (auth.name == "f02") {
+			if (auth.value >= 1) {
+				$("#admin_division_menu").css('display','inline');
+				disp_count++;
+			}
+		} else if (auth.name == "f03") {
+			if (auth.value >= 1) {
+				$("#admin_user_menu").css('display','inline');
+				disp_count++;
+			}
+		} else if (auth.name == "f04") {
+			if (auth.value >= 1) {
+				$("#admin_testitem_menu").css('display','inline');
+				disp_count++;
+			}
+		} else if (auth.name == "f05") {
+			if (auth.value >= 1) {
+				$("#admin_template_menu").css('display','inline');
+				disp_count++;
+			}
+		} else if (auth.name == "f06") {
+			if (auth.value >= 1) {
+				$("#admin_config_menu").css('display','inline');
+				disp_count++;
+			}
+		} else if ((auth.name == "f07") || (auth.name == "f08") || (auth.name == "f09") || (auth.name == "f10")){
+			if (auth.value >= 1) {
+				// 案件情報を非表示
+				$("#entry_menu").css('display','block');
+			}
+		} else if (auth.name == "f13") {
+			if (auth.value >= 1) {
+				$("#auth_menu").css('display','block');
+				$("#auth_settings_menu").css('display','inline');
+			}
+		}
+	}
+	// 管理メユーが一つでも表示なら、枠も表示
+	if (disp_count >= 1) {
+		$("#admin_menu").css('display','block');
+	}
+};
 // ログアウト処理
 portal.logout = function () {
 	var form = {};

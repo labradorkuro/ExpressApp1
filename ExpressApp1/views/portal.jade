@@ -7,6 +7,7 @@ block head
 	script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
 	script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
 	script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+	script(src="javascripts/jquery.cookie.js")
 	script(src="javascripts/ScheduleCommon.js")
 	script(src="javascripts/Portal.js")
 	link(rel="stylesheet" ,href="stylesheets/schedule.css")
@@ -24,7 +25,7 @@ block content
 		div.main_menu_row 
 			div.menu_title お知らせ
 			p このページは現在作成テスト中です。
-		div.main_menu_row
+		div.main_menu_row#entry_menu
 			div.menu_title 営業管理
 			a.menu_button_c(href="entry_list") 案件リスト
 		div.main_menu_row_b
@@ -43,14 +44,17 @@ block content
 			a.menu_button_a(href="calendar#tabs-4") 食品ヒト試験
 			a.menu_button_a(href="calendar#tabs-5") in vitro試験
 			a.menu_button_a(href="calendar#tabs-6") 外注
-		div.main_menu_row
+		div.main_menu_row_b#admin_menu
 			div.menu_title 管理メニュー
-			a.menu_button_a(href="client_list") 顧客管理
-			a.menu_button_a(href="division_list") 事業部マスタ
-			a.menu_button_a(href="user_list") 社員マスタ
-			a.menu_button_a(href="test_item_list") 試験分類マスタ
-			a.menu_button_a(href="template") 試験テンプレート管理
-			a.menu_button_a(href="configuration") 動作設定
+			a.menu_button_a#admin_client_menu(href="client_list") 顧客管理
+			a.menu_button_a#admin_division_menu(href="division_list") 事業部マスタ
+			a.menu_button_a#admin_user_menu(href="user_list") 社員マスタ
+			a.menu_button_a#admin_testitem_menu(href="test_item_list") 試験分類マスタ
+			a.menu_button_a#admin_template_menu(href="template") 試験テンプレート管理
+			a.menu_button_a#admin_config_menu(href="configuration") 動作設定
+		div.main_menu_row_b#auth_menu
+			div.menu_title 権限設定
+			a.menu_button_a#auth_settings_menu(href="auth_settings") 権限設定
 	div
 		div#password_dialog
 			include password_form

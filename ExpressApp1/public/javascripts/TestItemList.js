@@ -7,6 +7,20 @@
 var test_itemList = test_itemList || {};
 test_itemList.currentTestItemLarge = null;
 test_itemList.currentTestItemMiddle = null;
+// 権限チェック
+test_itemList.checkAuth = function() {
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f04") {
+			if (auth.value == 2) {
+				$("div.toolbar").css("display","block");
+			} else {
+				$("div.toolbar").css("display","none");
+			}
+		}
+	}
+};
 
 // ボタンの表示・非表示（大分類用）
 test_itemList.buttonEnabledForLarge = function(kind) {

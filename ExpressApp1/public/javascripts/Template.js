@@ -2,6 +2,7 @@
 // テンプレートの追加、編集処理
 //
 $(function() {
+	GanttTemplate.checkAuth();
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
 	$( "#tabs" ).tabs();
 					
@@ -17,6 +18,7 @@ $(function() {
 });
 
 var templateEdit = templateEdit || {};
+
 
 // 作業項目のダイアログ生成
 templateEdit.createWorkitemDialog = function () {

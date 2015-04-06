@@ -3,6 +3,8 @@
 // 事業部リスト画面の処理
 //
 $(function () {
+	$("div.toolbar").css("display","none");
+	divisionList.checkAuth();
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	$("#tabs").tabs();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
@@ -19,6 +21,20 @@ $(function () {
 
 // 事業部リスト処理
 var divisionList = divisionList || {};
+// 権限チェック
+divisionList.checkAuth = function() {
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f02") {
+			if (auth.value == 2) {
+				$("div.toolbar").css("display","block");
+			} else {
+				$("div.toolbar").css("display","none");
+			}
+		}
+	}
+};
 // メッセージ表示用ダイアログの生成
 divisionList.createMessageDialog = function () {
 	$('#message_dialog').dialog({

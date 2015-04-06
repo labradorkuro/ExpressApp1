@@ -557,7 +557,7 @@ div.main_menu {
     border-left:none;
     border-right:none;
     width:900px;
-    height:900px;
+    height:1200px;
 }
 div.menu_title {
     position:relative;
@@ -1469,3 +1469,19 @@ div.tooltip p{
     padding: 4px 4px;
     word-wrap:break-word;
 }  
+
+table.auth_table {
+    border-collapse:collapse;
+}
+.auth_table_title_s {
+    text-align: center;
+    width: 80px;
+}
+.auth_table_title_l {
+    text-align:center;
+    width:120px;
+}
+
+td.auth_table_check {
+    align-content: center;
+}

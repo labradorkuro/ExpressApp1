@@ -36,6 +36,7 @@ var user_get_list = function (req, res) {
 		+ 'division_name,' 
 		+ 'telno,' 
 		+ 'title,' 
+		+ 'auth_no,'
 		+ 'user_list.delete_check,' 
 		+ "to_char(user_list.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 		+ 'user_list.created_id,' 
@@ -90,6 +91,7 @@ var user_get_detail = function (req, res) {
 		+ 'division,' 
 		+ 'telno,' 
 		+ 'title,' 
+		+ 'auth_no,' 
 		+ 'delete_check,' 
 		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 		+ 'created_id,' 

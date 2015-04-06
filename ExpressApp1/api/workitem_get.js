@@ -47,7 +47,7 @@ var workitem_get_list_for_gantt = function (res, sql, params) {
 			for (var i in rows) {
 				result.push(rows[i]);
 			}
-			connection.release();
+			connection.end();
 			res.send(result);
 		});
 	});
