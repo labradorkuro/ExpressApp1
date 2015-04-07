@@ -137,7 +137,7 @@ CalendarTable.openDialog = function (event) {
 	// フォームにデータを設定する。
 	CalendarTable.setFormData(data);
 	// 案件番号をクリックしたら、案件情報参照用のダイアログ表示する
-	$("#entry_no").bind("click", { from: $("#start_date").val(), to: $("#end_date").val(), test_type: data.test_type, base_cd: data.base_cd }, CalendarTable.showEntryList);
+	$("#entry_no").bind("click", { from: $("#start_date").val(), to: $("#end_date").val(), test_type: CalendarTable.current_test_type, base_cd: data.base_cd }, CalendarTable.showEntryList);
 	// 案件情報参照画面のイベント処理登録
 	$("#entry_list").bind("change", {}, CalendarTable.searchQuoteData);
 	$("#quote_list").bind("change", {}, CalendarTable.selectQuoteData);
@@ -159,7 +159,7 @@ CalendarTable.setFormData = function(data) {
 	$("#am_pm").val("0");
 	$("#memo").val("");
 	// 安全性試験の時はAMPMの選択とパッチ番号の選択を表示する。それ以外は非表示にする。
-	if (data.test_type === "02") {
+	if (CalendarTable.current_test_type === "L02") {
 		// 安全性試験の場合
 		$("#test_02_row").css("display", "table-row");
 		$("#start_time_label").css("display", "none");
@@ -180,7 +180,7 @@ CalendarTable.setFormData = function(data) {
 	// eventに渡されたデータをフォームにセットする
 	var sd = data.start_date;
 	var ed = data.end_date;
-	if (data.test_type != "02") {
+	if (CalendarTable.current_test_type != "L02") {
 		ed = sd;
 	}
 	if (data.entry_no) {
@@ -417,10 +417,10 @@ CalendarTable.onloadAddSchedule = function (schedule) {
 
 // 案件データの参照画面の準備（案件データ検索）
 CalendarTable.showEntryList = function (event) {
-	CalendarTable.searchEntryData(event.data.from, event.data.to, event.data.test_type, event.data.base_cd);	
+	CalendarTable.searchEntryData(event.data.from, event.data.to, CalendarTable.current_test_type);	
 };
 // 表示する案件データの検索
-CalendarTable.searchEntryData = function (from, to, test_type, base_cd) {
+CalendarTable.searchEntryData = function (from, to, test_type) {
 	$("#entry_list").empty();
 	$("#quote_list").empty();
 	
@@ -429,17 +429,31 @@ CalendarTable.searchEntryData = function (from, to, test_type, base_cd) {
 		cache: false,
 		dataType: 'json',
 		success: function (entry_list) {
-			CalendarTable.setEntryList(entry_list,base_cd);
+			if (entry_list != null) {
+				$("#entry_list").empty();
+				var rows = entry_list.rows;
+				for (var i in rows) {
+					var op = $("<option value=" + rows[i].entry_no + ">" + rows[i].entry_title + "</option>");
+					$("#entry_list").append(op);
+				}
+			}
+		},
+		complete: function() {
+			CalendarTable.setEntryList();
 		}
 	});
 
 };
 // 選択した案件の試験明細データの検索
 CalendarTable.searchQuoteData = function () {
+	$("#quote_list").empty();
 	var entry_no = $("#entry_list").val();
 	var entry_title = $("#entry_list option:selected").text();
 	$("#ref_entry_no").val(entry_no);
 	$("#ref_entry_title").val(entry_title);
+	$("#ref_quote_no").val("");
+	$("#ref_quote_detail_no").val("");
+	$("#ref_test_item").val("");
 
 	$.ajax({
 		url: '/quote_specific_get_list/' + entry_no,
@@ -453,17 +467,12 @@ CalendarTable.searchQuoteData = function () {
 };
 
 // 案件リストにデータを追加してダイアログを表示する
-CalendarTable.setEntryList = function (entry_list,base_cd) {
-	$("#entry_list").empty();
-	if (entry_list != null) {
-		var rows = entry_list.rows;
-		for (var i in rows) {
-//			if (base_cd === rows[i].base_cd) {
-				var op = $("<option value=" + rows[i].entry_no + ">" + rows[i].entry_title + "</option>");
-				$("#entry_list").append(op);
-//			}
-		}
-	}
+CalendarTable.setEntryList = function () {
+	$("#ref_entry_no").val("");
+	$("#ref_entry_title").val("");
+	$("#ref_quote_no").val("");
+	$("#ref_quote_detail_no").val("");
+	$("#ref_test_item").val("");
 	// ダイアログ表示
 	$("#entry_ref_dialog").dialog("open");
 };

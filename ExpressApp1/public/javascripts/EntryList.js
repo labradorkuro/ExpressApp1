@@ -15,10 +15,9 @@ $(function() {
 	// 日付選択用設定
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 	entryList.createMessageDialog();
-	//scheduleCommon.getDivisionInfo();
 	// 編集用ダイアログの設定
 	entryList.createEntryDialog();				// 案件入力用
-	quoteInfo.createQuoteDialog();				// 見積明細用
+//	quoteInfo.createQuoteDialog();				// 見積明細用
 	quoteInfo.createQuoteFormDialog();			// 見積書発行用
 	entryList.createClientListDialog();			// 得意先選択用
 	test_itemList.createTestItemSelectDialog();	// 試験分類選択用
@@ -36,7 +35,7 @@ $(function() {
 	quoteInfo.createQuoteSpecificGrid(0,0);		// 見積明細リスト
 	test_itemList.createTestLargeGrid();		// 試験大分類リスト
 	test_itemList.createTestMiddleGrid(0);		// 試験中分類リスト
-	//billingList.createBillingListGrid();	// 請求情報リスト
+
 	scheduleCommon.changeFontSize();
 	// 案件追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_entry").bind('click' , {}, entryList.openEntryDialog);
@@ -47,11 +46,11 @@ $(function() {
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_quote").bind('click' , {entryList:entryList}, quoteInfo.openQuoteFormDialog);
-	// 見積書発行用フォームを表示する
-	//$("#print_quote").bind('click' , {}, quoteInfo.openQuoteFormDialog);
+
 	// クライアント選択ダイアログを表示するイベント処理を登録する
 	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
 	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);
+
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$("#test_middle_class_name").bind('click',{}, test_itemList.openTestItemSelectDialog);
 	$("#test_large_class_name").bind('click',{}, test_itemList.openTestItemSelectDialog);
@@ -88,10 +87,10 @@ entryList.currentEntry = {};			// 案件リストで選択中の案件情報
 entryList.currentEntryNo = 0;			// 案件リストで選択中の案件の番号
 entryList.currentClientListTabNo = 0;	// 得意先リストで選択中のタブ番号
 entryList.currentClient = {};			// 選択中の得意先情報
-entryList.auth_entry_add = 0;				// 権限
-entryList.auto_quote_add = 0;				// 権限
-entryList.auth_entry_edit = 0;				// 権限
-entryList.auto_quote_edit = 0;				// 権限
+entryList.auth_entry_add = 0;			// 権限
+entryList.auto_quote_add = 0;			// 権限
+entryList.auth_entry_edit = 0;			// 権限
+entryList.auto_quote_edit = 0;			// 権限
 // 権限チェック
 entryList.checkAuth = function() {
 	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));

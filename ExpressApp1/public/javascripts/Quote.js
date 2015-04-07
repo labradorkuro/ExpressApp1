@@ -213,7 +213,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 	jQuery("#quote_specific_list").jqGrid('navGrid', '#quote_specific_list_pager', { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize();
 };
-
+/**
 // 編集用ダイアログの表示
 quoteInfo.openQuoteDialog = function (event) {
 	var quote = {};
@@ -241,6 +241,7 @@ quoteInfo.openQuoteDialog = function (event) {
 	}
 	$("#quote_dialog").dialog("open");
 };
+**/
 // 見積書ダイアログ表示
 quoteInfo.openQuoteFormDialog = function (event) {
 	// 自社情報のセット
@@ -281,7 +282,38 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('PDF出力後に登録')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('登録')").button("disable");
 	}
+	// 受注確定になっている見積があるかチェックする
+	var order_index = quoteInfo.checkOrderStatus();
+	if (order_index >= 0) {
+		if ((order_index == "") || (order_index == quoteInfo.currentQuoteRowId)) {
+			$("#order_status_2").css("display","inline");
+		} else if (order_index != ""){
+			// 受注確定になっている見積がある場合で、選択中のものでない場合、受注確定のラジオボタンを無効化する
+			$("#order_status_2").css("display","none");
+		} 
+	}
 	$("#quoteForm_dialog").dialog("open");
+};
+
+// 見積の中で受注確定になっているものがあるかチェックする
+quoteInfo.checkOrderStatus = function() {
+	// データIDを取得する
+	var IDs = $("#quote_list").getDataIDs();
+	var result = "";
+	// 取得したIDで行データを取得する
+	for(var i in IDs){
+		var rowid = IDs[i];
+		var quote = $("#quote_list").getRowData(rowid);
+		if (quote.order_status) {
+			if (quote.order_status === "受注確定") {
+				result = rowid;
+				break;
+			}
+		} else {
+			break;
+		}
+	}
+	return result;
 };
 // 見積明細の検索とテーブル設定
 quoteInfo.searchSpecificInfo = function(entry_no,quote_no,large_item_cd) {
