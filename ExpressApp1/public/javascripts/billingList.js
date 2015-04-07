@@ -100,6 +100,11 @@ billingList.createBillingListGrid = function () {
 // 請求先選択イベント
 billingList.onSelectBillingList = function (rowid) {
 	billingList.currentBilling = $("#billing_info_list").getRowData(rowid);	
+	if (entryList.auth_entry_edit == 2) {
+		$("#edit_billing").css("display","inline");
+	} else {
+		$("#edit_billing").css("display","none");
+	}
 };
 // 請求情報リストダイアログの表示
 billingList.openBillingListDialog = function (event) {
@@ -107,6 +112,11 @@ billingList.openBillingListDialog = function (event) {
 	$("#billing_entry_no").val(event.data.entryList.currentEntryNo);
 	$("#billing_info_list").GridUnload();
 	billingList.createBillingListGrid();
+	if (entryList.auth_entry_add == 2) {
+		$("#add_billing").css("display","inline");
+	} else {
+		$("#add_billing").css("display","none");
+	}
 
 	$("#billing_list_dialog").dialog("open");
 };
@@ -138,7 +148,12 @@ billingList.openBillingFormDialog = function (event) {
 		billingList.currentBilling.client_info = client_info;
 		billingList.setBillingForm(billingList.currentBilling);	
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
-		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		// 権限チェック
+		if (entryList.auth_entry_edit == 2) {
+			$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		} else {
+			$(".ui-dialog-buttonpane button:contains('更新')").button("diable");
+		}
 	} else {
 		// 追加ボタンから開いた場合
 		var billing = {
@@ -158,7 +173,12 @@ billingList.openBillingFormDialog = function (event) {
 			client_info: client_info
 		}
 		billingList.setBillingForm(billing);		
-		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		// 権限チェック
+		if (entryList.auth_entry_add == 2) {
+			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		} else {
+			$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
+		}
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
 

@@ -11,7 +11,7 @@ CalendarTable.schedule = null;
 CalendarTable.days = ['日','月','火','水','木','金','土'];
 CalendarTable.days_color = ['red','black','black','black','black','black','blue'];
 CalendarTable.width_15 = [];
-
+CalendarTable.auth = 0;		// ユーザ権限
 // 初期化
 CalendarTable.init = function() {
 	CalendarTable.hideMemo();
@@ -118,9 +118,11 @@ CalendarTable.init = function() {
 			base_cd: CalendarTable.current_base_cd
 		};
 		$(day_times).data('schedule', data);
-		// クリックイベントで入力フォームを表示する
-		$(day_times).bind('click',CalendarTable.openDialog);
-		
+		// 権限チェック
+		if (CalendarTable.auth == 2) {
+			// クリックイベントで入力フォームを表示する
+			$(day_times).bind('click',CalendarTable.openDialog);
+		}
 	}
 	// スケジュールデータを検索して表示する
 	CalendarTable.searchScheduleData(start_date, end_date, "01", CalendarTable.current_test_type, CalendarTable.addScheduleData);
@@ -264,10 +266,13 @@ CalendarTable.addScheduleData = function (schedule_list) {
 			// 要素のカスタムデータとしてデータを追加
 			$("#" + rows[i].schedule_id).data('schedule', rows[i]);
 			// クリックイベント処理登録
-			$("#" + rows[i].schedule_id).bind('click', CalendarTable.openDialog);
+			if (CalendarTable.auth == 2) {
+				// ダイアログ表示
+				$("#" + rows[i].schedule_id).bind('click', CalendarTable.openDialog);
+				// Drag&Drop
+				$("#" + rows[i].schedule_id).draggable({ revert:false,zIndex: 1000 });
+			}
 			$("#" + rows[i].schedule_id).mousemove(CalendarTable.dispMemo).mouseout(CalendarTable.hideMemo);
-			// Drag&Drop
-			$("#" + rows[i].schedule_id).draggable({ revert:false,zIndex: 1000 });
 			if (prev_date == rows[i].start_date) {
 				// 同一日に複数の予定が入っている場合に時間が重なっていたら行の高さを調整して上下に表示する
 				if (start_time.getTime() < prev_end_time.getTime()) {

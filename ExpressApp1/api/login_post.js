@@ -21,6 +21,7 @@ exports.login_post = function (req, res) {
 		connection.query(sql, [uid,pass], function (err, results) {
 			if (err) {
 				console.log(err);
+				connection.end();
 			} else {
 				//connection.end();
 				if (results.rows.length == 1) {
@@ -40,13 +41,15 @@ exports.login_post = function (req, res) {
 								}
 								auth += results.rows[i].code + ":" + results.rows[i].auth_value;
 							}
+							connection.end();
 							res.cookie('user_auth', auth,{maxAge:1000 * 3600 * 24});
 							res.render('portal', { title: 'DRC試験スケジュール管理' , userid: req.session.uid ,name:req.session.name});
 						}
 					});
 				} else {
+					connection.end();
 					req.session.login = false;
-					var msg = 'ログインしてください。';
+					var msg = 'ユーザ名またはパスワードが違います。';
 					res.render('index', { title: 'DRC試験スケジュール管理', msg: msg });
 				}
 			}

@@ -1,4 +1,6 @@
 ﻿$(function() {
+	// 権限チェック
+	calendarEdit.checkAuth();
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	// 試験毎のタブを生成
 	$("#tabs").tabs({
@@ -173,6 +175,17 @@
 });
 
 var calendarEdit = calendarEdit || {};
+// 権限チェック
+calendarEdit.checkAuth = function() {
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f11") {
+			CalendarTable.auth = auth.value;
+		}
+	}
+};
+
 calendarEdit.calendarTableInit = function () {
 	var h = window.innerHeight;
 	$(".calendar_div").css("height", h - 270);

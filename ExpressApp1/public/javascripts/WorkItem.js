@@ -2,6 +2,8 @@
 // ガントチャートに表示する項目の処理
 //
 $(function() {
+	// 権限チェック
+	workitemEdit.checkAuth();
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
 	$( "#tabs" ).tabs();
 					
@@ -21,6 +23,16 @@ $(function() {
 });
 
 var workitemEdit = workitemEdit || {};
+// 権限チェック
+workitemEdit.checkAuth = function() {
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f11") {
+			GanttTable.auth = auth.value;
+		}
+	}
+};
 
 // 作業項目のダイアログ生成
 workitemEdit.createWorkitemDialog = function () {
@@ -483,6 +495,11 @@ workitemEdit.createEntryDialog = function () {
 };
 workitemEdit.openEntryDialog = function (event) {
 	var entry = event.data;
+	// 権限チェック
+	if (GanttTable.auth < 2) {
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable"); 
+		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+	}
 	$("#entry_dialog").dialog("open");
 };
 workitemEdit.saveEntry = function () {

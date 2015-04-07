@@ -10,7 +10,7 @@ GanttTable.days = ['日','月','火','水','木','金','土'];
 GanttTable.days_color = ['red','black','black','black','black','black','blue'];
 GanttTable.dateWidth = 100;
 GanttTable.rowHeight = 32;
-
+GanttTable.auth = 0;			// ユーザ権限
 // 初期化
 GanttTable.Init = function (id, test_type, disp_mode){
 	$('#' + id).empty();
@@ -264,9 +264,12 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 			$(template_select_button).data("workitem", workitem);
 			$(template_select_button).bind('click', workitemEdit.openSelectTemplateDialog);
             $(left_div).append(left_row);
-			$(cate2).append(add_button);
-			$(cate2).append(template_button);
-			$(cate2).append(template_select_button);
+			// 権限チェック
+			if (GanttTable.auth == 2) {
+				$(cate2).append(add_button);
+				$(cate2).append(template_button);
+				$(cate2).append(template_select_button);
+			}
 			$(cate1).append(title);
 			$(cate1).append(entry_ref_btn);
             $(left_row).append(cate1);
@@ -456,8 +459,11 @@ GanttTable.createWorkitemMilestoneRows = function (ganttData, workitem_list, lef
 GanttTable.milestoneBind = function (ms,workitem, ganttData) {
 	$(ms).data("workitem", workitem);
 	$(ms).data("ganttdata", ganttData);
-	$(ms).bind('click', workitemEdit.openDialog);
-	$(ms).draggable({ revert: false, zIndex: 1000, axis: "x" , start: GanttTable.dragStart });
+	// 権限チェック
+	if (GanttTable.auth == 2) {
+		$(ms).bind('click', workitemEdit.openDialog);
+		$(ms).draggable({ revert: false, zIndex: 1000, axis: "x" , start: GanttTable.dragStart });
+	}
 };
 //
 // 作業項目の表示行生成
@@ -601,8 +607,11 @@ GanttTable.workitem_band = function (top, GanttData, workitem, entry_title,color
 	// 要素のカスタムデータとして保存する
 	$(ms).data("workitem", workitem);
 	$(ms).data("ganttdata", GanttData);
-	$(ms).bind('click', workitemEdit.openDialog);
-	$(ms).draggable({ revert: false, zIndex: 1000,axis:"x" ,start:GanttTable.dragStart});
+	// 権限チェック
+	if (GanttTable.auth == 2) {
+		$(ms).bind('click', workitemEdit.openDialog);
+		$(ms).draggable({ revert: false, zIndex: 1000,axis:"x" ,start:GanttTable.dragStart});
+	}
 	return ms;
 };
 

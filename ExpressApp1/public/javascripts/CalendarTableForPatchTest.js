@@ -121,9 +121,13 @@ CalendarTableForPatchTest.addScheduleData = function (schedule_list) {
 				base_cd: rows[i].base_cd
 			};
 			$(sch).data('schedule', data);
-			$(sch).bind('click', CalendarTable.openDialog);
-//			$(sch).draggable({ zIndex: 100, appendTo: 'body', containment: 'window', scroll: false, helper: 'clone' });
-			$(sch).draggable({ zIndex: 1000});
+			// 権限チェック
+			if (CalendarTable.auth == 2) {
+				// ダイアログ表示イベント登録
+				$(sch).bind('click', CalendarTable.openDialog);
+				// ドラッグ可能化
+				$(sch).draggable({ zIndex: 1000});
+			}
 
 		}
 	}
@@ -185,10 +189,14 @@ CalendarTableForPatchTest.createCalendar = function (patch_tbl_body, year, month
 			};
 			$(week_l).append(add_btn);
 			$(add_btn).data('schedule', data);
-			$(add_btn).bind('click', CalendarTable.openDialog);
 			$(patch_week_div).append(week_l);
-			// Droppable設定
-			$(week_l).droppable({ drop: CalendarTableForPatchTest.drop });
+			// 権限チェック
+			if (CalendarTable.auth == 2) {
+				// 編集用ダイアログ表示イベント登録
+				$(add_btn).bind('click', CalendarTable.openDialog);
+				// Droppable設定
+				$(week_l).droppable({ drop: CalendarTableForPatchTest.drop });
+			}
 		}
 		//$("#" + dd).append(patch_branch_title);
 		$(right_row).append(patch_week_div);

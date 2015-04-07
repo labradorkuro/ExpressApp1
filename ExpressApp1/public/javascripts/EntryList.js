@@ -3,6 +3,8 @@
 // 案件リスト画面の処理
 //
 $(function() {
+	// 権限チェック
+	entryList.checkAuth();
 	// 自社情報の取得
 	quoteInfo.getMyInfo();
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
@@ -40,7 +42,7 @@ $(function() {
 	$("#add_entry").bind('click' , {}, entryList.openEntryDialog);
 	// 案件編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_entry").bind('click' , {}, entryList.openEntryDialog);
-	$("#edit_entry").css("visibility","hidden");
+	$("#edit_entry").css("display","none");
 	// 見積追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
@@ -56,11 +58,12 @@ $(function() {
 
 	// 請求情報ボタンイベント（登録・編集用画面の表示）
 	$("#entry_billing").bind('click' , {entryList:entryList}, billingList.openBillingListDialog);
-	$("#entry_billing").css("visibility","hidden");
+	$("#entry_billing").css("display","none");
 	// 請求情報追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_billing").bind('click' , {}, billingList.openBillingFormDialog);
 	// 請求先編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_billing").bind('click' , {}, billingList.openBillingFormDialog);
+	$("#edit_billing").css("display","none");
 
 	quoteInfo.enableQuoteButtons(false,0);
 	
@@ -85,6 +88,49 @@ entryList.currentEntry = {};			// 案件リストで選択中の案件情報
 entryList.currentEntryNo = 0;			// 案件リストで選択中の案件の番号
 entryList.currentClientListTabNo = 0;	// 得意先リストで選択中のタブ番号
 entryList.currentClient = {};			// 選択中の得意先情報
+entryList.auth_entry_add = 0;				// 権限
+entryList.auto_quote_add = 0;				// 権限
+entryList.auth_entry_edit = 0;				// 権限
+entryList.auto_quote_edit = 0;				// 権限
+// 権限チェック
+entryList.checkAuth = function() {
+	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
+	for(var i in user_auth) {
+		var auth = user_auth[i];
+		if (auth.name == "f07") {
+			entryList.auth_entry_add = auth.value;
+			if (auth.value == 2) {
+				$("#add_entry").css("display","inline");
+			} else {
+				$("#add_entry").css("display","none");
+			}
+		}
+		if (auth.name == "f08") {
+			entryList.auth_entry_edit = auth.value;
+			if (auth.value == 2) {
+				$("#edit_entry").css("display","inline");
+			} else {
+				$("#edit_entry").css("display","none");
+			}
+		}
+		if (auth.name == "f09") {
+			entryList.auth_quote_add = auth.value;
+			if (auth.value == 2) {
+				$("#add_quote").css("display","inline");
+			} else {
+				$("#add_quote").css("display","none");
+			}
+		}
+		if (auth.name == "f10") {
+			entryList.auth_quote_edit = auth.value;
+			if (auth.value == 2) {
+				$("#edit_quote").css("display","inline");
+			} else {
+				$("#edit_quote").css("display","none");
+			}
+		}
+	}
+};
 
 // 得意先リストのタブ生成と選択イベントの設定
 entryList.createClientListTabs = function () {
@@ -279,9 +325,19 @@ entryList.openEntryDialog = function (event) {
 		var no = entryList.getSelectEntry();
 		entryList.requestEntryData(no);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
-		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		// 権限チェック
+		if (entryList.auth_entry_edit == 2) {
+			$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		} else {
+			$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+		}
 	} else {
-		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		// 権限チェック
+		if (entryList.auth_entry_add == 2) {
+			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		} else {
+			$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
+		}
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
 
@@ -603,8 +659,11 @@ entryList.onSelectEntry = function (rowid) {
 		entryList.currentEntryNo = row.entry_no;
 		entryList.currentEntry = row;
 		// 請求情報表示ボタンを表示する
-		$("#entry_billing").css("visibility","visible");
-		$("#edit_entry").css("visibility","visible");
+		$("#entry_billing").css("display","inline");
+		// 権限チェック
+		if (entryList.auth_entry_edit >= 1) {
+			$("#edit_entry").css("display","inline");
+		}
 		entryList.requestEntryData(row.entry_no);
 	}
 
@@ -619,7 +678,7 @@ entryList.changeEntryOption = function (event) {
 	$("#quote_specific_list").GridUnload();
 	quoteInfo.createQuoteSpecificGrid(0,0);
 
-	$("#entry_billing").css("visibility","hidden");
-	$("#edit_entry").css("visibility","hidden");
+	$("#entry_billing").css("display","none");
+	$("#edit_entry").css("display","none");
 	quoteInfo.enableQuoteButtons(false,0);
 };

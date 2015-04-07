@@ -224,9 +224,19 @@ quoteInfo.openQuoteDialog = function (event) {
 		var quote = quoteInfo.getSelectQuote();
 		quoteInfo.setQuoteFormData(quote);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
-		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		// 権限チェック
+		if (entryList.auth_quote_edit == 2) {
+			$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		} else {
+			$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+		}
 	} else {
-		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		// 権限チェック
+		if (entryList.auth_quote_add == 2) {
+			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+		} else {
+			$(".ui-dialog-buttonpane button:contains('追加')").button("diable");
+		}
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
 	$("#quote_dialog").dialog("open");
@@ -263,7 +273,14 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	$("#drc_division_name").text("  試験課 " + entry.test_large_class_name);
 	$("#drc_test_person").text("  担当者 " + entry.test_person_id);
 	$("#quote_title").val(entry.entry_title);
-
+	// 権限チェック
+	if (entryList.auth_quote_edit == 2) {
+		$(".ui-dialog-buttonpane button:contains('PDF出力後に登録')").button("enable");
+		$(".ui-dialog-buttonpane button:contains('登録')").button("enable");
+	} else {
+		$(".ui-dialog-buttonpane button:contains('PDF出力後に登録')").button("disable");
+		$(".ui-dialog-buttonpane button:contains('登録')").button("disable");
+	}
 	$("#quoteForm_dialog").dialog("open");
 };
 // 見積明細の検索とテーブル設定
@@ -318,12 +335,21 @@ quoteInfo.onSelectQuote = function(rowid) {
 quoteInfo.enableQuoteButtons = function(enable, kind) {
 	if (enable) {
 		if (kind == 1) {
-			$("#add_quote").css("display", "inline");
-			$("#edit_quote").css("display", "none");
+			// 権限チェック
+			if (entryList.auth_quote_add == 2) {
+				$("#add_quote").css("display", "inline");
+			}
+			// 権限チェック
+			if (entryList.auth_quote_edit >= 1) {
+				$("#edit_quote").css("display", "none");
+			}
 			$("#quote_delete_check_disp").css("display", "inline");
 			$("#quote_delete_disp").css("display", "inline");
 		} else if (kind == 2) {
-			$("#edit_quote").css("display", "inline");
+			// 権限チェック
+			if (entryList.auth_quote_edit >= 1) {
+				$("#edit_quote").css("display", "inline");
+			}
 		}
 	} else {
 		$("#add_quote").css("display", "none");
