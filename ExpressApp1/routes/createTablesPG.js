@@ -33,7 +33,7 @@ exports.create = function (req, res) {
 			+ "prompt_report_submit_date_1 DATE,"	// 速報提出日１
 			+ "prompt_report_limit_date_2 DATE,"	// 速報提出期限２
 			+ "prompt_report_submit_date_2 DATE,"	// 速報提出日２
-			+ "consumption_fax INT2,"				// 消費税率
+			+ "consumption_tax INT2,"				// 消費税率
 			+ "entry_memo VARCHAR(1024),"			// メモ		
 			+ "delete_check INT2,"					// 削除フラグ
 			+ "delete_reason VARCHAR(255),"			// 削除理由
