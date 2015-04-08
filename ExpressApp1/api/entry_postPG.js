@@ -109,6 +109,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ 'prompt_report_submit_date_1,'	// 速報提出日１
 			+ 'prompt_report_limit_date_2,'		// 速報提出期限２
 			+ 'prompt_report_submit_date_2,'	// 速報提出日２
+			+ 'consumption_tax,'				// 消費税率
 			+ 'entry_memo,'						// メモ
 			+ 'delete_check,'					// 削除フラグ
 			+ 'delete_reason,'					// 削除理由
@@ -150,19 +151,20 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ '$25,'	// 速報提出日１
 			+ '$26,'	// 速報提出期限２
 			+ '$27,'	// 速報提出日２
-			+ '$28,'	// メモ
-			+ '$29,'	// 削除フラグ
-			+ '$30,'	// 削除理由
-			+ '$31,'	// 入力日
-			+ '$32,'	// 入力完了チェック
-			+ '$33,'	// 入力者ID
-			+ '$34,'	// 確認日
-			+ '$35,'	// 確認完了チェック
-			+ '$36,'	// 確認者ID
-			+ '$37,'	// 作成日
-			+ '$38,'	// 作成者ID
-			+ '$39,'	// 更新日
-			+ '$40'		// 更新者ID
+			+ '$28,'	// 消費税率
+			+ '$29,'	// メモ
+			+ '$30,'	// 削除フラグ
+			+ '$31,'	// 削除理由
+			+ '$32,'	// 入力日
+			+ '$33,'	// 入力完了チェック
+			+ '$34,'	// 入力者ID
+			+ '$35,'	// 確認日
+			+ '$36,'	// 確認完了チェック
+			+ '$37,'	// 確認者ID
+			+ '$38,'	// 作成日
+			+ '$39,'	// 作成者ID
+			+ '$40,'	// 更新日
+			+ '$41'		// 更新者ID
 			+ ')'
 			;
 	// SQL実行
@@ -194,6 +196,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			entry.prompt_report_submit_date_1,	// 速報提出日１
 			entry.prompt_report_limit_date_2,	// 速報提出期限２
 			entry.prompt_report_submit_date_2,	// 速報提出日２
+			entry.entry_consumption_tax,		// 消費税率
 			entry.entry_memo,				// メモ
 			entry.delete_check,				// 削除フラグ
 			entry.delete_reason,			// 削除理由
@@ -248,18 +251,19 @@ var updateEntryInfo = function(entry, req, res) {
 			+ 'prompt_report_submit_date_1 = $24,'	// 速報提出日１
 			+ 'prompt_report_limit_date_2 = $25,'	// 速報提出期限２
 			+ 'prompt_report_submit_date_2 = $26,'	// 速報提出日２
-			+ 'entry_memo = $27,'					// メモ
-			+ 'delete_check = $28,'					// 削除フラグ
-			+ 'delete_reason = $29,'				// 削除理由
-			+ 'input_check_date = $30,'				// 入力日
-			+ 'input_check = $31,'					// 入力完了チェック
-			+ 'input_operator_id = $32,'			// 入力者ID
-			+ 'confirm_check_date = $33,'			// 確認日
-			+ 'confirm_check = $34,'				// 確認完了チェック
-			+ 'confirm_operator_id = $35,'			// 確認者ID
-			+ 'updated = $36,'						// 更新日
-			+ 'updated_id = $37'					// 更新者ID
-			+ ' WHERE entry_no = $38';
+			+ 'consumption_tax = $27,'				// 消費税率
+			+ 'entry_memo = $28,'					// メモ
+			+ 'delete_check = $29,'					// 削除フラグ
+			+ 'delete_reason = $30,'				// 削除理由
+			+ 'input_check_date = $31,'				// 入力日
+			+ 'input_check = $32,'					// 入力完了チェック
+			+ 'input_operator_id = $33,'			// 入力者ID
+			+ 'confirm_check_date = $34,'			// 確認日
+			+ 'confirm_check = $35,'				// 確認完了チェック
+			+ 'confirm_operator_id = $36,'			// 確認者ID
+			+ 'updated = $37,'						// 更新日
+			+ 'updated_id = $38'					// 更新者ID
+			+ ' WHERE entry_no = $39';
 
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
@@ -286,10 +290,11 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.entry_amount_deposit,		// 案件入金合計金額
 			entry.report_limit_date,		// 報告書提出期限
 			entry.report_submit_date,		// 報告書提出日
-			entry.prompt_report_limit_date_1,		// 速報提出期限１
+			entry.prompt_report_limit_date_1,	// 速報提出期限１
 			entry.prompt_report_submit_date_1,	// 速報提出日１
-			entry.prompt_report_limit_date_2,		// 速報提出期限２
+			entry.prompt_report_limit_date_2,	// 速報提出期限２
 			entry.prompt_report_submit_date_2,	// 速報提出日２
+			entry.entry_consumption_tax,	// 消費税率
 			entry.entry_memo,				// メモ
 			entry.delete_check,				// 削除フラグ
 			entry.delete_reason,			// 削除理由
@@ -358,6 +363,7 @@ var entry_check = function (entry) {
 	entry.order_accept_check = Number(entry.order_accept_check);
 	entry.acounting_period_no = Number(entry.acounting_period_no);
 	entry.order_type = Number(entry.order_type);
+	entry.entry_consumption_tax = Number(entry.entry_consumption_tax);
 //	entry.contract_type = Number(entry.contract_type);
 	entry.entry_amount_price = Number(entry.entry_amount_price);
 	entry.entry_amount_billing = Number(entry.entry_amount_billing);

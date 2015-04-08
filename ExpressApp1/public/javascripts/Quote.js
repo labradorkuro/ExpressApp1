@@ -9,6 +9,7 @@
 var quoteInfo = quoteInfo || {};
 quoteInfo.currentEntry = {};			// 案件リストで選択中の案件情報
 quoteInfo.currentQuoteRowId = 0;		// 選択中の見積リスト行ID
+quoteInfo.currentConsumption_tax = 8;	// 現在の見積に適用される消費税率
 quoteInfo.drc_info = {
 	address1:"",
 	address2:"",
@@ -35,6 +36,7 @@ quoteInfo.getMyInfo = function() {
 		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_1 + "'>" + quoteInfo.drc_info.quote_form_memo_1 + "</option>")); 
 		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_2 + "'>" + quoteInfo.drc_info.quote_form_memo_2 + "</option>")); 
 		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_3 + "'>" + quoteInfo.drc_info.quote_form_memo_3 + "</option>")); 
+		quoteInfo.currentConsumption_tax = config_response.consumption_tax;
 	});
 };
 // イベント処理のバインド
@@ -47,33 +49,6 @@ quoteInfo.eventBind = function(kind) {
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
 	$(".summary_target").bind('input',{}, quoteInfo.calcSummary);
 	$(".calc_price").bind('input',{}, quoteInfo.calcPrice);
-};
-
-// 明細入力用ダイアログの生成
-quoteInfo.createQuoteDialog = function () {
-	$('#quote_dialog').dialog({
-		autoOpen: false,
-		width: 800,
-		height: 600,
-		title: '試験（見積）明細',
-		closeOnEscape: false,
-		modal: true,
-		buttons: {
-			"追加": function () {
-				if (quoteInfo.saveQuote()) {
-					$(this).dialog('close');
-				}
-			},
-			"更新": function () {
-				if (quoteInfo.saveQuote()) {
-					$(this).dialog('close');
-				}
-			},
-			"閉じる": function () {
-				$(this).dialog('close');
-			}
-		}
-	});
 };
 
 // 見積書用ダイアログの生成
@@ -213,35 +188,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 	jQuery("#quote_specific_list").jqGrid('navGrid', '#quote_specific_list_pager', { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize();
 };
-/**
-// 編集用ダイアログの表示
-quoteInfo.openQuoteDialog = function (event) {
-	var quote = {};
-	quote.quote_no = '';
-	quoteInfo.clearQuoteFormData(quote);
-	if ($(event.target).attr('id') == 'edit_quote') {
-		// 編集ボタンから呼ばれた時は選択中の案件のデータを取得して表示する
-		var quote = quoteInfo.getSelectQuote();
-		quoteInfo.setQuoteFormData(quote);
-		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
-		// 権限チェック
-		if (entryList.auth_quote_edit == 2) {
-			$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
-		} else {
-			$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
-		}
-	} else {
-		// 権限チェック
-		if (entryList.auth_quote_add == 2) {
-			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
-		} else {
-			$(".ui-dialog-buttonpane button:contains('追加')").button("diable");
-		}
-		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
-	}
-	$("#quote_dialog").dialog("open");
-};
-**/
+
 // 見積書ダイアログ表示
 quoteInfo.openQuoteFormDialog = function (event) {
 	// 自社情報のセット
@@ -597,7 +544,7 @@ quoteInfo.calcSummary = function(event) {
 			total += price;
 		}
 	}
-	var tax = Math.round(total * (quoteInfo.drc_info.consumption_tax / 100));
+	var tax = Math.round(total * (quoteInfo.currentConsumption_tax / 100));
 	$("#sum").val(scheduleCommon.numFormatter( total, 10))
 	$("#consumption").val(scheduleCommon.numFormatter( tax, 10))
 	$("#quote_total_price").val(scheduleCommon.numFormatter( total + tax, 10));
@@ -912,7 +859,11 @@ quoteInfo.printQuote = function (data) {
 	canvas.renderAll();
 	// canvasからイメージを取得してPDFに追加する
 	doc.addImage( $('canvas').get(0).toDataURL('image/jpeg'),'JPEG',0,0);
-	var filename = "御見積書_" + data.quote_issue_date + "_" + data.quote_no + "_" + data.client_name_1 + ".pdf";
+	var filename = "御見積書";// + data.quote_issue_date + "_" + data.quote_no + "_" + data.client_name_1 + ".pdf";
+	if (data.quote_issue_date != null) filename += "_" + data.quote_issue_date;
+	if (data.quote_no != null) filename += "_" + data.quote_no;
+	if (data.client_name_1 != null) filename += "_" + data.client_name_1;
+	filename += ".pdf";
 	doc.save(filename);
 	canvas.setHeight(0);
 	canvas.setWidth(0);
@@ -947,7 +898,7 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		total += Number(row.price);
 	}
 	top = top_wk + (27 * 20);
-	var tax = total * (quoteInfo.drc_info.consumption_tax / 100);
+	var tax = total * (quoteInfo.currentConsumption_tax / 100);
 	quoteInfo.outputText(canvas, "（合計）", font_size, 460, top);
 	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(total,10), font_size, 550, top);		 
 	top += 20;

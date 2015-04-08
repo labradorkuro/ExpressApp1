@@ -17,7 +17,6 @@ $(function() {
 	entryList.createMessageDialog();
 	// 編集用ダイアログの設定
 	entryList.createEntryDialog();				// 案件入力用
-//	quoteInfo.createQuoteDialog();				// 見積明細用
 	quoteInfo.createQuoteFormDialog();			// 見積書発行用
 	entryList.createClientListDialog();			// 得意先選択用
 	test_itemList.createTestItemSelectDialog();	// 試験分類選択用
@@ -377,18 +376,18 @@ entryList.requestEntryData = function (no) {
 	xhr.send();
 };
 // 受注確定になっている見積情報を取得する
-entryList.requestQuoteInfo = function(entry_no, large_item_cd) {
+entryList.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) {
 	$.ajax({
 		url: '/quote_specific_get_list_for_entryform/' + entry_no + '?large_item_cd=' + large_item_cd,
 		cache: false,
 		dataType: 'json',
 		success: function (quote_list) {
-			entryList.setQuoteInfo(quote_list);
+			entryList.setQuoteInfo(quote_list, consumption_tax);
 		}
 	});
 
 };
-entryList.setQuoteInfo = function (quote_list) {
+entryList.setQuoteInfo = function (quote_list, consumption_tax) {
 	if (quote_list != null) {
 		var total_price = 0;
 		var rows = quote_list.rows;
@@ -400,7 +399,7 @@ entryList.setQuoteInfo = function (quote_list) {
 				total_price += Number(rows[i].price);
 			}
 			$("#test_middle_class_list").text(list);
-			tax = total_price * (quoteInfo.drc_info.consumption_tax / 100);
+			tax = total_price * (consumption_tax / 100);
 			$("#entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));
 		}
 	}
@@ -505,11 +504,14 @@ entryList.onloadEntrySave = function (e) {
 entryList.onloadEntryReq = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
+		// 消費税率
+		if (entry.consumption_tax == "") entry.consumption_tax = quoteInfo.drc_info.consumption_tax;
+		quoteInfo.currentConsumption_tax = entry.consumption_tax;
 		// formに取得したデータを埋め込む
 		entryList.setEntryForm(entry);
 		$("#entry_memo_ref").text(entry.entry_memo);		
 		// 見積情報の取得
-		entryList.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd);		
+		entryList.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
 	}
 };
 
@@ -554,7 +556,7 @@ entryList.setEntryForm = function (entry) {
 	$("#prompt_report_submit_date_1").val(entry.prompt_report_submit_date_1);	// 速報提出日1
 	$("#prompt_report_limit_date_2").val(entry.prompt_report_limit_date_2);		// 速報提出期限2
 	$("#prompt_report_submit_date_2").val(entry.prompt_report_submit_date_2);	// 速報提出日2
-
+	$("#entry_consumption_tax").val(entry.consumption_tax);		// 消費税率
 	$("#entry_memo").val(entry.entry_memo);						// 備考
 	if (entry.delete_check == 1) {
 		$("#delete_check").prop("checked", true);				// 削除フラグ
@@ -617,6 +619,7 @@ entryList.clearEntry = function () {
 	entry.prompt_report_submit_date_1 = "";		// 速報提出日1
 	entry.prompt_report_limit_date_2 = "";		// 速報提出期限2
 	entry.prompt_report_submit_date_2 = "";		// 速報提出日2
+	entry.consumption_tax = quoteInfo.drc_info.consumption_tax;	// 消費税率
 	entry.entry_memo = "";			// メモ
 	entry.delete_check = 0;			// 削除フラグ
 	entry.delete_reason = "";		// 削除理由

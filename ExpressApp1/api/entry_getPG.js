@@ -265,7 +265,8 @@ var entry_get_detail = function (req, res) {
 		+ 'to_char(prompt_report_submit_date_1,\'YYYY/MM/DD\') AS prompt_report_submit_date_1,'		// 速報提出日１
 		+ 'to_char(prompt_report_limit_date_2,\'YYYY/MM/DD\') AS prompt_report_limit_date_2,'		// 速報提出期限２
 		+ 'to_char(prompt_report_submit_date_2,\'YYYY/MM/DD\') AS prompt_report_submit_date_2,'		// 速報提出日２
-		+ 'entry_memo,'															// メモ
+		+ 'consumption_tax,'															// 
+		+ 'entry_memo,'																	// メモ
 		+ "entry_info.delete_check,"													// 削除フラグ
 		+ "entry_info.delete_reason,"													// 削除理由
 		+ "to_char(entry_info.input_check_date,'YYYY/MM/DD') AS input_check_date,"		// 入力日
