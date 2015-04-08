@@ -63,11 +63,11 @@ var insertSchedule = function (schedule, req, res) {
 			+ '$8,' // AMPM
 			+ '$9,' // パッチ番号
 			+ '$10,' // 備考
-			+ '$12,' // 削除フラグ
-			+ '$13,' // 作成日
-			+ '$14,' // 作成者ID
-			+ '$15,' // 更新日
-			+ '$16' // 更新者ID
+			+ '$11,' // 削除フラグ
+			+ '$12,' // 作成日
+			+ '$13,' // 作成者ID
+			+ '$14,' // 更新日
+			+ '$15' // 更新者ID
 			+ ')'
 			;
 	pg.connect(connectionString, function (err, connection) {

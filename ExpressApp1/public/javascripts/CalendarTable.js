@@ -425,7 +425,7 @@ CalendarTable.searchEntryData = function (from, to, test_type) {
 	$("#quote_list").empty();
 	
 	$.ajax({
-		url: '/entry_get/term/' + scheduleCommon.dateSeparatorChange(from, '-') + '/' + scheduleCommon.dateSeparatorChange(to, '-') + '/' + test_type,
+		url: '/entry_get/cal/' + scheduleCommon.dateSeparatorChange(from, '-') + '/' + scheduleCommon.dateSeparatorChange(to, '-') + '/' + test_type,
 		cache: false,
 		dataType: 'json',
 		success: function (entry_list) {
@@ -456,7 +456,7 @@ CalendarTable.searchQuoteData = function () {
 	$("#ref_test_item").val("");
 
 	$.ajax({
-		url: '/quote_specific_get_list/' + entry_no,
+		url: '/quote_specific_get_list_for_calendar/' + entry_no,
 		cache: false,
 		dataType: 'json',
 		success: function (quote_list) {

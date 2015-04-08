@@ -208,7 +208,7 @@ GanttTable.createRows = function (ganttData, left_div, right_div, dateCount) {
 GanttTable.searchEntryData = function (ganttData, left_div, right_div, dateCount) {
 	
 	$.ajax({
-		url: '/entry_get/term/' + scheduleCommon.dateSeparatorChange(ganttData.from, '-') + '/' + scheduleCommon.dateSeparatorChange(ganttData.to, '-') + '/' + ganttData.test_type,
+		url: '/entry_get/gantt/' + scheduleCommon.dateSeparatorChange(ganttData.from, '-') + '/' + scheduleCommon.dateSeparatorChange(ganttData.to, '-') + '/' + ganttData.test_type,
 		cache: false,
 		dataType: 'json',
 		success: function (entry_list) {

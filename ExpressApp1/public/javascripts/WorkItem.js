@@ -444,9 +444,8 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 				var td_name = $("<td rowspan=" + count + ">" + name + "</td>");
 				var sel_btn = $("<a class='template_select_button'>選択</a>");
 				// 選択ボタン押下処理にバインド
-				workitem.template_cd = cd;
-				workitem.template_name = name;
-				$(sel_btn).data('workitem', workitem);
+				var workitem_wk = {entry_no:workitem.entry_no,template_cd:cd, template_name:name};
+				$(sel_btn).data('workitem', workitem_wk);
 				$(sel_btn).bind("click",workitemEdit.onSelectTemplate);
 				var tr = $("<tr></tr>");
 				$(td_name).append(sel_btn);

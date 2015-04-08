@@ -14,12 +14,12 @@ var connection = mysql.createConnection({
 */
 // 案件基本データのGET
 exports.entry_get = function (req, res) {
-	if ((req.params.start != undefined) && (req.params.start != '')) {
-		if ((req.params.end != undefined) && (req.params.end != '')) {
-			entry_get_list_term(req, res);
-		}
-	}	
-	else if ((req.params.no != undefined) && (req.params.no != '')) {
+//	if ((req.params.start != undefined) && (req.params.start != '')) {
+//		if ((req.params.end != undefined) && (req.params.end != '')) {
+//			entry_get_list_term(req, res);
+//		}
+//	}	
+	if ((req.params.no != undefined) && (req.params.no != '')) {
 		entry_get_detail(req, res);
 	} else {
 		entry_get_list(req, res);
@@ -92,7 +92,7 @@ var entry_get_list = function (req, res) {
 };
 
 // 案件リストの取得（ガントチャート用）
-var entry_get_list_term = function (req, res) {
+exports.entry_get_list_gantt = function (req, res) {
 	var sql = 'SELECT ' 
 		+ 'entry_info.entry_no,' 
 		+ 'client_list.name_1 AS client_name_1,'
@@ -103,11 +103,6 @@ var entry_get_list_term = function (req, res) {
 		+ 'sales_person_id,' 
 		+ 'quote_info.quote_no,' 
 		+ "to_char(quote_info.quote_date,'YYYY/MM/DD') AS quote_issue_date," 
-//		+ "entry_info.client_cd," 
-//		+ "client_list.name_2 AS client_name_2," 
-//		+ "client_division_list.address_1 AS client_address_1," 
-//		+ "client_division_list.address_2 AS client_address_2," 
-//		+ "client_person_list.name AS client_person_name," 
 		+ 'to_char(order_accepted_date,\'YYYY/MM/DD\') AS order_accepted_date,'
 		+ 'order_accept_check,' 
 		+ 'order_type,' 
@@ -127,7 +122,44 @@ var entry_get_list_term = function (req, res) {
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
 		+ ' LEFT JOIN drc_sch.quote_info ON(entry_info.entry_no = quote_info.entry_no AND quote_info.order_status = 2)'
 		+ ' WHERE entry_info.delete_check = $1 ' 
-		+ ' AND entry_info.test_large_class_cd = $2 AND quote_info.quote_delete_check = 0' 
+		+ ' AND entry_info.test_large_class_cd = $2 AND entry_info.entry_status != \'04\' AND entry_info.entry_status != \'05\' AND quote_info.quote_delete_check = 0' 
+		//+ ' AND order_accept_date NOT NULL '
+		+ ' ORDER BY entry_no ASC ';
+	return entry_get_list_for_gantt(res, sql, [0,req.params.test_type]);
+};
+// 案件リストの取得（スケジュール用）
+exports.entry_get_list_cal = function (req, res) {
+	var sql = 'SELECT ' 
+		+ 'entry_info.entry_no,' 
+		+ 'client_list.name_1 AS client_name_1,'
+		+ 'client_division_list.name AS client_division_name,'
+		+ 'entry_title,' 
+		+ 'to_char(inquiry_date, \'YYYY/MM/DD\') AS inquiry_date,'
+		+ 'entry_status,' 
+		+ 'sales_person_id,' 
+///		+ 'quote_info.quote_no,' 
+///		+ "to_char(quote_info.quote_date,'YYYY/MM/DD') AS quote_issue_date," 
+		+ 'to_char(order_accepted_date,\'YYYY/MM/DD\') AS order_accepted_date,'
+		+ 'order_accept_check,' 
+		+ 'order_type,' 
+		+ 'entry_info.test_large_class_cd,' 
+		+ 'test_large_class.item_name AS test_large_class_name,' 
+		+ 'entry_info.test_middle_class_cd,' 
+		+ 'test_middle_class.item_name AS test_middle_class_name,' 
+		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
+		+ 'entry_info.created_id,' 
+		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 
+		+ 'entry_info.updated_id' 
+		+ ' FROM drc_sch.entry_info'
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)' 
+		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)' 
+		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
+		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
+		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
+//		+ ' LEFT JOIN drc_sch.quote_info ON(entry_info.entry_no = quote_info.entry_no)'// AND quote_info.order_status = 2)'
+		+ ' WHERE entry_info.delete_check = $1 ' 
+//		+ ' AND entry_info.test_large_class_cd = $2 AND entry_info.entry_status != \'04\' AND entry_info.entry_status != \'05\' AND quote_info.quote_delete_check = 0' 
+		+ ' AND entry_info.test_large_class_cd = $2 AND entry_info.entry_status != \'04\' AND entry_info.entry_status != \'05\' ' 
 		//+ ' AND order_accept_date NOT NULL '
 		+ ' ORDER BY entry_no ASC ';
 	return entry_get_list_for_gantt(res, sql, [0,req.params.test_type]);
@@ -295,7 +327,7 @@ exports.quote_specific_get_grid = function (req, res) {
 				quote_specific_get_detail(req, res);
 			} else {
 				// 見積の中の明細情報のリストを取得する
-				quote_specific_get_list(req, res);
+				quote_specific_get_list_grid(req, res);
 			}
 		}
 	}
@@ -305,14 +337,49 @@ exports.quote_specific_get_list = function (req, res) {
 	if ((req.params.entry_no != undefined) && (req.params.entry_no != '')) {
 		if ((req.params.quote_no != undefined) && (req.params.quote_no != '')) {
 			// 見積の中の明細情報のリストを取得する
-			quote_specific_get_list2(req, res);
-		} else {
-			// 見積の中の明細情報のリストを取得する
-			quote_specific_get_list_for_calendar(req, res);
+			var sql = 'SELECT ' 
+				+ 'entry_no,'
+				+ 'quote_no,'			// 見積番号
+				+ 'quote_detail_no,'
+				+ 'quote_specific_info.test_middle_class_cd,'
+				+ 'test_middle_class.item_name AS test_middle_class_name,'
+				+ 'unit,'
+				+ 'unit_price,'
+				+ 'quantity,'
+				+ 'price,'
+				+ 'summary_check,'
+				+ 'specific_memo,'
+				+ 'to_char(quote_specific_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+				+ 'quote_specific_info.created_id,' 
+				+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+				+ 'quote_specific_info.updated_id' 
+				+ ' FROM drc_sch.quote_specific_info'
+				+ ' LEFT JOIN drc_sch.test_middle_class ON (quote_specific_info.test_middle_class_cd = test_middle_class.item_cd AND test_middle_class.large_item_cd = $3)'
+				+ ' WHERE specific_delete_check = 0 AND (entry_no = $1 AND quote_no = $2) ORDER BY quote_detail_no' 
+			// SQL実行
+			var params = [req.params.entry_no, req.params.quote_no, req.query.large_item_cd];
+			var result = { page: 1, total: 20, records: 0, rows: [] };
+			var rows = [];
+			// SQL実行
+			pg.connect(connectionString, function (err, connection) {
+				var query = connection.query(sql, params);
+				query.on('row', function (row) {
+					rows.push(row);
+				});
+				query.on('end',function(results,err) {
+					result.records = rows.length;
+					result.rows = rows;
+					res.send(result);
+					connection.end();
+				});
+				query.on('error', function (error) {
+					console.log(sql + ' ' + error);
+				});
+			});
 		}
-
 	}
 };
+
 // 報告書期限情報の取得（ガントチャート用）
 exports.report_gantt = function (req, res) {
 	var sql = 'SELECT '
@@ -447,7 +514,7 @@ var quote_get_detail = function (req, res) {
 	});
 };
 // 見積情報リストの取得（グリッド用）
-var quote_specific_get_list = function (req, res) {
+var quote_specific_get_list_grid = function (req, res) {
 	var pg_params = getPagingParams(req);
 	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.quote_specific_info WHERE specific_delete_check = $1 AND (entry_no = $2 AND quote_no = $3)';
 	var sql = 'SELECT ' 
@@ -507,52 +574,10 @@ var quote_specific_get_list = function (req, res) {
 		});
 	});
 };
-// 見積情報リストの取得（フォーム用）
-var quote_specific_get_list2 = function (req, res) {
-	var sql = 'SELECT ' 
-		+ 'entry_no,'
-		+ 'quote_no,'			// 見積番号
-		+ 'quote_detail_no,'
-		+ 'quote_specific_info.test_middle_class_cd,'
-		+ 'test_middle_class.item_name AS test_middle_class_name,'
-		+ 'unit,'
-		+ 'unit_price,'
-		+ 'quantity,'
-		+ 'price,'
-		+ 'summary_check,'
-		+ 'specific_memo,'
-		+ 'to_char(quote_specific_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
-		+ 'quote_specific_info.created_id,' 
-		+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
-		+ 'quote_specific_info.updated_id' 
-		+ ' FROM drc_sch.quote_specific_info'
-		+ ' LEFT JOIN drc_sch.test_middle_class ON (quote_specific_info.test_middle_class_cd = test_middle_class.item_cd AND test_middle_class.large_item_cd = $3)'
-		+ ' WHERE specific_delete_check = 0 AND (entry_no = $1 AND quote_no = $2) ORDER BY quote_detail_no' 
-	// SQL実行
-	var params = [req.params.entry_no, req.params.quote_no, req.query.large_item_cd];
-	var result = { page: 1, total: 20, records: 0, rows: [] };
-	var rows = [];
-	// SQL実行
-	pg.connect(connectionString, function (err, connection) {
-		var query = connection.query(sql, params);
-		query.on('row', function (row) {
-			rows.push(row);
-		});
-		query.on('end',function(results,err) {
-			result.records = rows.length;
-			result.rows = rows;
-			res.send(result);
-			connection.end();
-		});
-		query.on('error', function (error) {
-			console.log(sql + ' ' + error);
-		});
-	});
-};
 
-// 見積明細リストの取得（カレンダー用）
+// 見積明細リストの取得（案件フォーム用）
 // 受注確定になっている見積Noの明細を取得する
-var quote_specific_get_list_for_calendar = function (req, res) {
+exports.quote_specific_get_list_for_entryform = function (req, res) {
 	var sql = 'SELECT ' 
 		+ 'quote_info.entry_no,'
 		+ 'quote_info.quote_no,'			// 見積番号
@@ -589,6 +614,92 @@ var quote_specific_get_list_for_calendar = function (req, res) {
 			result.rows = rows;
 			res.send(result);
 			connection.end();
+		});
+		query.on('error', function (error) {
+			console.log(sql + ' ' + error);
+		});
+	});
+};
+// 見積明細リストの取得（案件フォーム用）
+// 案件に登録されている見積全部を取得する
+exports.quote_specific_get_list_for_calendar = function (req, res) {
+	// 受注確定の見積検索
+	var sql_a = 'SELECT ' 
+		+ 'quote_info.entry_no,'
+		+ 'quote_info.quote_no,'			// 見積番号
+		+ 'quote_detail_no,'
+		+ 'quote_specific_info.test_middle_class_cd,'
+		+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'unit,'
+		+ 'unit_price,'
+		+ 'quantity,'
+		+ 'price,'
+		+ 'summary_check,'
+		+ 'specific_memo,'
+		+ 'to_char(quote_specific_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'quote_specific_info.created_id,' 
+		+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ 'quote_specific_info.updated_id' 
+		+ ' FROM drc_sch.quote_specific_info'
+		+ ' LEFT JOIN drc_sch.entry_info ON (entry_info.entry_no = $1)'
+		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
+		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no AND quote_info.entry_no = $1 AND quote_info.order_status = 2)'
+		+ ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_specific_info.entry_no = $1 AND quote_info.order_status = 2) ORDER BY quote_detail_no' 
+	// 全見積の取得
+	var sql_b = 'SELECT ' 
+		+ 'quote_info.entry_no,'
+		+ 'quote_info.quote_no,'			// 見積番号
+		+ 'quote_detail_no,'
+		+ 'quote_specific_info.test_middle_class_cd,'
+		+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'unit,'
+		+ 'unit_price,'
+		+ 'quantity,'
+		+ 'price,'
+		+ 'summary_check,'
+		+ 'specific_memo,'
+		+ 'to_char(quote_specific_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
+		+ 'quote_specific_info.created_id,' 
+		+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
+		+ 'quote_specific_info.updated_id' 
+		+ ' FROM drc_sch.quote_specific_info'
+		+ ' LEFT JOIN drc_sch.entry_info ON (entry_info.entry_no = $1)'
+		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
+		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no AND quote_info.entry_no = $1)'
+		+ ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_specific_info.entry_no = $1) ORDER BY quote_detail_no' 
+	// SQL実行
+	var params = [req.params.entry_no];
+	var result = { page: 1, total: 20, records: 0, rows: [] };
+	var rows = [];
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		var query = connection.query(sql_a, params);
+		query.on('row', function (row) {
+			rows.push(row);
+		});
+		query.on('end',function(results,err) {
+			result.records = rows.length;
+			result.rows = rows;
+			if (rows.length > 0) {
+				// 受注確定になっている見積が見つかった場合はそれを取得して終了
+				res.send(result);
+				connection.end();
+			} else {
+				// 受注確定になっている見積が見つからない場合は全見積データを取得して返す
+				query = connection.query(sql_b, params);
+				query.on('row', function (row) {
+					rows.push(row);
+				});
+				query.on('end',function(results,err) {
+					result.records = rows.length;
+					result.rows = rows;
+					res.send(result);
+					connection.end();
+				});
+				query.on('error', function (error) {
+					console.log(sql + ' ' + error);
+				});
+			}
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);

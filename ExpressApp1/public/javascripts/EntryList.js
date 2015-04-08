@@ -379,7 +379,7 @@ entryList.requestEntryData = function (no) {
 // 受注確定になっている見積情報を取得する
 entryList.requestQuoteInfo = function(entry_no, large_item_cd) {
 	$.ajax({
-		url: '/quote_specific_get_list/' + entry_no + '?large_item_cd=' + large_item_cd,
+		url: '/quote_specific_get_list_for_entryform/' + entry_no + '?large_item_cd=' + large_item_cd,
 		cache: false,
 		dataType: 'json',
 		success: function (quote_list) {
