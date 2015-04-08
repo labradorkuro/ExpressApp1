@@ -202,7 +202,7 @@ GanttTemplate.createTemplateRows = function(ganttData, template_name_list,left_d
 };
 GanttTemplate.addTemplateRow = function(temp, left_row, right_row,lines) {
 	var w1 = GanttTemplate.dateWidth * GanttTemplate.dateCount;
-	var template = { template_cd: temp.template_cd, template_name: temp.template_name,template_id:-1,work_title:"",start_date:"",end_date:"",start_date_result:"",end_date_result:"",priority_item_id:"",subsequent_item_id:"",progress:0,item_type:0};
+	var template = { template_cd: temp.template_cd, template_name: temp.template_name,template_id:-1,work_title:"",start_date:"2000/01/01",end_date:"2000/01/01",start_date_result:"",end_date_result:"",priority_item_id:"",subsequent_item_id:"",progress:0,item_type:0};
 	// 項目名の表示
 	//var left_row = $("<div class='gt_left_row_div'></div>");
 	// テンプレート名表示エリア

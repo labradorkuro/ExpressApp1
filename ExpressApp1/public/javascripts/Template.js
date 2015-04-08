@@ -124,6 +124,8 @@ templateEdit.setFormData = function (workitem) {
 	$("#start_date").val(sd);
 	var ed = scheduleCommon.calcDateCount("2000/01/01",workitem.end_date);
 	$("#end_date").val(ed);
+	$("#start_date").attr('max',ed);
+	$("#end_date").attr('min',sd);
 	$("#priority_item_id").val("");
 	$("#subsequent_item_id").val("");
 	if (workitem.item_type == 0) {
@@ -135,6 +137,8 @@ templateEdit.setFormData = function (workitem) {
 
 // 作業項目ダイアログの表示
 templateEdit.openDialog = function (event) {
+	$("#start_date").attr('min',1);
+	$("#end_date").attr('min',1);
 	var target = event.target;
 	// マイルストーンのimgがtargetになっている時は親のa要素からデータを取得するようにする
 	if (event.target.className == 'gt_milestone_img') {
@@ -150,11 +154,15 @@ templateEdit.openDialog = function (event) {
 	var template = $(target).data("template");
 	templateEdit.setFormData(template);
 	if (template.template_id != -1) {
+		// 更新
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable"); 
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
 
 	} else {
+		// 追加
+		$("#start_date").attr('max',365);
+		$("#end_date").attr('max',365);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable"); 
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("disable");
