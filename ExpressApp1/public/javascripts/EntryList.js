@@ -490,6 +490,7 @@ entryList.entryInputCheck = function () {
 			if (! ctl.validity.valid) {
 				if (ctl.id == "entry_title") {
 					err = "試験タイトルの入力値を確認して下さい";
+					break;
 				} else if (ctl.id == "entry_amount_price") {
 					err = "合計金額の入力値を確認して下さい";
 					break;

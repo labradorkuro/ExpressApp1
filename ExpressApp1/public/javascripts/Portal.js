@@ -160,29 +160,48 @@ portal.savePassword = function () {
 	return true;
 };
 portal.inputCheck = function () {
-	var result = true;
-	if ($("#password").val() == "") {
-		// パスワード
-		$("#message").text("パスワードが未入力です。");
-		result = false;
-	}
-	else if ($("#password_confirm").val() == "") {
-		// パスワード
-		$("#message").text("パスワード確認用が未入力です。");
-		result = false;
-	}
-	else if ($("#password").val() != $("#password_confirm").val()) {
-		// 不一致
-		$("#message").text("パスワードが不一致です。");
-		result = false;
+	var result = false;
+	var err = "";
+	if ($("#passwordForm")[0].checkValidity) {
+		if ($("#password").val() != $("#password_confirm").val()) {
+			// 不一致
+			err = "パスワードが不一致です。";
+			result = false;
+		} else {
+			result =  true;
+		}
+	} else {
+		var ctrls = $("#passwordForm input");
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (ctl.validity.valueMissing) {
+				if (ctl.id == "password") {
+					err = "パスワードが未入力です";
+					break;
+				} else if (ctl.id == "password_confirm") {
+					err = "パスワード（確認用）が未入力です";
+					break;
+				}
+			} else if (!ctl.validity.valid) {
+				if (ctl.id == "password") {
+					err = "パスワードの入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "password_confirm") {
+					err = "パスワード（確認用）の入力値を確認して下さい";
+					break;
+				}
+			}
+		}
 	}
 	if (!result) {
+		$("#message").text(err);
 		$("#message_dialog").dialog("option", { title: "入力エラー" });
 		$("#message_dialog").dialog("open");
 	}
 	return result;
 
 };
+
 // formデータの取得
 portal.getFormData = function () {
 	var form = new FormData(document.querySelector("#passwordForm"));

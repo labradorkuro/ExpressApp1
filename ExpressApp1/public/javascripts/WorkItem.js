@@ -20,6 +20,7 @@ $(function() {
 	workitemEdit.createTemplateSelectDialog();
 	workitemEdit.createTemplateNameDialog();
 	workitemEdit.createEntryDialog();
+	workitemEdit.createMessageDialog();
 });
 
 var workitemEdit = workitemEdit || {};
@@ -114,7 +115,7 @@ workitemEdit.createTemplateNameDialog = function () {
 				click: function () {
 					// 保存処理
 					// テンプレート名の入力ダイアログを表示する
-					workitemEdit.saveTemplate($("#template_name_nf").val(), $("#entry_no_nf").val());
+					workitemEdit.saveTemplate($("#template_cd_nf").val(),$("#template_name_nf").val(), $("#entry_no_nf").val());
 					$(this).dialog('close');
 				}
 			},
@@ -126,6 +127,22 @@ workitemEdit.createTemplateNameDialog = function () {
 				}
 			}
 		]
+	});
+};
+// メッセージ表示用ダイアログの生成
+workitemEdit.createMessageDialog = function () {
+	$('#message_dialog').dialog({
+		autoOpen: false,
+		width: 400,
+		height: 180,
+		title: 'メッセージ',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
 	});
 };
 
@@ -323,14 +340,16 @@ workitemEdit.selectTemplate = function (entry_no, template_cd) {
 // テンプレートとして保存ボタンイベント
 workitemEdit.onSaveToTemplate = function (event) {
 	var workitem = $(event.target).data("workitem");
-	$('#template_cd').val("");
-	$('#template_name').val(workitem.entry_title);
-	$('#entry_no').val(workitem.entry_no);
+	$('#template_cd_nf').val("");
+	$('#template_name_nf').val("");
+	$('#entry_no_nf').val("");
+	$('#template_name_nf').val(workitem.entry_title);
+	$('#entry_no_nf').val(workitem.entry_no);
 	workitemEdit.openTemplateNameDialog();
 };
 
 // 案件に登録されている項目をテンプレートとして保存する
-workitemEdit.saveTemplate = function (template_name, entry_no) {
+workitemEdit.saveTemplate = function (template_cd, template_name, entry_no) {
 	var entry = $.get('/entry_get/' + entry_no, {});
 	// 作業項目データの検索(マイルストーンと作業項目)
 	var workitem_list = $.get('/workitem_get/' + entry_no + '/' + 2, {});
@@ -342,9 +361,9 @@ workitemEdit.saveTemplate = function (template_name, entry_no) {
 			var workitem = list[i];
 			// 案件の受注日を起点の日とする
 			var base_date = entry_Response[0].order_accepted_date;
-			if (base_date == "") {
+			if ((base_date == null) || (base_date == "")) {
 				// 受注日が未入力の場合
-				base_date = workitem.start_date;
+				base_date = scheduleCommon.getToday("{0}/{1}/{2}");
 			}
 			// 作業項目の開始日などの日付と起点の日の日数を求める
 			var start_offset = scheduleCommon.calcDateCount(base_date, workitem.start_date) - 1;
@@ -355,6 +374,7 @@ workitemEdit.saveTemplate = function (template_name, entry_no) {
 			// テンプレート化する時は起点の日を2000年1月1日とする
 			var template = {
 				template_id: -1, 
+				template_cd: template_cd,
 				template_name: template_name, 
 				work_title: workitem.work_title , 
 				start_date: "2000/01/01", 
@@ -364,9 +384,9 @@ workitemEdit.saveTemplate = function (template_name, entry_no) {
 			};
 			// 求めた各日数を起点の日に加算して日付とする
 			var sd = scheduleCommon.addDate(scheduleCommon.dateStringToDate(template.start_date), start_offset);
-			template.start_date = scheduleCommon.getDateString(sd, "{0}/{1}/{2}");
+			template.start_date_date = scheduleCommon.getDateString(sd, "{0}/{1}/{2}");
 			var ed = scheduleCommon.addDate(scheduleCommon.dateStringToDate(template.end_date), end_offset);
-			template.end_date = scheduleCommon.getDateString(ed, "{0}/{1}/{2}");
+			template.end_date_date = scheduleCommon.getDateString(ed, "{0}/{1}/{2}");
 			// DBにテンプレートを追加する
 			workitemEdit.addTemplate(template);
 		}
@@ -389,6 +409,9 @@ workitemEdit.addTemplate = function (template) {
 };
 
 workitemEdit.onAddTemplate = function () {
+		$("#message").text("テンプレートに保存されました");
+		$("#message_dialog").dialog("option", { title: "ガントチャート" });
+		$("#message_dialog").dialog("open");
 };
 workitemEdit.addWorkitem = function (workitem) {
 	$.ajax("/workitem_post", {
