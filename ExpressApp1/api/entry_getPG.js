@@ -236,6 +236,7 @@ var entry_get_detail = function (req, res) {
 		+ 'sales_person_id,'													// 営業担当者ID
 //		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date," 
 		+ 'agent_cd,'															// 代理店CD
+		+ 'agent_list.name_1 AS agent_name,'									// 代理店CD
 		+ "entry_info.client_cd,"												// 得意先CD
 		+ "entry_info.client_division_cd,"										// 得意先部署CD
 		+ "entry_info.client_person_id,"										// 得意先担当者ID
@@ -252,6 +253,7 @@ var entry_get_detail = function (req, res) {
 		+ 'entry_title,'														// 試験タイトル
 		+ 'order_type,'															// 受託区分
 		+ 'outsourcing_cd,'														// 受託先CD
+		+ 'out_list.name_1 AS outsourcing_name,'								// 受託先CD
 		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date,"	// 受注日
 		+ 'order_accept_check,'													// 仮受注チェック
 		+ 'acounting_period_no,'												// 会計期No
@@ -283,6 +285,8 @@ var entry_get_detail = function (req, res) {
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)' 
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
+		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)' 
+		+ ' LEFT JOIN drc_sch.client_list AS out_list ON(entry_info.outsourcing_cd = out_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
 		+ ' WHERE entry_no = $1 ';

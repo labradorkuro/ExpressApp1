@@ -472,6 +472,7 @@ quoteInfo.onloadQuoteReq = function (e) {
 		quoteInfo.createQuoteInfoGrid(quoteInfo.currentEntry.entry_no);
 		$("#quote_specific_list").GridUnload();
 		quoteInfo.createQuoteSpecificGrid(quoteInfo.currentEntry.entry_no,quote.estimate_quote_no, quoteInfo.currentEntry.test_large_class_cd);
+		quoteInfo.enableQuoteButtons(true, 1);
 
 	}
 };
@@ -488,6 +489,7 @@ quoteInfo.onloadQuoteReqAfterPrint = function (e) {
 		// 印刷用PDFの生成
 		var data = quoteInfo.printDataSetup(entry,quote);
 		quoteInfo.printQuote(data);
+		quoteInfo.enableQuoteButtons(true, 1);
 	}
 };
 

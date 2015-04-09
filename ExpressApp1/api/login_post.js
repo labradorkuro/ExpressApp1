@@ -11,6 +11,7 @@ exports.login_post = function (req, res) {
 		req.session.uid = uid;
 		req.session.name = "管理者";
 		auth = 'f01:2,f02:2,f03:2,f04:2,f05:2,f06:2,f07:2,f08:2,f09:2,f10:2,f11:2,f12:2,f13:2';	// 最低権限で初期化
+		res.cookie('userid', uid,{maxAge:1000 * 3600 * 24});
 		res.cookie('user_auth', auth,{maxAge:1000 * 3600 * 24});
 		res.render('portal', { title: 'DRC試験スケジュール管理' , userid: uid , name: "管理者" });
 		return;
@@ -42,6 +43,7 @@ exports.login_post = function (req, res) {
 								auth += results.rows[i].code + ":" + results.rows[i].auth_value;
 							}
 							connection.end();
+							res.cookie('userid', uid,{maxAge:1000 * 3600 * 24});
 							res.cookie('user_auth', auth,{maxAge:1000 * 3600 * 24});
 							res.render('portal', { title: 'DRC試験スケジュール管理' , userid: req.session.uid ,name:req.session.name});
 						}
