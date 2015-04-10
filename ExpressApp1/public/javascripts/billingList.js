@@ -123,6 +123,7 @@ billingList.openBillingListDialog = function (event) {
 // 請求情報編集用ダイアログの表示
 billingList.openBillingFormDialog = function (event) {
 	// フォームをクリアする
+	billingList.clearPayResult();	// 請求区分のチェックをクリアする
 	var billing = billingList.clearBilling();
 	billingList.setBillingForm(billing);
 	var address1 = billingList.currentEntry.currentEntry.client_address_1;
@@ -186,8 +187,27 @@ billingList.openBillingFormDialog = function (event) {
 };
 // 請求情報のクリア
 billingList.clearBilling = function() {
-	var billing = {};
+	var billing = {
+			billing_no:'',
+			pay_planning_date:'',
+			pay_complete_date:'',
+			pay_amount:0,
+			pay_result:0,
+			memo:'',
+			client_cd:'',
+			client_name:'',
+			client_division_cd:'',
+			client_division_name:'',
+			client_person_id:'',
+			client_person_name:'',
+			client_info: ''
+	};
 	return billing;
+};
+billingList.clearPayResult = function() {
+	$("#pay_result_1").prop("checked",false);
+	$("#pay_result_2").prop("checked",false);
+	$("#pay_result_3").prop("checked",false);
 };
 // 請求情報をフォームにセットする
 billingList.setBillingForm = function(billing) {
@@ -196,7 +216,16 @@ billingList.setBillingForm = function(billing) {
 	$("#pay_planning_date").val(billing.pay_planning_date);
 	$("#pay_complete_date").val(billing.pay_complete_date);
 	$("#pay_amount").val(billing.pay_amount);
-	$("#pay_result").val(billing.pay_result);
+//	$("#pay_result").val(billing.pay_result);
+	
+	if (billing.pay_result == "請求可") {
+		$("#pay_result_1").prop("checked",true);
+	} else if (billing.pay_result == "請求済") {
+		$("#pay_result_2").prop("checked",true);
+	} else if (billing.pay_result == "入金確認済") {
+		$("#pay_result_3").prop("checked",true);
+	}
+
 	$("#billing_client_cd").val(billing.client_cd);
 	$("#billing_client_name").val(billing.client_name);
 	$("#billing_client_division_cd").val(billing.client_division_cd);
