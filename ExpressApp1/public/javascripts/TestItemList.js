@@ -53,12 +53,14 @@ test_itemList.createFormDialog = function () {
 		modal: true,
 		buttons: {
 			"追加": function () {
-				test_itemList.save();
-				$(this).dialog('close');
+				if (test_itemList.save()) {
+					$(this).dialog('close');
+				}
 			},
 			"更新": function () {
-				test_itemList.save();
-				$(this).dialog('close');
+				if (test_itemList.save()) {
+					$(this).dialog('close');
+				}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -174,6 +176,7 @@ test_itemList.openFormDialog = function (event) {
 	if (event.target.id == "add_test_item_large") {
 		// 大分類の追加
 		title = "試験大分類";
+		$("#item_cd").prop("readonly",false);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	} else if (event.target.id == "add_test_item_middle") {
@@ -183,6 +186,7 @@ test_itemList.openFormDialog = function (event) {
 			// 大分類CD
 			$("#large_item_cd").val(large_item.item_cd);
 		}
+		$("#item_cd").prop("readonly",false);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	} else if (event.target.id == "edit_test_item_large") {
@@ -190,6 +194,7 @@ test_itemList.openFormDialog = function (event) {
 		title = "試験大分類";
 		// 編集ボタンから呼ばれた時は選択中のデータを取得して表示する
 		test_itemList.setTest_itemForm(large_item);
+		$("#item_cd").prop("readonly",true);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 	} else if (event.target.id == "edit_test_item_middle") {
@@ -201,6 +206,7 @@ test_itemList.openFormDialog = function (event) {
 		}
 		// 編集ボタンから呼ばれた時は選択中のデータを取得して表示する
 		test_itemList.setTest_itemForm(middle_item);
+		$("#item_cd").prop("readonly",true);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 	}
@@ -210,22 +216,27 @@ test_itemList.openFormDialog = function (event) {
 
 //	データの保存
 test_itemList.save = function () {
-	var title = $("#test_item_dialog").dialog("option","title");
-	// checkboxのチェック状態確認と値設定
-	test_itemList.checkCheckbox();
-	// formデータの取得
-	var form = test_itemList.getFormData();
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/test_item_post', true);
-	xhr.responseType = 'json';
-	if (title == "試験大分類") {
-		// 大分類
-		xhr.onload = test_itemList.onloadSaveLarge;
+	if (test_itemList.inputCheck()) {
+		var title = $("#test_item_dialog").dialog("option","title");
+		// checkboxのチェック状態確認と値設定
+		test_itemList.checkCheckbox();
+		// formデータの取得
+		var form = test_itemList.getFormData();
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/test_item_post', true);
+		xhr.responseType = 'json';
+		if (title == "試験大分類") {
+			// 大分類
+			xhr.onload = test_itemList.onloadSaveLarge;
+		} else {
+			// 中分類
+			xhr.onload = test_itemList.onloadSaveMiddle;
+		}
+		xhr.send(form);
+		return true;
 	} else {
-		// 中分類
-		xhr.onload = test_itemList.onloadSaveMiddle;
+		return false;
 	}
-	xhr.send(form);
 };
 
 // checkboxのチェック状態確認と値設定
@@ -369,4 +380,56 @@ test_itemList.selectLargeClass = function() {
 	$("#test_large_class_cd").val(test_itemList.currentTestItemLarge.item_cd);
 	$("#test_large_class_name").val(test_itemList.currentTestItemLarge.item_name);
 	return true;
+};
+test_itemList.inputCheck = function () {
+	var err = "";
+	if ($("#test_itemForm").checkValidity) {
+	} else {
+		var ctrls = $("#test_itemForm input");
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (ctl.validity.valueMissing) {
+				if (ctl.id == "item_cd") {
+					err = "項目CDが未入力です";
+					break;
+				}
+				else if (ctl.id == "item_name") {
+					err = "項目名が未入力です";
+					break;
+				}
+			} else if (!ctl.validity.valid) {
+				if (ctl.id == "item_cd") {
+					err = "項目CDの入力値を確認して下さい";
+					break;
+				}
+			}
+		}
+	}
+	if (err != "") {
+		$("#message").text(err);
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
+		return false;
+	} else {
+		return true;
+	
+	}
+
+};
+
+// メッセージ表示用ダイアログの生成
+test_itemList.createMessageDialog = function () {
+	$('#message_dialog').dialog({
+		autoOpen: false,
+		width: 400,
+		height: 180,
+		title: 'メッセージ',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
 };

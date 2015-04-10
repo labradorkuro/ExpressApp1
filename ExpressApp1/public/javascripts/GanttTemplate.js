@@ -338,6 +338,7 @@ GanttTemplate.createTemplateMilestoneRows = function (ganttData, template_list, 
 			}	
 			if (ms != null) {
 				// 要素の追加とイベント登録
+				$(ms).css("cursor","pointer");
 				$(right_row).append(ms);
 				GanttTemplate.milestoneBind(ms, rows[j], ganttData);
 			}
@@ -478,6 +479,7 @@ GanttTemplate.template_band = function (top, GanttData, template, color) {
 			$(ms).css("background-color", "red");
 		}
 	}	
+	$(ms).css("cursor","pointer");
 	$(ms).css("left", start + "px");
 	$(ms).css("width", w + "px");
 	top = 2;

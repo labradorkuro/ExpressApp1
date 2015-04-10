@@ -7,10 +7,10 @@ form#test_itemForm(method="post",action="javascript:return false;")
 			td.form_title 試験項目CD
 			td 
 				input#large_item_cd(type="hidden")
-				input#item_cd(type="text" name="item_cd" maxlength="4" placeholder="項目CD")
-			td.form_title 名前
+				input#item_cd(type="text" name="item_cd" maxlength="4" required="required" pattern="^[0-9A-Za-z]+$" placeholder="項目CD(半角英数字、必須)")
+			td.form_title 項目名
 			td 
-				input#item_name(type="text" name="item_name" maxlength="128" placeholder="項目名")
+				input#item_name(type="text" name="item_name" maxlength="128" required="required" placeholder="項目名(必須)")
 		tr
 			td.form_title 備考
 			td(colspan="3") 

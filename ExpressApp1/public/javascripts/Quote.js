@@ -99,9 +99,9 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 			{ name: 'order_status', index: 'order_status', width: 120,align:"center",formatter:quoteInfo.orderCheckFormatter },			// 受注ステータス
 			{ name: 'quote_form_memo' , index: 'quote_form_memo', width: 120, align: "left" },	// 見積備考
 			{ name: 'created', index: 'created', width: 120, align: "center" },					// 作成日
-			{ name: 'created_id', index: 'created_id', width: 120 , align: "center",formatter: entryList.personFormatter},							// 作成者ID
+			{ name: 'created_id', index: 'created_id', width: 120 , align: "center",formatter: scheduleCommon.personFormatter},							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120, align: "center" },					// 更新日
-			{ name: 'updated_id', index: 'updated_id', width: 120 , align: "center",formatter: entryList.personFormatter}								// 更新者ID
+			{ name: 'updated_id', index: 'updated_id', width: 120 , align: "center",formatter: scheduleCommon.personFormatter}								// 更新者ID
 		],
 		height: "115px",
 		shrinkToFit:false,
@@ -169,9 +169,9 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:quoteInfo.numFormatterC},							// 見積金額
 			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:quoteInfo.summaryCheckFormatter },						// 集計対象チェック
 			{ name: 'created', index: 'created', width: 120 },									// 作成日
-			{ name: 'created_id', index: 'created_id', width: 120, align: "center",formatter: entryList.personFormatter },							// 作成者ID
+			{ name: 'created_id', index: 'created_id', width: 120, align: "center",formatter: scheduleCommon.personFormatter },							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120 },									// 更新日
-			{ name: 'updated_id', index: 'updated_id', width: 120, align: "center",formatter: entryList.personFormatter }								// 更新者ID
+			{ name: 'updated_id', index: 'updated_id', width: 120, align: "center",formatter: scheduleCommon.personFormatter }								// 更新者ID
 		],
 		height: "130px",
 		//width:960,

@@ -12,6 +12,8 @@ $(function () {
 	scheduleCommon.getUserInfo();
 	// 編集用ダイアログの設定
 	test_itemList.createFormDialog();
+	// メッセージ用ダイアログの設定
+	test_itemList.createMessageDialog();
 	// 大分類リスト
 	test_itemList.createTestLargeGrid();
 	// 中分類リスト

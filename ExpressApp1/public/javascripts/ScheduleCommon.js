@@ -76,6 +76,10 @@ scheduleCommon.onloadDivisionReq = function (e) {
 	}
 
 };
+// 拠点CD
+scheduleCommon.base_cdFormatter = function (cellval, options, rowObject) {
+	return scheduleCommon.getBase_cd(cellval);
+};
 // jqgridのユーザ表示用
 scheduleCommon.personFormatter = function (cellval, options, rowObject) {
 	var name = "";
@@ -105,8 +109,7 @@ scheduleCommon.changeFontSize = function(s){
     $('div.ui-jqgrid').css('font-size', size);
 	$('div.ui-jqgrid-view').css('font-size', size);
     $('table.ui-jqgrid-htable th').css('font-size', size);
-    $('table.ui-jqgrid-htable th').css('height', size)
-        .children('div').css('height', size);
+    $('table.ui-jqgrid-htable th').css('height', size).children('div').css('height', size);
 //    $('div.ui-jqgrid-pager').css('height', size);
 //    $('div.ui-jqgrid-pager').css('font-size', '1em');
 	$('div.ui-jqgrid-pager').css('height', '1.6em');

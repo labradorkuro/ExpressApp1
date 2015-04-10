@@ -9,7 +9,7 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 				input#billing_entry_no(type="text" name="billing_entry_no" value=no readonly="true" placeholder="案件番号" size="12")
 			td.form_title_s 請求番号
 			td 
-				input#billing_no(type="text" name="billing_no" size="15")
+				input#billing_no(type="text" name="billing_no" size="15" readonly="true" placeholder="自動採番")
 		tr
 			td.form_title_s 請求区分
 			td
@@ -43,11 +43,11 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 			td.form_title_ss 部署
 			td
 				input#billing_client_division_cd(type="hidden" name="billing_client_division_cd")
-				input#billing_client_division_name(type="text" name="billing_client_division_name" size="16")
+				input#billing_client_division_name(type="text" name="billing_client_division_name" size="16" readonly="true")
 			td.form_title_ss 担当者
 			td 
 				input#billing_client_person_id(type="hidden" name="billing_client_person_id")
-				input#billing_client_person_name(type="text" name="billing_client_person_name" size="16")
+				input#billing_client_person_name(type="text" name="billing_client_person_name" size="16" readonly="true")
 	table
 		tr
 			td.form_title_s 請求先情報

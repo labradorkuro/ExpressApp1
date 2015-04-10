@@ -13,6 +13,7 @@ $(function () {
 	// 編集用ダイアログの設定
 	userList.createUserDialog();
 	userList.createGrid();
+	userList.createMessageDialog();
 	// 社員情報追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_user").bind('click' , {}, userList.openUserDialog);
 	// 社員情報編集ボタンイベント（登録・編集用画面の表示）
@@ -50,12 +51,14 @@ userList.createUserDialog = function () {
 		modal: true,
 		buttons: {
 			"追加": function () {
-				userList.saveUser();
-				$(this).dialog('close');
+				if (userList.saveUser()) {
+					$(this).dialog('close');
+				}
 			},
 			"更新": function () {
-				userList.saveUser();
-				$(this).dialog('close');
+				if (userList.saveUser()) {
+					$(this).dialog('close');
+				}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -74,18 +77,18 @@ userList.createGrid = function () {
 		colNames: ['社員ID','名前','社員番号', '役職名', '拠点','事業部','内線番号','入社日'
 				　,'作成日','作成者','更新日','更新者'],
 		colModel: [
-			{ name: 'uid', index: 'uid', width: 80, align: "center" },
+			{ name: 'uid', index: 'uid', width: 120, align: "center" },
 			{ name: 'name', index: 'name', width: 200, align: "center" },
 			{ name: 'u_no', index: 'u_no', width: 80, align: "center" },
-			{ name: 'title', index: 'title', width: 100 },
-			{ name: 'base_cd', index: 'base_cd', width: 100, align: "center" },
-			{ name: 'division_name', index: 'division_name', width: 100, align: "center" },
+			{ name: 'title', index: 'title', width: 100, align: "center" },
+			{ name: 'base_cd', index: 'base_cd', width: 80, align: "center" ,formatter:scheduleCommon.base_cdFormatter},
+			{ name: 'division_name', index: 'division_name', width: 200, align: "center" },
 			{ name: 'telno', index: 'telno', width: 80, align: "center" },
 			{ name: 'start_date', index: 'start_date', width: 80, align: "center" },
-			{ name: 'created', index: 'created', width: 130, align: "center" },
-			{ name: 'created_id', index: 'created_id' },
-			{ name: 'updated', index: 'updated', width: 130, align: "center" },
-			{ name: 'updated_id', index: 'updated_id' },
+			{ name: 'created', index: 'created', width: 150, align: "center"},
+			{ name: 'created_id', index: 'created_id'  ,width: 80,formatter: scheduleCommon.personFormatter, align: "center"},
+			{ name: 'updated', index: 'updated', width: 150, align: "center"},
+			{ name: 'updated_id', index: 'updated_id' ,width: 80,formatter: scheduleCommon.personFormatter, align: "center"},
 		],
 		height: "260px",
 		rowNum: 10,
@@ -113,9 +116,11 @@ userList.openUserDialog = function (event) {
 		// 編集ボタンから呼ばれた時は選択中の案件のデータを取得して表示する
 		var no = userList.getSelectUser();
 		userList.requestUserData(no);
+		$("#uid").prop("readonly",true);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 	} else {
+		$("#uid").prop("readonly",false);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
@@ -131,15 +136,20 @@ userList.requestUserData = function (uid) {
 };
 //	社員情報データの保存
 userList.saveUser = function () {
+	var result = false; 
 	// checkboxのチェック状態確認と値設定
 	userList.checkCheckbox();
-	// formデータの取得
-	var form = userList.getFormData();
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/user_post', true);
-	xhr.responseType = 'json';
-	xhr.onload = userList.onloadUserSave;
-	xhr.send(form);
+	if (userList.inputCheck()) {
+		// formデータの取得
+		var form = userList.getFormData();
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/user_post', true);
+		xhr.responseType = 'json';
+		xhr.onload = userList.onloadUserSave;
+		xhr.send(form);
+		result = true;
+	}
+	return result;
 };
 
 // checkboxのチェック状態確認と値設定
@@ -167,6 +177,9 @@ userList.onloadUserSave = function (e) {
 		} else {
 			$("#user_list").GridUnload();
 			userList.createGrid();
+			$("#message").text("保存されました");
+			$("#message_dialog").dialog("option", { title: "社員情報" });
+			$("#message_dialog").dialog("open");
 		}
 	}
 };
@@ -237,3 +250,57 @@ userList.changeOption = function (event) {
 	userList.createGrid();
 };
 
+userList.inputCheck = function () {
+	var err = "";
+	if ($("#userForm").checkValidity) {
+	} else {
+		var ctrls = $("#userForm input");
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (ctl.validity.valueMissing) {
+				if (ctl.id == "uid") {
+					err = "社員IDが未入力です";
+					break;
+				} else if (ctl.id == "name") {
+					err = "名前が未入力です";
+					break;
+				}
+			} else if (!ctl.validity.valid) {
+				if (ctl.id == "uid") {
+					err = "社員IDの入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "u_no") {
+					err = "社員番号の入力値を確認して下さい";
+					break;
+				}
+			}
+		}
+	}
+	if (err != "") {
+		$("#message").text(err);
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
+		return false;
+	} else {
+		return true;
+	
+	}
+
+};
+
+// メッセージ表示用ダイアログの生成
+userList.createMessageDialog = function () {
+	$('#message_dialog').dialog({
+		autoOpen: false,
+		width: 400,
+		height: 180,
+		title: 'メッセージ',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};

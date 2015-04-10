@@ -322,7 +322,7 @@ GanttTable.searchData = function (ganttData, entry_no, entry_title, left_row, ri
 		// 報告書期限データのマイルストーン表示
 		var lines = GanttTable.createReportRows(ganttData, report_listResponse[0], left_row, right_row, dateCount, exist_lines);
 		// 項目追加したマイルストーンの表示		
-		lines = lines + GanttTable.createWorkitemMilestoneRows(ganttData, workitem_milestoneResponse[0], left_row, right_row, dateCount, exist_lines + lines);
+		lines = lines + GanttTable.createWorkitemMilestoneRows(ganttData, workitem_milestoneResponse[0], entry_no, entry_title, left_row, right_row, dateCount, exist_lines + lines);
 		// 作業項目の表示		
 		GanttTable.createWorkitemRows(ganttData, workitem_listResponse[0], entry_no, entry_title, left_row, right_row, dateCount, exist_lines + lines);
 		var child = $(right_row).children();
@@ -400,7 +400,7 @@ GanttTable.createReportRows = function (ganttData, report_list, left_row, right_
 };
 
 // 項目追加したマイルストーンを表示する
-GanttTable.createWorkitemMilestoneRows = function (ganttData, workitem_list, left_row, right_row, dateCount, exist_lines) {
+GanttTable.createWorkitemMilestoneRows = function (ganttData, workitem_list, entry_no, entry_title,left_row, right_row, dateCount, exist_lines) {
 	var total_lines = 0;
 	if (workitem_list != null) {
 		var w1 = GanttTable.dateWidth * dateCount;
@@ -448,7 +448,9 @@ GanttTable.createWorkitemMilestoneRows = function (ganttData, workitem_list, lef
 				ms = GanttTable.milestone(exist_lines + total_lines + (j % lines), ganttData, rows[j].start_date, rows[j].work_title, color);
 			}	
 			if (ms != null) {
+				$(ms).css("cursor","pointer");
 				$(right_row).append(ms);
+				rows[j].entry_title = entry_title;
 				GanttTable.milestoneBind(ms, rows[j], ganttData);
 			}
 		}
@@ -600,6 +602,7 @@ GanttTable.workitem_band = function (top, GanttData, workitem, entry_title,color
 			$(ms).css("background-color", "red");
 		}
 	}	
+	$(ms).css("cursor","pointer");
 	$(ms).css("left", start + "px");
 	$(ms).css("width", w + "px");
 	top = 2;

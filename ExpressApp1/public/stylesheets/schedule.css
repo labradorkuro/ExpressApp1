@@ -55,6 +55,7 @@ a.titlebar_button {
     border:1px solid;
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
     background:#cccccc;
+    cursor:pointer;
 }
 
 a.titlebar_button:hover{
@@ -315,6 +316,7 @@ a.gt_button {
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
     background:#cccccc;
     font-weight:bold;
+    cursor:pointer;
 }
 
 a.gt_button:hover {
@@ -344,6 +346,7 @@ a.gt_mode_button {
 	transition: none;
 	box-shadow: 0 3px 0 #ff0000;    
     font-weight:bold;
+    cursor:pointer;
 }
 
 a.gt_mode_button:hover {
@@ -378,6 +381,7 @@ a.gt_workitem_button {
 	box-shadow: 0 3px 0 #0e8c73;    
     font-weight:bold;
     box-shadow: 0 3px 0 #0e8c73;
+    cursor:pointer;
 }
 
 a.gt_workitem_button:hover {
@@ -412,6 +416,7 @@ a.gt_template_button {
 	box-shadow: 0 3px 0 #0e8c73;    
     font-weight:bold;
     box-shadow: 0 3px 0 #0e8c73;
+    cursor:pointer;
 }
 
 a.gt_template_button:hover {
@@ -447,6 +452,7 @@ a.gt_template_select_button {
 	box-shadow: 0 3px 0 #0e8c73;    
     font-weight:bold;
     box-shadow: 0 3px 0 #0e8c73;
+    cursor:pointer;
 }
 
 a.gt_template_select_button:hover {
@@ -646,6 +652,7 @@ a.menu_button_a {
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
     background:#cccccc;
 	border-radius: 6px;
+    cursor:pointer;
 }
 
 a.menu_button_a:hover{
@@ -667,6 +674,7 @@ a.menu_button_b {
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
     background:#cccccc;
 	border-radius: 6px;
+    cursor:pointer;
 }
 
 a.menu_button_b:hover {
@@ -688,6 +696,7 @@ a.menu_button_c {
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
     background:#cccccc;
 	border-radius: 6px;
+    cursor:pointer;
 }
 
 a.menu_button_c:hover{
@@ -737,6 +746,7 @@ a.tool_button_a {
 	transition: none;
 	box-shadow: 0 3px 0 darkolivegreen;    
     font-weight:bold;
+    cursor:pointer;
 }
 
 a.tool_button_a:hover{
@@ -762,6 +772,7 @@ a.tool_button_b {
     border:1px solid;
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
     background:#cccccc;
+    cursor:pointer;
 }
 
 a.tool_button_b:hover {
@@ -811,6 +822,7 @@ a.form_button {
 	transition: none;
 	box-shadow: 0 3px 0 darkolivegreen;    
     font-weight:bold;
+    cursor:pointer;
 }
 
 a.form_button:hover{
@@ -1128,6 +1140,7 @@ a.cal_add_button {
 	box-shadow: 0 1px 0 #0e8c73;    
     font-weight:bold;
     box-shadow: 0 1px 0 #0e8c73;
+    cursor:pointer;
 }
 
 a.cal_add_button:hover {
@@ -1171,6 +1184,7 @@ a.schedule_band {
 	transition: none;
 	box-shadow: 0 3px 0 #061150;    
     font-weight:bold;
+    cursor:pointer;
 }
 a.schedule_band:hover {
     background-color: #0094aa;
@@ -1214,6 +1228,7 @@ a.general_button {
     border:2px solid;
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
     background:#cccccc;
+    cursor:pointer;
 }
 
 a.general_button:hover{
@@ -1422,6 +1437,7 @@ a.template_select_button {
 	box-shadow: 0 3px 0 #0e8c73;    
     font-weight:bold;
     box-shadow: 0 3px 0 #0e8c73;
+    cursor:pointer;
 }
 
 a.template_select_button:hover {
@@ -1485,4 +1501,9 @@ table.auth_table {
 
 td.auth_table_check {
     align-content: center;
+}
+
+/* 案件入力から参照するクライアントリストダイアログの文字サイズ */
+#client_list_dialog {
+    font-size: 0.8em;
 }

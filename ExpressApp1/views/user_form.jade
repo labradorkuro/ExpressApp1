@@ -6,14 +6,14 @@ form#userForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 社員ID
 			td 
-				input#uid(type="text" name="uid" maxlength="32" placeholder="社員ID")
+				input#uid(type="text" name="uid" maxlength="32" pattern="^[0-9A-Za-z]+$" required="required" placeholder="社員ID(半角英数字、必須)")
 			td.form_title 名前
 			td 
-				input#name(type="text" name="name" maxlength="64" placeholder="名前")
+				input#name(type="text" name="name" maxlength="64" required="required" placeholder="名前(必須)")
 		tr
 			td.form_title 社員番号
 			td 
-				input#u_no(type="text" name="u_no" maxlength="32" placeholder="社員番号")
+				input#u_no(type="text" name="u_no" maxlength="32" pattern="^[0-9A-Za-z]+$" placeholder="社員番号(半角英数字)")
 			td.form_title 役職名
 			td 
 				input#title(type="text" name="title" maxlength="64" placeholder="役職名")

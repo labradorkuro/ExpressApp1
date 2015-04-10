@@ -248,11 +248,11 @@ entryList.createGrid = function () {
 			{ name: 'test_large_class_cd', index: 'test_large_class_name', hidden:true },
 			{ name: 'test_large_class_name', index: 'test_large_class_name', width: 100, align: "center" },
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 100, align: "center" },
-			{ name: 'test_person_id', index: 'test_person_id', width: 100, align: "center", formatter: entryList.personFormatter },
+			{ name: 'test_person_id', index: 'test_person_id', width: 100, align: "center", formatter: scheduleCommon.personFormatter },
 			{ name: 'created', index: 'created', width: 130, align: "center" },
-			{ name: 'created_id', index: 'created_id' , align: "center", formatter: entryList.personFormatter },
+			{ name: 'created_id', index: 'created_id' , align: "center", formatter: scheduleCommon.personFormatter },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
-			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: entryList.personFormatter  },
+			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: scheduleCommon.personFormatter  },
 		],
 		height:"230px",
 		//width:960,
@@ -271,7 +271,7 @@ entryList.createGrid = function () {
 };
 entryList.createClientList = function() {
 	// 得意先リスト画面生成
-	clientList.init(false);
+	clientList.init(false,"1.0em");
 	// 得意先選択ダイアログ用のタブ生成
 	clientList.createClientListTabs();
 	// 得意先,部署、担当者グリッドの生成
@@ -303,24 +303,6 @@ entryList.selectOutsourcing = function () {
 	$("#outsourcing_name").val(clientList.currentClient.name_1);
 	return true;
 };
-
-entryList.personFormatter = function (cellval, options, rowObject) {
-	var name = "";
-	if (cellval === "drc_admin") {
-		return "管理者";
-	}
-	for (var i in scheduleCommon.user_list) {
-		if (cellval === scheduleCommon.user_list[i].uid) {
-			name = scheduleCommon.user_list[i].name;
-			break;
-		}
-	}
-	return name;
-};
-// 拠点CD
-entryList.base_cdFormatter = function (cellval, options, rowObject) {
-	return scheduleCommon.getBase_cd(cellval);
-};
 // 案件ステータスのフォーマッター
 entryList.statusFormatter = function (cellval, options, rowObject) {
 	return scheduleCommon.getEntry_status(cellval);
@@ -334,11 +316,11 @@ entryList.orderAcceptFormatter = function (cellval, options, rowObject) {
 };
 // 受託区分チェックのフォーマッター
 entryList.orderTypeFormatter = function (cellval, options, rowObject) {
-	if (cellval == 0) 
+	if (cellval == 1) 
 		return "社内実施";
-	else if (cellval == 1)
+	else if (cellval == 2)
 		return "外部国内";
-	else
+	else if (cellval == 3)
 		return "外部海外";
 };
 // 編集用ダイアログの表示
@@ -372,6 +354,7 @@ entryList.openEntryDialog = function (event) {
 };
 // クライアント参照ダイアログ表示
 entryList.openClientListDialog = function (event) {
+	// アイウエオ順のタブと中のグリッドの生成
 	entryList.createClientList();
 	$("#client_list_dialog").dialog({
 		buttons: {
@@ -379,28 +362,23 @@ entryList.openClientListDialog = function (event) {
 				if (event.target.id == 'client_name') {
 					if (entryList.selectClient()) {
 						$(this).dialog('close');
-						scheduleCommon.changeFontSize();
 					}
 				} else if (event.target.id == 'billing_client_name') {
 					if (billingList.selectClient()) {
 						$(this).dialog('close');
-						scheduleCommon.changeFontSize();
 					}
 				} else if (event.target.id == 'agent_name') {
 					if (entryList.selectAgent()) {
 						$(this).dialog('close');
-						scheduleCommon.changeFontSize();
 					}
 				} else if (event.target.id == 'outsourcing_name') {
 					if (entryList.selectOutsourcing()) {
 						$(this).dialog('close');
-						scheduleCommon.changeFontSize();
 					}
 				}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
-				scheduleCommon.changeFontSize();
 			}
 		}
 	});
