@@ -24,21 +24,21 @@ form#clientForm(method="post",action="javascript:return false;")
 				input#zipcode(type="text" name="zipcode" pattern="/^[0-9]{3}[\-]?[0-9]{4}$/" placeholder="郵便番号")
 			td.form_title メールアドレス
 			td 
-				input#email(type="email" name="email" placeholder="メールアドレス")
+				input#email(type="email" name="email" maxlength="128" placeholder="メールアドレス")
 		tr
 			td.form_title 住所１
 			td 
-				input#address_1(type="text" name="address_1" placeholder="住所１")
+				input#address_1(type="text" name="address_1" maxlength="127" placeholder="住所１")
 			td.form_title 住所２
 			td 
-				input#address_2(type="text" name="address_2" placeholder="住所２")
+				input#address_2(type="text" name="address_2" maxlength="127" placeholder="住所２")
 		tr
 			td.form_title 電話番号
 			td 
-				input#tel_no(type="text" name="tel_no" placeholder="電話番号")
+				input#tel_no(type="text" name="tel_no" maxlength="16" placeholder="電話番号")
 			td.form_title FAX番号
 			td 
-				input#fax_no(type="text" name="fax_no" placeholder="FAX番号")
+				input#fax_no(type="text" name="fax_no" maxlength="16" placeholder="FAX番号")
 	hr
 	table
 		tr

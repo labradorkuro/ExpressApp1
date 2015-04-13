@@ -15,7 +15,7 @@ form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascri
 		tr
 			td.form_title 部署名
 			td 
-				input#division_name(type="text" name="division_name" maxlength="128" placeholder="部署名")
+				input#division_name(type="text" name="division_name" maxlength="256" placeholder="部署名")
 			td.form_title カナ
 			td 
 				input#division_kana(type="text" name="division_kana" maxlength="512" placeholder="カナ")
@@ -25,21 +25,21 @@ form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascri
 				input#division_zipcode(type="text" name="division_zipcode"  pattern="/^[0-9]{3}[\-]?[0-9]{4}$/" placeholder="郵便番号")
 			td.form_title メールアドレス
 			td 
-				input#division_email(type="email" name="division_email" placeholder="メールアドレス")
+				input#division_email(type="email" name="division_email" maxlength="128" placeholder="メールアドレス")
 		tr
 			td.form_title 住所１
 			td 
-				input#division_address_1(type="text" name="division_address_1" placeholder="住所１")
+				input#division_address_1(type="text" name="division_address_1" maxlength="127" placeholder="住所１")
 			td.form_title 住所２
 			td 
-				input#division_address_2(type="text" name="division_address_2" placeholder="住所２")
+				input#division_address_2(type="text" name="division_address_2" maxlength="127" placeholder="住所２")
 		tr
 			td.form_title 電話番号
 			td 
-				input#division_tel_no(type="text" name="division_tel_no" placeholder="電話番号")
+				input#division_tel_no(type="text" name="division_tel_no" maxlength="16" placeholder="電話番号")
 			td.form_title FAX番号
 			td 
-				input#division_fax_no(type="text" name="division_fax_no" placeholder="FAX番号")
+				input#division_fax_no(type="text" name="division_fax_no" maxlength="16" placeholder="FAX番号")
 	hr
 	table
 		tr
@@ -54,10 +54,10 @@ form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascri
 		tr
 			td.form_title 休日対応
 			td 
-				input#holiday_support(type="text" name="holiday_support" placeholder="休日対応")
+				input#holiday_support(type="text" name="holiday_support" maxlength="64" placeholder="休日対応")
 			td.form_title メモ
 			td 
-				textarea#division_memo(name="division_memo" placeholder="メモ" cols="12" rows="2")
+				textarea#division_memo(name="division_memo" placeholder="メモ" maxlength="64" cols="12" rows="2")
 	hr
 	table
 		tr

@@ -284,7 +284,7 @@ clientList.createClientDialog = function (kind, title, saveFunc) {
 	$('#' + kind + '_dialog').dialog({
 		autoOpen: false,
 		width: 800,
-		height: 600,
+		height: 500,
 		title: title,
 		closeOnEscape: false,
 		modal: true,

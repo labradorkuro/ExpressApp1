@@ -29,7 +29,7 @@ form#clientPersonForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title メールアドレス
 			td(colspan="3")
-				input#person_email(type="email" name="person_email" placeholder="メールアドレス")
+				input#person_email(type="email" name="person_email" maxlength="128" placeholder="メールアドレス")
 	hr
 	table
 		tr
@@ -39,7 +39,7 @@ form#clientPersonForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title メモ
 			td 
-				textarea#person_memo(name="person_memo" placeholder="メモ" cols="12" rows="2")
+				textarea#person_memo(name="person_memo" placeholder="メモ" maxlength="64" cols="12" rows="2")
 	hr
 	table
 		tr

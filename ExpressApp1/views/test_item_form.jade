@@ -10,11 +10,11 @@ form#test_itemForm(method="post",action="javascript:return false;")
 				input#item_cd(type="text" name="item_cd" maxlength="4" required="required" pattern="^[0-9A-Za-z]+$" placeholder="項目CD(半角英数字、必須)")
 			td.form_title 項目名
 			td 
-				input#item_name(type="text" name="item_name" maxlength="128" required="required" placeholder="項目名(必須)")
+				input#item_name(type="text" name="item_name" maxlength="64" required="required" placeholder="項目名(必須)")
 		tr
 			td.form_title 備考
 			td(colspan="3") 
-				textarea#memo(name="memo" placeholder="メモ" maxlength="128" cols="30" rows="4")
+				textarea#memo(name="memo" placeholder="メモ" maxlength="64" cols="30" rows="4")
 	hr
 	table
 		tr
