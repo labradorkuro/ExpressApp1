@@ -4,7 +4,7 @@
 
 var CalendarTable = CalendarTable || {};
 CalendarTable.current_div = "";
-CalendarTable.current_test_type = "01";
+CalendarTable.current_test_type = "L01";
 CalendarTable.current_base_cd = "01"; 
 CalendarTable.start_date = null;
 CalendarTable.schedule = null;
@@ -114,7 +114,7 @@ CalendarTable.init = function() {
 			end_date: scheduleCommon.getDateString(end_date, "{0}/{1}/{2}"),
 			am_pm: "00", 
 			patch_no: 0,
-			test_type: CalendarTable.current_test_type,
+//			test_type: CalendarTable.current_test_type,
 			base_cd: CalendarTable.current_base_cd
 		};
 		$(day_times).data('schedule', data);

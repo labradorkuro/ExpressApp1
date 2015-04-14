@@ -189,7 +189,7 @@ calendarEdit.checkAuth = function() {
 calendarEdit.calendarTableInit = function () {
 	var h = window.innerHeight;
 	$(".calendar_div").css("height", h - 270);
-	if (CalendarTable.current_test_type != "02") {
+	if (CalendarTable.current_test_type != "L02") {
 		CalendarTable.init();
 	} else {
 		CalendarTableForPatchTest.init();	// 年、月、拠点CD

@@ -123,7 +123,7 @@ CalendarTableForPatchTest.addScheduleData = function (schedule_list) {
 				end_date: rows[i].end_date,
 				am_pm: rows[i].am_pm, 
 				patch_no: rows[i].patch_no,
-				test_type: "02",	// 安全性試験
+//				test_type: "02",	// 安全性試験
 				base_cd: rows[i].base_cd
 			};
 			$(sch).data('schedule', data);
@@ -191,7 +191,7 @@ CalendarTableForPatchTest.createCalendar = function (patch_tbl_body, year, month
 				end_date: end,
 				am_pm: cc, 
 				patch_no: i,
-				test_type: "02",	// 安全性試験
+//				test_type: "L02",	// 安全性試験
 				base_cd: CalendarTable.current_base_cd
 			};
 			// 権限チェック
