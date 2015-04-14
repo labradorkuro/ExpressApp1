@@ -157,6 +157,7 @@ CalendarTable.setFormData = function(data) {
 	$("#end_time").val("10:00");
 	$("#patch_no").val("1");
 	$("#am_pm").val("0");
+	$("#base_cd").val("01");
 	$("#memo").val("");
 	// 安全性試験の時はAMPMの選択とパッチ番号の選択を表示する。それ以外は非表示にする。
 	if (CalendarTable.current_test_type === "L02") {
@@ -218,6 +219,7 @@ CalendarTable.setFormData = function(data) {
 	}
 	$("#patch_no").val(data.patch_no);
 	$("#am_pm").val(data.am_pm);
+	$("#base_cd").val(data.base_cd);	// hidden項目
 	$("#memo").val(data.memo);
 };
 // スケジュールデータの検索
@@ -226,7 +228,7 @@ CalendarTable.searchScheduleData = function (start,end,base_cd,test_type, callba
 		url: '/schedule_get/term/' 
 			+ scheduleCommon.getDateString(start, "{0}-{1}-{2}") + '/' 
 			+ scheduleCommon.getDateString(end, "{0}-{1}-{2}") + '/' 
-//			+ base_cd + '/' 
+			+ base_cd + '/' 
 			+ test_type,
 		cache: false,
 		dataType: 'json',
@@ -270,7 +272,8 @@ CalendarTable.addScheduleData = function (schedule_list) {
 				// ダイアログ表示
 				$("#" + rows[i].schedule_id).bind('click', CalendarTable.openDialog);
 				// Drag&Drop
-				$("#" + rows[i].schedule_id).draggable({ revert:false,zIndex: 1000 });
+				$("#" + rows[i].schedule_id).bind('mousedown',CalendarTable.mousedown);
+				$("#" + rows[i].schedule_id).draggable({revert:false,zIndex: 1000 });
 			}
 			$("#" + rows[i].schedule_id).mousemove(CalendarTable.dispMemo).mouseout(CalendarTable.hideMemo);
 			if (prev_date == rows[i].start_date) {
@@ -299,11 +302,23 @@ CalendarTable.addScheduleData = function (schedule_list) {
 	}
 };
 
+// MOUSEDOWNイベント
+CalendarTable.mousedown = function(event,ui) {
+	if (event.ctrlKey) {
+		// CTRLキー押下＋ドラッグをコピーモードとする。
+		// その場合は、helperをcloneにして元の要素は動かさないようにする
+		$(event.target).draggable("option","helper","clone");
+	}
+};
 // 試験スケジュールのドロップイベント処理
 CalendarTable.drop = function (event, ui) {
 	var left = ui.position.left;
 	var top = ui.position.top;
 	var data = $(ui.draggable).data('schedule');
+	if ($(ui.draggable).draggable("option","helper") == "clone") {
+		// copy mode
+		data.schedule_id = 0;
+	}
 	data.start_date = $(event.target).data('date');
 	// 横方向の移動位置の判定（時間の変更）
 	// 移動した位置から１５分単位の位置を求めて表示位置を合わせる	
@@ -327,19 +342,25 @@ CalendarTable.drop = function (event, ui) {
 	d.setTime(time + len);
 	data.end_time = scheduleCommon.getTimeString(d, "{0}:{1}");
 	// 要素に設定するカスタムデータを更新する
-	$(ui.draggable).data('schedule', data);
+	$(ui.helper).data('schedule', data);
 	// ドラッグした要素をターゲットの子要素として追加する
-	$(ui.draggable).css('top', 0);	
-	$(event.target).append(ui.draggable);
+	$(ui.helper).css('top', 0);	
+	$(event.target).append(ui.helper);
 	// 高さ、表示位置調整が必要か確認して必要なら調整する（移動元、移動先）
-	CalendarTable.checkCalRow(event.target, ui.draggable);
+	CalendarTable.checkCalRow(event.target);
 	// 更新されたデータでDBのデータを更新する
 	CalendarTable.setFormData(data);			// 入力フォームにデータを入れて
-	CalendarTable.updateSchedule(false);		// 更新処理を実行する（ダイアログから更新する処理を利用）
+	if ($(ui.draggable).draggable("option","helper") == "clone") {
+		// copy mode
+		$(ui.helper).draggable({revert:false,zIndex: 1000 });
+		CalendarTable.updateSchedule(true);		// 更新処理を実行する（ダイアログから更新する処理を利用）
+	} else {
+		CalendarTable.updateSchedule(false);	// 更新処理を実行する（ダイアログから更新する処理を利用）
+	}
 };
 
 // カレンダーに追加する（ドロップする）時に行の高さ、表示位置を調整する
-CalendarTable.checkCalRow = function(target, draggable) {
+CalendarTable.checkCalRow = function(target) {
 	var children = $(target).children();
 	var count = 1;
 	// 一旦すべてのtopを0にしておく

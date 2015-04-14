@@ -1155,6 +1155,7 @@ div.schedule_data {
     background-color: white;
     height:36px;
     overflow:auto;
+    cursor:pointer;
 }
 div.schedule_data:hover {
     background-color: #ecf9d2;

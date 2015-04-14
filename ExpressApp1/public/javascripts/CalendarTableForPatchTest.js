@@ -90,7 +90,12 @@ CalendarTableForPatchTest.init = function () {
 	// 検体数分のカレンダー行を生成
 	CalendarTableForPatchTest.createCalendar(patch_tbl_body, year, month, width, right_width);
 	// 試験スケジュールデータの検索と表示（他の試験と共通）
-	CalendarTable.searchScheduleData(CalendarTableForPatchTest.start_date_list[0], CalendarTableForPatchTest.end_date_list[4], CalendarTable.current_base_cd,"02", CalendarTableForPatchTest.addScheduleData);
+	CalendarTable.searchScheduleData(
+		CalendarTableForPatchTest.start_date_list[0], 
+		CalendarTableForPatchTest.end_date_list[4], 
+		CalendarTable.current_base_cd,
+		"L02",	// 安全性試験大分類CD 
+		CalendarTableForPatchTest.addScheduleData);
 };
 
 // スケジュールデータを表示用テーブルに追加する
@@ -111,6 +116,7 @@ CalendarTableForPatchTest.addScheduleData = function (schedule_list) {
 				schedule_id: rows[i].schedule_id,
 				entry_no: rows[i].entry_no,
 				entry_title: rows[i].entry_title,
+				quote_no:rows[i].quote_no,
 				quote_detail_no: rows[i].quote_detail_no,
 				test_item: rows[i].test_item,
 				start_date: rows[i].start_date, 
@@ -125,6 +131,7 @@ CalendarTableForPatchTest.addScheduleData = function (schedule_list) {
 			if (CalendarTable.auth == 2) {
 				// ダイアログ表示イベント登録
 				$(sch).bind('click', CalendarTable.openDialog);
+				$(sch).bind('mousedown',CalendarTable.mousedown);
 				// ドラッグ可能化
 				$(sch).draggable({ zIndex: 1000});
 			}
@@ -187,7 +194,10 @@ CalendarTableForPatchTest.createCalendar = function (patch_tbl_body, year, month
 				test_type: "02",	// 安全性試験
 				base_cd: CalendarTable.current_base_cd
 			};
-			$(week_l).append(add_btn);
+			// 権限チェック
+			if (CalendarTable.auth == 2) {
+				$(week_l).append(add_btn);
+			}
 			$(add_btn).data('schedule', data);
 			$(patch_week_div).append(week_l);
 			// 権限チェック
@@ -212,19 +222,28 @@ CalendarTableForPatchTest.drop = function (event, ui) {
 	var left = ui.position.left;
 	var top = ui.position.top;
 	var data = $(ui.draggable).data('schedule');
+	if ($(ui.draggable).draggable("option","helper") == "clone") {
+		// copy mode
+		data.schedule_id = 0;
+	}
 	var info = $(event.target).data('info');
 	data.start_date = info.start_date;
 	data.end_date = info.end_date;
 	data.am_pm = info.am_pm;
 	data.patch_no = info.patch_no;
 	// 要素に設定するカスタムデータを更新する
-	$(ui.draggable).data('schedule', data);
+	$(ui.helper).data('schedule', data);
 	// ドラッグした要素をターゲットの子要素として追加する
-	$(ui.draggable).css('top', 0);
-	$(ui.draggable).css('left', 0);
-	$(event.target).append(ui.draggable);
+	$(ui.helper).css('top', 0);
+	$(ui.helper).css('left', 0);
+	$(event.target).append(ui.helper);
 	// 更新されたデータでDBのデータを更新する
 	CalendarTable.setFormData(data);	// 入力フォームにデータを入れて
-	CalendarTable.updateSchedule();		// 更新処理を実行する（ダイアログから更新する処理を利用）
-
+	if ($(ui.draggable).draggable("option","helper") == "clone") {
+		// copy mode
+		$(ui.helper).draggable({revert:false,zIndex: 1000 });
+		CalendarTable.updateSchedule(true);		// 更新処理を実行する（ダイアログから更新する処理を利用）
+	} else {
+		CalendarTable.updateSchedule(false);		// 更新処理を実行する（ダイアログから更新する処理を利用）
+	}
 };

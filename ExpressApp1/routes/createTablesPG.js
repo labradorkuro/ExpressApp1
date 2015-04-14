@@ -217,6 +217,7 @@ exports.create = function (req, res) {
 			+ "end_time TIME,"					// 開始時間
 			+ "am_pm VARCHAR(2),"				// 午前午後
 			+ "patch_no INT2,"					// 検体番号(1～30)
+			+ "base_cd VARCHAR(2) default '01',"	// 拠点CD "01":大阪、"02":札幌
 			+ "memo VARCHR(128),"				// 備考
 			+ "delete_check VARCHAR(1),"		// 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日

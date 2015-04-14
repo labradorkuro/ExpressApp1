@@ -46,6 +46,7 @@ var insertSchedule = function (schedule, req, res) {
 			+ 'end_time,'		// 終了時間
 			+ 'am_pm,'			// AM/PM
 			+ 'patch_no,'		// パッチ番号	
+			+ 'base_cd,'		// 拠点CD
 			+ 'memo,'			// 備考	
 			+ 'delete_check,'	// 削除フラグ
 			+ 'created,'		// 作成日
@@ -62,12 +63,13 @@ var insertSchedule = function (schedule, req, res) {
 			+ '$7,' // 終了時間
 			+ '$8,' // AMPM
 			+ '$9,' // パッチ番号
-			+ '$10,' // 備考
-			+ '$11,' // 削除フラグ
-			+ '$12,' // 作成日
-			+ '$13,' // 作成者ID
-			+ '$14,' // 更新日
-			+ '$15' // 更新者ID
+			+ '$10,' // 拠点CD
+			+ '$11,' // 備考
+			+ '$12,' // 削除フラグ
+			+ '$13,' // 作成日
+			+ '$14,' // 作成者ID
+			+ '$15,' // 更新日
+			+ '$16' // 更新者ID
 			+ ')'
 			;
 	pg.connect(connectionString, function (err, connection) {
@@ -82,6 +84,7 @@ var insertSchedule = function (schedule, req, res) {
 			schedule.end_time,
 			schedule.am_pm,
 			schedule.patch_no,
+			schedule.base_cd,
 			schedule.memo,
 			schedule.delete_check,
 			created,			// 作成日
@@ -111,10 +114,11 @@ var updateSchedule = function (schedule, req, res) {
 			+ 'end_time = $7,'			// 終了時間
 			+ 'am_pm = $8,'				// AM/PM
 			+ 'patch_no = $9,'			// パッチ番号	
-			+ 'memo = $10,'				// 備考	
-			+ 'delete_check = $11,'		// 削除フラグ
-			+ 'updated_id = $12'		// 更新者ID
-			+ " WHERE schedule_id = $13";
+			+ 'base_cd = $10,'			// 拠点CD	
+			+ 'memo = $11,'				// 備考	
+			+ 'delete_check = $12,'		// 削除フラグ
+			+ 'updated_id = $13'		// 更新者ID
+			+ " WHERE schedule_id = $14";
 	pg.connect(connectionString, function (err, connection) {
 		// SQL実行
 		var query = connection.query(sql, [
@@ -127,6 +131,7 @@ var updateSchedule = function (schedule, req, res) {
 			schedule.end_time,
 			schedule.am_pm,
 			schedule.patch_no,
+			schedule.base_cd,
 			schedule.memo,
 			schedule.delete_check,
 			updated_id,			// 更新者ID
