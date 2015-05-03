@@ -366,6 +366,15 @@ exports.create = function (req, res) {
 			+ "created_id VARCHAR(32),"							// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
 			+ "updated_id VARCHAR(32)"							// 更新者ID
+			+ ", PRIMARY KEY(id));",
+		// ログイン履歴情報
+		"CREATE TABLE IF NOT EXISTS drc_sch.login_status (" 
+			+ "id SERIAL,"					// ID
+			+ "uid VARCHAR(32),"			// ＩＤ
+			+ "name VARCHAR(128),"			// 名前
+			+ "agent VARCHAR(1024),"		// エージェント
+			+ "kind INT2,"					// 種別 0:ログイン、1:ログアウト
+			+ "created TIMESTAMP  default CURRENT_TIMESTAMP"	// 作成日
 			+ ", PRIMARY KEY(id));"
   	];
 	pg.connect(connectionString, function (err, connection) {
