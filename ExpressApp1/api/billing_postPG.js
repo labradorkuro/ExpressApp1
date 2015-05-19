@@ -45,10 +45,17 @@ var billing_check = function (billing) {
 	} else {
 		billing.billing_no = 0;
 	}
+	// 請求額
 	if (billing.pay_amount) {
 		billing.pay_amount = Number(billing.pay_amount);
 	} else {
 		billing.pay_amount = 0;
+	}
+	// 入金額
+	if (billing.pay_complete) {
+		billing.pay_complete = Number(billing.pay_complete);
+	} else {
+		billing.pay_complete = 0;
 	}
 	if (billing.pay_result) {
 		billing.pay_result = Number(billing.pay_result);
@@ -64,9 +71,11 @@ var insertBilling = function (connection, billing, req, res) {
 	var updated_id = "";
 	var sql = 'INSERT INTO drc_sch.billing_info(' 
 			+ "entry_no,"				// 案件番号
+			+ "billing_number,"			// 請求番号（経理用）
 			+ "pay_planning_date,"		// 請求日
 			+ "pay_complete_date,"		// 入金日
 			+ "pay_amount,"				// 請求金額 
+			+ "pay_complete,"			// 入金額 
 			+ "pay_result,"				// 請求区分
 			+ "client_cd,"				// クライアントCD
 			+ "client_division_cd,"		// クライアント部署CD
@@ -78,14 +87,16 @@ var insertBilling = function (connection, billing, req, res) {
 			+ 'updated,'				// 更新日 
 			+ 'updated_id'				// 更新者ID
 			+ ') values (' 
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)'
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
+			billing.billing_number,			// 請求番号
 			billing.pay_planning_date,		// 請求日
 			billing.pay_complete_date,		// 入金日
 			billing.pay_amount,				// 請求金額 
+			billing.pay_complete,			// 入金額 
 			billing.pay_result,				// 請求区分
 			billing.billing_client_cd,				// クライアントCD
 			billing.billing_client_division_cd,		// クライアント部署CD
@@ -113,24 +124,28 @@ var updateBilling = function (connection, billing, req, res) {
 	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.billing_info SET ' 
 			+ "entry_no = $1,"				// 案件番号
-			+ "pay_planning_date = $2,"		// 請求日
-			+ "pay_complete_date = $3,"		// 入金日
-			+ "pay_amount = $4,"			// 請求金額 
-			+ "pay_result = $5,"			// 請求区分
-			+ "client_cd = $6,"				// クライアントCD
-			+ "client_division_cd = $7,"	// クライアント部署CD
-			+ "client_person_id = $8,"		// クライアント担当者ID
-			+ "memo = $9,"					// 備考
-			+ 'delete_check = $10,'			// 削除フラグ
-			+ 'updated = $11,'				// 更新日 
-			+ 'updated_id = $12'			// 更新者ID
-			+ " WHERE entry_no = $13 AND billing_no = $14";
+			+ "billing_number = $2,"		// 請求番号
+			+ "pay_planning_date = $3,"		// 請求日
+			+ "pay_complete_date = $4,"		// 入金日
+			+ "pay_amount = $5,"			// 請求金額 
+			+ "pay_complete = $6,"			// 入金額 
+			+ "pay_result = $7,"			// 請求区分
+			+ "client_cd = $8,"				// クライアントCD
+			+ "client_division_cd = $9,"	// クライアント部署CD
+			+ "client_person_id = $10,"		// クライアント担当者ID
+			+ "memo = $11,"					// 備考
+			+ 'delete_check = $12,'			// 削除フラグ
+			+ 'updated = $13,'				// 更新日 
+			+ 'updated_id = $14'			// 更新者ID
+			+ " WHERE entry_no = $15 AND billing_no = $16";
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
+			billing.billing_number,			// 請求番号
 			billing.pay_planning_date,		// 請求日
 			billing.pay_complete_date,		// 入金日
 			billing.pay_amount,				// 請求金額 
+			billing.pay_complete,			// 入金額 
 			billing.pay_result,				// 請求区分
 			billing.billing_client_cd,				// クライアントCD
 			billing.billing_client_division_cd,		// クライアント部署CD

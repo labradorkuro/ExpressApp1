@@ -57,7 +57,7 @@ GanttTable.createGanttTable = function (target_id,start_date,end_date,test_type,
 	var left_div = $('<div class="gt_left_div"></div>');
 		
 	var left_top = $('<div class="gt_left_top_div"></div>');
-	var left_top1 = $('<div class="gt_left_top1_div"><a class="gt_mode_button" id="mode_button-' + target_id + '">表示切替</a></div>');
+	var left_top1 = $('<div class="gt_left_top1_div"><a class="_gt_mode_button" id="mode_button-' + target_id + '"></a></div>');	// 表示切替ボタン（将来バージョンで実装予定）
 	var left_top2 = $('<div class="gt_left_top2_div"></div>');
 		
 	var category1 = $('<div class="gt_category1_div"><label class="gt_label">' + ganttData.name + '</label></div>');
@@ -95,7 +95,7 @@ GanttTable.createGanttTable = function (target_id,start_date,end_date,test_type,
 	// スケジュール表示行の生成
 	GanttTable.createRows(ganttData, left_div, right_div, dateCount);
 	// 表示切替ボタンのイベント処理登録
-	$("#mode_button-" + target_id).click(GanttTable.dispModeChange);
+	//$("#mode_button-" + target_id).click(GanttTable.dispModeChange);	// 将来バージョンで実装予定
 };
 
 // カレンダー表示行生成
@@ -239,6 +239,7 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 			var cate1 = $("<div class='gt_category1_div'></div>");
 			// 案件番号、案件名を表示
 			var title = $("<label class='gt_label'>[" + rows[i].entry_no + "]<br/> " + rows[i].entry_title + "</lebel>");
+			// 案件情報の参照ボタン処理
 			var entry_ref_btn = $("<input type='button' class='gt_title_link' value='参照'>");
 			$(entry_ref_btn).bind('click', {entry:rows[i]},workitemEdit.openEntryDialog);
 			// 作業項目追加ボタン作成

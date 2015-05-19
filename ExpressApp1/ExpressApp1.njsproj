@@ -145,6 +145,7 @@
     <Content Include="views\configuration.jade" />
     <Content Include="views\division_form.jade" />
     <Content Include="views\division_list.jade" />
+    <Content Include="views\entry_form_ref.jade" />
     <Content Include="views\entry_quote_dialog.jade" />
     <Content Include="views\entry_form.jade" />
     <Content Include="views\entry_list.jade" />

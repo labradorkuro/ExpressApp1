@@ -52,17 +52,19 @@ billingList.createBillingListGrid = function () {
 	// checkboxの状態取得	
 	var delchk = billingList.getBillingDeleteCheckDispCheck();
 	var entry_no = $("#billing_entry_no").val();
-	// 得意先リストのグリッド
+	// 請求情報リストのグリッド
 	jQuery("#billing_info_list").jqGrid({
 		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','請求番号','請求日', '請求金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','備考','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','請求番号serial','請求番号','請求日', '請求金額','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','備考','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
-			{ name: 'billing_no', index: 'billing_no', width: 80, align: "center" },
+			{ name: 'billing_no', index: 'billing_no', hidden:true },
+			{ name: 'billing_number', index: 'billing_number', width: 80, align: "center" },
 			{ name: 'pay_planning_date', index: 'pay_planning_date', width: 80, align: "center" },
 			{ name: 'pay_amount', index: 'pay_amount', width: 80, align: "right" },
+			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "right" },
 			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
 			{ name: 'client_cd', index: '', hidden:true },
@@ -88,10 +90,10 @@ billingList.createBillingListGrid = function () {
 		rowNum: 10,
 		rowList: [10],
 		pager: '#billing_info_list_pager',
-		sortname: 'billing_no',
+		sortname: 'billing_number',
 		viewrecords: true,
 		sortorder: "asc",
-		caption: "得意先リスト",
+		caption: "請求情報",
 		onSelectRow: billingList.onSelectBillingList
 	});
 	jQuery("#billing_info_list").jqGrid('navGrid', '#billing_info_list_pager', { edit: false, add: false, del: false });
@@ -159,9 +161,11 @@ billingList.openBillingFormDialog = function (event) {
 		// 追加ボタンから開いた場合
 		var billing = {
 			billing_no:'',
+			billing_number:'',
 			pay_planning_date:'',
 			pay_complete_date:'',
 			pay_amount:0,
+			pay_complete:0,
 			pay_result:0,
 			memo:'',
 			// 選択中の案件情報から得意先情報をコピーする（デフォルト設定として）
@@ -189,9 +193,11 @@ billingList.openBillingFormDialog = function (event) {
 billingList.clearBilling = function() {
 	var billing = {
 			billing_no:'',
+			billing_number:'',
 			pay_planning_date:'',
 			pay_complete_date:'',
 			pay_amount:0,
+			pay_complete:0,
 			pay_result:0,
 			memo:'',
 			client_cd:'',
@@ -205,6 +211,7 @@ billingList.clearBilling = function() {
 	return billing;
 };
 billingList.clearPayResult = function() {
+	$("#pay_result_0").prop("checked",true);
 	$("#pay_result_1").prop("checked",false);
 	$("#pay_result_2").prop("checked",false);
 	$("#pay_result_3").prop("checked",false);
@@ -212,10 +219,12 @@ billingList.clearPayResult = function() {
 // 請求情報をフォームにセットする
 billingList.setBillingForm = function(billing) {
 	$("#billing_no").val(billing.billing_no);
+	$("#billing_number").val(billing.billing_number);
 
 	$("#pay_planning_date").val(billing.pay_planning_date);
 	$("#pay_complete_date").val(billing.pay_complete_date);
 	$("#pay_amount").val(billing.pay_amount);
+	$("#pay_complete").val(billing.pay_complete);
 //	$("#pay_result").val(billing.pay_result);
 	
 	if (billing.pay_result == "請求可") {
@@ -224,6 +233,8 @@ billingList.setBillingForm = function(billing) {
 		$("#pay_result_2").prop("checked",true);
 	} else if (billing.pay_result == "入金確認済") {
 		$("#pay_result_3").prop("checked",true);
+	} else if (billing.pay_result == "請求待ち") {
+		$("#pay_result_0").prop("checked",true);
 	}
 
 	$("#billing_client_cd").val(billing.client_cd);

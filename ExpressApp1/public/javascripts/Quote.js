@@ -88,7 +88,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		url: '/quote_get/' + no + '/?quote_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','PDF発行','受注ステータス','備考','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','PDF発行','受注ステータス','備考','','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" },				// 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
@@ -98,6 +98,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 			{ name: 'quote_submit_check', index: 'quote_submit_check', width: 120,align:"center",formatter:quoteInfo.submitCheckFormatter },			// 受注ステータス
 			{ name: 'order_status', index: 'order_status', width: 120,align:"center",formatter:quoteInfo.orderCheckFormatter },			// 受注ステータス
 			{ name: 'quote_form_memo' , index: 'quote_form_memo', width: 120, align: "left" },	// 見積備考
+			{ name: 'quote_delete_check', hidden:true},											// 削除フラグ
 			{ name: 'created', index: 'created', width: 120, align: "center" },					// 作成日
 			{ name: 'created_id', index: 'created_id', width: 120 , align: "center",formatter: scheduleCommon.personFormatter},							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120, align: "center" },					// 更新日
@@ -366,6 +367,7 @@ quoteInfo.clearQuote = function () {
 	quote.order_status = "商談中";
 	quote.quote_total_price = "";
 	quote.quote_form_memo = "";
+	quote.quote_delete_check = "0";
 	return quote;
 };
 
@@ -388,6 +390,11 @@ quoteInfo.setQuoteFormData = function (quote) {
 		$('#order_status_yes').prop("checked",true);
 	}
 	$("#quote_form_memo").val(quote.quote_form_memo);	// 見積書備考
+	if (quote.quote_delete_check == "0") {
+		$("#estimate_delete_check").prop("checked", false);
+	} else {
+		$("#estimate_delete_check").prop("checked", true);
+	}
 };
 // 見積データの保存
 quoteInfo.saveQuote = function (kind) {

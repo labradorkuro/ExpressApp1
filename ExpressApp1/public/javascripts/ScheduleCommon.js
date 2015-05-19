@@ -24,11 +24,15 @@ scheduleCommon.getEntry_status = function (no) {
 	return "";
 };
 // 社員マスタから情報取得
-scheduleCommon.getUserInfo = function () {
+scheduleCommon.getUserInfo = function (ref) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/user_get/?rows=100&delete_check=0', true);
 	xhr.responseType = 'json';
-	xhr.onload = scheduleCommon.onloadUserReq;
+	if (ref == "_ref") {
+		xhr.onload = scheduleCommon.onloadUserReqRef;
+	} else {
+		xhr.onload = scheduleCommon.onloadUserReq;
+	}
 	xhr.send();
 };
 scheduleCommon.onloadUserReq = function (e) {
@@ -52,6 +56,30 @@ scheduleCommon.onloadUserReq = function (e) {
 			$("#test_person_id").append("<option value=" + user.uid + ">" + user.name);
 			$("#input_operator_id").append("<option value=" + user.uid + ">" + user.name);
 			$("#confirm_operator_id").append("<option value=" + user.uid + ">" + user.name);
+		}
+	}
+};
+scheduleCommon.onloadUserReqRef = function (e) {
+	if (this.status == 200) {
+		var users = this.response;
+		// formに取得したデータを埋め込む
+		$("#sales_person_id_ref").empty();
+		$("#test_person_id_ref").empty();
+		$("#input_operator_id_ref").empty();
+		$("#confirm_operator_id_ref").empty();
+		scheduleCommon.user_list = new Array();
+		// 先頭に空行を入れる
+		$("#sales_person_id_ref").append("<option value=''></option>");
+		$("#test_person_id_ref").append("<option value=''></option>");
+		$("#input_operator_id_ref").append("<option value=''></option>");
+		$("#confirm_operator_id_ref").append("<option value=''></option>");
+		for (var i in users.rows) {
+			var user = users.rows[i].cell;
+			scheduleCommon.user_list.push(user);
+			$("#sales_person_id_ref").append("<option value=" + user.uid + ">" + user.name);
+			$("#test_person_id_ref").append("<option value=" + user.uid + ">" + user.name);
+			$("#input_operator_id_ref").append("<option value=" + user.uid + ">" + user.name);
+			$("#confirm_operator_id_ref").append("<option value=" + user.uid + ">" + user.name);
 		}
 	}
 };
@@ -95,7 +123,7 @@ scheduleCommon.personFormatter = function (cellval, options, rowObject) {
 	return name;
 };
 scheduleCommon.pay_resultFormatter = function(cellval, options, rowObject) {
-	if (cellval == 0) return "";
+	if (cellval == 0) return "請求待ち";
 	if (cellval == 1) return "請求可";
 	if (cellval == 2) return "請求済";
 	if (cellval == 3) return "入金確認済";

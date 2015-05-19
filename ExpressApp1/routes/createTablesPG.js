@@ -52,10 +52,12 @@ exports.create = function (req, res) {
 		// 請求先情報
 		"CREATE TABLE IF NOT EXISTS drc_sch.billing_info ("
 			+ "entry_no VARCHAR(10),"		// 案件番号
-			+ "billing_no SERIAL,"			// 請求番号
+			+ "billing_no SERIAL,"			// 請求番号(連番）
+			+ "billing_number VARCHAR(16),"	// 経理さんが入力する請求番号
 			+ "pay_planning_date DATE,"		// 請求日
 			+ "pay_complete_date DATE,"		// 入金日
 			+ "pay_amount DECIMAL(9),"		// 請求金額 
+			+ "pay_complete DECIMAL(9),"	// 入金額 
 			+ "pay_result INT2,"			// 請求区分
 			+ "client_cd VARCHAR(8),"		// クライアントCD
 			+ "client_division_cd VARCHAR(8)," // クライアント部署CD

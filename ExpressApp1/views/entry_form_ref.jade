@@ -1,0 +1,193 @@
+﻿//
+// 案件登録フォーム
+//
+form#entryForm(method="post",action="javascript:return false;")
+	table
+		tr
+			td.form_title_s 案件番号
+			td 
+				input#entry_no_ref(type="text" name="entry_no" value=no readonly="true" placeholder="自動採番" size="12")
+			td.form_title_s 見積番号
+			td 
+				input#quote_no_ref(type="text" name="quote_no" readonly="true" placeholder="自動採番" size="15")
+			td.form_title_s 営業担当者
+			td 
+				select#sales_person_id_ref(name="sales_person_id")
+	table
+		tr
+			td.form_title_s 問合せ日
+			td 
+				input.datepicker#inquiry_date_ref(type="text" name="inquiry_date" placeholder="日付選択" size="12")
+			td.form_title_s ステータス
+			td(colspan=3) 
+				select#entry_status_ref(name="entry_status")
+					option(value="01" selected="true") 引合
+					option(value="02") 見積
+					option(value="03") 依頼
+					option(value="04") 完了
+					option(value="05") 失注
+			td.form_title_ss 代理店
+			td(colspan=4)
+				input#agent_cd_ref(type="hidden" name="agent_cd")
+				input#agent_name_ref(type="text" name="agent_name" size="16" placeholder="代理店選択")
+	hr
+	table
+		tr
+			td(colspan=6) クライアント情報
+		tr
+			td.form_title_ss 社名
+			td
+				input#client_cd_ref(type="hidden" name="client_cd")
+				input#client_name_ref(type="text" name="client_name" size="16" placeholder="クライアント選択")
+			td.form_title_ss 部署
+			td
+				input#client_division_cd_ref(type="hidden" name="client_division_cd")
+				input#client_division_name_ref(type="text" name="client_division_name" size="16")
+			td.form_title_ss 担当者
+			td 
+				input#client_person_id_ref(type="hidden" name="client_person_id")
+				input#client_person_name_ref(type="text" name="client_person_name" size="16")
+	hr
+	table
+		tr
+			td.form_title 試験大分類
+			td 
+				input#test_large_class_cd_ref(type="hidden" name="test_large_class_cd")
+				input#test_large_class_name_ref(type="text" name="test_large_class_name" placeholder="分類選択" size="16")
+			td.form_title 試験中分類
+			td 
+				input#test_middle_class_cd_ref(type="hidden" name="test_middle_class_cd")
+				input#test_middle_class_name_ref(type="text" name="test_middle_class_name" placeholder="分類選択" size="16")
+			td
+				textarea#test_middle_class_list_ref(cols="16" rows="2")
+	table
+		tr
+			td.form_title 
+				span.remark ＊試験タイトル
+			td(colspan=4)
+				input#entry_title_ref(type="text" name="entry_title" size="32" maxlength="128" required="required")
+	table
+		tr
+			td.form_title_s 受託区分
+			td
+				label
+					input#order_type_01_ref(type="radio" name="order_type" value="1" checked="true")
+					| 社内実施
+				label
+					input#order_type_02_ref(type="radio" name="order_type" value="2")
+					| 外部国内
+				label
+					input#order_type_03_ref(type="radio" name="order_type" value="3")
+					| 外部海外
+			td.form_title_s 委託先
+			td
+				input#outsourcing_cd_ref(type="hidden" name="outsourcing_cd")
+				input#outsourcing_name_ref(type="text" name="outsourcing_name" size="16")
+	table
+		tr
+			td.form_title_ss 受注日
+			td 
+				input.datepicker#order_accepted_date_ref(type="text" name="order_accepted_date" placeholder="日付選択" size="12")
+			td.form_title_m 仮受注チェック
+			td
+				label
+					input#order_accept_check_0_ref(type="radio" name="order_accept_check" value="0" checked="true")
+					| 本登録
+				label
+					input#order_accept_check_1_ref(type="radio" name="order_accept_check" value="1")
+					| 仮登録
+			td.form_title_ss 担当者
+			td 
+				select#test_person_id_ref(name="test_person_id")
+	table
+		tr
+			td(colspan=6) 案件金額
+		tr
+			td.form_title_ss 合計
+			td
+				input.num_type#entry_amount_price_ref(type="text" name="entry_amount_price" size="10" pattern="[0-9]{1,8}" readonly="true")
+			td.form_title 請求合計
+			td
+				input.num_type#entry_amount_billing_ref(type="text" name="entry_amount_billing" size="10" pattern="[0-9]{1,8}")
+			td.form_title 入金合計
+			td
+				input.num_type#entry_amount_deposit_ref(type="text" name="entry_amount_deposit" size="10" pattern="[0-9]{1,8}")
+		tr
+			td.form_title 会計期No
+			td
+				select#acounting_period_no_ref(name="acounting_period_no")
+					option(value="1" selected="true") 1
+					option(value="2") 2
+					option(value="3") 3
+					option(value="4") 4
+			td.form_title_m 消費税率
+			td
+				input.num_type#entry_consumption_tax_ref(type="number" name="entry_consumption_tax" size="3" pattern="[0-9]{1,3}" readonly="true")
+			td
+				label %
+			td
+	hr
+	table
+		tr
+			td.form_title 報告書提出期限
+			td 
+				input.datepicker#report_limit_date_ref(type="text" name="report_limit_date" placeholder="日付選択" size="12")
+			td.form_title 報告書提出日
+			td 
+				input.datepicker#report_submit_date_ref(type="text" name="report_submit_date" placeholder="日付選択" size="12")
+		tr
+			td.form_title 速報提出期限1
+			td 
+				input.datepicker#prompt_report_limit_date_1_ref(type="text" name="prompt_report_limit_date_1" placeholder="日付選択" size="12")
+			td.form_title 速報提出日1
+			td 
+				input.datepicker#prompt_report_submit_date_1_ref(type="text" name="prompt_report_submit_date_1" placeholder="日付選択" size="12")
+		tr
+			td.form_title 速報提出期限2
+			td 
+				input.datepicker#prompt_report_limit_date_2_ref(type="text" name="prompt_report_limit_date_2" placeholder="日付選択" size="12")
+			td.form_title 速報提出日2
+			td 
+				input.datepicker#prompt_report_submit_date_2_ref(type="text" name="prompt_report_submit_date_2" placeholder="日付選択" size="12")
+	hr
+	table
+		tr
+			td.form_title_ss 備考
+			td
+				textarea#entry_memo_ref(name="entry_memo" cols="60" rows="2" maxlength="1024")
+	hr
+	table
+		tr
+			td.form_title_s 削除フラグ
+			td
+				label
+					input#delete_check_ref(type="checkbox" name="delete_check" value="0")
+					| 削除
+			td.form_title_s 削除理由
+			td
+				input#delete_reason_ref(type="text" name="delete_reason")
+	table
+		tr
+			td.form_title_ss 入力日
+			td
+				input.datepicker#input_check_date_ref(type="text" name="input_check_date" placeholder="日付選択" size="10")
+			td.form_title_s 入力者ID
+			td
+				select#input_operator_id_ref(name="input_operator_id")
+			td.form_title_m 入力完了チェック
+			td(colspan="3")
+				label
+					input#input_check_ref(type="checkbox" name="input_check" value="0")
+					| 入力完了
+		tr
+			td.form_title_ss 確認日
+			td
+				input.datepicker#confirm_check_date_ref(type="text" name="confirm_check_date" placeholder="日付選択" size="10")
+			td.form_title_s 確認者ID
+			td
+				select#confirm_operator_id_ref(name="confirm_operator_id")
+			td.form_title 確認完了チェック
+			td(colspan="3")
+				label
+					input#confirm_check_ref(type="checkbox" name="confirm_check" value="0")
+					| 確認完了

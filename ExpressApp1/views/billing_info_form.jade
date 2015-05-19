@@ -9,10 +9,14 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 				input#billing_entry_no(type="text" name="billing_entry_no" value=no readonly="true" placeholder="案件番号" size="12")
 			td.form_title_s 請求番号
 			td 
-				input#billing_no(type="text" name="billing_no" size="15" readonly="true" placeholder="自動採番")
+				input#billing_number(type="text" name="billing_number" placeholder="請求番号" )
+				input#billing_no(type="hidden" name="billing_no" )
 		tr
 			td.form_title_s 請求区分
 			td
+				label
+					input#pay_result_0(type="radio" name="pay_result" value="0")
+					| 請求待ち
 				label
 					input#pay_result_1(type="radio" name="pay_result" value="1")
 					| 請求可
@@ -30,11 +34,16 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 			td.form_title_s 請求金額
 			td 
 				input.num_type#pay_amount(type="number" pattern="[0-9]{1,8}" name="pay_amount" size="15")
+		tr
 			td.form_title_s 入金日
 			td 
 				input.datepicker#pay_complete_date(name="pay_complete_date")
+			td.form_title_s 入金額
+			td 
+				input.num_type#pay_complete(type="number" pattern="[0-9]{1,8}" name="pay_complete" size="15")
+	table
 		tr
-			td(colspan=6) クライアント情報
+			td(colspan=6) 請求先
 		tr
 			td.form_title_ss 社名
 			td

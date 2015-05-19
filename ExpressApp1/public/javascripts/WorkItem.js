@@ -6,6 +6,8 @@ $(function() {
 	workitemEdit.checkAuth();
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
 	$( "#tabs" ).tabs();
+	// 社員マスタからリストを取得する
+	scheduleCommon.getUserInfo("_ref");
 					
 	var today = scheduleCommon.getToday("{0}/{1}/{2}");
 	GanttTable.start_date = today;
@@ -493,36 +495,195 @@ workitemEdit.openTemplateNameDialog = function (event) {
 workitemEdit.createEntryDialog = function () {
 	$('#entry_dialog').dialog({
 		autoOpen: false,
-		width: 800,
-		height: 600,
+		width: 900,
+		height: 900,
 		title: '案件情報',
 		closeOnEscape: false,
 		modal: true,
 		buttons: {
-			"追加": function () {
-				if (workitemEdit.saveEntry()) {
-					$(this).dialog('close');
-				}
-			},
-			"更新": function () {
-				if (workitemEdit.saveEntry()) {
-					$(this).dialog('close');
-				}
-			},
 			"閉じる": function () {
 				$(this).dialog('close');
 			}
 		}
 	});
 };
+
+// 案件情報の参照ダイアログ
 workitemEdit.openEntryDialog = function (event) {
-	var entry = event.data;
-	// 権限チェック
-	if (GanttTable.auth < 2) {
-		$(".ui-dialog-buttonpane button:contains('追加')").button("disable"); 
-		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
-	}
+	var entry = event.data.entry;
+	workitemEdit.requestEntryData(entry.entry_no);
 	$("#entry_dialog").dialog("open");
 };
-workitemEdit.saveEntry = function () {
+// 案件データの読込み
+workitemEdit.requestEntryData = function (no) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/entry_get/' + no, true);
+	xhr.responseType = 'json';
+	xhr.onload = workitemEdit.onloadEntryReq;
+	xhr.send();
 };
+// 案件データ取得リクエストのコールバック
+workitemEdit.onloadEntryReq = function (e) {
+	if (this.status == 200) {
+		var entry = this.response;
+		// formに取得したデータを埋め込む
+		workitemEdit.setEntryForm(entry);
+		$("#entry_memo_ref").text(entry.entry_memo);		
+		// 見積情報の取得
+		workitemEdit.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
+	}
+};
+// 受注確定になっている見積情報を取得する
+workitemEdit.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) {
+	$.ajax({
+		url: '/quote_specific_get_list_for_entryform/' + entry_no + '?large_item_cd=' + large_item_cd,
+		cache: false,
+		dataType: 'json',
+		success: function (quote_list) {
+			workitemEdit.setQuoteInfo(quote_list, consumption_tax);
+		}
+	});
+
+};
+workitemEdit.setQuoteInfo = function (quote_list, consumption_tax) {
+	if (quote_list != null) {
+		var total_price = 0;
+		var rows = quote_list.rows;
+		if (rows.length > 0) {
+			$("#quote_no_ref").val(rows[0].quote_no);
+			var list = "";
+			for (var i = 0;i <  rows.length;i++) {
+				list += rows[i].test_middle_class_name + "\n";
+				total_price += Number(rows[i].price);
+			}
+			$("#test_middle_class_list_ref").text(list);
+			tax = total_price * (consumption_tax / 100);
+			$("#entry_amount_price_ref").val(scheduleCommon.numFormatter(total_price + tax,11));
+		}
+	}
+};
+
+// 案件データをフォームにセットする
+workitemEdit.setEntryForm = function (entry) {
+	$("#entry_no_ref").val(entry.entry_no);					// 案件No
+	$("#quote_no_ref").val(entry.quote_no);					// 見積番号
+	$("#inquiry_date_ref").val(entry.inquiry_date);			// 問合せ日
+	$("#entry_status_ref").val(entry.entry_status);			// 案件ステータス
+	$("#sales_person_id_ref").val(entry.sales_person_id);	// 案件ステータス
+//	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
+	$("#agent_cd_ref").val(entry.agent_cd);					// 代理店コード
+	$("#agent_name_ref").val(entry.agent_name);				// 代理店名
+	$("#client_cd_ref").val(entry.client_cd);				// 得意先コード
+	var name_1 = entry.client_name_1;
+	var name_2 = entry.client_name_2;
+	$("#client_name_ref").val(name_1 );								// 得意先名1
+	$("#client_division_cd_ref").val(entry.client_division_cd);		// 所属部署CD
+	$("#client_division_name_ref").val(entry.client_division_name);	// 所属部署名
+	$("#client_person_id_ref").val(entry.client_person_id);			// 担当者ID
+	$("#client_person_name_ref").val(entry.client_person_name);		// 担当者名
+
+	$("#test_large_class_cd_ref").val(entry.test_large_class_cd);		// 試験大分類CD
+	$("#test_large_class_name_ref").val(entry.test_large_class_name);	// 試験大分類名
+	$("#test_middle_class_cd_ref").val(entry.test_middle_class_cd);		// 試験中分類CD
+	$("#test_middle_class_name_ref").val(entry.test_middle_class_name);	// 試験中分類名
+	$("#entry_title_ref").val(entry.entry_title);						// 案件名
+	
+	$("#order_accepted_date_ref").val(entry.order_accepted_date);	// 受注日付
+	$("#order_accept_check_ref").val(entry.order_accept_check);		// 仮受注日チェック
+	$("#acounting_period_no_ref").val(entry.acounting_period_no);	// 会計期No
+	$("#order_type_ref").val(entry.order_type);						// 受託区分
+	$("#contract_type_ref").val(entry.contract_type);				// 契約区分
+	$("#outsourcing_cd_ref").val(entry.outsourcing_cd);				// 委託先CD
+	$("#outsourcing_name_ref").val(entry.outsourcing_name);			// 委託先CD
+	$("#entry_amount_price_ref").val(entry.entry_amount_price);		// 案件合計金額
+	$("#entry_amount_billing_ref").val(entry.entry_amount_billing);	// 案件請求合計金額
+	$("#entry_amount_deposit_ref").val(entry.entry_amount_deposit); // 案件入金合計金額
+	$("#test_person_id_ref").val(entry.test_person_id);				// 試験担当者ID
+	
+	$("#report_limit_date_ref").val(entry.report_limit_date);		// 報告書提出期限
+	$("#report_submit_date_ref").val(entry.report_submit_date);		// 報告書提出日
+	$("#prompt_report_limit_date_1_ref").val(entry.prompt_report_limit_date_1);		// 速報提出期限1
+	$("#prompt_report_submit_date_1_ref").val(entry.prompt_report_submit_date_1);	// 速報提出日1
+	$("#prompt_report_limit_date_2_ref").val(entry.prompt_report_limit_date_2);		// 速報提出期限2
+	$("#prompt_report_submit_date_2_ref").val(entry.prompt_report_submit_date_2);	// 速報提出日2
+	$("#entry_consumption_tax_ref").val(entry.consumption_tax);		// 消費税率
+	$("#entry_memo_ref").val(entry.entry_memo);						// 備考
+	if (entry.delete_check == 1) {
+		$("#delete_check_ref").prop("checked", true);				// 削除フラグ
+	} else {
+		$("#delete_check_ref").prop("checked", false);				// 削除フラグ
+	}
+	$("#delete_reason_ref").val(entry.delete_reason);				// 削除理由
+	$("#input_check_date_ref").val(entry.input_check_date);			// 入力日
+	if (entry.input_check == 1) {
+		$("#input_check_ref").prop("checked",true);					// 入力完了チェック
+	} else {
+		$("#input_check_ref").prop("checked", false);				// 入力完了チェック
+	}
+	$("#input_operator_id_ref").val(entry.input_operator_id);		// 入力者ID
+	$("#confirm_check_date_ref").val(entry.confirm_check_date);		// 確認日
+	if (entry.confirm_check == 1) {
+		$("#confirm_check_ref").prop("checked",true);				// 確認完了チェック
+	} else {
+		$("#confirm_check_ref").prop("checked", false);				// 確認完了チェック
+	}
+	$("#confirm_operator_id_ref").val(entry.confirm_operator_id);	// 確認者ID
+	$("#created_ref").val(entry.created);							// 作成日
+	$("#created_id_ref").val(entry.created_id);						// 作成者ID
+	$("#updated_ref").val(entry.updated);							// 更新日
+	$("#updated_id_ref").val(entry.updated_id);						// 更新者ID
+};
+workitemEdit.clearEntry = function () {
+	var today = scheduleCommon.getToday("{0}/{1}/{2}");
+	var entry = {} ;
+	entry.entry_no = "";			// 案件No
+	entry.entry_title = "";			// 案件名
+	entry.inquiry_date = today;		// 問合せ日
+	entry.entry_status = "01";		// 案件ステータス
+	entry.sales_person_id = "";		// 営業担当者ID
+	entry.quote_no = "";			// 見積番号
+	entry.quote_issue_date = "";	// 見積書発行日
+	entry.agent_cd = "";			// 代理店コード
+	entry.agent_name = "";			// 代理店名
+	entry.client_cd = "";			// 得意先コード
+	entry.client_name_1 = "";		// 得意先名
+	entry.client_name_2 = "";		// 得意先名
+	entry.client_address_1 = "";	// 住所
+	entry.client_address_2 = "";	// 住所
+	entry.client_division_cd = "";	// 担当者所属部署
+	entry.client_division_name = "";// 担当者所属部署
+	entry.client_person_id = "";	// 担当者
+	entry.client_person_name = "";	// 担当者
+	entry.order_accepted_date = ""; // 受注日付
+	entry.order_accept_check = 0;	// 仮受注日チェック
+	entry.acounting_period_no = 1;	// 会計期No
+	entry.order_type = 0;			// 受託区分
+	entry.contract_type = 1;		// 契約区分
+	entry.outsourcing_cd = "";		// 委託先CD
+	entry.entry_amount_price = 0;	// 案件合計金額
+	entry.entry_amount_price = 0;	// 案件請求合計金額
+	entry.entry_amount_billing = 0; // 案件入金合計金額
+	entry.test_person_id = "";		// 試験担当者ID
+	entry.report_limit_date = "";				// 報告書提出期限
+	entry.report_submit_date = "";				// 報告書提出日
+	entry.prompt_report_limit_date_1 = "";		// 速報提出期限1
+	entry.prompt_report_submit_date_1 = "";		// 速報提出日1
+	entry.prompt_report_limit_date_2 = "";		// 速報提出期限2
+	entry.prompt_report_submit_date_2 = "";		// 速報提出日2
+	entry.consumption_tax = quoteInfo.drc_info.consumption_tax;	// 消費税率
+	entry.entry_memo = "";			// メモ
+	entry.delete_check = 0;			// 削除フラグ
+	entry.delete_reason = "";		// 削除理由
+	entry.input_check_date = today;	// 入力日
+	entry.input_check = 0;			// 入力完了チェック
+	entry.input_operator_id = $.cookie('userid');	// 入力者ID
+	entry.confirm_check_date = "";	// 確認日
+	entry.confirm_check = 0;		// 確認完了チェック
+	entry.confirm_operator_id = ""; // 確認者ID
+	entry.created = "";				// 作成日
+	entry.created_id = "";			// 作成者ID
+	entry.updated = "";				// 更新日
+	entry.updated_id = "";			// 更新者ID
+	return entry;
+};
+

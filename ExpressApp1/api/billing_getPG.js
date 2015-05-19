@@ -18,7 +18,7 @@ var getPagingParams = function (req) {
 	if (req.query.rows) pg_param.limit = req.query.rows;
 	if (req.query.page) pg_param.page = req.query.page;
 	if (req.query.sidx) pg_param.sidx = req.query.sidx;
-	if (req.query.sodr) pg_param.sord = req.query.sord;
+	if (req.query.sord) pg_param.sord = req.query.sord;
 	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
 	return pg_param;
 };
@@ -31,9 +31,11 @@ var billing_get_list = function (req, res) {
 	var sql = 'SELECT ' 
 		+ 'entry_no,' 
 		+ 'billing_no,' 
+		+ 'billing_number,' 
 		+ "to_char(pay_planning_date, 'YYYY/MM/DD') AS pay_planning_date," 
 		+ "to_char(pay_complete_date, 'YYYY/MM/DD') AS pay_complete_date," 
 		+ 'pay_amount,' 
+		+ 'pay_complete,' 
 		+ 'pay_result,' 
 		+ 'client_list.client_cd,' 
 		+ 'client_list.name_1 AS client_name,' 
@@ -98,9 +100,11 @@ var billing_get_detail = function (req, res) {
 	var sql = 'SELECT ' 
 		+ 'entry_no,' 
 		+ 'billing_no,' 
+		+ 'billing_number,' 
 		+ "to_char(pay_planning_date, 'YYYY/MM/DD') AS pay_planning_date," 
 		+ "to_char(pay_complete_date, 'YYYY/MM/DD') AS pay_complete_date," 
 		+ 'pay_amount,' 
+		+ 'pay_complete,' 
 		+ 'pay_result,' 
 		+ 'client_list.client_cd,' 
 		+ 'client_list.name_1 AS client_name,' 

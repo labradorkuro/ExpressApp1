@@ -30,7 +30,7 @@ var getPagingParams = function (req) {
 	if (req.query.rows) pg_param.limit = req.query.rows;
 	if (req.query.page) pg_param.page = req.query.page;
 	if (req.query.sidx) pg_param.sidx = req.query.sidx;
-	if (req.query.sodr) pg_param.sord = req.query.sord;
+	if (req.query.sord) pg_param.sord = req.query.sord;
 	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
 	return pg_param;
 };

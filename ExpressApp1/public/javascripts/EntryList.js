@@ -9,7 +9,7 @@ $(function() {
 	quoteInfo.getMyInfo();
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	// 社員マスタからリストを取得する
-	scheduleCommon.getUserInfo();
+	scheduleCommon.getUserInfo("");
 	// 案件リストのタブ生成
 	$("#tabs").tabs();
 	// 日付選択用設定
@@ -26,8 +26,8 @@ $(function() {
 	$("#entry_status_01").prop("checked", true);
 	$("#entry_status_02").prop("checked", true);
 	$("#entry_status_03").prop("checked", true);
-	$("#entry_status_04").prop("checked", true);
-	$("#entry_status_05").prop("checked", true);
+	$("#entry_status_04").prop("checked", false);
+	$("#entry_status_05").prop("checked", false);
 	// グリッドの生成
 	entryList.createGrid();						// 案件リスト
 	quoteInfo.createQuoteInfoGrid(0);			// 見積リスト
@@ -64,6 +64,8 @@ $(function() {
 	// 請求先編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_billing").bind('click' , {}, billingList.openBillingFormDialog);
 	$("#edit_billing").css("display","none");
+	// 請求情報画面の参照ボタン
+	$("#ref_entry").bind('click' , {}, entryList.openEntryDialog);
 
 	quoteInfo.enableQuoteButtons(false,0);
 	
@@ -190,7 +192,7 @@ entryList.createClientListDialog = function () {
 		autoOpen: false,
 		width: 900,
 		height: 600,
-		title: '受注先選択',
+		title: '顧客リスト',
 		closeOnEscape: false,
 		modal: true,
 		buttons: {
@@ -221,9 +223,9 @@ entryList.createGrid = function () {
 		colNames: ['案件No','','クライアント名','','クライアント部署','','','','','','','','','','クライアント担当者','','試験タイトル','問合せ日', '案件ステータス', '営業担当者'
 				,'受注日','仮受注チェック','受託区分','', '試験大分類', '試験中分類','試験担当者','作成日','作成者','更新日','更新者'],
 		colModel: [
-			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
+			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" ,sortable:true},
 			{ name: 'client_cd', index: '', hidden:true },
-			{ name: 'client_name_1', index: 'client_name_1', width: 200, align: "center" },
+			{ name: 'client_name_1', index: 'client_name_1', width: 200, align: "center" ,sortable:true},
 			{ name: 'client_division_cd', index: '', hidden:true },
 			{ name: 'client_division_name', index: 'client_division_name', width: 200, align: "center" },
 			{ name: 'client_address_1', index: '', hidden:true },
@@ -340,13 +342,20 @@ entryList.openEntryDialog = function (event) {
 		} else {
 			$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 		}
-	} else {
+	} else if ($(event.target).attr('id') == 'add_entry') {
+		// 追加ボタンの処理
 		// 権限チェック
 		if (entryList.auth_entry_add == 2) {
 			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		} else {
 			$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		}
+		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+	} else if ($(event.target).attr('id') == 'ref_entry') {
+		// 請求情報画面からの参照
+		var no = entryList.getSelectEntry();
+		entryList.requestEntryData(no);
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
 
@@ -384,7 +393,7 @@ entryList.openClientListDialog = function (event) {
 	});
 	$("#client_list_dialog").dialog("open");
 };
-// 案件データの読込み
+// 案件データの読込み(案件番号指定）
 entryList.requestEntryData = function (no) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', '/entry_get/' + no, true);
