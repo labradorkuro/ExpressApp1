@@ -75,6 +75,7 @@ var entry_get_list = function (req, res) {
 		+ 'entry_info.test_middle_class_cd,' 
 		+ 'test_middle_class.item_name AS test_middle_class_name,' 
 		+ 'test_person_id,'
+		+ 'consumption_tax,'
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created," 
 		+ 'entry_info.created_id,' 
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated," 

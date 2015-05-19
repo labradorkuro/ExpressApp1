@@ -56,7 +56,9 @@ exports.create = function (req, res) {
 			+ "billing_number VARCHAR(16),"	// 経理さんが入力する請求番号
 			+ "pay_planning_date DATE,"		// 請求日
 			+ "pay_complete_date DATE,"		// 入金日
-			+ "pay_amount DECIMAL(9),"		// 請求金額 
+			+ "pay_amount DECIMAL(9),"		// 税抜請求金額 
+			+ "pay_amount_tax DECIMAL(9),"	// 消費税額 
+			+ "pay_amount_total DECIMAL(9),"// 請求金額合計 
 			+ "pay_complete DECIMAL(9),"	// 入金額 
 			+ "pay_result INT2,"			// 請求区分
 			+ "client_cd VARCHAR(8),"		// クライアントCD

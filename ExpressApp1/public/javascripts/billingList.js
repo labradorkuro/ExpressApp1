@@ -5,6 +5,29 @@ var billingList = billingList || {};
 
 billingList.currentEntry = null;
 billingList.currentBilling = null;
+billingList.status = "add"; // or "edit"
+// イベント処理登録
+billingList.eventBind = function() {
+	// 税抜請求金額の変更
+	$("#pay_amount").bind("change",billingList.calc_amount);
+	// 消費税の変更
+	$("#pay_amount_tax").bind("change",billingList.calc_amount);
+};
+
+// 請求金額合計の計算
+billingList.calc_amount = function() {
+	var amount = Number($("#pay_amount").val());
+	var tax = Number($("#pay_amount_tax").val());
+	if (billingList.status == "add") {
+		// 請求情報を追加している時
+		tax = billingList.currentEntry.currentEntry.consumption_tax;
+		tax = amount * (tax / 100);
+		$("#pay_amount_tax").val(tax);
+	}
+	var total = amount + tax;
+	$("#pay_amount_total").val(total);
+};
+
 // 請求情報リストダイアログの生成
 billingList.createBillingListDialog = function () {
 	$('#billing_list_dialog').dialog({
@@ -26,7 +49,7 @@ billingList.createBillingFormDialog = function () {
 	$('#billing_form_dialog').dialog({
 		autoOpen: false,
 		width: 900,
-		height: 400,
+		height: 500,
 		title: '請求情報',
 		closeOnEscape: false,
 		modal: true,
@@ -57,13 +80,15 @@ billingList.createBillingListGrid = function () {
 		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','請求番号serial','請求番号','請求日', '請求金額','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','備考','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','請求番号serial','請求番号','請求日', '税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','備考','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
 			{ name: 'billing_number', index: 'billing_number', width: 80, align: "center" },
 			{ name: 'pay_planning_date', index: 'pay_planning_date', width: 80, align: "center" },
 			{ name: 'pay_amount', index: 'pay_amount', width: 80, align: "right" },
+			{ name: 'pay_amount_tax', index: 'pay_amount_tax', width: 80, align: "right" },
+			{ name: 'pay_amount_total', index: 'pay_amount_total', width: 80, align: "right" },
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "right" },
 			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
@@ -148,6 +173,7 @@ billingList.openBillingFormDialog = function (event) {
 					+ " \ntel:" + tel + " \nfax:" + fax
 	if ($(event.target).attr('id') == 'edit_billing') {
 		// 編集ボタンから開いた場合
+		billingList.status = "edit";
 		billingList.currentBilling.client_info = client_info;
 		billingList.setBillingForm(billingList.currentBilling);	
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
@@ -159,12 +185,15 @@ billingList.openBillingFormDialog = function (event) {
 		}
 	} else {
 		// 追加ボタンから開いた場合
+		billingList.status = "add";
 		var billing = {
 			billing_no:'',
 			billing_number:'',
 			pay_planning_date:'',
 			pay_complete_date:'',
 			pay_amount:0,
+			pay_amount_tax:0,
+			pay_amount_total:0,
 			pay_complete:0,
 			pay_result:0,
 			memo:'',
@@ -197,6 +226,8 @@ billingList.clearBilling = function() {
 			pay_planning_date:'',
 			pay_complete_date:'',
 			pay_amount:0,
+			pay_amount_tax:0,
+			pay_amount_total:0,
 			pay_complete:0,
 			pay_result:0,
 			memo:'',
@@ -224,6 +255,8 @@ billingList.setBillingForm = function(billing) {
 	$("#pay_planning_date").val(billing.pay_planning_date);
 	$("#pay_complete_date").val(billing.pay_complete_date);
 	$("#pay_amount").val(billing.pay_amount);
+	$("#pay_amount_tax").val(billing.pay_amount_tax);
+	$("#pay_amount_total").val(billing.pay_amount_total);
 	$("#pay_complete").val(billing.pay_complete);
 //	$("#pay_result").val(billing.pay_result);
 	

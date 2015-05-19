@@ -35,6 +35,8 @@ var billing_get_list = function (req, res) {
 		+ "to_char(pay_planning_date, 'YYYY/MM/DD') AS pay_planning_date," 
 		+ "to_char(pay_complete_date, 'YYYY/MM/DD') AS pay_complete_date," 
 		+ 'pay_amount,' 
+		+ 'pay_amount_tax,' 
+		+ 'pay_amount_total,' 
 		+ 'pay_complete,' 
 		+ 'pay_result,' 
 		+ 'client_list.client_cd,' 
@@ -104,6 +106,8 @@ var billing_get_detail = function (req, res) {
 		+ "to_char(pay_planning_date, 'YYYY/MM/DD') AS pay_planning_date," 
 		+ "to_char(pay_complete_date, 'YYYY/MM/DD') AS pay_complete_date," 
 		+ 'pay_amount,' 
+		+ 'pay_amount_tax,' 
+		+ 'pay_amount_total,' 
 		+ 'pay_complete,' 
 		+ 'pay_result,' 
 		+ 'client_list.client_cd,' 
@@ -131,6 +135,31 @@ var billing_get_detail = function (req, res) {
 	pg.connect(connectionString, function (err, connection) {
 		// データを取得するためのクエリーを実行する
 		connection.query(sql, [req.params.entry_no,req.params.billing_no], function (err, results) {
+			if (err) {
+				console.log(err);
+			} else {
+				var billing = [];
+				for (var i in results.rows) {
+					billing = results.rows[i];
+				}
+				connection.end();
+				res.send(billing);
+			}
+		});
+	});
+};
+
+// 請求金額、入金金額合計の取得
+exports.billing_get_total = function (req, res) {
+	var sql = 'SELECT ' 
+		+ 'SUM(pay_amount_total) AS amount_total,' 
+		+ 'SUM(pay_complete) AS complete_total' 
+		+ ' FROM drc_sch.billing_info'
+		+ ' WHERE entry_no = $1 AND delete_check = $2' 
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		// データを取得するためのクエリーを実行する
+		connection.query(sql, [req.params.entry_no,0], function (err, results) {
 			if (err) {
 				console.log(err);
 			} else {

@@ -80,6 +80,8 @@ $(function() {
 	$("#entry_status_05").bind('change', entryList.changeEntryOption);
 	// 見積書関連のイベント処理登録
 	quoteInfo.eventBind();
+	// 請求情報入力画面のイベント処理登録
+	billingList.eventBind();
 });
 
 //
@@ -221,7 +223,7 @@ entryList.createGrid = function () {
 		altRows: true,
 		datatype: "json",
 		colNames: ['案件No','','クライアント名','','クライアント部署','','','','','','','','','','クライアント担当者','','試験タイトル','問合せ日', '案件ステータス', '営業担当者'
-				,'受注日','仮受注チェック','受託区分','', '試験大分類', '試験中分類','試験担当者','作成日','作成者','更新日','更新者'],
+				,'受注日','仮受注チェック','受託区分','', '試験大分類', '試験中分類','試験担当者','消費税率','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" ,sortable:true},
 			{ name: 'client_cd', index: '', hidden:true },
@@ -251,6 +253,7 @@ entryList.createGrid = function () {
 			{ name: 'test_large_class_name', index: 'test_large_class_name', width: 100, align: "center" },
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 100, align: "center" },
 			{ name: 'test_person_id', index: 'test_person_id', width: 100, align: "center", formatter: scheduleCommon.personFormatter },
+			{ name: 'consumption_tax', index: '', hidden:true },
 			{ name: 'created', index: 'created', width: 130, align: "center" },
 			{ name: 'created_id', index: 'created_id' , align: "center", formatter: scheduleCommon.personFormatter },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
@@ -401,6 +404,13 @@ entryList.requestEntryData = function (no) {
 	xhr.onload = entryList.onloadEntryReq;
 	xhr.send();
 };
+entryList.requestBillingTotal = function (no) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/billing_get_total/' + no, true);
+	xhr.responseType = 'json';
+	xhr.onload = entryList.onloadBillingTotalReq;
+	xhr.send();
+};
 // 受注確定になっている見積情報を取得する
 entryList.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) {
 	$.ajax({
@@ -409,22 +419,30 @@ entryList.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) 
 		dataType: 'json',
 		success: function (quote_list) {
 			entryList.setQuoteInfo(quote_list, consumption_tax);
+			// 請求情報から請求金額、入金金額合計を取得して表示
+			entryList.requestBillingTotal(entry_no);	
 		}
 	});
 
 };
+
+// 受注確定の見積データをフォームにセットする
 entryList.setQuoteInfo = function (quote_list, consumption_tax) {
 	if (quote_list != null) {
 		var total_price = 0;
 		var rows = quote_list.rows;
 		if (rows.length > 0) {
+			// 見積番号
 			$("#quote_no").val(rows[0].quote_no);
 			var list = "";
+			// 見積金額合計計算
 			for (var i = 0;i <  rows.length;i++) {
 				list += rows[i].test_middle_class_name + "\n";
 				total_price += Number(rows[i].price);
 			}
+			// 中分類リスト
 			$("#test_middle_class_list").text(list);
+			// 消費税込の合計金額
 			tax = total_price * (consumption_tax / 100);
 			$("#entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));
 		}
@@ -533,13 +551,28 @@ entryList.onloadEntryReq = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
 		// 消費税率
-		if (entry.consumption_tax == "") entry.consumption_tax = quoteInfo.drc_info.consumption_tax;
+		if (entry.consumption_tax == "") {
+			// デフォルトでシステム設定値を入れる
+			entry.consumption_tax = quoteInfo.drc_info.consumption_tax;
+		}
 		quoteInfo.currentConsumption_tax = entry.consumption_tax;
 		// formに取得したデータを埋め込む
 		entryList.setEntryForm(entry);
-		$("#entry_memo_ref").text(entry.entry_memo);		
+		$("#entry_memo_ref").text(entry.entry_memo);	
 		// 見積情報の取得
 		entryList.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
+	}
+};
+// 請求金額、入金額取得リクエストのコールバック
+entryList.onloadBillingTotalReq = function (e) {
+	if (this.status == 200) {
+		var billing = this.response;
+		if (billing.amount_total != null) {
+			$("#entry_amount_billing").val(scheduleCommon.numFormatter(billing.amount_total,11));
+		}
+		if (billing.complete_total != null) {
+			$("#entry_amount_deposit").val(scheduleCommon.numFormatter(billing.complete_total,11));
+		}
 	}
 };
 
