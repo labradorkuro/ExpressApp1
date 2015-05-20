@@ -44,9 +44,13 @@ var entry_get_list = function (req, res) {
 	var pg_params = getPagingParams(req);
 	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.entry_info WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND delete_check = $1';
 	var sql = 'SELECT ' 
-		+ 'entry_no,' 
+		+ 'entry_info.entry_no,' 
 		+ 'entry_title,' 
 		+ "to_char(inquiry_date, 'YYYY/MM/DD') AS inquiry_date," 
+		+ "to_char(report_limit_date, 'YYYY/MM/DD') AS report_limit_date," 
+		+ "to_char(report_submit_date, 'YYYY/MM/DD') AS report_submit_date," 
+		+ 'subq.pay_complete,'
+		+ 'subq2.pay_result,'
 		+ 'entry_status,' 
 		+ 'sales_person_id,' 
 		+ 'quote_no,' 
@@ -86,7 +90,11 @@ var entry_get_list = function (req, res) {
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
-		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND entry_info.delete_check = $1 ORDER BY ' 
+		// 請求情報のサブクエリ 未入金ありを表示するため
+		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE pay_result < 3 and billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
+		// 請求情報のサブクエリ 請求可を表示するため
+		+ ' LEFT JOIN (SELECT entry_no,MAX(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
+		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND entry_info.delete_check = $1  ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);

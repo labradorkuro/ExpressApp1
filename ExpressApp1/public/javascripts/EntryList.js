@@ -222,10 +222,17 @@ entryList.createGrid = function () {
 		url: '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01 + '&entry_status_02=' + sts02 + '&entry_status_03=' + sts03 + '&entry_status_04=' + sts04 + '&entry_status_05=' + sts05,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件No','','クライアント名','','クライアント部署','','','','','','','','','','クライアント担当者','','試験タイトル','問合せ日', '案件ステータス', '営業担当者'
-				,'受注日','仮受注チェック','受託区分','', '試験大分類', '試験中分類','試験担当者','消費税率','作成日','作成者','更新日','更新者'],
+		colNames: ['請求区分','未入金','報告書期限','report_submit_date','案件No','client_cd','クライアント名','client_division_cd','クライアント部署'
+				,'client_address_1','client_address_2','client_division_address_1','client_division_address_2'
+				,'client_tel_no','client_fax_no','client_division_tel_no','client_division_fax_no','client_person_id'
+				,'クライアント担当者','client_person_compellation','試験タイトル','問合せ日', '案件ステータス', '営業担当者'
+				,'受注日','仮受注チェック','受託区分','test_large_class_cd', '試験大分類', '試験中分類','試験担当者','消費税率','作成日','作成者','更新日','更新者'],
 		colModel: [
-			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" ,sortable:true},
+			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter},
+			{ name: 'pay_complete', index: 'pay_complete', width: 120, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter},
+			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter},
+			{ name: 'report_submit_date', index: '', hidden:true },
+			{ name: 'entry_no', index: 'entry_no', width: 100, align: "center" ,sortable:true},
 			{ name: 'client_cd', index: '', hidden:true },
 			{ name: 'client_name_1', index: 'client_name_1', width: 200, align: "center" ,sortable:true},
 			{ name: 'client_division_cd', index: '', hidden:true },
@@ -308,6 +315,57 @@ entryList.selectOutsourcing = function () {
 	$("#outsourcing_name").val(clientList.currentClient.name_1);
 	return true;
 };
+// 請求可のフォーマッター
+entryList.payResultFormatter = function (cellval, options, rowObject) {
+	var result = "<label style='color:red;font-weight:bold;'>未登録</>";
+	if (cellval != null) {
+		switch(cellval) {
+			case 0:result = "請求待ち";
+			break;
+			case 1:result = "請求可";
+			break;
+			case 2:result = "請求済";
+			break;
+			case 3:result = "入金済";
+			break;
+		}
+	}
+	return result;
+};
+// 未入金のフォーマッター
+entryList.payCompleteFormatter = function (cellval, options, rowObject) {
+	var result = "";
+	if ((cellval != null) && (cellval != "")) {
+		// 入金確認済みになっていない請求情報の件数を取得できた
+		// 報告書提出になっているか？
+		if ((rowObject.report_submit_date == null) || (rowObject.report_submit_date == "")) { 
+			result = "";
+		} else {
+			result = "<label style='color:red;font-weight:bold;'>" + cellval + " 件あり</>";
+		}
+	}
+	return result;
+};
+
+// 報告遅延のフォーマッター
+entryList.reportLimitFormatter = function (cellval, options, rowObject) {
+	var result = "";
+	if ((cellval != null) && (cellval != "")) {
+		result = cellval;
+		// 報告書期限設定あり
+		var today = scheduleCommon.getToday("{0}/{1}/{2}");
+		var count = scheduleCommon.calcDateCount(today, cellval);
+		if (count <= 0) {
+			// 提出期限を過ぎている
+			if ((rowObject.report_submit_date == null) || (rowObject.report_submit_date == "")) { 
+				// 提出日が入力されていない
+				result = "<label style='color:red;font-weight:bold;'>【遅延】 " + cellval + "</>";
+			}
+		}
+	}
+	return result;
+};
+
 // 案件ステータスのフォーマッター
 entryList.statusFormatter = function (cellval, options, rowObject) {
 	return scheduleCommon.getEntry_status(cellval);
