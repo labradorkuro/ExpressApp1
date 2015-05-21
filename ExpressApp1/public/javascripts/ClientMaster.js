@@ -6,7 +6,8 @@ $(function () {
 	$("#tabs").tabs();
 	// 権限チェック
 	clientList.checkAuth();
-	// リスト画面生成
+	// メッセージダイアログ生成
+	clientList.createMessageDialog();
 	//clientList.init(true);　// 権限チェック処理の中へ移動
 	// 得意先選択ダイアログ用のタブ生成
 	clientList.createClientListTabs();

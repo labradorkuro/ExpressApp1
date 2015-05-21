@@ -22,6 +22,22 @@ clientList.checkAuth = function() {
 		}
 	}
 };
+// メッセージ表示用ダイアログの生成
+clientList.createMessageDialog = function () {
+	$('#message_dialog').dialog({
+		autoOpen: false,
+		width: 400,
+		height: 180,
+		title: 'メッセージ',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
 
 // リスト画面の生成（初期化）
 clientList.init = function(toolbar) {
@@ -386,16 +402,129 @@ clientList.checkCheckbox = function (delete_check_id) {
 	}
 };
 
+// フォームの入力値チェック（得意先）
+clientList.clientInputCheck = function () {
+	var result = false;
+	var err = "";
+	if (! $("#clientForm")[0].checkValidity) {
+		return true;
+	}
+	// HTML5のバリデーションチェック
+	if ($("#clientForm")[0].checkValidity()) {
+		result = true;
+	} else {
+		var ctrls = $("#clientForm input");
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (! ctl.validity.valid) {
+				if (ctl.id == "client_cd") {
+					err = "得意先コード(半角英数カナ)の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "name_1") {
+					err = "得意先名１の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "kana") {
+					err = "カナの入力値を確認して下さい";
+					break;
+				}
+			}
+		}
+	}
+	if (!result) {
+		$("#message").text(err);
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
+	}
+	return result;
+};
+
+// フォームの入力値チェック（部署）
+clientList.clientDivisionInputCheck = function () {
+	var result = false;
+	var err = "";
+	if (! $("#clientDivisionForm")[0].checkValidity) {
+		return true;
+	}
+	// HTML5のバリデーションチェック
+	if ($("#clientDivisionForm")[0].checkValidity()) {
+		result = true;
+	} else {
+		var ctrls = $("#clientDivisionForm input");
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (! ctl.validity.valid) {
+				if (ctl.id == "division_cd") {
+					err = "部署コードの入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "division_name") {
+					err = "部署名の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "division_kana") {
+					err = "カナの入力値を確認して下さい";
+					break;
+				}
+			}
+		}
+	}
+	if (!result) {
+		$("#message").text(err);
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
+	}
+	return result;
+};
+
+// フォームの入力値チェック（担当者）
+clientList.clientPersonInputCheck = function () {
+	var result = false;
+	var err = "";
+	if (! $("#clientPersonForm")[0].checkValidity) {
+		return true;
+	}
+	// HTML5のバリデーションチェック
+	if ($("#clientPersonForm")[0].checkValidity()) {
+		result = true;
+	} else {
+		var ctrls = $("#clientPersonForm input");
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (! ctl.validity.valid) {
+				if (ctl.id == "person_id") {
+					err = "担当者コードの入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "person_name") {
+					err = "担当者名の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "person_kana") {
+					err = "カナの入力値を確認して下さい";
+					break;
+				}
+			}
+		}
+	}
+	if (!result) {
+		$("#message").text(err);
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
+	}
+	return result;
+};
+
 // 得意先情報の保存
 clientList.saveClient = function () {
-	// formデータの取得
-	var form = clientList.getFormData("clientForm","delete_check");
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/client_post', true);
-	xhr.responseType = 'json';
-	xhr.onload = clientList.onloadClientSave;
-	xhr.send(form);
-	return true;
+	// 入力値チェック
+	if (clientList.clientInputCheck()) {
+		// formデータの取得
+		var form = clientList.getFormData("clientForm","delete_check");
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/client_post', true);
+		xhr.responseType = 'json';
+		xhr.onload = clientList.onloadClientSave;
+		xhr.send(form);
+		return true;
+	} else {
+		return false;
+	}
 };
 clientList.onloadClientSave = function (event) {
 	if (this.status == 200) {
@@ -404,14 +533,19 @@ clientList.onloadClientSave = function (event) {
 };
 // 部署情報の保存
 clientList.saveClientDivision = function () {
-	// formデータの取得
-	var form = clientList.getFormData("clientDivisionForm","division_delete_check");
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/client_division_post', true);
-	xhr.responseType = 'json';
-	xhr.onload = clientList.onloadClientDivisionSave;
-	xhr.send(form);
-	return true;
+	// 入力値チェック
+	if (clientList.clientDivisionInputCheck()) {
+		// formデータの取得
+		var form = clientList.getFormData("clientDivisionForm","division_delete_check");
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/client_division_post', true);
+		xhr.responseType = 'json';
+		xhr.onload = clientList.onloadClientDivisionSave;
+		xhr.send(form);
+		return true;
+	} else {
+		return false;
+	}
 };
 clientList.onloadClientDivisionSave = function (event) {
 	if (this.status == 200) {
@@ -420,14 +554,19 @@ clientList.onloadClientDivisionSave = function (event) {
 };
 // 担当者情報の保存
 clientList.saveClientPerson = function () {
-	// formデータの取得
-	var form = clientList.getFormData("clientPersonForm","person_delete_check");
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/client_person_post', true);
-	xhr.responseType = 'json';
-	xhr.onload = clientList.onloadClientPersonSave;
-	xhr.send(form);
-	return true;
+	// 入力値チェック
+	if (clientList.clientPersonInputCheck()) {
+		// formデータの取得
+		var form = clientList.getFormData("clientPersonForm","person_delete_check");
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/client_person_post', true);
+		xhr.responseType = 'json';
+		xhr.onload = clientList.onloadClientPersonSave;
+		xhr.send(form);
+		return true;
+	} else {
+		return false;
+	}
 };
 clientList.onloadClientPersonSave = function (event) {
 	if (this.status == 200) {

@@ -9,7 +9,7 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 				input#billing_entry_no(type="text" name="billing_entry_no" value=no readonly="true" placeholder="案件番号" size="12")
 			td.form_title_s 請求番号
 			td 
-				input#billing_number(type="text" name="billing_number" placeholder="請求番号" )
+				input#billing_number(type="text" name="billing_number" placeholder="請求番号"  maxlength="16")
 				input#billing_no(type="hidden" name="billing_no" )
 		tr
 			td.form_title_s 請求区分
@@ -41,6 +41,7 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 			td.form_title_m 消費税
 			td 
 				input.num_type#pay_amount_tax(type="number" pattern="[0-9]{1,8}" name="pay_amount_tax" size="8")
+				input#calc_tax_button(type="button" name="calc_tax_button" value="計算")
 		tr
 			td.form_title_s 入金日
 			td 
@@ -55,23 +56,23 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 			td.form_title_ss 社名
 			td
 				input#billing_client_cd(type="hidden" name="billing_client_cd")
-				input#billing_client_name(type="text" name="billing_client_name" size="16")
+				input#billing_client_name(type="text" name="billing_client_name" maxlength="64" size="16")
 			td.form_title_ss 部署
 			td
 				input#billing_client_division_cd(type="hidden" name="billing_client_division_cd")
-				input#billing_client_division_name(type="text" name="billing_client_division_name" size="16" readonly="true")
+				input#billing_client_division_name(type="text" name="billing_client_division_name" maxlength="64" size="16")
 			td.form_title_ss 担当者
 			td 
 				input#billing_client_person_id(type="hidden" name="billing_client_person_id")
-				input#billing_client_person_name(type="text" name="billing_client_person_name" size="16" readonly="true")
+				input#billing_client_person_name(type="text" name="billing_client_person_name" maxlength="64" size="16")
 	table
 		tr
 			td.form_title_s 請求先情報
 			td
-				textarea#billing_client_info(name="billing_client_info" cols="30" rows="4")
+				textarea#billing_client_info(name="billing_client_info" cols="30" rows="4" maxlength="512")
 			td.form_title_s 備考
 			td
-				textarea#billing_memo(name="billing_memo" cols="30" rows="4")
+				textarea#billing_memo(name="billing_memo" cols="30" rows="4" maxlength="512")
 	hr
 	table
 		tr

@@ -92,8 +92,12 @@ var insertBilling = function (connection, billing, req, res) {
 			+ "pay_complete,"			// 入金額 
 			+ "pay_result,"				// 請求区分
 			+ "client_cd,"				// クライアントCD
+			+ "client_name,"			// クライアント名
 			+ "client_division_cd,"		// クライアント部署CD
+			+ "client_division_name,"	// クライアント部署名
 			+ "client_person_id,"		// クライアント担当者ID
+			+ "client_person_name,"		// クライアント担当者名
+			+ "client_info,"			// 請求先情報（住所、電話、Fax）
 			+ "memo,"					// 備考
 			+ 'delete_check,'			// 削除フラグ
 			+ 'created,'				// 作成日
@@ -101,7 +105,7 @@ var insertBilling = function (connection, billing, req, res) {
 			+ 'updated,'				// 更新日 
 			+ 'updated_id'				// 更新者ID
 			+ ') values (' 
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)'
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
@@ -115,8 +119,12 @@ var insertBilling = function (connection, billing, req, res) {
 			billing.pay_complete,			// 入金額 
 			billing.pay_result,				// 請求区分
 			billing.billing_client_cd,				// クライアントCD
+			billing.billing_client_name,			// クライアント名
 			billing.billing_client_division_cd,		// クライアント部署CD
+			billing.billing_client_division_name,	// クライアント部署名
 			billing.billing_client_person_id,		// クライアント担当者ID
+			billing.billing_client_person_name,		// クライアント担当者名
+			billing.billing_client_info,			// 請求先情報（住所、電話、Fax）
 			billing.billing_memo,					// 備考
 			billing.billing_delete_check,			// 削除フラグ
 			created,						// 作成日
@@ -149,13 +157,17 @@ var updateBilling = function (connection, billing, req, res) {
 			+ "pay_complete = $8,"			// 入金額 
 			+ "pay_result = $9,"			// 請求区分
 			+ "client_cd = $10,"			// クライアントCD
-			+ "client_division_cd = $11,"	// クライアント部署CD
-			+ "client_person_id = $12,"		// クライアント担当者ID
-			+ "memo = $13,"					// 備考
-			+ 'delete_check = $14,'			// 削除フラグ
-			+ 'updated = $15,'				// 更新日 
-			+ 'updated_id = $16'			// 更新者ID
-			+ " WHERE entry_no = $17 AND billing_no = $18";
+			+ "client_name = $11,"			// クライアント名
+			+ "client_division_cd = $12,"	// クライアント部署CD
+			+ "client_division_name = $13,"	// クライアント部署名
+			+ "client_person_id = $14,"		// クライアント担当者ID
+			+ "client_person_name = $15,"	// クライアント担当者名
+			+ "client_info = $16,"			// 請求先情報（住所、電話、Fax)
+			+ "memo = $17,"					// 備考
+			+ 'delete_check = $18,'			// 削除フラグ
+			+ 'updated = $19,'				// 更新日 
+			+ 'updated_id = $20'			// 更新者ID
+			+ " WHERE entry_no = $21 AND billing_no = $22";
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
@@ -168,8 +180,12 @@ var updateBilling = function (connection, billing, req, res) {
 			billing.pay_complete,			// 入金額 
 			billing.pay_result,				// 請求区分
 			billing.billing_client_cd,				// クライアントCD
+			billing.billing_client_name,			// クライアント名
 			billing.billing_client_division_cd,		// クライアント部署CD
+			billing.billing_client_division_name,	// クライアント部署名
 			billing.billing_client_person_id,		// クライアント担当者ID
+			billing.billing_client_person_name,		// クライアント担当者名
+			billing.billing_client_info,			// 請求先情報（住所、電話、Fax）
 			billing.billing_memo,					// 備考
 			billing.billing_delete_check,			// 削除フラグ
 			updated,						// 更新日

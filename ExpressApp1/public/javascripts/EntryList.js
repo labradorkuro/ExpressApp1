@@ -136,6 +136,13 @@ entryList.checkAuth = function() {
 	}
 };
 
+// 案件リストの再ロード
+entryList.reloadGrid = function() {
+	$("#entry_list").GridUnload();
+	entryList.createGrid();
+	entryList.refreshEntryGridAfter();	// グリッド初期化後の処理
+};
+
 // 得意先リストのタブ生成と選択イベントの設定
 entryList.createClientListTabs = function () {
 	$("#tabs-client").tabs({
@@ -229,7 +236,7 @@ entryList.createGrid = function () {
 				,'受注日','仮受注チェック','受託区分','test_large_class_cd', '試験大分類', '試験中分類','試験担当者','消費税率','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter},
-			{ name: 'pay_complete', index: 'pay_complete', width: 120, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter},
+			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter},
 			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter},
 			{ name: 'report_submit_date', index: '', hidden:true },
 			{ name: 'entry_no', index: 'entry_no', width: 100, align: "center" ,sortable:true},
@@ -251,7 +258,7 @@ entryList.createGrid = function () {
 			{ name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
 			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
 			{ name: 'entry_status', index: 'entry_status', width: 100 ,align: "center" ,formatter: entryList.statusFormatter},
-			{ name: 'sales_person_id', index: 'sales_person_id', width: 100, align: "center", formatter: entryList.personFormatter },
+			{ name: 'sales_person_id', index: 'sales_person_id', width: 100, align: "center", formatter: scheduleCommon.personFormatter },
 //			{ name: 'quoto_no', index: 'quoto_no', width: 80, align: "center" },
 			{ name: 'order_accepted_date', index: 'order_accepted_date', width: 80, align: "center" },
 			{ name: 'order_accept_check', index: 'order_accept_check', width: 80, align: "center" ,formatter: entryList.orderAcceptFormatter},
@@ -341,7 +348,7 @@ entryList.payCompleteFormatter = function (cellval, options, rowObject) {
 		if ((rowObject.report_submit_date == null) || (rowObject.report_submit_date == "")) { 
 			result = "";
 		} else {
-			result = "<label style='color:red;font-weight:bold;'>" + cellval + " 件あり</>";
+			result = "<label style='color:red;font-weight:bold;'>有(" + cellval + ")</>";
 		}
 	}
 	return result;
@@ -537,6 +544,8 @@ entryList.checkCheckbox = function () {
 		$("#confirm_check").val('1');
 	}
 };
+
+// フォームの入力値チェック
 entryList.entryInputCheck = function () {
 	var result = false;
 	var err = "";
@@ -599,9 +608,7 @@ entryList.getFormData = function () {
 entryList.onloadEntrySave = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
-		$("#entry_list").GridUnload();
-		entryList.createGrid();
-		entryList.refreshEntryGridAfter();	// グリッド初期化後の処理
+		entryList.reloadGrid();
 	}
 };
 // 案件データ取得リクエストのコールバック

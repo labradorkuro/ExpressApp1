@@ -62,8 +62,12 @@ exports.create = function (req, res) {
 			+ "pay_complete DECIMAL(9),"	// 入金額 
 			+ "pay_result INT2,"			// 請求区分
 			+ "client_cd VARCHAR(8),"		// クライアントCD
+			+ "client_name VARCHAR(128),"		// クライアント名（入力値）
 			+ "client_division_cd VARCHAR(8)," // クライアント部署CD
+			+ "client_division_name VARCHAR(128)," // クライアント部署名（入力値）
 			+ "client_person_id VARCHAR(128),"// クライアント担当者ID
+			+ "client_person_name VARCHAR(128),"// クライアント担当者名（入力値）
+			+ "client_info VARCHAR(1024),"	// 住所、電話、FAXなど
 			+ "memo VARCHAR(1024),"			// 備考
 			+ "delete_check INT2,"			// 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日

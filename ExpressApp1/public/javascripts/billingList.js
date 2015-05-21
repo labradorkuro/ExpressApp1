@@ -13,6 +13,19 @@ billingList.eventBind = function() {
 	$("#pay_amount").bind("change",billingList.calc_amount);
 	// 消費税の変更
 	$("#pay_amount_tax").bind("change",billingList.calc_amount);
+	$("#calc_tax_button").bind("click",billingList.calc_tax);
+};
+
+// 消費税の計算実行(ボタン押下）
+billingList.calc_tax = function() {
+	var amount = Number($("#pay_amount").val());
+	var tax = Number($("#pay_amount_tax").val());
+	// 請求情報を追加する場合、デフォルトの消費税計算をする
+	tax = billingList.currentEntry.currentEntry.consumption_tax;
+	tax = amount * (tax / 100);
+	$("#pay_amount_tax").val(tax);
+	var total = amount + tax;
+	$("#pay_amount_total").val(total);
 };
 
 // 請求金額合計の計算
@@ -51,7 +64,7 @@ billingList.createBillingFormDialog = function () {
 		autoOpen: false,
 		width: 900,
 		height: 500,
-		title: '請求情報',
+		title: '請求情報の編集',
 		closeOnEscape: false,
 		modal: true,
 		buttons: {
@@ -81,7 +94,7 @@ billingList.createBillingListGrid = function () {
 		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','請求番号serial','請求番号','請求日', '税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','備考','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','請求番号serial','請求番号','請求日', '税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','請求先情報','備考','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
@@ -103,7 +116,7 @@ billingList.createBillingListGrid = function () {
 			{ name: 'client_fax_no', index: '', hidden:true },
 			{ name: 'client_person_id', index: '', hidden:true },
 			{ name: 'client_person_name', index: 'client_person_name', width: 120 , align: "center" },
-//			{ name: 'client_info', index: 'client_info', width: 200, align: "left"},
+			{ name: 'client_info', hidden:true},
 			{ name: 'memo', index: 'memo', width: 100, align: "center" },
 			{ name: 'created', index: 'created', width: 120 }, // 作成日
 			{ name: 'created_id', index: 'created_id', width: 120 }, // 作成者ID
@@ -170,12 +183,12 @@ billingList.openBillingFormDialog = function (event) {
 	if (billingList.currentEntry.currentEntry.client_division_fax_no != "") {
 		fax = billingList.currentEntry.currentEntry.client_division_fax_no;
 	}
-	var client_info = "住所1" + address1 + " \n住所2" + address2
-					+ " \ntel:" + tel + " \nfax:" + fax
+	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
+					+ " \ntel : " + tel + " \nfax : " + fax
 	if ($(event.target).attr('id') == 'edit_billing') {
 		// 編集ボタンから開いた場合
 		billingList.status = "edit";
-		billingList.currentBilling.client_info = client_info;
+		//billingList.currentBilling.client_info = client_info;
 		billingList.setBillingForm(billingList.currentBilling);	
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		// 権限チェック
@@ -331,6 +344,8 @@ billingList.onloadBillingSave = function (e) {
 		} else {
 			$("#billing_info_list").GridUnload();
 			billingList.createBillingListGrid();
+			// 案件リストの再ロード
+			entryList.reloadGrid();
 		}
 	}
 };
