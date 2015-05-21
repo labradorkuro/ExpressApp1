@@ -101,6 +101,7 @@ exports.create = function (req, res) {
 			+ "quote_no VARCHAR(3),"		// 見積番号
 			+ "quote_detail_no VARCHAR(3)," // 明細番号
 			+ "test_middle_class_cd VARCHAR(4),"	// 試験中分類CD
+			+ "test_middle_class_name VARCHAR(128),"// 試験中分類名称（入力値）
 			+ "unit VARCHAR(16),"			// 単位
 			+ "unit_price DECIMAL(10,2),"	// 単価
 			+ "quantity INT4,"				// 数量

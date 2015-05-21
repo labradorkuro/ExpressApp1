@@ -69,12 +69,14 @@ billingList.createBillingFormDialog = function () {
 		modal: true,
 		buttons: {
 			"追加": function () {
-				billingList.saveBillingInfo();
-				$(this).dialog('close');
+				if (billingList.saveBillingInfo()) {
+					$(this).dialog('close');
+				}
 			},
 			"更新": function () {
-				billingList.saveBillingInfo();
-				$(this).dialog('close');
+				if (billingList.saveBillingInfo()) {
+					$(this).dialog('close');
+				}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -319,12 +321,14 @@ billingList.saveBillingInfo = function () {
 	xhr.responseType = 'json';
 	xhr.onload = billingList.onloadBillingSave;
 	xhr.send(form);
+	return true;
 };
 billingList.checkCheckbox = function () {
 	if ($("#billing_delete_check:checked").val()) {
 		$("#billing_delete_check").val('1');
 	}
 };
+
 // formデータの取得
 billingList.getFormData = function () {
 	var form = new FormData(document.querySelector("#billingInfoForm"));

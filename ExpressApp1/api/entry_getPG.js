@@ -356,7 +356,8 @@ exports.quote_specific_get_list = function (req, res) {
 				+ 'quote_no,'			// 見積番号
 				+ 'quote_detail_no,'
 				+ 'quote_specific_info.test_middle_class_cd,'
-				+ 'test_middle_class.item_name AS test_middle_class_name,'
+				+ 'test_middle_class_name,'
+				//+ 'test_middle_class.item_name AS test_middle_class_name,'
 				+ 'unit,'
 				+ 'unit_price,'
 				+ 'quantity,'
@@ -368,10 +369,11 @@ exports.quote_specific_get_list = function (req, res) {
 				+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
 				+ 'quote_specific_info.updated_id' 
 				+ ' FROM drc_sch.quote_specific_info'
-				+ ' LEFT JOIN drc_sch.test_middle_class ON (quote_specific_info.test_middle_class_cd = test_middle_class.item_cd AND test_middle_class.large_item_cd = $3)'
+				//+ ' LEFT JOIN drc_sch.test_middle_class ON (quote_specific_info.test_middle_class_cd = test_middle_class.item_cd AND test_middle_class.large_item_cd = $3)'
 				+ ' WHERE specific_delete_check = 0 AND (entry_no = $1 AND quote_no = $2) ORDER BY quote_detail_no' 
 			// SQL実行
-			var params = [req.params.entry_no, req.params.quote_no, req.query.large_item_cd];
+			//var params = [req.params.entry_no, req.params.quote_no, req.query.large_item_cd];
+			var params = [req.params.entry_no, req.params.quote_no];
 			var result = { page: 1, total: 20, records: 0, rows: [] };
 			var rows = [];
 			// SQL実行
@@ -536,7 +538,8 @@ var quote_specific_get_list_grid = function (req, res) {
 		+ 'quote_no,'			// 見積番号
 		+ 'quote_detail_no,'
 		+ 'quote_specific_info.test_middle_class_cd,'
-		+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'test_middle_class_name,'
+		//+ 'test_middle_class.item_name AS test_middle_class_name,'
 		+ 'unit,'
 		+ 'unit_price,'
 		+ 'quantity,'
@@ -548,7 +551,7 @@ var quote_specific_get_list_grid = function (req, res) {
 		+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,' 
 		+ 'quote_specific_info.updated_id' 
 		+ ' FROM drc_sch.quote_specific_info'
-		+ ' LEFT JOIN drc_sch.test_middle_class ON (quote_specific_info.test_middle_class_cd = test_middle_class.item_cd AND test_middle_class.large_item_cd = $4)'
+		//+ ' LEFT JOIN drc_sch.test_middle_class ON (quote_specific_info.test_middle_class_cd = test_middle_class.item_cd AND test_middle_class.large_item_cd = $4)'
 		+ ' WHERE specific_delete_check = $1 AND (entry_no = $2 AND quote_no = $3 ) ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
@@ -557,7 +560,8 @@ var quote_specific_get_list_grid = function (req, res) {
 	var rows = [];
 	var dc = Number(req.query.specific_delete_check);
 	var params_0 = [dc,req.params.entry_no, req.params.quote_no];
-	var params = [dc,req.params.entry_no, req.params.quote_no,req.query.large_item_cd];
+	//var params = [dc,req.params.entry_no, req.params.quote_no,req.query.large_item_cd];
+	var params = [dc,req.params.entry_no, req.params.quote_no];
 	pg.connect(connectionString, function (err, connection) {
 		// 最初に件数を取得する		
 		connection.query(sql_count, params_0, function (err, results) {
@@ -597,7 +601,8 @@ exports.quote_specific_get_list_for_entryform = function (req, res) {
 		+ 'quote_info.quote_no,'			// 見積番号
 		+ 'quote_detail_no,'
 		+ 'quote_specific_info.test_middle_class_cd,'
-		+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'test_middle_class_name,'
+		//+ 'test_middle_class.item_name AS test_middle_class_name,'
 		+ 'unit,'
 		+ 'unit_price,'
 		+ 'quantity,'
@@ -610,7 +615,7 @@ exports.quote_specific_get_list_for_entryform = function (req, res) {
 		+ 'quote_specific_info.updated_id' 
 		+ ' FROM drc_sch.quote_specific_info'
 		+ ' LEFT JOIN drc_sch.entry_info ON (entry_info.entry_no = $1)'
-		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
+		//+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
 		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no AND quote_info.entry_no = $1 AND quote_info.order_status = 2)'
 		+ ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_specific_info.entry_no = $1 AND quote_info.order_status = 2) ORDER BY quote_detail_no' 
 	// SQL実行
@@ -643,7 +648,8 @@ exports.quote_specific_get_list_for_calendar = function (req, res) {
 		+ 'quote_info.quote_no,'			// 見積番号
 		+ 'quote_detail_no,'
 		+ 'quote_specific_info.test_middle_class_cd,'
-		+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'test_middle_class_name,'
+		//+ 'test_middle_class.item_name AS test_middle_class_name,'
 		+ 'unit,'
 		+ 'unit_price,'
 		+ 'quantity,'
@@ -656,7 +662,7 @@ exports.quote_specific_get_list_for_calendar = function (req, res) {
 		+ 'quote_specific_info.updated_id' 
 		+ ' FROM drc_sch.quote_specific_info'
 		+ ' LEFT JOIN drc_sch.entry_info ON (entry_info.entry_no = $1)'
-		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
+		//+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
 		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no AND quote_info.entry_no = $1 AND quote_info.order_status = 2)'
 		+ ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_specific_info.entry_no = $1 AND quote_info.order_status = 2) ORDER BY quote_detail_no' 
 	// 全見積の取得
@@ -665,7 +671,8 @@ exports.quote_specific_get_list_for_calendar = function (req, res) {
 		+ 'quote_info.quote_no,'			// 見積番号
 		+ 'quote_detail_no,'
 		+ 'quote_specific_info.test_middle_class_cd,'
-		+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'test_middle_class_name,'
+		//+ 'test_middle_class.item_name AS test_middle_class_name,'
 		+ 'unit,'
 		+ 'unit_price,'
 		+ 'quantity,'
@@ -678,7 +685,7 @@ exports.quote_specific_get_list_for_calendar = function (req, res) {
 		+ 'quote_specific_info.updated_id' 
 		+ ' FROM drc_sch.quote_specific_info'
 		+ ' LEFT JOIN drc_sch.entry_info ON (entry_info.entry_no = $1)'
-		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
+		//+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
 		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no AND quote_info.entry_no = $1)'
 		+ ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_specific_info.entry_no = $1) ORDER BY quote_detail_no' 
 	// SQL実行

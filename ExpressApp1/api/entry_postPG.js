@@ -602,6 +602,7 @@ var getSpecificInfo = function(connection,quote, req, res, no) {
 		// 行がある
 		specific.quote_detail_no = quote["quote_detail_no_" + no];
 		specific.test_middle_class_cd = quote["test_middle_class_cd_" + no];
+		specific.test_middle_class_name = quote["test_middle_class_name_" + no];
 		specific.unit = quote["unit_" + no];
 		specific.unit_price = quote["unit_price_" + no];
 		specific.quantity = quote["quantity_" + no];
@@ -651,6 +652,7 @@ var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
 		+ 'quote_no,'				// 見積番号
 		+ 'quote_detail_no,'		// 明細番号
 		+ 'test_middle_class_cd,'	// 試験中分類CD
+		+ 'test_middle_class_name,'	// 試験中分類名称
 		+ 'unit,'					// 単位
 		+ 'unit_price,'				// 単価
 		+ 'quantity,'				// 数量
@@ -667,17 +669,18 @@ var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
 		+ "$2," // 見積番号
 		+ "$3," // 明細番号
 		+ "$4," // 試験中分類CD
-		+ "$5," // 単位
-		+ "$6," // 単価
-		+ "$7," // 数量
-		+ "$8," // 金額
-		+ "$9," // 集計対象フラグ
-		+ "$10," // 備考
-		+ "$11," // 削除フラグ
-		+ "$12," // 作成日
-		+ "$13," // 作成者ID
-		+ "$14," // 更新日
-		+ "$15"  // 更新者ID
+		+ "$5," // 試験中分類名称
+		+ "$6," // 単位
+		+ "$7," // 単価
+		+ "$8," // 数量
+		+ "$9," // 金額
+		+ "$10," // 集計対象フラグ
+		+ "$11," // 備考
+		+ "$12," // 削除フラグ
+		+ "$13," // 作成日
+		+ "$14," // 作成者ID
+		+ "$15," // 更新日
+		+ "$16"  // 更新者ID
 		+ ")";
 	// SQL実行
 	var query = connection.query(sql, [
@@ -685,6 +688,7 @@ var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
 		specific.estimate_quote_no,		// 見積番号
 		specific.quote_detail_no,		// 明細番号
 		specific.test_middle_class_cd,	// 試験中分類CD
+		specific.test_middle_class_name,// 試験中分類名
 		specific.unit,					// 単位
 		specific.unit_price,			// 単価
 		specific.quantity,				// 数量
@@ -715,19 +719,21 @@ var updateQuoteSpecific = function (connection,quote, specific, req, res, no) {
 	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.quote_specific_info SET ' 
 		+ 'test_middle_class_cd = $1,'	// 試験中分類CD
-		+ 'unit = $2,'					// 単位
-		+ 'unit_price = $3,'			// 単価
-		+ 'quantity = $4,'				// 数量
-		+ 'price = $5,'					// 金額
-		+ 'summary_check = $6,'			// 集計対象フラグ
-		+ 'specific_memo = $7,'			// 備考
-		+ "specific_delete_check = $8,"	// 削除フラグ
-		+ "updated = $9,"				// 更新日
-		+ "updated_id = $10"			// 更新者ID
-		+ " WHERE entry_no = $11 AND quote_no = $12 AND quote_detail_no = $13"
+		+ 'test_middle_class_name = $2,'	// 試験中分類名称
+		+ 'unit = $3,'					// 単位
+		+ 'unit_price = $4,'			// 単価
+		+ 'quantity = $5,'				// 数量
+		+ 'price = $6,'					// 金額
+		+ 'summary_check = $7,'			// 集計対象フラグ
+		+ 'specific_memo = $8,'			// 備考
+		+ "specific_delete_check = $9,"	// 削除フラグ
+		+ "updated = $10,"				// 更新日
+		+ "updated_id = $11"			// 更新者ID
+		+ " WHERE entry_no = $12 AND quote_no = $13 AND quote_detail_no = $14"
 	// SQL実行
 	var query = connection.query(sql, [
 		specific.test_middle_class_cd,	// 試験中分類CD
+		specific.test_middle_class_name,// 試験中分類名称
 		specific.unit,					// 単位
 		specific.unit_price,			// 単価
 		specific.quantity,				// 数量
