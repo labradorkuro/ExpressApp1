@@ -609,7 +609,7 @@ quoteInfo.addRowCreate = function(no) {
 	var id = "test_middle_class_cd_" + no;
 	var name_1 = $("<input type='hidden' id='quote_detail_no_" + no + "' name='quote_detail_no_" + no + "' value='" + no + "' +/>");
 	var name_2 = $("<input type='hidden' id='" + id + "' name='" + id + "'/>");
-	var name_3 = $("<input type='text' class='test_middle_class' id='test_middle_class_name_" + no + "' name='test_middle_class_name_" + no + "' size='20' placeholder='試験中分類'required='required'/>");
+	var name_3 = $("<input type='text' class='test_middle_class' id='test_middle_class_name_" + no + "' name='test_middle_class_name_" + no + "' size='20' placeholder='試験中分類'required='true'/>");
 	$(td).append(name_1);
 	$(td).append(name_2);
 	$(td).append(name_3);
