@@ -199,8 +199,8 @@ entryList.createEntryDialog = function () {
 entryList.createClientListDialog = function () {
 	$('#client_list_dialog').dialog({
 		autoOpen: false,
-		width: 900,
-		height: 600,
+		width: '90%',
+		height: '900',
 		title: '顧客リスト',
 		closeOnEscape: false,
 		modal: true,

@@ -102,12 +102,14 @@ clientList.createToolbar = function(target, kind, no) {
 };
 // リスト画面のグリッド用テーブル要素を生成する
 clientList.createListGridElements = function(target, kind, no) {
+	var admin_div = $("<div class='admin_div'></div>");
 	// グリッド用テーブル
 	var table = $("<table class='client_list' id='" + kind + "_list_" + no + "'><table>");
-	$(target).append(table);
+	$(admin_div).append(table);
 	// ページャ用
-	var div = $("<div id='" + kind + "_list_pager_" + no + "'></div");
-	$(target).append(div);
+	var div = $("<div class='grid_pager' id='" + kind + "_list_pager_" + no + "'></div>");
+	$(admin_div).append(div);
+	$(target).append(admin_div);
 	$(target).append($("<p></p>"));
 };
 
@@ -150,7 +152,6 @@ clientList.createClientListGrid = function (no) {
 			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter  },
 		],
 		height: "230px",
-		width: "900",
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10],
@@ -174,6 +175,8 @@ clientList.onSelectClientList = function (rowid) {
 	if (rowid != null) {
 		var row = $("#client_list_" + (clientList.currentClientListTabNo + 1)).getRowData(rowid);
 		clientList.currentClient = row;
+		clientList.currentClientDivision = {};
+		clientList.currentClientPerson = {};
 		// 部署リストの再検索と表示
 		var tabNo = (clientList.currentClientListTabNo + 1);
 		$("#client_division_list_" + tabNo).GridUnload();
@@ -214,7 +217,6 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter  },
 		],
 		height: "115px",
-		width: "900",
 		shrinkToFit:false,
 		rowNum: 5,
 		rowList: [5],
@@ -236,6 +238,7 @@ clientList.onSelectClientDivisionList = function (rowid) {
 	if (rowid != null) {
 		var row = $("#client_division_list_" + (clientList.currentClientListTabNo + 1)).getRowData(rowid);
 		clientList.currentClientDivision = row;
+		clientList.currentClientPerson = {};
 		// 担当者リストの再検索と表示
 		var tabNo = (clientList.currentClientListTabNo + 1);
 		$("#client_person_list_" + tabNo).GridUnload();
@@ -269,7 +272,6 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter  },
 		],
 		height: "115px",
-		width: "900",
 		shrinkToFit:false,
 		rowNum: 5,
 		rowList: [5],
@@ -426,6 +428,9 @@ clientList.clientInputCheck = function () {
 				} else if (ctl.id == "kana") {
 					err = "カナの入力値を確認して下さい";
 					break;
+				} else if (ctl.id == "zipcode") {
+					err = "郵便番号の入力値を確認して下さい";
+					break;
 				}
 			}
 		}
@@ -461,6 +466,9 @@ clientList.clientDivisionInputCheck = function () {
 					break;
 				} else if (ctl.id == "division_kana") {
 					err = "カナの入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "division_zipcode") {
+					err = "郵便番号の入力値を確認して下さい";
 					break;
 				}
 			}

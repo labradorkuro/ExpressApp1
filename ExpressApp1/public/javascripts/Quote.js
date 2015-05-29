@@ -220,7 +220,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	$("#billing_division").val(entry.client_division_name);
 	$("#billing_person").val(entry.client_person_name + " " + entry.client_person_compellation);
 	$("#drc_division_name").text("  試験課 " + entry.test_large_class_name);
-	$("#drc_test_person").text("  担当者 " + entry.test_person_id);
+	$("#drc_test_person").text("  担当者 " + entry.sales_person_id);
 	$("#quote_title").val(entry.entry_title);
 	// 権限チェック
 	if (entryList.auth_quote_edit == 2) {
@@ -625,7 +625,7 @@ quoteInfo.addRowCreate = function(no) {
 	var qty = $("<td><input type='number'  min='0' max='9999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='4' placeholder='数量'  pattern='[0-9]{1,4}'/></td>");
 
 	id = "price_" + no;
-	var price = $("<td><input type='number'  min='0' max='99999999' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' pattern='[0-9]{1,8}'/></td>");
+	var price = $("<td><input type='number'  min='-99999999' max='99999999' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' pattern='[0-9]{1,8}'/></td>");
 
 	id = "summary_check_" + no;
 	var summary = $("<td><label><input type='checkbox' id='" + id + "' name='" + id + "' checked='true'/>集計する</label></td>");
@@ -901,7 +901,12 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		quoteInfo.outputText(canvas, row.unit, font_size, 295, top);							// 単位
 		quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(row.unit_price,10), font_size, 350, top);			// 単価
 		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row.quantity,5), font_size, 470, top);			// 数量
-		quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(Math.round(row.price),10), font_size, 550, top);				// 金額
+		var pr = scheduleCommon.numFormatter(Math.round(row.price),10);
+		if (row.price < 0) {
+			pr = scheduleCommon.numFormatter(Math.round(row.price),9);
+			pr = pr.replace("-","▲");
+		}
+		quoteInfo.outputText(canvas, "\\" + pr, font_size, 550, top);				// 金額
 		quoteInfo.outputText(canvas, row.specific_memo, font_size, 670, top);		// 備考
 		top += 20;
 		total += Number(row.price);

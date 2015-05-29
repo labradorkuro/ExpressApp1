@@ -22,7 +22,7 @@ form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascri
 		tr
 			td.form_title 郵便番号
 			td 
-				input#division_zipcode(type="text" name="division_zipcode"  pattern="/^[0-9]{3}[\-]?[0-9]{4}$/" placeholder="郵便番号")
+				input#division_zipcode(type="text" name="division_zipcode"  pattern="^[0-9]{3}-[0-9]{4}$" placeholder="郵便番号")
 			td.form_title メールアドレス
 			td 
 				input#division_email(type="email" name="division_email" maxlength="128" placeholder="メールアドレス")

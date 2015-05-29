@@ -1378,7 +1378,7 @@ table.estimate_meisai_table th {
 
 table.client_list {
     /*height:400px;*/
-    width:80%;
+    /*width:80%;*/
 }
 canvas#canvas {
     height:900px;
@@ -1507,4 +1507,8 @@ td.auth_table_check {
 /* 案件入力から参照するクライアントリストダイアログの文字サイズ */
 #client_list_dialog {
     font-size: 0.8em;
+}
+div.client_grid {
+
+    overflow:auto;
 }

@@ -63,7 +63,7 @@ billingList.createBillingFormDialog = function () {
 	$('#billing_form_dialog').dialog({
 		autoOpen: false,
 		width: 900,
-		height: 500,
+		height: 600,
 		title: '請求情報の編集',
 		closeOnEscape: false,
 		modal: true,

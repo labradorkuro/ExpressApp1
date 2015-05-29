@@ -21,7 +21,7 @@ form#clientForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 郵便番号
 			td 
-				input#zipcode(type="text" name="zipcode" pattern="/^[0-9]{3}[\-]?[0-9]{4}$/" placeholder="郵便番号")
+				input#zipcode(type="text" name="zipcode" pattern="^[0-9]{3}-[0-9]{4}$" placeholder="郵便番号")
 			td.form_title メールアドレス
 			td 
 				input#email(type="email" name="email" maxlength="128" placeholder="メールアドレス")
