@@ -90,10 +90,10 @@ var entry_get_list = function (req, res) {
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)' 
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)' 
-		// 請求情報のサブクエリ 未入金ありを表示するため
-		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE pay_result < 3 and billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
-		// 請求情報のサブクエリ 請求可を表示するため
-		+ ' LEFT JOIN (SELECT entry_no,MAX(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
+		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
+		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
+		// 請求情報のサブクエリ 請求区分を表示するため
+		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
 		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND entry_info.delete_check = $1  ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
@@ -254,7 +254,9 @@ var entry_get_detail = function (req, res) {
 		+ "client_division_list.address_1 AS client_address_1,"					// 得意先部署住所１
 		+ "client_division_list.address_2 AS client_address_2,"					// 得意先部署住所２
 		+ "client_division_list.name AS client_division_name,"					// 得意先部署名
+		+ "client_division_list.memo AS client_division_memo,"					// 得意先部署メモ
 		+ "client_person_list.name AS client_person_name,"						// 得意先担当者名
+		+ "client_person_list.memo AS client_person_memo,"						// 得意先担当者メモ
 		+ 'entry_info.test_large_class_cd,'										// 試験大分類CD
 		+ 'test_large_class.item_name AS test_large_class_name,'				// 試験大分類名
 		+ 'entry_info.test_middle_class_cd,'									// 試験中分類CD

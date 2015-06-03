@@ -157,16 +157,16 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 		url: '/quote_specific_get_grid/' + entry_no + '/' + quote_no + '/?specific_delete_check=' + delchk + '&large_item_cd=' + large_item_cd,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','見積番号', '明細番号','','試験中分類名','単位','単価','数量','見積金額','集計','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','見積番号', '明細番号','','試験中分類名','数量','単位','単価','見積金額','集計','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" },				// 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
 			{ name: 'quote_detail_no', index: 'quote_detail_no', width: 80, align: "center" },	// 明細番号
 			{ name: 'test_middle_class_cd', index: 'test_middle_class_cd', hidden:true },		// 試験中分類CD
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 200 },	// 試験中分類名
+			{ name: 'quantity', index: 'quantity', width: 60,align:"right" },					// 数量
 			{ name: 'unit', index: 'unit', width: 60,align:"center" },							// 単位
 			{ name: 'unit_price', index: 'unit_price', width: 120,align:"right",formatter:quoteInfo.numFormatterC },				// 単価
-			{ name: 'quantity', index: 'quantity', width: 60,align:"right" },					// 数量
 			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:quoteInfo.numFormatterC},							// 見積金額
 			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:quoteInfo.summaryCheckFormatter },						// 集計対象チェック
 			{ name: 'created', index: 'created', width: 120 },									// 作成日
@@ -591,9 +591,9 @@ quoteInfo.specificTableClear = function() {
 quoteInfo.addHeader = function() {
 	var row = $("<tr></tr>");
 	$(row).append("<th>名称</th>");
+	$(row).append("<th>数量</th>");
 	$(row).append("<th>単位</th>");
 	$(row).append("<th>単価</th>");
-	$(row).append("<th>数量</th>");
 	$(row).append("<th>金額</th>");
 	$(row).append("<th>集計</th>");
 	$(row).append("<th>備考</th>");
@@ -615,15 +615,15 @@ quoteInfo.addRowCreate = function(no) {
 	$(td).append(name_3);
 	$(row).append(td);
 
+	id = "quantity_" + no;
+	var qty = $("<td><input type='number'  min='0' max='9999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='4' placeholder='数量'  pattern='[0-9]{1,4}'/></td>");
+
 	id = "unit_" + no;
 	var unit = $("<td><input type='text' id='" + id + "' name='" + id + "' size='4' placeholder='単位'/></td>");
 
 	id = "unit_price_" + no;
 	var unit_price = $("<td><input type='number' min='0' max='99999999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='9' placeholder='単価' pattern='[0-9]{1,8}'/></td>");
 	
-	id = "quantity_" + no;
-	var qty = $("<td><input type='number'  min='0' max='9999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='4' placeholder='数量'  pattern='[0-9]{1,4}'/></td>");
-
 	id = "price_" + no;
 	var price = $("<td><input type='number'  min='-99999999' max='99999999' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' pattern='[0-9]{1,8}'/></td>");
 
@@ -636,9 +636,9 @@ quoteInfo.addRowCreate = function(no) {
 	id = "del_row_btn_" + no;
 	var button = $("<td><input type='button' id='" + id + "' class='del_row_btn' name='" + id + "' value='行削除'/><input type='hidden' id='specific_delete_check_" + no + "' name='specific_delete_check_" + no + "' value='0'/></td>");
 
+	$(row).append(qty);
 	$(row).append(unit);
 	$(row).append(unit_price);
-	$(row).append(qty);
 	$(row).append(price);
 	$(row).append(summary);
 	$(row).append(memo);
@@ -804,17 +804,17 @@ quoteInfo.printQuote = function (data) {
 	if (data.quote_no != null)
 		quoteInfo.outputText(canvas, "見積番号：" + data.quote_no, font_size, left, top);
 	// 自社情報
+	top += font_size + 20;
+	quoteInfo.outputText(canvas, data.drc_name, font_size, left, top);
 	top += font_size + 2;
 	quoteInfo.outputText(canvas, data.drc_address1, font_size, left, top);
 	top += font_size + 2;
 	quoteInfo.outputText(canvas, data.drc_address2, font_size, left, top);
 	top += font_size + 2;
-	quoteInfo.outputText(canvas, data.drc_name, font_size, left, top);
-	top += font_size + 2;
 	quoteInfo.outputText(canvas, data.drc_tel, font_size, left, top);
 	top += font_size + 2;
 	quoteInfo.outputText(canvas, data.drc_fax, font_size, left, top);
-	top += font_size + 20;
+	top += font_size + 10;
 	quoteInfo.outputText(canvas, data.drc_division_name, font_size, left, top);
 	top += font_size + 2;
 	quoteInfo.outputText(canvas, data.drc_prepared, font_size, left, top);
@@ -838,19 +838,19 @@ quoteInfo.printQuote = function (data) {
 	top = 400;
 	h = 620;
 	canvas.add(new fabric.Rect({ top : top, left : 280, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
-	canvas.add(new fabric.Rect({ top : top, left : 340, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
-	canvas.add(new fabric.Rect({ top : top, left : 440, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
-	canvas.add(new fabric.Rect({ top : top, left : 520, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
-	canvas.add(new fabric.Rect({ top : top, left : 640, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 330, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 390, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 510, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 630, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
 	
 	top = 400;
 	font_size = 16;
 	quoteInfo.outputText(canvas, "件　　名", font_size, 130, top);
-	quoteInfo.outputText(canvas, "単位"  , font_size, 290, top);
-	quoteInfo.outputText(canvas, "単　価", font_size, 365, top);
-	quoteInfo.outputText(canvas, "数　量", font_size, 460, top);
-	quoteInfo.outputText(canvas, "金  額", font_size, 560, top);
-	quoteInfo.outputText(canvas, "備  考", font_size, 665, top);
+	quoteInfo.outputText(canvas, "数量", font_size, 290, top);
+	quoteInfo.outputText(canvas, "単位"  , font_size, 345, top);
+	quoteInfo.outputText(canvas, "単　価", font_size, 430, top);
+	quoteInfo.outputText(canvas, "金  額", font_size, 550, top);
+	quoteInfo.outputText(canvas, "備  考", font_size, 655, top);
 	// 印鑑枠	
 	canvas.add(new fabric.Rect({ top : 300, left : 530, width : 210, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
 	canvas.add(new fabric.Rect({ top : 300, left : 600, width : 70, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 0.7 }));
@@ -897,30 +897,30 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	var top_wk = top;
 	for (var i in data.rows) {
 		var row = data.rows[i];
-		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);			// 試験中分類名
-		quoteInfo.outputText(canvas, row.unit, font_size, 295, top);							// 単位
-		quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(row.unit_price,10), font_size, 350, top);			// 単価
-		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row.quantity,5), font_size, 470, top);			// 数量
+		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);	// 試験中分類名
+		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row.quantity,5), font_size, 285, top);	// 数量
+		quoteInfo.outputText(canvas, row.unit, font_size, 340, top);					// 単位
+		quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(row.unit_price,10), font_size, 420, top);// 単価
 		var pr = scheduleCommon.numFormatter(Math.round(row.price),10);
 		if (row.price < 0) {
 			pr = scheduleCommon.numFormatter(Math.round(row.price),9);
 			pr = pr.replace("-","▲");
 		}
-		quoteInfo.outputText(canvas, "\\" + pr, font_size, 550, top);				// 金額
-		quoteInfo.outputText(canvas, row.specific_memo, font_size, 670, top);		// 備考
+		quoteInfo.outputText(canvas, "\\" + pr, font_size, 540, top);				// 金額
+		quoteInfo.outputText(canvas, row.specific_memo, font_size, 630, top);		// 備考
 		top += 20;
 		total += Number(row.price);
 	}
 	top = top_wk + (27 * 20);
 	var tax = total * (quoteInfo.currentConsumption_tax / 100);
-	quoteInfo.outputText(canvas, "（合計）", font_size, 460, top);
-	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(total,10), font_size, 550, top);		 
+	quoteInfo.outputText(canvas, "（合計）", font_size, 450, top);
+	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(total,10), font_size, 540, top);		 
 	top += 20;
-	quoteInfo.outputText(canvas, "（消費税）", font_size, 445, top);
-	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(tax,10), font_size, 550, top);		 
+	quoteInfo.outputText(canvas, "（消費税）", font_size, 435, top);
+	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(tax,10), font_size, 540, top);		 
 	top += 20;
-	quoteInfo.outputText(canvas, " 総合計 ", font_size, 460, top);
-	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(total + tax,10), font_size, 550, top);		 
+	quoteInfo.outputText(canvas, " 総合計 ", font_size, 450, top);
+	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(total + tax,10), font_size, 540, top);		 
 };
 quoteInfo.onloadPrintPDFReq = function () {
 };

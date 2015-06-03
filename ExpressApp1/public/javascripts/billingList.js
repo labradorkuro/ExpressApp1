@@ -32,12 +32,12 @@ billingList.calc_tax = function() {
 billingList.calc_amount = function() {
 	var amount = Number($("#pay_amount").val());
 	var tax = Number($("#pay_amount_tax").val());
-	if (billingList.status == "add") {
-		// 請求情報を追加する場合、デフォルトの消費税計算をする
-		tax = billingList.currentEntry.currentEntry.consumption_tax;
-		tax = amount * (tax / 100);
-		$("#pay_amount_tax").val(tax);
-	}
+//	if (billingList.status == "add") {
+//		// 請求情報を追加する場合、デフォルトの消費税計算をする
+//		tax = billingList.currentEntry.currentEntry.consumption_tax;
+//		tax = amount * (tax / 100);
+//		$("#pay_amount_tax").val(tax);
+//	}
 	var total = amount + tax;
 	$("#pay_amount_total").val(total);
 };

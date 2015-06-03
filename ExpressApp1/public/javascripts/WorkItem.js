@@ -499,7 +499,7 @@ workitemEdit.createEntryDialog = function () {
 		height: 900,
 		title: '案件情報',
 		closeOnEscape: false,
-		modal: true,
+		modal: false,
 		buttons: {
 			"閉じる": function () {
 				$(this).dialog('close');

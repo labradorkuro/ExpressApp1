@@ -307,8 +307,10 @@ entryList.selectClient = function () {
 	$("#client_name").val(clientList.currentClient.name_1);
 	$("#client_division_cd").val(clientList.currentClientDivision.division_cd);
 	$("#client_division_name").val(clientList.currentClientDivision.name);
+	$("#client_division_memo").val(clientList.currentClientDivision.memo);
 	$("#client_person_id").val(clientList.currentClientPerson.person_id);
 	$("#client_person_name").val(clientList.currentClientPerson.name);
+	$("#client_person_memo").val(clientList.currentClientPerson.memo);
 	return true;
 };
 
@@ -343,13 +345,8 @@ entryList.payResultFormatter = function (cellval, options, rowObject) {
 entryList.payCompleteFormatter = function (cellval, options, rowObject) {
 	var result = "";
 	if ((cellval != null) && (cellval != "")) {
-		// 入金確認済みになっていない請求情報の件数を取得できた
-		// 報告書提出になっているか？
-		if ((rowObject.report_submit_date == null) || (rowObject.report_submit_date == "")) { 
-			result = "";
-		} else {
-			result = "<label style='color:red;font-weight:bold;'>有(" + cellval + ")</>";
-		}
+		// 入金確認済みになっていないか、または入金確認済でも入金額が請求額より少ない請求情報の件数を取得できた
+		result = "<label style='color:red;font-weight:bold;'>有(" + cellval + ")</>";
 	}
 	return result;
 };
@@ -395,6 +392,7 @@ entryList.orderTypeFormatter = function (cellval, options, rowObject) {
 };
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {
+	$("#entry_dialog").dialog({modal:true});	// デフォルトはモーダル
 	// フォームをクリアする
 	var entry = entryList.clearEntry();
 	entryList.setEntryForm(entry);
@@ -421,6 +419,7 @@ entryList.openEntryDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	} else if ($(event.target).attr('id') == 'ref_entry') {
 		// 請求情報画面からの参照
+		$("#entry_dialog").dialog({modal:false});	// 参照の時はモードレス
 		var no = entryList.getSelectEntry();
 		entryList.requestEntryData(no);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
@@ -509,6 +508,8 @@ entryList.setQuoteInfo = function (quote_list, consumption_tax) {
 			$("#test_middle_class_list").text(list);
 			// 消費税込の合計金額
 			tax = total_price * (consumption_tax / 100);
+			$("#entry_amount_price_notax").val(scheduleCommon.numFormatter(total_price,11));
+			$("#entry_amount_tax").val(scheduleCommon.numFormatter(tax,11));
 			$("#entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));
 		}
 	}
@@ -657,8 +658,10 @@ entryList.setEntryForm = function (entry) {
 	$("#client_name").val(name_1 );								// 得意先名1
 	$("#client_division_cd").val(entry.client_division_cd);		// 所属部署CD
 	$("#client_division_name").val(entry.client_division_name);	// 所属部署名
+	$("#client_division_memo").val(entry.client_division_memo);	// 所属部署メモ
 	$("#client_person_id").val(entry.client_person_id);			// 担当者ID
 	$("#client_person_name").val(entry.client_person_name);		// 担当者名
+	$("#client_person_memo").val(entry.client_person_memo);		// 担当者メモ
 
 	$("#test_large_class_cd").val(entry.test_large_class_cd);		// 試験大分類CD
 	$("#test_large_class_name").val(entry.test_large_class_name);	// 試験大分類名
@@ -673,7 +676,9 @@ entryList.setEntryForm = function (entry) {
 	$("#contract_type").val(entry.contract_type);				// 契約区分
 	$("#outsourcing_cd").val(entry.outsourcing_cd);				// 委託先CD
 	$("#outsourcing_name").val(entry.outsourcing_name);			// 委託先CD
-	$("#entry_amount_price").val(entry.entry_amount_price);		// 案件合計金額
+	$("#entry_amount_price_notax").val(entry.entry_amount_price_notax);		// 案件合計金額（税抜）
+	$("#entry_amount_tax").val(entry.entry_amount_tax);			// 消費税額
+	$("#entry_amount_price").val(entry.entry_amount_price);		// 案件合計金額（税込）
 	$("#entry_amount_billing").val(entry.entry_amount_billing);	// 案件請求合計金額
 	$("#entry_amount_deposit").val(entry.entry_amount_deposit); // 案件入金合計金額
 	$("#test_person_id").val(entry.test_person_id);				// 試験担当者ID
@@ -738,9 +743,11 @@ entryList.clearEntry = function () {
 	entry.order_type = 0;			// 受託区分
 	entry.contract_type = 1;		// 契約区分
 	entry.outsourcing_cd = "";		// 委託先CD
-	entry.entry_amount_price = 0;	// 案件合計金額
-	entry.entry_amount_price = 0;	// 案件請求合計金額
-	entry.entry_amount_billing = 0; // 案件入金合計金額
+	entry.entry_amount_price_notax = 0;	// 案件合計金額（税抜）
+	entry.entry_amount_tax = 0;		// 消費税額
+	entry.entry_amount_price = 0;	// 案件合計金額（税込）
+	entry.entry_amount_billing = 0;	// 案件請求合計金額
+	entry.entry_amount_deposit = 0; // 案件入金合計金額
 	entry.test_person_id = "";		// 試験担当者ID
 	entry.report_limit_date = "";				// 報告書提出期限
 	entry.report_submit_date = "";				// 報告書提出日
