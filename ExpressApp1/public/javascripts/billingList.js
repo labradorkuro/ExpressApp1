@@ -18,28 +18,32 @@ billingList.eventBind = function() {
 
 // 消費税の計算実行(ボタン押下）
 billingList.calc_tax = function() {
-	var amount = Number($("#pay_amount").val());
-	var tax = Number($("#pay_amount_tax").val());
-	// 請求情報を追加する場合、デフォルトの消費税計算をする
-	tax = billingList.currentEntry.currentEntry.consumption_tax;
-	tax = amount * (tax / 100);
-	$("#pay_amount_tax").val(tax);
-	var total = amount + tax;
-	$("#pay_amount_total").val(total);
+	if (billingList.inputCheck()) {
+		var amount = Number($("#pay_amount").val());
+		var tax = Number($("#pay_amount_tax").val());
+		// 請求情報を追加する場合、デフォルトの消費税計算をする
+		tax = billingList.currentEntry.currentEntry.consumption_tax;
+		tax = amount * (tax / 100);
+		$("#pay_amount_tax").val(tax);
+		var total = amount + tax;
+		$("#pay_amount_total").val(total);
+	}
 };
 
 // 請求金額合計の計算
 billingList.calc_amount = function() {
-	var amount = Number($("#pay_amount").val());
-	var tax = Number($("#pay_amount_tax").val());
+	if (billingList.inputCheck()) {
+		var amount = Number($("#pay_amount").val());
+		var tax = Number($("#pay_amount_tax").val());
 //	if (billingList.status == "add") {
 //		// 請求情報を追加する場合、デフォルトの消費税計算をする
 //		tax = billingList.currentEntry.currentEntry.consumption_tax;
 //		tax = amount * (tax / 100);
 //		$("#pay_amount_tax").val(tax);
 //	}
-	var total = amount + tax;
-	$("#pay_amount_total").val(total);
+		var total = amount + tax;
+		$("#pay_amount_total").val(total);
+	}
 };
 
 // 請求情報リストダイアログの生成
@@ -314,14 +318,18 @@ billingList.selectClient = function () {
 billingList.saveBillingInfo = function () {
 	// checkboxのチェック状態確認と値設定
 	billingList.checkCheckbox();
-	// formデータの取得
-	var form = billingList.getFormData();
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/billing_info_post', true);
-	xhr.responseType = 'json';
-	xhr.onload = billingList.onloadBillingSave;
-	xhr.send(form);
-	return true;
+	if (billingList.inputCheck()) {
+		// formデータの取得
+		var form = billingList.getFormData();
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/billing_info_post', true);
+		xhr.responseType = 'json';
+		xhr.onload = billingList.onloadBillingSave;
+		xhr.send(form);
+		return true;
+	} else {
+		return false;
+	}
 };
 billingList.checkCheckbox = function () {
 	if ($("#billing_delete_check:checked").val()) {
@@ -356,4 +364,42 @@ billingList.onloadBillingSave = function (e) {
 billingList.changeOption = function (event) {
 	$("#billing_info_list").GridUnload();
 	billingList.createBillingListGrid();
+};
+// フォームの入力値チェック
+billingList.inputCheck = function () {
+	var result = false;
+	var err = "";
+	if (! $("#billingInfoForm")[0].checkValidity) {
+		return true;
+	}
+	// HTML5のバリデーションチェック
+	if ($("#billingInfoForm")[0].checkValidity()) {
+		result = true;
+	} else {
+		var ctrls = $("#billingInfoForm input");
+		for(var i = 0; i < ctrls.length;i++) {
+			var ctl = ctrls[i];
+			if (! ctl.validity.valid) {
+				if (ctl.id == "pay_amount") {
+					err = "金額(税抜)の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "pay_amount_tax") {
+					err = "消費税の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "pay_amount_total") {
+					err = "合計(税込)の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "pay_amount_complete") {
+					err = "入金額の入力値を確認して下さい";
+					break;
+				}
+			}
+		}
+	}
+	if (!result) {
+		$("#message").text(err);
+		$("#message_dialog").dialog("option", { title: "入力エラー" });
+		$("#message_dialog").dialog("open");
+	}
+	return result;
 };

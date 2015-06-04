@@ -528,11 +528,31 @@ workitemEdit.onloadEntryReq = function (e) {
 		var entry = this.response;
 		// formに取得したデータを埋め込む
 		workitemEdit.setEntryForm(entry);
-		$("#entry_memo_ref").text(entry.entry_memo);		
+		//$("#entryForm #entry_memo_ref").text(entry.entry_memo);		
 		// 見積情報の取得
 		workitemEdit.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
 	}
 };
+workitemEdit.requestBillingTotal = function (no) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/billing_get_total/' + no, true);
+	xhr.responseType = 'json';
+	xhr.onload = workitemEdit.onloadBillingTotalReq;
+	xhr.send();
+};
+// 請求金額、入金額取得リクエストのコールバック
+workitemEdit.onloadBillingTotalReq = function (e) {
+	if (this.status == 200) {
+		var billing = this.response;
+		if (billing.amount_total != null) {
+			$("#entryForm #entry_amount_billing").val(scheduleCommon.numFormatter(billing.amount_total,11));
+		}
+		if (billing.complete_total != null) {
+			$("#entryForm #entry_amount_deposit").val(scheduleCommon.numFormatter(billing.complete_total,11));
+		}
+	}
+};
+
 // 受注確定になっている見積情報を取得する
 workitemEdit.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) {
 	$.ajax({
@@ -541,6 +561,8 @@ workitemEdit.requestQuoteInfo = function(entry_no, large_item_cd, consumption_ta
 		dataType: 'json',
 		success: function (quote_list) {
 			workitemEdit.setQuoteInfo(quote_list, consumption_tax);
+			// 請求情報から請求金額、入金金額合計を取得して表示
+			workitemEdit.requestBillingTotal(entry_no);	
 		}
 	});
 
@@ -550,88 +572,91 @@ workitemEdit.setQuoteInfo = function (quote_list, consumption_tax) {
 		var total_price = 0;
 		var rows = quote_list.rows;
 		if (rows.length > 0) {
-			$("#quote_no_ref").val(rows[0].quote_no);
+			$("#entryForm #quote_no").val(rows[0].quote_no);
 			var list = "";
 			for (var i = 0;i <  rows.length;i++) {
 				list += rows[i].test_middle_class_name + "\n";
 				total_price += Number(rows[i].price);
 			}
-			$("#test_middle_class_list_ref").text(list);
+			$("#entryForm #test_middle_class_list").text(list);
 			tax = total_price * (consumption_tax / 100);
-			$("#entry_amount_price_ref").val(scheduleCommon.numFormatter(total_price + tax,11));
+			$("#entryForm #entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));
 		}
 	}
 };
-
 // 案件データをフォームにセットする
 workitemEdit.setEntryForm = function (entry) {
-	$("#entry_no_ref").val(entry.entry_no);					// 案件No
-	$("#quote_no_ref").val(entry.quote_no);					// 見積番号
-	$("#inquiry_date_ref").val(entry.inquiry_date);			// 問合せ日
-	$("#entry_status_ref").val(entry.entry_status);			// 案件ステータス
-	$("#sales_person_id_ref").val(entry.sales_person_id);	// 案件ステータス
+	$("#entryForm #entry_no").val(entry.entry_no);					// 案件No
+	$("#entryForm #quote_no").val(entry.quote_no);					// 見積番号
+	$("#entryForm #inquiry_date").val(entry.inquiry_date);			// 問合せ日
+	$("#entryForm #entry_status").val(entry.entry_status);			// 案件ステータス
+	$("#entryForm #sales_person_id").val(entry.sales_person_id);	// 案件ステータス
 //	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
-	$("#agent_cd_ref").val(entry.agent_cd);					// 代理店コード
-	$("#agent_name_ref").val(entry.agent_name);				// 代理店名
-	$("#client_cd_ref").val(entry.client_cd);				// 得意先コード
+	$("#entryForm #agent_cd").val(entry.agent_cd);					// 代理店コード
+	$("#entryForm #agent_name").val(entry.agent_name);				// 代理店名
+	$("#entryForm #client_cd").val(entry.client_cd);				// 得意先コード
 	var name_1 = entry.client_name_1;
 	var name_2 = entry.client_name_2;
-	$("#client_name_ref").val(name_1 );								// 得意先名1
-	$("#client_division_cd_ref").val(entry.client_division_cd);		// 所属部署CD
-	$("#client_division_name_ref").val(entry.client_division_name);	// 所属部署名
-	$("#client_person_id_ref").val(entry.client_person_id);			// 担当者ID
-	$("#client_person_name_ref").val(entry.client_person_name);		// 担当者名
+	$("#entryForm #client_name").val(name_1 );								// 得意先名1
+	$("#entryForm #client_division_cd").val(entry.client_division_cd);		// 所属部署CD
+	$("#entryForm #client_division_name").val(entry.client_division_name);	// 所属部署名
+	$("#entryForm #client_division_memo").val(entry.client_division_memo);	// 所属部署メモ
+	$("#entryForm #client_person_id").val(entry.client_person_id);			// 担当者ID
+	$("#entryForm #client_person_name").val(entry.client_person_name);		// 担当者名
+	$("#entryForm #client_person_memo").val(entry.client_person_memo);		// 担当者メモ
 
-	$("#test_large_class_cd_ref").val(entry.test_large_class_cd);		// 試験大分類CD
-	$("#test_large_class_name_ref").val(entry.test_large_class_name);	// 試験大分類名
-	$("#test_middle_class_cd_ref").val(entry.test_middle_class_cd);		// 試験中分類CD
-	$("#test_middle_class_name_ref").val(entry.test_middle_class_name);	// 試験中分類名
-	$("#entry_title_ref").val(entry.entry_title);						// 案件名
+	$("#entryForm #test_large_class_cd").val(entry.test_large_class_cd);		// 試験大分類CD
+	$("#entryForm #test_large_class_name").val(entry.test_large_class_name);	// 試験大分類名
+	$("#entryForm #test_middle_class_cd").val(entry.test_middle_class_cd);		// 試験中分類CD
+	$("#entryForm #test_middle_class_name").val(entry.test_middle_class_name);	// 試験中分類名
+	$("#entryForm #entry_title").val(entry.entry_title);						// 案件名
 	
-	$("#order_accepted_date_ref").val(entry.order_accepted_date);	// 受注日付
-	$("#order_accept_check_ref").val(entry.order_accept_check);		// 仮受注日チェック
-	$("#acounting_period_no_ref").val(entry.acounting_period_no);	// 会計期No
-	$("#order_type_ref").val(entry.order_type);						// 受託区分
-	$("#contract_type_ref").val(entry.contract_type);				// 契約区分
-	$("#outsourcing_cd_ref").val(entry.outsourcing_cd);				// 委託先CD
-	$("#outsourcing_name_ref").val(entry.outsourcing_name);			// 委託先CD
-	$("#entry_amount_price_ref").val(entry.entry_amount_price);		// 案件合計金額
-	$("#entry_amount_billing_ref").val(entry.entry_amount_billing);	// 案件請求合計金額
-	$("#entry_amount_deposit_ref").val(entry.entry_amount_deposit); // 案件入金合計金額
-	$("#test_person_id_ref").val(entry.test_person_id);				// 試験担当者ID
+	$("#entryForm #order_accepted_date").val(entry.order_accepted_date);	// 受注日付
+	$("#entryForm #order_accept_check").val(entry.order_accept_check);		// 仮受注日チェック
+	$("#entryForm #acounting_period_no").val(entry.acounting_period_no);	// 会計期No
+	$("#entryForm #order_type").val(entry.order_type);						// 受託区分
+	$("#entryForm #contract_type").val(entry.contract_type);				// 契約区分
+	$("#entryForm #outsourcing_cd").val(entry.outsourcing_cd);				// 委託先CD
+	$("#entryForm #outsourcing_name").val(entry.outsourcing_name);			// 委託先CD
+	$("#entryForm #entry_amount_price_notax").val(entry.entry_amount_price_notax);		// 案件合計金額（税抜）
+	$("#entryForm #entry_amount_tax").val(entry.entry_amount_tax);			// 消費税額
+	$("#entryForm #entry_amount_price").val(entry.entry_amount_price);		// 案件合計金額（税込）
+	$("#entryForm #entry_amount_billing").val(entry.entry_amount_billing);	// 案件請求合計金額
+	$("#entryForm #entry_amount_deposit").val(entry.entry_amount_deposit); // 案件入金合計金額
+	$("#entryForm #test_person_id").val(entry.test_person_id);				// 試験担当者ID
 	
-	$("#report_limit_date_ref").val(entry.report_limit_date);		// 報告書提出期限
-	$("#report_submit_date_ref").val(entry.report_submit_date);		// 報告書提出日
-	$("#prompt_report_limit_date_1_ref").val(entry.prompt_report_limit_date_1);		// 速報提出期限1
-	$("#prompt_report_submit_date_1_ref").val(entry.prompt_report_submit_date_1);	// 速報提出日1
-	$("#prompt_report_limit_date_2_ref").val(entry.prompt_report_limit_date_2);		// 速報提出期限2
-	$("#prompt_report_submit_date_2_ref").val(entry.prompt_report_submit_date_2);	// 速報提出日2
-	$("#entry_consumption_tax_ref").val(entry.consumption_tax);		// 消費税率
-	$("#entry_memo_ref").val(entry.entry_memo);						// 備考
+	$("#entryForm #report_limit_date").val(entry.report_limit_date);		// 報告書提出期限
+	$("#entryForm #report_submit_date").val(entry.report_submit_date);		// 報告書提出日
+	$("#entryForm #prompt_report_limit_date_1").val(entry.prompt_report_limit_date_1);		// 速報提出期限1
+	$("#entryForm #prompt_report_submit_date_1").val(entry.prompt_report_submit_date_1);	// 速報提出日1
+	$("#entryForm #prompt_report_limit_date_2").val(entry.prompt_report_limit_date_2);		// 速報提出期限2
+	$("#entryForm #prompt_report_submit_date_2").val(entry.prompt_report_submit_date_2);	// 速報提出日2
+	$("#entryForm #entry_consumption_tax").val(entry.consumption_tax);		// 消費税率
+	$("#entryForm #entry_memo").val(entry.entry_memo);						// 備考
 	if (entry.delete_check == 1) {
-		$("#delete_check_ref").prop("checked", true);				// 削除フラグ
+		$("#entryForm #delete_check").prop("checked", true);				// 削除フラグ
 	} else {
-		$("#delete_check_ref").prop("checked", false);				// 削除フラグ
+		$("#entryForm #delete_check").prop("checked", false);				// 削除フラグ
 	}
-	$("#delete_reason_ref").val(entry.delete_reason);				// 削除理由
-	$("#input_check_date_ref").val(entry.input_check_date);			// 入力日
+	$("#entryForm #delete_reason").val(entry.delete_reason);				// 削除理由
+	$("#entryForm #input_check_date").val(entry.input_check_date);			// 入力日
 	if (entry.input_check == 1) {
-		$("#input_check_ref").prop("checked",true);					// 入力完了チェック
+		$("#entryForm #input_check").prop("checked",true);					// 入力完了チェック
 	} else {
-		$("#input_check_ref").prop("checked", false);				// 入力完了チェック
+		$("#entryForm #input_check").prop("checked", false);				// 入力完了チェック
 	}
-	$("#input_operator_id_ref").val(entry.input_operator_id);		// 入力者ID
-	$("#confirm_check_date_ref").val(entry.confirm_check_date);		// 確認日
+	$("#entryForm #input_operator_id").val(entry.input_operator_id);		// 入力者ID
+	$("#entryForm #confirm_check_date").val(entry.confirm_check_date);		// 確認日
 	if (entry.confirm_check == 1) {
-		$("#confirm_check_ref").prop("checked",true);				// 確認完了チェック
+		$("#entryForm #confirm_check").prop("checked",true);				// 確認完了チェック
 	} else {
-		$("#confirm_check_ref").prop("checked", false);				// 確認完了チェック
+		$("#entryForm #confirm_check").prop("checked", false);				// 確認完了チェック
 	}
-	$("#confirm_operator_id_ref").val(entry.confirm_operator_id);	// 確認者ID
-	$("#created_ref").val(entry.created);							// 作成日
-	$("#created_id_ref").val(entry.created_id);						// 作成者ID
-	$("#updated_ref").val(entry.updated);							// 更新日
-	$("#updated_id_ref").val(entry.updated_id);						// 更新者ID
+	$("#entryForm #confirm_operator_id").val(entry.confirm_operator_id);	// 確認者ID
+	$("#entryForm #created").val(entry.created);							// 作成日
+	$("#entryForm #created_id").val(entry.created_id);						// 作成者ID
+	$("#entryForm #updated").val(entry.updated);							// 更新日
+	$("#entryForm #updated_id").val(entry.updated_id);						// 更新者ID
 };
 workitemEdit.clearEntry = function () {
 	var today = scheduleCommon.getToday("{0}/{1}/{2}");
@@ -660,9 +685,11 @@ workitemEdit.clearEntry = function () {
 	entry.order_type = 0;			// 受託区分
 	entry.contract_type = 1;		// 契約区分
 	entry.outsourcing_cd = "";		// 委託先CD
-	entry.entry_amount_price = 0;	// 案件合計金額
-	entry.entry_amount_price = 0;	// 案件請求合計金額
-	entry.entry_amount_billing = 0; // 案件入金合計金額
+	entry.entry_amount_price_notax = 0;	// 案件合計金額（税抜）
+	entry.entry_amount_tax = 0;		// 消費税額
+	entry.entry_amount_price = 0;	// 案件合計金額（税込）
+	entry.entry_amount_billing = 0;	// 案件請求合計金額
+	entry.entry_amount_deposit = 0; // 案件入金合計金額
 	entry.test_person_id = "";		// 試験担当者ID
 	entry.report_limit_date = "";				// 報告書提出期限
 	entry.report_submit_date = "";				// 報告書提出日
@@ -686,4 +713,3 @@ workitemEdit.clearEntry = function () {
 	entry.updated_id = "";			// 更新者ID
 	return entry;
 };
-
