@@ -408,6 +408,7 @@ quoteInfo.saveQuote = function (kind) {
 	xhr.open('POST', '/quote_post', true);
 	xhr.responseType = 'json';
 	if (kind == "print") {
+		document.body.style.cursor = "wait";
 		xhr.onload = quoteInfo.onloadQuoteReqAfterPrint;
 	} else {
 		xhr.onload = quoteInfo.onloadQuoteReq;
@@ -876,13 +877,7 @@ quoteInfo.printQuote = function (data) {
 	doc.save(filename);
 	canvas.setHeight(0);
 	canvas.setWidth(0);
-/*
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/print_pdf/' + quoteInfo.currentEntryNo, true);
-	xhr.responseType = 'application/pdf';
-	xhr.onload = quoteInfo.onloadPrintPDFReq;
-	xhr.send();
- * **/
+	document.body.style.cursor = "default";
 	return true;
 };
 
@@ -921,6 +916,4 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	top += 20;
 	quoteInfo.outputText(canvas, " 総合計 ", font_size, 450, top);
 	quoteInfo.outputText(canvas, "\\" + scheduleCommon.numFormatter(total + tax,10), font_size, 540, top);		 
-};
-quoteInfo.onloadPrintPDFReq = function () {
 };
