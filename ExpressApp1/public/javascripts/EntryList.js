@@ -242,13 +242,14 @@ entryList.createGrid = function () {
 		url: '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01 + '&entry_status_02=' + sts02 + '&entry_status_03=' + sts03 + '&entry_status_04=' + sts04 + '&entry_status_05=' + sts05,
 		altRows: true,
 		datatype: "json",
-		colNames: ['請求区分','未入金','報告書期限','report_submit_date','案件No','client_cd','クライアント名','client_division_cd','クライアント部署'
+		colNames: ['請求区分','請求区分_1','未入金','報告書期限','report_submit_date','案件No','client_cd','クライアント名','client_division_cd','クライアント部署'
 				,'client_address_1','client_address_2','client_division_address_1','client_division_address_2'
 				,'client_tel_no','client_fax_no','client_division_tel_no','client_division_fax_no','client_person_id'
 				,'クライアント担当者','client_person_compellation','試験タイトル','問合せ日', '案件ステータス', '営業担当者'
 				,'受注日','仮受注チェック','受託区分','test_large_class_cd', '試験大分類', '試験中分類','試験担当者','消費税率','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter},
+			{ name: 'pay_result_1', hidden:true},
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter},
 			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter},
 			{ name: 'report_submit_date', index: '', hidden:true },
@@ -350,6 +351,9 @@ entryList.payResultFormatter = function (cellval, options, rowObject) {
 			break;
 			case 3:result = "入金済";
 			break;
+		}
+		if (rowObject.pay_result_1 > 0) {	// 請求可があればそれを優先する
+			result = "請求可";
 		}
 	}
 	return result;

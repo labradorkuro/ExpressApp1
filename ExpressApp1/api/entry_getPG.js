@@ -51,6 +51,7 @@ var entry_get_list = function (req, res) {
 		+ "to_char(report_submit_date, 'YYYY/MM/DD') AS report_submit_date," 
 		+ 'subq.pay_complete,'
 		+ 'subq2.pay_result,'
+		+ 'subq3.pay_result_1,'
 		+ 'entry_status,' 
 		+ 'sales_person_id,' 
 		+ 'quote_no,' 
@@ -94,6 +95,7 @@ var entry_get_list = function (req, res) {
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
 		// 請求情報のサブクエリ 請求区分を表示するため
 		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
+		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_result_1 FROM drc_sch.billing_info WHERE (pay_result = 1 AND billing_info.delete_check = 0) GROUP BY entry_no) as subq3 ON(subq3.entry_no = entry_info.entry_no)'
 		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND entry_info.delete_check = $1  ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
