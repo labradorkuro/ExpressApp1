@@ -656,6 +656,13 @@ workitemEdit.setEntryForm = function (entry) {
 //	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
 	$("#entryForm #agent_cd").val(entry.agent_cd);					// 代理店コード
 	$("#entryForm #agent_name").val(entry.agent_name);				// 代理店名
+	$("#entryForm #agent_division_cd").val(entry.agent_division_cd);		// 所属部署CD
+	$("#entryForm #agent_division_name").val(entry.agent_division_name);	// 所属部署名
+	$("#entryForm #agent_division_memo").val(entry.agent_division_memo);	// 所属部署メモ
+	$("#entryForm #agent_person_id").val(entry.agent_person_id);			// 担当者ID
+	$("#entryForm #agent_person_name").val(entry.agent_person_name);		// 担当者名
+	$("#entryForm #agent_person_memo").val(entry.agent_person_memo);		// 担当者メモ
+
 	$("#entryForm #client_cd").val(entry.client_cd);				// 得意先コード
 	var name_1 = entry.client_name_1;
 	var name_2 = entry.client_name_2;
