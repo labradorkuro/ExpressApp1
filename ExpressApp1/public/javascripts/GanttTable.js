@@ -256,7 +256,7 @@ GanttTable.createEntryRows = function(ganttData, entry_list,left_div,right_div, 
 			$(cate1).css('height',height);
 			$(cate2).css('height', height);
 			// 作業項目の追加ボタンの押下イベント処理定義
-			var workitem = { entry_no: rows[i].entry_no, entry_title: rows[i].entry_title,work_item_id:-1,work_title:"",start_date:"",end_date:"",start_date_result:"",end_date_result:"",priority_item_id:"",subsequent_item_id:"",progress:0,item_type:0};
+			var workitem = { entry_no: rows[i].entry_no, entry_title: rows[i].entry_title,order_accepted_date:rows[i].order_accepted_date,work_item_id:-1,work_title:"",start_date:"",end_date:"",start_date_result:"",end_date_result:"",priority_item_id:"",subsequent_item_id:"",progress:0,item_type:0};
 			$(add_button).data("workitem", workitem);
 			$(add_button).bind('click', workitemEdit.openDialog);
 			// テンプレート			

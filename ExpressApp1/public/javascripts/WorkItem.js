@@ -300,9 +300,14 @@ workitemEdit.onSelectTemplate = function (event) {
 
 // 選択されたテンプレートを指定された案件の作業項目として追加する
 workitemEdit.selectTemplate = function (entry_no, template_cd) {
-	var entry = $.get('/entry_get/' + entry_no, {});
-//	var template = $.get('/template_get/list/' + template_name + '/' + 2 + '?delete_check=' + 0, {});
-	var template = $.get('/template_get_list/' + template_cd + '?delete_check=' + 0, {});
+	//var entry = $.get('/entry_get/' + entry_no, {});
+	//var template = $.get('/template_get_list/' + template_cd + '?delete_check=' + 0, {});
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/template_get_list/' + template_cd + '?delete_check=' + 0, true);
+	xhr.responseType = 'json';
+	xhr.onload = workitemEdit.onloadTemplateListReq;
+	xhr.send();
+/**
 	$.when(entry,template)
 	.done(function (entry_Response,template_response) {
 		var temp = template_response[0];
@@ -340,6 +345,42 @@ workitemEdit.selectTemplate = function (entry_no, template_cd) {
     .fail(function () {
 		$("#error").html("an error occured").show();
 	});
+**/
+};
+workitemEdit.onloadTemplateListReq = function(e) {
+	if (this.status == 200) {
+		var temp = this.response;
+		for (var i = 0; i < temp.length; i++) {
+			// 案件の受注日を起点日とする
+			var base_date = workitemEdit.currentWorkitem.order_accepted_date;
+			if ((base_date == null) || (base_date == "")) {
+				// 受注日が未入力の場合、ガントチャートの開始日を起点日とする
+				base_date = GanttTable.start_date;
+			}
+
+			// 作業項目の開始日などの日付と起点の日の日数を求める
+			var start_offset = scheduleCommon.calcDateCount("2000/01/01", temp[i].start_date) - 1;
+			var end_offset = scheduleCommon.calcDateCount("2000/01/01", temp[i].end_date) - 1;
+			var workitem = {
+				entry_no: workitemEdit.currentWorkitem.entry_no, 
+				work_item_id: -1,
+				work_title: temp[i].work_title, 
+				start_date_result: "",
+				end_date_result: "",
+				item_type: temp[i].item_type, 
+				priority_item_id: temp[i].priority_item_id,
+				subsequent_item_id: 0,
+				progress:0,
+				delete_check:0
+			};
+			// 求めた各日数を起点の日に加算して日付とする
+			var sd = scheduleCommon.addDate(scheduleCommon.dateStringToDate(base_date), start_offset);
+			workitem.start_date = scheduleCommon.getDateString(sd, "{0}/{1}/{2}");
+			var ed = scheduleCommon.addDate(scheduleCommon.dateStringToDate(base_date), end_offset);
+			workitem.end_date = scheduleCommon.getDateString(ed, "{0}/{1}/{2}");
+			workitemEdit.addWorkitem(workitem);
+		}
+	}
 };
 
 // テンプレートとして保存ボタンイベント
