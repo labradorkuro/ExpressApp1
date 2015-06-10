@@ -180,6 +180,9 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		// 最初に件数を取得する		
 		connection.query(sql_count, params, function (err, results) {
 			if (err) {
@@ -217,6 +220,9 @@ var entry_get_list_for_gantt = function (res, sql, params) {
 	var rows = [];
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		var query = connection.query(sql, params);
 		query.on('row', function (row) {
 			rows.push(row);
@@ -316,6 +322,9 @@ var entry_get_detail = function (req, res) {
 	var entry = {};
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		var query = connection.query(sql, [req.params.no]);
 		var rows = [];
 		query.on('row', function (row) {
@@ -392,6 +401,9 @@ exports.quote_specific_get_list = function (req, res) {
 			var rows = [];
 			// SQL実行
 			pg.connect(connectionString, function (err, connection) {
+				if (err) {
+					console.log(err);
+				}
 				var query = connection.query(sql, params);
 				query.on('row', function (row) {
 					rows.push(row);
@@ -426,6 +438,9 @@ exports.report_gantt = function (req, res) {
 	var result = [];
 	var rows = [];
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		var query = connection.query(sql, [req.params.entry_no]);
 		query.on('row', function (row) {
 			rows.push(row);
@@ -473,6 +488,9 @@ var quote_get_list = function (req, res) {
 	var dc = Number(req.query.quote_delete_check);
 	var params = [dc,req.params.entry_no];
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		// 最初に件数を取得する		
 		connection.query(sql_count, params, function (err, results) {
 			if (err) {
@@ -526,6 +544,9 @@ var quote_get_detail = function (req, res) {
 	var rows = [];
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		var query = connection.query(sql, [req.params.entry_no, req.params.quote_no]);
 		query.on('row', function (row) {
 			rows.push(row);
@@ -577,6 +598,9 @@ var quote_specific_get_list_grid = function (req, res) {
 	//var params = [dc,req.params.entry_no, req.params.quote_no,req.query.large_item_cd];
 	var params = [dc,req.params.entry_no, req.params.quote_no];
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		// 最初に件数を取得する		
 		connection.query(sql_count, params_0, function (err, results) {
 			if (err) {
@@ -638,6 +662,9 @@ exports.quote_specific_get_list_for_entryform = function (req, res) {
 	var rows = [];
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		var query = connection.query(sql, params);
 		query.on('row', function (row) {
 			rows.push(row);
@@ -708,6 +735,9 @@ exports.quote_specific_get_list_for_calendar = function (req, res) {
 	var rows = [];
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
 		var query = connection.query(sql_a, params);
 		query.on('row', function (row) {
 			rows.push(row);
