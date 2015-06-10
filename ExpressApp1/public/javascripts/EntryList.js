@@ -64,7 +64,7 @@ $(function() {
 	// 請求先編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_billing").bind('click' , {}, billingList.openBillingFormDialog);
 	$("#edit_billing").css("display","none");
-	// 請求情報画面の参照ボタン
+	// 請求情報画面の参照ボタン(案件情報の参照）
 	$("#ref_entry").bind('click' , {}, entryList.openEntryDialog);
 
 	quoteInfo.enableQuoteButtons(false,0);
@@ -176,21 +176,34 @@ entryList.createEntryDialog = function () {
 		title: '案件情報',
 		closeOnEscape: false,
 		modal: true,
-		buttons: {
-			"追加": function () {
-				if (entryList.saveEntry()) {
-					$(this).dialog('close');
-				}
-			},
-			"更新": function () {
-				if (entryList.saveEntry()) {
-					$(this).dialog('close');
-				}
-			},
-			"閉じる": function () {
-				$(this).dialog('close');
-			}
-		}
+        buttons:[
+            {
+                text: '追加',
+                class:'btn-entry_add',
+                click: function() {
+					if (entryList.saveEntry()) {
+						$(this).dialog('close');
+					}
+                }
+            },
+            {
+                text: '更新',
+                class:'btn-entry_update',
+                click: function() {
+                    //ボタンを押したときの処理
+					if (entryList.saveEntry()) {
+						$(this).dialog('close');
+					}
+                }
+            },
+            {
+                text: '閉じる',
+                class:'btn-close',
+                click: function() {
+                    $(this).dialog('close');
+                }
+            }
+		]
 	});
 };
 
@@ -422,8 +435,8 @@ entryList.openEntryDialog = function (event) {
 		$("#entry_dialog").dialog({modal:false});	// 参照の時はモードレス
 		var no = entryList.getSelectEntry();
 		entryList.requestEntryData(no);
-		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
-		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+		$(".btn-entry_add").button("disable");
+		$(".btn-entry_update").button("disable");
 	}
 
 	$("#entry_dialog").dialog("open");
