@@ -26,6 +26,9 @@ $(function() {
 });
 
 var workitemEdit = workitemEdit || {};
+
+workitemEdit.currentWorkitem = null;	// 処理中のスケジュール情報
+
 // 権限チェック
 workitemEdit.checkAuth = function() {
 	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
@@ -433,11 +436,18 @@ workitemEdit.onAddWorkitem = function () {
 
 // テンプレート選択ダイアログ
 workitemEdit.openSelectTemplateDialog = function (event) {
-	var workitem = $(event.target).data('workitem');
+	workitemEdit.currentWorkitem = $(event.target).data('workitem');
 	// 初期化
 	$("#template_table").empty();
 	// テーブルを作成してリストを表示する
 	$("#template_table").append("<tr><th>テンプレート名</th><th>項目名</th><th>種別</th>");
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/template_get_all?delete_check=' + 0, true);
+	xhr.responseType = 'json';
+	xhr.onload = workitemEdit.onloadTemplateReq;
+	xhr.send();
+	/**
 	var template = $.get('/template_get_all?delete_check=' + 0, {});
 	$.when(template)
 	.done(function (template_response) {
@@ -487,7 +497,59 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 		}
 		$("#select_template_dialog").dialog("open");
 	});
+	**/
 };
+
+workitemEdit.onloadTemplateReq = function(e) {
+	if (this.status == 200) {
+		var temp = this.response;
+		if (temp.length > 0) {
+			// 同一テンプレート名毎の件数を取得する
+			var prev_cd = temp[0].template_cd;
+			var prev_name = temp[0].template_name;
+			var name_count = [];
+			var count = 0;
+			for (var i = 0; i < temp.length; i++) {
+				if (temp[i].template_cd != prev_cd) {
+					// 名前と件数を保存する
+					name_count.push({ cd:prev_cd, name: prev_name, count: count });
+					prev_cd = temp[i].template_cd;
+					prev_name = temp[i].template_name;
+					count = 0;
+				}
+				count++;
+			}
+			// 名前と件数を保存する
+			name_count.push({ cd:prev_cd, name: prev_name, count: count });
+			// テーブル行を作成する
+			var offset = 0;
+			for (var j = 0; j < name_count.length; j++) {
+				var cd = name_count[j].cd;
+				var name = name_count[j].name;
+				var count = name_count[j].count;
+				var td_name = $("<td rowspan=" + count + ">" + name + "</td>");
+				var sel_btn = $("<a class='template_select_button'>選択</a>");
+				// 選択ボタン押下処理にバインド
+				var workitem_wk = {entry_no:workitemEdit.currentWorkitem.entry_no,template_cd:cd, template_name:name};
+				$(sel_btn).data('workitem', workitem_wk);
+				$(sel_btn).bind("click",workitemEdit.onSelectTemplate);
+				var tr = $("<tr></tr>");
+				$(td_name).append(sel_btn);
+				$(tr).append(td_name);
+				for (var i = offset; i < count + offset; i++) {
+					var type = temp[i].item_type == 0 ? "作業項目": "マイルストーン";
+					var td_detail = $("<td>" + temp[i].work_title + "</td><td>" + type + "</td>");
+					$(tr).append(td_detail);
+					$("#template_table").append(tr);
+					tr = $("<tr></tr>");
+				}
+				offset += count;
+			}
+		}
+		$("#select_template_dialog").dialog("open");
+	}
+};
+
 workitemEdit.openTemplateNameDialog = function (event) {
 	$("#template_name_dialog").dialog("open");
 };

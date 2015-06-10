@@ -19,17 +19,39 @@ form#entryForm(method="post",action="javascript:return false;")
 			td 
 				input.datepicker#inquiry_date(type="text" name="inquiry_date" placeholder="日付選択" size="12")
 			td.form_title_s ステータス
-			td(colspan=3) 
+			td 
 				select#entry_status(name="entry_status")
 					option(value="01" selected="true") 引合
 					option(value="02") 見積
 					option(value="03") 依頼
 					option(value="04") 完了
 					option(value="05") 失注
-			td.form_title_ss 代理店
-			td(colspan=4)
+	hr
+	table
+		tr
+			td(colspan=6) 代理店
+		tr
+			td.form_title_ss 社名
+			td
 				input#agent_cd(type="hidden" name="agent_cd")
 				input#agent_name(type="text" name="agent_name" size="16" placeholder="代理店選択")
+			td.form_title_ss 部署
+			td
+				input#agent_division_cd(type="hidden" name="agent_division_cd")
+				input#agent_division_name(type="text" name="agent_division_name" size="16")
+			td.form_title_m 部署メモ
+			td 
+				input#agent_division_memo(type="text" name="agent_division_memo" readonly="true" size="16")
+		tr
+			td
+			td
+			td.form_title_ss 担当者
+			td 
+				input#agent_person_id(type="hidden" name="agent_person_id")
+				input#agent_person_name(type="text" name="agent_person_name" size="16")
+			td.form_title_m 担当者メモ
+			td 
+				input#agent_person_memo(type="text" name="agent_person_memo" readonly="true" size="16")
 	hr
 	table
 		tr

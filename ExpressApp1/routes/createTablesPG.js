@@ -12,6 +12,8 @@ exports.create = function (req, res) {
 			+ "entry_status VARCHAR(2),"			// 案件ステータス
 			+ "sales_person_id VARCHAR(32),"		// 営業担当者ID
 			+ "agent_cd VARCHAR(8),"				// 代理店CD
+			+ "agent_division_cd VARCHAR(8),"		// 代理店部署CD
+			+ "agent_person_id VARCHAR(128),"		// 代理店担当者ID
 			+ "client_cd VARCHAR(8),"				// クライアントCD
 			+ "client_division_cd VARCHAR(8),"		// クライアント部署CD
 			+ "client_person_id VARCHAR(128),"		// クライアント担当者ID

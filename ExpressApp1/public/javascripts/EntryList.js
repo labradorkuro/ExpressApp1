@@ -331,6 +331,12 @@ entryList.selectClient = function () {
 entryList.selectAgent = function () {
 	$("#agent_cd").val(clientList.currentClient.client_cd);
 	$("#agent_name").val(clientList.currentClient.name_1);
+	$("#agent_division_cd").val(clientList.currentClientDivision.division_cd);
+	$("#agent_division_name").val(clientList.currentClientDivision.name);
+	$("#agent_division_memo").val(clientList.currentClientDivision.memo);
+	$("#agent_person_id").val(clientList.currentClientPerson.person_id);
+	$("#agent_person_name").val(clientList.currentClientPerson.name);
+	$("#agent_person_memo").val(clientList.currentClientPerson.memo);
 	return true;
 };
 entryList.selectOutsourcing = function () {
@@ -669,6 +675,13 @@ entryList.setEntryForm = function (entry) {
 //	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
 	$("#agent_cd").val(entry.agent_cd);					// 代理店コード
 	$("#agent_name").val(entry.agent_name);				// 代理店名
+	$("#agent_division_cd").val(entry.agent_division_cd);		// 所属部署CD
+	$("#agent_division_name").val(entry.agent_division_name);	// 所属部署名
+	$("#agent_division_memo").val(entry.agent_division_memo);	// 所属部署メモ
+	$("#agent_person_id").val(entry.agent_person_id);			// 担当者ID
+	$("#agent_person_name").val(entry.agent_person_name);		// 担当者名
+	$("#agent_person_memo").val(entry.agent_person_memo);		// 担当者メモ
+
 	$("#client_cd").val(entry.client_cd);				// 得意先コード
 	var name_1 = entry.client_name_1;
 	var name_2 = entry.client_name_2;
@@ -744,7 +757,14 @@ entryList.clearEntry = function () {
 	entry.quote_no = "";			// 見積番号
 	entry.quote_issue_date = "";	// 見積書発行日
 	entry.agent_cd = "";			// 代理店コード
-	entry.agent_name = "";			// 代理店名
+	entry.agent_name_1 = "";		// 得意先名
+	entry.agent_name_2 = "";		// 得意先名
+	entry.agent_address_1 = "";		// 住所
+	entry.agent_address_2 = "";		// 住所
+	entry.agent_division_cd = "";	// 代理店担当者所属部署
+	entry.agent_division_name = "";	// 代理店担当者所属部署
+	entry.agent_person_id = "";		// 代理店担当者
+	entry.agent_person_name = "";	// 代理店担当者
 	entry.client_cd = "";			// 得意先コード
 	entry.client_name_1 = "";		// 得意先名
 	entry.client_name_2 = "";		// 得意先名

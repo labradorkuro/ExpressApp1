@@ -88,6 +88,8 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ 'entry_status,'					// 案件ステータス
 			+ 'sales_person_id,'				// 営業担当者ID
 			+ 'agent_cd,'						// 代理店CD
+			+ 'agent_division_cd,'				// 代理店部署コード
+			+ 'agent_person_id,'				// 代理店担当者ID
 			+ 'client_cd,'						// 得意先コード
 			+ 'client_division_cd,'				// 得意先部署コード
 			+ 'client_person_id,'				// 得意先担当者ID
@@ -130,41 +132,43 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ '$4,'		// 案件ステータス
 			+ '$5,'		// 営業担当者ID
 			+ '$6,'		// 代理店CD
-			+ '$7,'		// 得意先CD
-			+ '$8,'		// 得意先部署CD
-			+ '$9,'		// 得意先担当者CD
-			+ '$10,'	// 試験大分類
-			+ '$11,'	// 試験中分類
-			+ '$12,'	// 案件名
-			+ '$13,'	// 受託区分
-			+ '$14,'	// 委託先CD
-			+ '$15,'	// 受注日
-			+ '$16,'	// 仮受注チェック
-			+ '$17,'	// 会計期No
-			+ '$18,'	// 試験担当者ID
-			+ '$19,'	// 案件合計金額
-			+ '$20,'	// 案件請求合計金額
-			+ '$21,'	// 案件入金合計金額
-			+ '$22,'	// 報告書提出期限
-			+ '$23,'	// 報告書提出日
-			+ '$24,'	// 速報提出期限１
-			+ '$25,'	// 速報提出日１
-			+ '$26,'	// 速報提出期限２
-			+ '$27,'	// 速報提出日２
-			+ '$28,'	// 消費税率
-			+ '$29,'	// メモ
-			+ '$30,'	// 削除フラグ
-			+ '$31,'	// 削除理由
-			+ '$32,'	// 入力日
-			+ '$33,'	// 入力完了チェック
-			+ '$34,'	// 入力者ID
-			+ '$35,'	// 確認日
-			+ '$36,'	// 確認完了チェック
-			+ '$37,'	// 確認者ID
-			+ '$38,'	// 作成日
-			+ '$39,'	// 作成者ID
-			+ '$40,'	// 更新日
-			+ '$41'		// 更新者ID
+			+ '$7,'		// 代理店部署CD
+			+ '$8,'		// 代理店担当者CD
+			+ '$9,'		// 得意先CD
+			+ '$10,'		// 得意先部署CD
+			+ '$11,'		// 得意先担当者CD
+			+ '$12,'	// 試験大分類
+			+ '$13,'	// 試験中分類
+			+ '$14,'	// 案件名
+			+ '$15,'	// 受託区分
+			+ '$16,'	// 委託先CD
+			+ '$17,'	// 受注日
+			+ '$18,'	// 仮受注チェック
+			+ '$19,'	// 会計期No
+			+ '$20,'	// 試験担当者ID
+			+ '$21,'	// 案件合計金額
+			+ '$22,'	// 案件請求合計金額
+			+ '$23,'	// 案件入金合計金額
+			+ '$24,'	// 報告書提出期限
+			+ '$25,'	// 報告書提出日
+			+ '$26,'	// 速報提出期限１
+			+ '$27,'	// 速報提出日１
+			+ '$28,'	// 速報提出期限２
+			+ '$29,'	// 速報提出日２
+			+ '$30,'	// 消費税率
+			+ '$31,'	// メモ
+			+ '$32,'	// 削除フラグ
+			+ '$33,'	// 削除理由
+			+ '$34,'	// 入力日
+			+ '$35,'	// 入力完了チェック
+			+ '$36,'	// 入力者ID
+			+ '$37,'	// 確認日
+			+ '$38,'	// 確認完了チェック
+			+ '$39,'	// 確認者ID
+			+ '$40,'	// 作成日
+			+ '$41,'	// 作成者ID
+			+ '$42,'	// 更新日
+			+ '$43'		// 更新者ID
 			+ ')'
 			;
 	// SQL実行
@@ -175,6 +179,8 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			entry.entry_status,				// 案件ステータス
 			entry.sales_person_id,			// 営業担当者ID
 			entry.agent_cd,					// 代理店CD
+			entry.agent_division_cd,		// 代理店部署コード
+			entry.agent_person_id,			// 代理店担当者ID
 			entry.client_cd,				// 得意先コード
 			entry.client_division_cd,		// 得意先部署コード
 			entry.client_person_id,			// 得意先担当者ID
@@ -230,40 +236,42 @@ var updateEntryInfo = function(entry, req, res) {
 			+ 'entry_status = $3,'					// 案件ステータス
 			+ 'sales_person_id = $4,'				// 営業担当者ID
 			+ 'agent_cd = $5,'						// 代理店CD
-			+ 'client_cd = $6,'						// 得意先コード
-			+ 'client_division_cd = $7,'			// 得意先部署コード
-			+ 'client_person_id = $8,'				// 得意先担当者ID
-			+ 'test_large_class_cd = $9,'			// 試験大分類CD
-			+ 'test_middle_class_cd = $10,'			// 試験中分類CD
-			+ 'entry_title = $11,'					// 案件名
-			+ 'order_type = $12,'					// 受託区分
-			+ 'outsourcing_cd = $13,'				// 委託先CD
-			+ 'order_accepted_date = $14,'			// 受注日付
-			+ 'order_accept_check = $15,'			// 仮受注日チェック
-			+ 'acounting_period_no = $16,'			// 会計期No
-			+ 'test_person_id = $17,'				// 試験担当者ID
-			+ 'entry_amount_price = $18,'			// 案件合計金額
-			+ 'entry_amount_billing = $19,'			// 案件請求合計金額
-			+ 'entry_amount_deposit = $20,'			// 案件入金合計金額
-			+ 'report_limit_date = $21,'			// 報告書提出期限
-			+ 'report_submit_date = $22,'			// 報告書提出日
-			+ 'prompt_report_limit_date_1 = $23,'	// 速報提出期限１
-			+ 'prompt_report_submit_date_1 = $24,'	// 速報提出日１
-			+ 'prompt_report_limit_date_2 = $25,'	// 速報提出期限２
-			+ 'prompt_report_submit_date_2 = $26,'	// 速報提出日２
-			+ 'consumption_tax = $27,'				// 消費税率
-			+ 'entry_memo = $28,'					// メモ
-			+ 'delete_check = $29,'					// 削除フラグ
-			+ 'delete_reason = $30,'				// 削除理由
-			+ 'input_check_date = $31,'				// 入力日
-			+ 'input_check = $32,'					// 入力完了チェック
-			+ 'input_operator_id = $33,'			// 入力者ID
-			+ 'confirm_check_date = $34,'			// 確認日
-			+ 'confirm_check = $35,'				// 確認完了チェック
-			+ 'confirm_operator_id = $36,'			// 確認者ID
-			+ 'updated = $37,'						// 更新日
-			+ 'updated_id = $38'					// 更新者ID
-			+ ' WHERE entry_no = $39';
+			+ 'agent_division_cd = $6,'				// 得意先部署コード
+			+ 'agent_person_id = $7,'				// 得意先担当者ID
+			+ 'client_cd = $8,'						// 得意先コード
+			+ 'client_division_cd = $9,'			// 得意先部署コード
+			+ 'client_person_id = $10,'				// 得意先担当者ID
+			+ 'test_large_class_cd = $11,'			// 試験大分類CD
+			+ 'test_middle_class_cd = $12,'			// 試験中分類CD
+			+ 'entry_title = $13,'					// 案件名
+			+ 'order_type = $14,'					// 受託区分
+			+ 'outsourcing_cd = $15,'				// 委託先CD
+			+ 'order_accepted_date = $16,'			// 受注日付
+			+ 'order_accept_check = $17,'			// 仮受注日チェック
+			+ 'acounting_period_no = $18,'			// 会計期No
+			+ 'test_person_id = $19,'				// 試験担当者ID
+			+ 'entry_amount_price = $20,'			// 案件合計金額
+			+ 'entry_amount_billing = $21,'			// 案件請求合計金額
+			+ 'entry_amount_deposit = $22,'			// 案件入金合計金額
+			+ 'report_limit_date = $23,'			// 報告書提出期限
+			+ 'report_submit_date = $24,'			// 報告書提出日
+			+ 'prompt_report_limit_date_1 = $25,'	// 速報提出期限１
+			+ 'prompt_report_submit_date_1 = $26,'	// 速報提出日１
+			+ 'prompt_report_limit_date_2 = $27,'	// 速報提出期限２
+			+ 'prompt_report_submit_date_2 = $28,'	// 速報提出日２
+			+ 'consumption_tax = $29,'				// 消費税率
+			+ 'entry_memo = $30,'					// メモ
+			+ 'delete_check = $31,'					// 削除フラグ
+			+ 'delete_reason = $32,'				// 削除理由
+			+ 'input_check_date = $33,'				// 入力日
+			+ 'input_check = $34,'					// 入力完了チェック
+			+ 'input_operator_id = $35,'			// 入力者ID
+			+ 'confirm_check_date = $36,'			// 確認日
+			+ 'confirm_check = $37,'				// 確認完了チェック
+			+ 'confirm_operator_id = $38,'			// 確認者ID
+			+ 'updated = $39,'						// 更新日
+			+ 'updated_id = $40'					// 更新者ID
+			+ ' WHERE entry_no = $41';
 
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
@@ -273,6 +281,8 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.entry_status,				// 案件ステータス
 			entry.sales_person_id,			// 営業担当者ID
 			entry.agent_cd,					// 代理店CD
+			entry.agent_division_cd,		// 代理店部署コード
+			entry.agent_person_id,			// 代理店担当者ID
 			entry.client_cd,				// 得意先コード
 			entry.client_division_cd,		// 得意先部署コード
 			entry.client_person_id,			// 得意先担当者ID
