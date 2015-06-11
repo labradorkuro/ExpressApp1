@@ -506,7 +506,7 @@ workitemEdit.createEntryDialog = function () {
 workitemEdit.openEntryDialog = function (event) {
 	var entry = event.data.entry;
 	workitemEdit.requestEntryData(entry.entry_no);
-	$("#entry_dialog").dialog("open");
+//	$("#entry_dialog").dialog("open");
 };
 // 案件データの読込み
 workitemEdit.requestEntryData = function (no) {
@@ -529,6 +529,7 @@ workitemEdit.requestBillingTotal = function (no) {
 		if (billing.complete_total != null) {
 			$("#entryForm #entry_amount_deposit").val(scheduleCommon.numFormatter(billing.complete_total,11));
 		}
+		$("#entry_dialog").dialog("open");
 	});
 };
 
