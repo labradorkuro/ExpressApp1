@@ -226,12 +226,12 @@ workitemEdit.updateItem = function (refresh) {
 };
 // 作業項目の削除確認ダイアログ表示
 workitemEdit.deleteItemConfirm = function () {
-	scheduleCommon.showConfirmDialog("#messageDlg", "作業項目の削除", "この作業項目を削除しますか？", workitemEdit.deleteItem);
+	scheduleCommon.showConfirmDialog("#confirm_dialog", "作業項目の削除", "この作業項目を削除しますか？", workitemEdit.deleteItem);
 };
 
 // 作業項目の削除(削除フラグのセット）
 workitemEdit.deleteItem = function () {
-	$("#messageDlg").dialog("close");
+	$("#confirm_dialog").dialog("close");
 	// formデータの取得
 	var form = workitemEdit.getFormData();
 	form.append('delete_check', '1'); // 削除フラグセット
@@ -300,8 +300,8 @@ workitemEdit.onSelectTemplate = function (event) {
 
 // 選択されたテンプレートを指定された案件の作業項目として追加する
 workitemEdit.selectTemplate = function (entry_no, template_cd) {
-	var template = $.get('/template_get_list/' + template_cd + '?delete_check=' + 0,function (entry_Response,template_response) {
-		var temp = template_response[0];
+	var template = $.get('/template_get_list/' + template_cd + '?delete_check=' + 0,function (template_response) {
+		var temp = template_response;
 		for (var i = 0; i < temp.length; i++) {
 			// 案件の受注日を起点日とする
 			var base_date = workitemEdit.currentWorkitem.order_accepted_date;
@@ -341,6 +341,7 @@ workitemEdit.selectTemplate = function (entry_no, template_cd) {
 // テンプレートとして保存ボタンイベント
 workitemEdit.onSaveToTemplate = function (event) {
 	var workitem = $(event.target).data("workitem");
+	workitemEdit.currentWorkitem = workitem;
 	$('#template_cd_nf').val("");
 	$('#template_name_nf').val("");
 	$('#entry_no_nf').val("");
@@ -351,17 +352,13 @@ workitemEdit.onSaveToTemplate = function (event) {
 
 // 案件に登録されている項目をテンプレートとして保存する
 workitemEdit.saveTemplate = function (template_cd, template_name, entry_no) {
-	var entry = $.get('/entry_get/' + entry_no, {});
 	// 作業項目データの検索(マイルストーンと作業項目)
-	var workitem_list = $.get('/workitem_get/' + entry_no + '/' + 2, {});
-	// 検索が終了後に処理	
-	$.when(entry, workitem_list)
-    .done(function (entry_Response, workitem_listResponse) {
-		var list = workitem_listResponse[0];
+	var workitem_list = $.get('/workitem_get/' + entry_no + '/' + 2, function (workitem_listResponse) {
+		var list = workitem_listResponse;
 		for (var i = 0; i < list.length; i++) {
 			var workitem = list[i];
 			// 案件の受注日を起点の日とする
-			var base_date = entry_Response[0].order_accepted_date;
+			var base_date = workitemEdit.currentWorkitem.order_accepted_date;
 			if ((base_date == null) || (base_date == "")) {
 				// 受注日が未入力の場合
 				base_date = scheduleCommon.getToday("{0}/{1}/{2}");
@@ -409,9 +406,9 @@ workitemEdit.addTemplate = function (template) {
 };
 
 workitemEdit.onAddTemplate = function () {
-		$("#message").text("テンプレートに保存されました");
-		$("#message_dialog").dialog("option", { title: "ガントチャート" });
-		$("#message_dialog").dialog("open");
+	$("#message").text("テンプレートに保存されました");
+	$("#message_dialog").dialog("option", { title: "ガントチャート" });
+	$("#message_dialog").dialog("open");
 };
 workitemEdit.addWorkitem = function (workitem) {
 	$.ajax("/workitem_post", {
@@ -513,11 +510,6 @@ workitemEdit.openEntryDialog = function (event) {
 };
 // 案件データの読込み
 workitemEdit.requestEntryData = function (no) {
-//	var xhr = new XMLHttpRequest();
-//	xhr.open('GET', '/entry_get/' + no, true);
-//	xhr.responseType = 'json';
-//	xhr.onload = workitemEdit.onloadEntryReq;
-//	xhr.send();
 	$.get('/entry_get/' + no,function(response) {
 		var entry = response;
 		// formに取得したデータを埋め込む
@@ -527,35 +519,17 @@ workitemEdit.requestEntryData = function (no) {
 		workitemEdit.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
 	});
 };
-// 案件データ取得リクエストのコールバック
-workitemEdit.onloadEntryReq = function (e) {
-	if (this.status == 200) {
-		var entry = this.response;
-		// formに取得したデータを埋め込む
-		workitemEdit.setEntryForm(entry);
-		//$("#entryForm #entry_memo_ref").text(entry.entry_memo);		
-		// 見積情報の取得
-		workitemEdit.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
-	}
-};
+// 請求金額、入金額取得リクエスト
 workitemEdit.requestBillingTotal = function (no) {
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/billing_get_total/' + no, true);
-	xhr.responseType = 'json';
-	xhr.onload = workitemEdit.onloadBillingTotalReq;
-	xhr.send();
-};
-// 請求金額、入金額取得リクエストのコールバック
-workitemEdit.onloadBillingTotalReq = function (e) {
-	if (this.status == 200) {
-		var billing = this.response;
+	$.get('/billing_get_total/' + no,function(response) {
+		var billing = response;
 		if (billing.amount_total != null) {
 			$("#entryForm #entry_amount_billing").val(scheduleCommon.numFormatter(billing.amount_total,11));
 		}
 		if (billing.complete_total != null) {
 			$("#entryForm #entry_amount_deposit").val(scheduleCommon.numFormatter(billing.complete_total,11));
 		}
-	}
+	});
 };
 
 // 受注確定になっている見積情報を取得する
