@@ -289,8 +289,8 @@ workitemEdit.ganttTableInit = function () {
 
 // テンプレート選択ボタンイベント
 workitemEdit.onSelectTemplate = function (event) {
-	scheduleCommon.showConfirmDialog("#messageDlg", "作業項目の追加", "このテンプレートを作業項目として追加しますか？", function (){
-		$("#messageDlg").dialog("close");
+	scheduleCommon.showConfirmDialog("#confirm_dialog", "作業項目の追加", "このテンプレートを作業項目として追加しますか？", function (){
+		$("#confirm_dialog").dialog("close");
 		$("#select_template_dialog").dialog("close");
 		var workitem = $(event.target).data("workitem");
 		// 案件の作業項目として追加する
