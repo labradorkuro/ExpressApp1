@@ -300,20 +300,11 @@ workitemEdit.onSelectTemplate = function (event) {
 
 // 選択されたテンプレートを指定された案件の作業項目として追加する
 workitemEdit.selectTemplate = function (entry_no, template_cd) {
-	//var entry = $.get('/entry_get/' + entry_no, {});
-	//var template = $.get('/template_get_list/' + template_cd + '?delete_check=' + 0, {});
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/template_get_list/' + template_cd + '?delete_check=' + 0, true);
-	xhr.responseType = 'json';
-	xhr.onload = workitemEdit.onloadTemplateListReq;
-	xhr.send();
-/**
-	$.when(entry,template)
-	.done(function (entry_Response,template_response) {
+	var template = $.get('/template_get_list/' + template_cd + '?delete_check=' + 0,function (entry_Response,template_response) {
 		var temp = template_response[0];
 		for (var i = 0; i < temp.length; i++) {
 			// 案件の受注日を起点日とする
-			var base_date = entry_Response[0].order_accepted_date;
+			var base_date = workitemEdit.currentWorkitem.order_accepted_date;
 			if ((base_date == null) || (base_date == "")) {
 				// 受注日が未入力の場合、ガントチャートの開始日を起点日とする
 				base_date = GanttTable.start_date;
@@ -345,42 +336,6 @@ workitemEdit.selectTemplate = function (entry_no, template_cd) {
     .fail(function () {
 		$("#error").html("an error occured").show();
 	});
-**/
-};
-workitemEdit.onloadTemplateListReq = function(e) {
-	if (this.status == 200) {
-		var temp = this.response;
-		for (var i = 0; i < temp.length; i++) {
-			// 案件の受注日を起点日とする
-			var base_date = workitemEdit.currentWorkitem.order_accepted_date;
-			if ((base_date == null) || (base_date == "")) {
-				// 受注日が未入力の場合、ガントチャートの開始日を起点日とする
-				base_date = GanttTable.start_date;
-			}
-
-			// 作業項目の開始日などの日付と起点の日の日数を求める
-			var start_offset = scheduleCommon.calcDateCount("2000/01/01", temp[i].start_date) - 1;
-			var end_offset = scheduleCommon.calcDateCount("2000/01/01", temp[i].end_date) - 1;
-			var workitem = {
-				entry_no: workitemEdit.currentWorkitem.entry_no, 
-				work_item_id: -1,
-				work_title: temp[i].work_title, 
-				start_date_result: "",
-				end_date_result: "",
-				item_type: temp[i].item_type, 
-				priority_item_id: temp[i].priority_item_id,
-				subsequent_item_id: 0,
-				progress:0,
-				delete_check:0
-			};
-			// 求めた各日数を起点の日に加算して日付とする
-			var sd = scheduleCommon.addDate(scheduleCommon.dateStringToDate(base_date), start_offset);
-			workitem.start_date = scheduleCommon.getDateString(sd, "{0}/{1}/{2}");
-			var ed = scheduleCommon.addDate(scheduleCommon.dateStringToDate(base_date), end_offset);
-			workitem.end_date = scheduleCommon.getDateString(ed, "{0}/{1}/{2}");
-			workitemEdit.addWorkitem(workitem);
-		}
-	}
 };
 
 // テンプレートとして保存ボタンイベント
@@ -450,8 +405,7 @@ workitemEdit.addTemplate = function (template) {
 		data: JSON.stringify(template),
 		contentType : 'application/json',
 		success: workitemEdit.onAddTemplate
-	}
-	);
+	});
 };
 
 workitemEdit.onAddTemplate = function () {
@@ -466,8 +420,7 @@ workitemEdit.addWorkitem = function (workitem) {
 		data: JSON.stringify(workitem),
 		contentType : 'application/json',
 		success: workitemEdit.onAddWorkitem
-	}
-	);
+	});
 };
 
 workitemEdit.onAddWorkitem = function () {
@@ -483,12 +436,6 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 	// テーブルを作成してリストを表示する
 	$("#template_table").append("<tr><th>テンプレート名</th><th>項目名</th><th>種別</th>");
 
-	//var xhr = new XMLHttpRequest();
-	//xhr.open('GET', '/template_get_all?delete_check=' + 0, true);
-	//xhr.responseType = 'json';
-	//xhr.onload = workitemEdit.onloadTemplateReq;
-	//xhr.send();
-	
 	var template = $.get('/template_get_all?delete_check=' + 0, function (template_response) {
 		var temp = template_response;
 		if (temp.length > 0) {
@@ -538,61 +485,10 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 	});
 	
 };
-/**
-workitemEdit.onloadTemplateReq = function(e) {
-	if (this.status == 200) {
-		var temp = this.response;
-		if (temp.length > 0) {
-			// 同一テンプレート名毎の件数を取得する
-			var prev_cd = temp[0].template_cd;
-			var prev_name = temp[0].template_name;
-			var name_count = [];
-			var count = 0;
-			for (var i = 0; i < temp.length; i++) {
-				if (temp[i].template_cd != prev_cd) {
-					// 名前と件数を保存する
-					name_count.push({ cd:prev_cd, name: prev_name, count: count });
-					prev_cd = temp[i].template_cd;
-					prev_name = temp[i].template_name;
-					count = 0;
-				}
-				count++;
-			}
-			// 名前と件数を保存する
-			name_count.push({ cd:prev_cd, name: prev_name, count: count });
-			// テーブル行を作成する
-			var offset = 0;
-			for (var j = 0; j < name_count.length; j++) {
-				var cd = name_count[j].cd;
-				var name = name_count[j].name;
-				var count = name_count[j].count;
-				var td_name = $("<td rowspan=" + count + ">" + name + "</td>");
-				var sel_btn = $("<a class='template_select_button'>選択</a>");
-				// 選択ボタン押下処理にバインド
-				var workitem_wk = {entry_no:workitemEdit.currentWorkitem.entry_no,template_cd:cd, template_name:name};
-				$(sel_btn).data('workitem', workitem_wk);
-				$(sel_btn).bind("click",workitemEdit.onSelectTemplate);
-				var tr = $("<tr></tr>");
-				$(td_name).append(sel_btn);
-				$(tr).append(td_name);
-				for (var i = offset; i < count + offset; i++) {
-					var type = temp[i].item_type == 0 ? "作業項目": "マイルストーン";
-					var td_detail = $("<td>" + temp[i].work_title + "</td><td>" + type + "</td>");
-					$(tr).append(td_detail);
-					$("#template_table").append(tr);
-					tr = $("<tr></tr>");
-				}
-				offset += count;
-			}
-		}
-		$("#select_template_dialog").dialog("open");
-	}
-};
-**/
 workitemEdit.openTemplateNameDialog = function (event) {
 	$("#template_name_dialog").dialog("open");
 };
-// 案件入力用ダイアログの生成
+// 案件参照用ダイアログの生成
 workitemEdit.createEntryDialog = function () {
 	$('#entry_dialog').dialog({
 		autoOpen: false,
@@ -617,11 +513,19 @@ workitemEdit.openEntryDialog = function (event) {
 };
 // 案件データの読込み
 workitemEdit.requestEntryData = function (no) {
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/entry_get/' + no, true);
-	xhr.responseType = 'json';
-	xhr.onload = workitemEdit.onloadEntryReq;
-	xhr.send();
+//	var xhr = new XMLHttpRequest();
+//	xhr.open('GET', '/entry_get/' + no, true);
+//	xhr.responseType = 'json';
+//	xhr.onload = workitemEdit.onloadEntryReq;
+//	xhr.send();
+	$.get('/entry_get/' + no,function(response) {
+		var entry = response;
+		// formに取得したデータを埋め込む
+		workitemEdit.setEntryForm(entry);
+		//$("#entryForm #entry_memo_ref").text(entry.entry_memo);		
+		// 見積情報の取得
+		workitemEdit.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
+	});
 };
 // 案件データ取得リクエストのコールバック
 workitemEdit.onloadEntryReq = function (e) {
