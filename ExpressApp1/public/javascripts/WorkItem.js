@@ -535,17 +535,11 @@ workitemEdit.requestBillingTotal = function (no) {
 
 // 受注確定になっている見積情報を取得する
 workitemEdit.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) {
-	$.ajax({
-		url: '/quote_specific_get_list_for_entryform/' + entry_no + '?large_item_cd=' + large_item_cd,
-		cache: false,
-		dataType: 'json',
-		success: function (quote_list) {
+	$.get('/quote_specific_get_list_for_entryform/' + entry_no + '?large_item_cd=' + large_item_cd, function (quote_list) {
 			workitemEdit.setQuoteInfo(quote_list, consumption_tax);
 			// 請求情報から請求金額、入金金額合計を取得して表示
 			workitemEdit.requestBillingTotal(entry_no);	
-		}
 	});
-
 };
 workitemEdit.setQuoteInfo = function (quote_list, consumption_tax) {
 	if (quote_list != null) {
