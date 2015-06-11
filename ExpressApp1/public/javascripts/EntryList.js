@@ -88,6 +88,7 @@ $(function() {
 // 案件入力、リスト表示に関する処理
 //
 var entryList = entryList || {};
+
 entryList.currentEntry = {};			// 案件リストで選択中の案件情報
 entryList.currentEntryNo = 0;			// 案件リストで選択中の案件の番号
 entryList.currentClientListTabNo = 0;	// 得意先リストで選択中のタブ番号
@@ -138,9 +139,16 @@ entryList.checkAuth = function() {
 
 // 案件リストの再ロード
 entryList.reloadGrid = function() {
+	entryList.refreshEntryGridAfter();	// グリッド初期化後の処理
 	$("#entry_list").GridUnload();
 	entryList.createGrid();
+	$("#quote_list").GridUnload();
+	quoteInfo.createQuoteInfoGrid(0);
+	$("#quote_specific_list").GridUnload();
+	quoteInfo.createQuoteSpecificGrid(0,0);
+
 	entryList.refreshEntryGridAfter();	// グリッド初期化後の処理
+	quoteInfo.enableQuoteButtons(false,0);
 };
 
 // 得意先リストのタブ生成と選択イベントの設定
@@ -845,17 +853,9 @@ entryList.onSelectEntry = function (rowid) {
 
 // 削除分の表示チェックイベント（案件）
 entryList.changeEntryOption = function (event) {
-	$("#entry_list").GridUnload();
-	entryList.createGrid();
-	$("#quote_list").GridUnload();
-	quoteInfo.createQuoteInfoGrid(0);
-	$("#quote_specific_list").GridUnload();
-	quoteInfo.createQuoteSpecificGrid(0,0);
-
-	entryList.refreshEntryGridAfter();	// グリッド初期化後の処理
-	quoteInfo.enableQuoteButtons(false,0);
+	entryList.reloadGrid();
 };
-
+// グリッド初期化後の処理
 entryList.refreshEntryGridAfter = function() {
 	$("#entry_billing").css("display","none");
 	$("#edit_entry").css("display","none");
