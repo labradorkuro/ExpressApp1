@@ -93,8 +93,8 @@ var insertSchedule = function (schedule, req, res) {
 			updated_id			// 更新者ID
 		]);
 		query.on('end', function(result,err) {
-			res.send(schedule);
 			connection.end();
+			res.send(schedule);
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
@@ -138,8 +138,8 @@ var updateSchedule = function (schedule, req, res) {
 			schedule.schedule_id
 		]);
 		query.on('end', function (result, err) {
-			res.send(schedule);
 			connection.end();
+			res.send(schedule);
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);

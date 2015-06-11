@@ -411,8 +411,8 @@ exports.quote_specific_get_list = function (req, res) {
 				query.on('end',function(results,err) {
 					result.records = rows.length;
 					result.rows = rows;
-					res.send(result);
 					connection.end();
+					res.send(result);
 				});
 				query.on('error', function (error) {
 					console.log(sql + ' ' + error);
@@ -672,8 +672,8 @@ exports.quote_specific_get_list_for_entryform = function (req, res) {
 		query.on('end',function(results,err) {
 			result.records = rows.length;
 			result.rows = rows;
-			res.send(result);
 			connection.end();
+			res.send(result);
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
@@ -747,8 +747,8 @@ exports.quote_specific_get_list_for_calendar = function (req, res) {
 			result.rows = rows;
 			if (rows.length > 0) {
 				// 受注確定になっている見積が見つかった場合はそれを取得して終了
-				res.send(result);
 				connection.end();
+				res.send(result);
 			} else {
 				// 受注確定になっている見積が見つからない場合は全見積データを取得して返す
 				query = connection.query(sql_b, params);
@@ -758,8 +758,8 @@ exports.quote_specific_get_list_for_calendar = function (req, res) {
 				query.on('end',function(results,err) {
 					result.records = rows.length;
 					result.rows = rows;
-					res.send(result);
 					connection.end();
+					res.send(result);
 				});
 				query.on('error', function (error) {
 					console.log(sql + ' ' + error);

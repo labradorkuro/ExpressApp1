@@ -132,13 +132,12 @@ var insertBilling = function (connection, billing, req, res) {
 			updated,						// 更新日
 			updated_id						// 更新者ID
 		], function (err, result) {
+			connection.end();
 			if (err) {
 				console.log(err);
 				res.send({error_msg:'データベースの登録に失敗しました。'});
-				connection.end();
 			} else {
 				res.send(billing);
-				connection.end();
 			}
 		})
 
@@ -193,13 +192,12 @@ var updateBilling = function (connection, billing, req, res) {
 			billing.billing_entry_no,
 			billing.billing_no
 		], function (err, results) { 
+			connection.end();
 			if (err) {
 				console.log(err);
 				res.send({ error_msg: 'データベースの更新に失敗しました。' });
-				connection.end();
 			} else {
 				res.send(billing);
-				connection.end();
 			}
 		});
 };

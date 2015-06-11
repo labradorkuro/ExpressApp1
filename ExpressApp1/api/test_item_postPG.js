@@ -91,13 +91,12 @@ var insertTest_item_large = function (connection, test_item, req, res) {
 			updated,
 			updated_id			// 更新者ID
 		], function (err, result) {
+			connection.end();
 			if (err) {
 				console.log(err);
 				res.send({error_msg:'データベースの登録に失敗しました。'});
-				connection.end();
 			} else {
 				res.send(test_item);
-				connection.end();
 			}
 		});
 	//});
@@ -122,13 +121,12 @@ var updateTest_item_large = function (connection, test_item, req, res) {
 			updated,
 			test_item.item_cd
 		], function (err, results) { 
+			connection.end();
 			if (err) {
 				console.log(err);
 				res.send({ error_msg: 'データベースの更新に失敗しました。' });
-				connection.end();
 			} else {
 				res.send(test_item);
-				connection.end();
 			}
 		});
 	//});
@@ -164,13 +162,12 @@ var insertTest_item_middle = function (connection, test_item, req, res) {
 			updated,
 			updated_id			// 更新者ID
 		], function (err, result) {
+			connection.end();
 			if (err) {
 				console.log(err);
 				res.send({error_msg:'データベースの登録に失敗しました。'});
-				connection.end();
 			} else {
 				res.send(test_item);
-				connection.end();
 			}
 		});
 	//});
@@ -196,13 +193,12 @@ var updateTest_item_middle = function (connection, test_item, req, res) {
 			test_item.item_cd,
 			test_item.large_item_cd
 		], function (err, results) { 
+			connection.end();
 			if (err) {
 				console.log(err);
 				res.send({ error_msg: 'データベースの更新に失敗しました。' });
-				connection.end();
 			} else {
 				res.send(test_item);
-				connection.end();
 			}
 		});
 	//});

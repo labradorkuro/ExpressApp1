@@ -64,13 +64,12 @@ var insertConfig = function (connection, config, req, res) {
 		updated,
 		updated_id			// 更新者ID
 	], function (err, result) {
+		connection.end();
 		if (err) {
 			console.log(err);
 			res.send({error_msg:'データベースの登録に失敗しました。'});
-			connection.end();
 		} else {
 			res.send(config);
-			connection.end();
 		}
 	});
 };
@@ -105,13 +104,12 @@ var updateConfig = function (connection, config, req, res) {
 		updated,
 		req.params.id
 	], function (err, results) { 
+		connection.end();
 		if (err) {
 			console.log(err);
 			res.send({ error_msg: 'データベースの更新に失敗しました。' });
-			connection.end();
 		} else {
 			res.send(config);
-			connection.end();
 		}
 	});
 };

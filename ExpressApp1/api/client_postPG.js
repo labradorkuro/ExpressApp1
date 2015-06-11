@@ -138,13 +138,12 @@ var insertClient = function (connection, client, req, res) {
 		updated,			// 更新日
 		updated_id			// 更新者ID
 	], function (err, result) {
+		connection.end();
 		if (err) {
 			console.log(err);
 			res.send({ error_msg: 'データベースの登録に失敗しました。' });
-			connection.end();
 		} else {
 			res.send(client);
-			connection.end();
 		}
 	});
 };
@@ -186,13 +185,12 @@ var updateClient = function (connection, client, req, res) {
 		updated,
 		client.client_cd
 	], function (err, results) {
+		connection.end();
 		if (err) {
 			console.log(err);
 			res.send({ error_msg: 'データベースの更新に失敗しました。' });
-			connection.end();
 		} else {
 			res.send(client);
-			connection.end();
 		}
 	});
 };
@@ -248,13 +246,12 @@ var insertClientDivision = function (connection, division, req, res) {
 		updated,					// 更新日
 		updated_id					// 更新者ID
 	], function (err, result) {
+		connection.end();
 		if (err) {
 			console.log(err);
 			res.send({ error_msg: 'データベースの登録に失敗しました。' });
-			connection.end();
 		} else {
 			res.send(division);
-			connection.end();
 		}
 	});
 };
@@ -303,13 +300,12 @@ var updateClientDivision = function (connection, division, req, res) {
 		division.division_client_cd,// クライアントCD
 		division.division_cd		// 部署CD
 	], function (err, results) {
+		connection.end();
 		if (err) {
 			console.log(err);
 			res.send({ error_msg: 'データベースの更新に失敗しました。' });
-			connection.end();
 		} else {
 			res.send(division);
-			connection.end();
 		}
 	});
 };
@@ -355,13 +351,12 @@ var insertClientPerson = function (connection, person, req, res) {
 		updated,					// 更新日
 		updated_id					// 更新者ID
 	], function (err, result) {
+		connection.end();
 		if (err) {
 			console.log(err);
 			res.send({ error_msg: 'データベースの登録に失敗しました。' });
-			connection.end();
 		} else {
 			res.send(person);
-			connection.end();
 		}
 	});
 };
@@ -401,13 +396,12 @@ var updateClientPerson = function (connection, person, req, res) {
 		person.person_division_cd,	// 部署CD
 		person.person_id
 	], function (err, results) {
+		connection.end();
 		if (err) {
 			console.log(err);
 			res.send({ error_msg: 'データベースの更新に失敗しました。' });
-			connection.end();
 		} else {
 			res.send(person);
-			connection.end();
 		}
 	});
 };

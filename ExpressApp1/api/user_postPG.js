@@ -85,13 +85,12 @@ var insertUser = function (connection, user, req, res) {
 			updated,
 			updated_id			// 更新者ID
 		], function (err, result) {
+			connection.end();
 			if (err) {
 				console.log(err);
 				res.send({error_msg:'データベースの登録に失敗しました。'});
-				connection.end();
 			} else {
 				res.send(user);
-				connection.end();
 			}
 		});
 	//});
@@ -131,13 +130,12 @@ var updateUser = function (connection, user, req, res) {
 			updated,
 			user.uid
 		], function (err, results) { 
+			connection.end();
 			if (err) {
 				console.log(err);
 				res.send({ error_msg: 'データベースの更新に失敗しました。' });
-				connection.end();
 			} else {
 				res.send(user);
-				connection.end();
 			}
 		});
 	//});
@@ -183,11 +181,11 @@ var updateUserPassword = function (connection, user, req, res) {
 			updated,
 			user.uid
 		], function (err, results) {
+		connection.end();
 		if (err) {
 			console.log(err);
 		} else {
 			res.send(user);
-			connection.end();
 		}
 	});
 };
