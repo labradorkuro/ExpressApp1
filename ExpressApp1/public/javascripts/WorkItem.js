@@ -483,15 +483,13 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 	// テーブルを作成してリストを表示する
 	$("#template_table").append("<tr><th>テンプレート名</th><th>項目名</th><th>種別</th>");
 
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', '/template_get_all?delete_check=' + 0, true);
-	xhr.responseType = 'json';
-	xhr.onload = workitemEdit.onloadTemplateReq;
-	xhr.send();
-	/**
-	var template = $.get('/template_get_all?delete_check=' + 0, {});
-	$.when(template)
-	.done(function (template_response) {
+	//var xhr = new XMLHttpRequest();
+	//xhr.open('GET', '/template_get_all?delete_check=' + 0, true);
+	//xhr.responseType = 'json';
+	//xhr.onload = workitemEdit.onloadTemplateReq;
+	//xhr.send();
+	
+	var template = $.get('/template_get_all?delete_check=' + 0, function (template_response) {
 		var temp = template_response;
 		if (temp.length > 0) {
 			// 同一テンプレート名毎の件数を取得する
@@ -520,7 +518,7 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 				var td_name = $("<td rowspan=" + count + ">" + name + "</td>");
 				var sel_btn = $("<a class='template_select_button'>選択</a>");
 				// 選択ボタン押下処理にバインド
-				var workitem_wk = {entry_no:workitem.entry_no,template_cd:cd, template_name:name};
+				var workitem_wk = {entry_no:workitemEdit.currentWorkitem.entry_no,template_cd:cd, template_name:name};
 				$(sel_btn).data('workitem', workitem_wk);
 				$(sel_btn).bind("click",workitemEdit.onSelectTemplate);
 				var tr = $("<tr></tr>");
@@ -538,9 +536,9 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 		}
 		$("#select_template_dialog").dialog("open");
 	});
-	**/
+	
 };
-
+/**
 workitemEdit.onloadTemplateReq = function(e) {
 	if (this.status == 200) {
 		var temp = this.response;
@@ -590,7 +588,7 @@ workitemEdit.onloadTemplateReq = function(e) {
 		$("#select_template_dialog").dialog("open");
 	}
 };
-
+**/
 workitemEdit.openTemplateNameDialog = function (event) {
 	$("#template_name_dialog").dialog("open");
 };
