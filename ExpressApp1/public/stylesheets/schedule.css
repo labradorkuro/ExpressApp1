@@ -1512,3 +1512,13 @@ div.client_grid {
 
     overflow:auto;
 }
+
+/* Japanese glyphs - size: 1.2MB */
+@font-face {
+  font-family: JapaneseWithGentium;
+  src: local(MSMincho);
+}
+@font-face {
+  font-family: 'MS Gothic';
+  src: local(MSPMincho);
+}
