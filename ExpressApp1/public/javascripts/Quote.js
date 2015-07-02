@@ -32,10 +32,11 @@ quoteInfo.getMyInfo = function() {
 		quoteInfo.drc_info.quote_form_memo_1 = config_response.quote_form_memo_define_1;
 		quoteInfo.drc_info.quote_form_memo_2 = config_response.quote_form_memo_define_2;
 		quoteInfo.drc_info.quote_form_memo_3 = config_response.quote_form_memo_define_3;
-		$("#quote_form_memo").append($("<option value=''></option>")); 
-		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_1 + "'>" + quoteInfo.drc_info.quote_form_memo_1 + "</option>")); 
-		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_2 + "'>" + quoteInfo.drc_info.quote_form_memo_2 + "</option>")); 
-		$("#quote_form_memo").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_3 + "'>" + quoteInfo.drc_info.quote_form_memo_3 + "</option>")); 
+		// 見積書の最下の備考の選択肢設定
+		$("#quote_form_memo_select").append($("<option value=''></option>")); 
+		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_1 + "'>" + quoteInfo.drc_info.quote_form_memo_1 + "</option>")); 
+		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_2 + "'>" + quoteInfo.drc_info.quote_form_memo_2 + "</option>")); 
+		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_3 + "'>" + quoteInfo.drc_info.quote_form_memo_3 + "</option>")); 
 		quoteInfo.currentConsumption_tax = config_response.consumption_tax;
 	});
 };
@@ -49,6 +50,9 @@ quoteInfo.eventBind = function(kind) {
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
 	$(".summary_target").bind('input',{}, quoteInfo.calcSummary);
 	$(".calc_price").bind('input',{}, quoteInfo.calcPrice);
+	// 備考選択イベント処理登録
+	$("#quote_form_memo_select").unbind("change",quoteInfo.selectMemoList);
+	$("#quote_form_memo_select").bind("change",{},quoteInfo.selectMemoList);
 };
 
 // 見積書用ダイアログの生成
@@ -845,7 +849,7 @@ quoteInfo.printQuote = function (data) {
 	canvas.add(new fabric.Rect({ top : top, left : 510, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Rect({ top : top, left : 630, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	
-	top = 398;
+	top = 400;
 	font_size = 16;
 	quoteInfo.outputText(canvas, "件　　名", font_size, 130, top);
 	quoteInfo.outputText(canvas, "数量", font_size, 290, top);
@@ -858,9 +862,9 @@ quoteInfo.printQuote = function (data) {
 	canvas.add(new fabric.Rect({ top : 300, left : 600, width : 70, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	// 備考
 	font_size = 11;
-	canvas.add(new fabric.Rect({ top : 1040, left : left, width : w, height : 40, fill: 'none', stroke: 'black',strokeWidth: 2, opacity: 1 }));
+	canvas.add(new fabric.Rect({ top : 1040, left : left, width : w, height : 60, fill: 'none', stroke: 'black',strokeWidth: 2, opacity: 1 }));
 	quoteInfo.outputText(canvas, "備  考", font_size, 70, 1045);
-	quoteInfo.outputText(canvas, data.memo, font_size, 80, 1060);
+	quoteInfo.outputText(canvas, data.memo, font_size, 120, 1045);
 
 
 	// 明細データの出力
@@ -927,7 +931,7 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 			} else {
 				lines = row.specific_memo;
 			}
-			quoteInfo.outputText(canvas, lines, memo_font_size, 630, memo_top);		// 備考
+			quoteInfo.outputText(canvas, lines, memo_font_size, 632, memo_top);		// 備考
 		}
 		top += 24;
 		total += Number(row.price);
@@ -942,4 +946,15 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	top += 24;
 	quoteInfo.outputText(canvas, " 総合計 ", font_size, 445, top);
 	quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(total + tax,12)), font_size, 520, top);		 
+};
+
+// 備考を選択したらテキストエリアにコピーする
+quoteInfo.selectMemoList = function(event) {
+	
+	var val = $("#quote_form_memo_select option:selected").val();
+	var memo = $("#quote_form_memo").val();
+	memo = memo + val + "\n";
+	$("#quote_form_memo").val(memo);
+	$("#quote_form_memo_select").val("");
+	
 };

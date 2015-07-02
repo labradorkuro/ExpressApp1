@@ -88,7 +88,7 @@ exports.create = function (req, res) {
 			+ "quote_submit_check INT2,"	// 見積書提出済フラグ	
 			+ "order_status INT2,"			// 受注ステータス
 			+ "expire_date VARCHAR(128),"		// 見積有効期限
-			+ "quote_form_memo VARCHAR(128),"	// 見積書備考
+			+ "quote_form_memo VARCHAR(1024),"	// 見積書備考
 			+ "quote_delete_check INT2,"	// 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID
