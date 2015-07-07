@@ -338,3 +338,15 @@ scheduleCommon.getAuthList = function(auth) {
 	}
 	return auth_array;
 };
+
+// 入力文字チェック（カナ）
+scheduleCommon.checkKana = function(str) {
+	var result = true;
+	for(var cnt=0;cnt<str.length;cnt++){
+		if(str[cnt].match(/^[ァ-ヶー]*$/) == null){
+			result = false;
+			break;
+		}
+	}
+	return result;
+}

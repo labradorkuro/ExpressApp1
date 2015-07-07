@@ -435,6 +435,10 @@ clientList.clientInputCheck = function () {
 			}
 		}
 	}
+	if (scheduleCommon.checkKana($("#kana").val()) == false) {
+		err = "カナは全角カナで入力して下さい";
+		result = false;
+	}
 	if (!result) {
 		$("#message").text(err);
 		$("#message_dialog").dialog("option", { title: "入力エラー" });
@@ -474,6 +478,11 @@ clientList.clientDivisionInputCheck = function () {
 			}
 		}
 	}
+	if (scheduleCommon.checkKana($("#division_kana").val()) == false) {
+		err = "カナは全角カナで入力して下さい";
+		result = false;
+	}
+
 	if (!result) {
 		$("#message").text(err);
 		$("#message_dialog").dialog("option", { title: "入力エラー" });
@@ -509,6 +518,10 @@ clientList.clientPersonInputCheck = function () {
 				}
 			}
 		}
+	}
+	if (scheduleCommon.checkKana($("#person_kana").val()) == false) {
+		err = "カナは全角カナで入力して下さい";
+		result = false;
 	}
 	if (!result) {
 		$("#message").text(err);
