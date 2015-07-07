@@ -339,6 +339,7 @@ scheduleCommon.getAuthList = function(auth) {
 	return auth_array;
 };
 
+
 // 入力文字チェック（カナ）
 scheduleCommon.checkKana = function(str) {
 	var result = true;
