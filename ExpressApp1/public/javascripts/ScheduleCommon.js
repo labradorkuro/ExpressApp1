@@ -351,3 +351,5 @@ scheduleCommon.checkKana = function(str) {
 	}
 	return result;
 }
+
+// end
