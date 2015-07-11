@@ -209,6 +209,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	// 選択中の案件情報を取得する
 	var entry = event.data.entryList.currentEntry;
 	quoteInfo.currentEntry = entry;
+	quoteInfo.currentConsumption_tax = quoteInfo.drc_info.consumption_tax;
 	var quote = quoteInfo.clearQuote();
 	if ($(event.target).attr("id") == "edit_quote") {
 		// 見積の編集ボタン押下時は選択中の見積情報を取得する
