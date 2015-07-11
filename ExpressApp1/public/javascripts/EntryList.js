@@ -538,10 +538,11 @@ entryList.setQuoteInfo = function (quote_list, consumption_tax) {
 			// 中分類リスト
 			$("#test_middle_class_list").text(list);
 			// 消費税込の合計金額
-			tax = total_price * (consumption_tax / 100);
+			tax = total_price * (rows[0].consumption_tax / 100);
 			$("#entry_amount_price_notax").val(scheduleCommon.numFormatter(total_price,11));	// 金額(税抜)
 			$("#entry_amount_tax").val(scheduleCommon.numFormatter(tax,11));					// 消費税
 			$("#entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));	// 合計(税込)
+			$("#entry_consumption_tax").val(rows[0].consumption_tax);							// 消費税率
 		}
 	}
 };

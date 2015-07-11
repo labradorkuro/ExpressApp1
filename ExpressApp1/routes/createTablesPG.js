@@ -89,6 +89,7 @@ exports.create = function (req, res) {
 			+ "order_status INT2,"			// 受注ステータス
 			+ "expire_date VARCHAR(128),"		// 見積有効期限
 			+ "quote_form_memo VARCHAR(1024),"	// 見積書備考
+			+ "consumption_tax INT2,"			// 消費税率
 			+ "quote_delete_check INT2,"	// 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID

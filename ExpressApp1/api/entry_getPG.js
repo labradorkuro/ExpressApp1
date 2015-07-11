@@ -472,6 +472,7 @@ var quote_get_list = function (req, res) {
 		+ 'quote_submit_check,'	// 見積書提出済フラグ
 		+ 'order_status,'		// 受注ステータス
 		+ 'quote_form_memo,'	// 見積書備考
+		+ 'consumption_tax,'	// 消費税率
 		+ 'quote_delete_check,' // 削除フラグ
 		+ 'to_char(quote_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
 		+ 'quote_info.created_id,' 
@@ -533,6 +534,7 @@ var quote_get_detail = function (req, res) {
 		+ 'quote_submit_check,'	// 見積書提出済フラグ
 		+ 'order_status,'		// 受注ステータス
 		+ 'quote_form_memo,'	// 見積書備考
+		+ 'consumption_tax,'	// 消費税率
 		+ 'quote_delete_check,' // 削除フラグ
 		+ 'to_char(quote_info.created,\'YYYY/MM/DD HH24:MI:SS\') AS created,' 
 		+ 'quote_info.created_id,' 
@@ -637,6 +639,7 @@ exports.quote_specific_get_list_for_entryform = function (req, res) {
 	var sql = 'SELECT ' 
 		+ 'quote_info.entry_no,'
 		+ 'quote_info.quote_no,'			// 見積番号
+		+ 'quote_info.consumption_tax,'
 		+ 'quote_detail_no,'
 		+ 'quote_specific_info.test_middle_class_cd,'
 		+ 'test_middle_class_name,'

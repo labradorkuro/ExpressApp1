@@ -480,6 +480,7 @@ var insertQuote = function (connection, quote, req, res) {
 		+ 'quote_submit_check,'	// 見積書提出済フラグ
 		+ 'order_status,'		// 受注ステータス
 		+ 'quote_form_memo,'	// 見積書備考
+		+ 'consumption_tax,'	// 消費税率
 		+ "quote_delete_check," // 削除フラグ
 		+ "created,"			// 作成日
 		+ "created_id,"			// 作成者ID
@@ -494,11 +495,12 @@ var insertQuote = function (connection, quote, req, res) {
 		+ "$6," // 見積書提出済フラグ
 		+ "$7," // 受注ステータス
 		+ "$8,"	// 見積書備考
-		+ "$9," // 削除フラグ
-		+ "$10," // 作成日
-		+ "$11," // 作成者ID
-		+ "$12," // 更新日
-		+ "$13"  // 更新者ID
+		+ "$9,"	// 消費税率
+		+ "$10," // 削除フラグ
+		+ "$11," // 作成日
+		+ "$12," // 作成者ID
+		+ "$13," // 更新日
+		+ "$14"  // 更新者ID
 		+ ")";
 	// SQL実行
 	var query = connection.query(sql, [
@@ -510,6 +512,7 @@ var insertQuote = function (connection, quote, req, res) {
 			quote.quote_submit_check,	// 見積書提出済フラグ
 			quote.order_status,			// 受注ステータス
 			quote.quote_form_memo,		// 見積書備考
+			quote.consumption_tax,		// 消費税率
 			quote.estimate_delete_check,// 削除フラグ
 			created,					// 作成日
 			created_id,					// 作成者ID
@@ -538,10 +541,11 @@ var updateQuote = function (connection,quote, req, res) {
 		+ 'quote_submit_check = $4,'	// 見積書提出済フラグ
 		+ 'order_status = $5,'			// 受注ステータス
 		+ 'quote_form_memo = $6,'		// 見積書備考
-		+ "quote_delete_check = $7,"	// 削除フラグ
-		+ "updated = $8,"				// 更新日
-		+ "updated_id = $9"				// 更新者ID
-		+ " WHERE entry_no = $10 AND quote_no = $11";
+		+ 'consumption_tax = $7,'		// 消費税率
+		+ "quote_delete_check = $8,"	// 削除フラグ
+		+ "updated = $9,"				// 更新日
+		+ "updated_id = $10"				// 更新者ID
+		+ " WHERE entry_no = $11 AND quote_no = $12";
 	// SQL実行
 	var query = connection.query(sql, [
 		quote.quote_date,			// 見積日
@@ -550,6 +554,7 @@ var updateQuote = function (connection,quote, req, res) {
 		quote.quote_submit_check,	// 見積書提出済フラグ
 		quote.order_status,			// 受注ステータス
 		quote.quote_form_memo,		// 見積書備考
+		quote.consumption_tax,		// 消費税率
 		quote.estimate_delete_check,// 削除フラグ
 		updated,					// 更新日
 		updated_id,					// 更新者ID
@@ -578,6 +583,7 @@ var quote_check = function (quote) {
 //	quote.quantity = Number(quote.quantity);			// 数量
 //	quote.quote_price = Number(quote.quote_price);		// 見積金額
 //	quote.summary_check = Number(quote.summary_check); // 削除フラグ
+	quote.consumption_tax = Number(quote.consumption_tax);	// 消費税率
 	quote.estimate_delete_check = Number(quote.estimate_delete_check); // 削除フラグ
 	// 日付
 	quote.quote_date = dateCheck(quote.quote_date);

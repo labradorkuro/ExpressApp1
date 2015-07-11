@@ -48,8 +48,10 @@ quoteInfo.eventBind = function(kind) {
 	$(".del_row_btn").bind("click", quoteInfo.delQuoteRow);
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
+	// 合計計算用
 	$(".summary_target").bind('input',{}, quoteInfo.calcSummary);
 	$(".calc_price").bind('input',{}, quoteInfo.calcPrice);
+	$("#estimateForm #consumption_tax").bind('input',{}, quoteInfo.calcSummary);
 	// 備考選択イベント処理登録
 	$("#quote_form_memo_select").unbind("change",quoteInfo.selectMemoList);
 	$("#quote_form_memo_select").bind("change",{},quoteInfo.selectMemoList);
@@ -92,13 +94,14 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		url: '/quote_get/' + no + '/?quote_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','PDF発行','受注ステータス','備考','','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','消費税率','PDF発行','受注ステータス','備考','','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" },				// 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
 			{ name: 'quote_date' , index: 'quote_date', width: 120, align: "center" },			// 見積日
 			{ name: 'expire_date' , index: 'expire_date', width: 120, align: "center" },		// 有効期限
 			{ name: 'monitors_num', index: 'monitors_num', width: 80,align:"right" },			// 被験者数
+			{ name: 'consumption_tax', index: 'consumption_tax', width: 80,align:"right" },		// 消費税率
 			{ name: 'quote_submit_check', index: 'quote_submit_check', width: 120,align:"center",formatter:quoteInfo.submitCheckFormatter },			// 受注ステータス
 			{ name: 'order_status', index: 'order_status', width: 120,align:"center",formatter:quoteInfo.orderCheckFormatter },			// 受注ステータス
 			{ name: 'quote_form_memo' , index: 'quote_form_memo', width: 120, align: "left" },	// 見積備考
@@ -310,6 +313,8 @@ quoteInfo.onSelectQuote = function(rowid) {
 	// 明細グリッドの再表示
 	var entry = quoteInfo.getSelectEntry();
 	var quote = quoteInfo.getSelectQuote();
+	// 消費税率を取得してカレントに設定する
+	quoteInfo.currentConsumption_tax = quote.consumption_tax;
 	$("#quote_specific_list").GridUnload();
 	quoteInfo.createQuoteSpecificGrid(entry.entry_no, quote.quote_no, entry.test_large_class_cd);
 	
@@ -372,6 +377,7 @@ quoteInfo.clearQuote = function () {
 	quote.quote_total_price = "";
 	quote.quote_form_memo = "";
 	quote.quote_delete_check = "0";
+	quote.consumption_tax = quoteInfo.currentConsumption_tax;	// 消費税率のデフォルトセット
 	return quote;
 };
 
@@ -399,6 +405,7 @@ quoteInfo.setQuoteFormData = function (quote) {
 	} else {
 		$("#estimate_delete_check").prop("checked", true);
 	}
+	$("#estimateForm #consumption_tax").val(quote.consumption_tax);	// 消費税率
 };
 // 見積データの保存
 quoteInfo.saveQuote = function (kind) {
@@ -453,6 +460,9 @@ quoteInfo.quoteInputCheck = function (kind) {
 					break;
 				} else if (ctl.id == "estimate_monitors_num") {
 					err = "被験者数の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "consumption_tax") {
+					err = "消費税率の入力値を確認して下さい";
 					break;
 				}
 			}
@@ -544,6 +554,8 @@ quoteInfo.addQuoteRow = function(event) {
 }
 // 合計金額計算
 quoteInfo.calcSummary = function(event) {
+	// 消費税率の入力値を取得する
+	quoteInfo.currentConsumption_tax = Number($("#estimateForm #consumption_tax").val());
 	// 現在の行数を取得する（見出し行を含む）
 	var rows = $("#meisai_table tbody").children().length;
 	var total = 0;
