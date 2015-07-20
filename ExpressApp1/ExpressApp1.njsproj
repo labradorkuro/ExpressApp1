@@ -125,6 +125,7 @@
     <Content Include="package.json" />
     <Content Include="public\favicon.ico" />
     <Content Include="public\images\drc_logo.jpg" />
+    <Content Include="public\images\logo_DRC.jpg" />
     <Content Include="public\images\milestone_red.png" />
     <Content Include="public\images\milestone_yellow.png" />
     <Content Include="public\images\no.png" />
