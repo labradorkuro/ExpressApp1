@@ -465,9 +465,10 @@ var quote_get_list = function (req, res) {
 	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.quote_info WHERE quote_delete_check = $1 AND entry_no = $2';
 	var sql = 'SELECT ' 
 		+ 'quote_info.entry_no,'
-		+ 'quote_no,'			// 見積番号
+		+ 'quote_info.quote_no,'			// 見積番号
 		+ 'to_char(quote_date,\'YYYY/MM/DD\') AS quote_date,'	// 見積日
 		+ 'expire_date,'		// 有効期限
+		+ 'quote_specific.total_price,'
 		+ 'monitors_num,'		// 被験者数
 		+ 'quote_submit_check,'	// 見積書提出済フラグ
 		+ 'order_status,'		// 受注ステータス
@@ -480,6 +481,8 @@ var quote_get_list = function (req, res) {
 		+ 'quote_info.updated_id,' 
 		+ 'quote_delete_check' 
 		+ ' FROM drc_sch.quote_info'
+		// 合計金額を求めるサブクエリー
+		+ ' LEFT JOIN (SELECT entry_no,quote_no,sum(price) AS total_price FROM drc_sch.quote_specific_info GROUP BY entry_no,quote_no) AS quote_specific ON (quote_info.entry_no = quote_specific.entry_no AND quote_info.quote_no = quote_specific.quote_no )'
 		+ ' WHERE quote_delete_check = $1 AND quote_info.entry_no = $2 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;

@@ -24,6 +24,7 @@ quoteInfo.getMyInfo = function() {
 	.done(function (config_response) {
 //		configuration = config_response;
 		quoteInfo.drc_info.name = config_response.drc_name;
+		quoteInfo.drc_info.zipcode = '〒530-0044'//config_response.drc_zipcode;
 		quoteInfo.drc_info.address1 = config_response.drc_address1;
 		quoteInfo.drc_info.address2 = config_response.drc_address2;
 		quoteInfo.drc_info.telno = "TEL : " + config_response.drc_telno;
@@ -94,12 +95,13 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		url: '/quote_get/' + no + '/?quote_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','見積番号', '見積日','有効期限','被験者数','消費税率','PDF発行','受注ステータス','備考','','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','見積番号', '見積日','有効期限','合計金額','被験者数','消費税率','PDF発行','受注ステータス','備考','','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" },				// 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
 			{ name: 'quote_date' , index: 'quote_date', width: 120, align: "center" },			// 見積日
-			{ name: 'expire_date' , index: 'expire_date', width: 120, align: "center" },		// 有効期限
+			{ name: 'expire_date' , index: 'expire_date', width: 120, align: "center" ,hidden:true},		// 有効期限
+			{ name: 'total_price' , index: 'total_price', width: 120, align: "right",formatter:quoteInfo.numFormatterC },			// 合計金額
 			{ name: 'monitors_num', index: 'monitors_num', width: 80,align:"right" },			// 被験者数
 			{ name: 'consumption_tax', index: 'consumption_tax', width: 80,align:"right" },		// 消費税率
 			{ name: 'quote_submit_check', index: 'quote_submit_check', width: 120,align:"center",formatter:quoteInfo.submitCheckFormatter },			// 受注ステータス
@@ -372,7 +374,7 @@ quoteInfo.clearQuote = function () {
 	quote.quote_no = "";
 	quote.monitors_num = "";
 	quote.quote_date = "";
-	quote.expire_date = "見積発行から60日";
+	quote.expire_date = "見積もり発効から60日";
 	quote.quote_submit_check = "未";
 	quote.order_status = "商談中";
 	quote.quote_total_price = "";
@@ -729,6 +731,7 @@ quoteInfo.printDataSetup = function (entry,quote) {
 		title: '御 見 積 書',
 		quote_issue_date: quote.quote_date,
 		quote_no: entry.entry_no + "-" + quote.estimate_quote_no,
+		drc_zipcode: quoteInfo.drc_info.zipcode,
 		drc_address1: quoteInfo.drc_info.address1,
 		drc_address2: quoteInfo.drc_info.address2,
 		drc_tel: quoteInfo.drc_info.telno,
@@ -776,76 +779,97 @@ quoteInfo.printQuote = function (data) {
 	canvas.setHeight(1500);
 	canvas.setWidth(900);
 	var doc = new jsPDF();
+	fabric.Image.fromURL('images/logo_DRC.jpg',function(img) {
+		img.left = 460;
+		img.top = 167;
+		img.scaleX = 0.25;
+		img.scaleY = 0.25;
+		canvas.add(img);
 	
 	var top = 100;
-	var font_size = 25;
+	var font_size = 20;
 	// タイトル	
-	quoteInfo.outputText(canvas, data.title, font_size, 330, 40);
+	quoteInfo.outputText(canvas, data.title, font_size, 330, 100);
 	// 請求先情報	
 	font_size = 16;
-	var left = 60;
-	top = 100;
+	var left = 80;
+	top = 155;
 	if (data.client_name_1 != null)
-		quoteInfo.outputText(canvas, data.client_name_1, font_size, left, top);
-	top += font_size + 2;
+		quoteInfo.outputTextBold(canvas, data.client_name_1, font_size, left, top);
+	top += font_size + 6;
 	if (data.client_name_2 != null)
-		quoteInfo.outputText(canvas, data.client_name_2, font_size, left, top);
-	top += font_size + 2;
+		quoteInfo.outputTextBold(canvas, data.client_name_2, font_size, left, top);
+	top += font_size + 6;
 	if (data.prepared_division != null)
-		quoteInfo.outputText(canvas, data.prepared_division, font_size, left, top);
-	top += font_size + 2;
+		quoteInfo.outputTextBold(canvas, data.prepared_division, font_size, left, top);
+	top += font_size + 6;
 	if (data.prepared_name != null)
-		quoteInfo.outputText(canvas, data.prepared_name, font_size, left, top);
+		quoteInfo.outputTextBold(canvas, data.prepared_name, font_size, left, top);
+	top += font_size + 6 + 4;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
 	// 見積内容	
 	top += font_size + 10;
-	quoteInfo.outputText(canvas, "次の通りお見積申し上げます", font_size, left, top);
+	font_size = 12;
+	quoteInfo.outputText(canvas, "下記の通りお見積り申し上げます", font_size, left, top);
 	top += font_size + 10;
-	quoteInfo.outputText(canvas, "件名：" + data.quote_title, font_size, left, top);
+	font_size = 14;
+	quoteInfo.outputTextBold(canvas, "件名：" + data.quote_title, font_size, left, top);
 	top += font_size + 4 + 4;
-	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
 
-	top += 20;
-	quoteInfo.outputText(canvas, "有効期限：" + data.quote_expire, font_size, left, top);
+	top += font_size;
+	font_size = 12;
+	quoteInfo.outputTextBold(canvas, "有効期限：" + data.quote_expire, font_size, left, top);
 	top += font_size + 4 + 4;
-	canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 1 }));
-	font_size = 18;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 1 }));	// 下線
+	top += font_size;
+	font_size = 20;
 	quoteInfo.outputText(canvas, "御見積合計金額　" + scheduleCommon.addYenMark(scheduleCommon.numFormatter(data.quote_total_price)) + ".-", font_size, left, top);
 	top += font_size + 4 + 4;
-	canvas.add(new fabric.Rect({ top : top, left : left, width : 300, height : 2 }));
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 340, height : 2 }));	// 下線
 	// 見積情報
-	font_size = 16;
-	left = 440;
+	font_size = 12;
+	left = 560;
 	top = 100;
 	if (data.quote_issue_date != null)
 		quoteInfo.outputText(canvas, "見積日：" + data.quote_issue_date, font_size, left, top);
-	top += font_size + 2;
+	top += font_size + 8;
 	if (data.quote_no != null)
 		quoteInfo.outputText(canvas, "見積番号：" + data.quote_no, font_size, left, top);
 	// 自社情報
-	top += font_size + 20;
-	quoteInfo.outputText(canvas, data.drc_name, font_size, left, top);
-	top += font_size + 2;
-	quoteInfo.outputText(canvas, data.drc_address1, font_size, left, top);
-	top += font_size + 2;
-	quoteInfo.outputText(canvas, data.drc_address2, font_size, left, top);
-	top += font_size + 2;
-	quoteInfo.outputText(canvas, data.drc_tel, font_size, left, top);
-	top += font_size + 2;
-	quoteInfo.outputText(canvas, data.drc_fax, font_size, left, top);
+	left = 530;
+	top += 60;
+	font_size = 14;
+	quoteInfo.outputTextBold(canvas, data.drc_name, font_size, left, top);
 	top += font_size + 10;
+	font_size = 12;
+	quoteInfo.outputText(canvas, data.drc_zipcode, font_size, left, top);
+	top += font_size + 6;
+	font_size = 12;
+	quoteInfo.outputText(canvas, data.drc_address1, font_size, left, top);
+	top += font_size + 6;
+	quoteInfo.outputText(canvas, data.drc_address2, font_size, left, top);
+	top += font_size + 6;
+	font_size = 12;
+	quoteInfo.outputTextMono(canvas, data.drc_tel, font_size, left, top);
+	top += font_size + 6;
+	quoteInfo.outputTextMono(canvas, data.drc_fax, font_size, left, top);
+	top += font_size + 6;
+	font_size = 14;
 	quoteInfo.outputText(canvas, data.drc_division_name, font_size, left, top);
-	top += font_size + 2;
+	top += font_size + 6;
 	quoteInfo.outputText(canvas, data.drc_prepared, font_size, left, top);
 	
 	// 明細表
 	left = 60;
 	top = 400;
 	var w = 680;
+	h = 24;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'gray', stroke: 'black',opacity: 0.7 }));
+
 	var h = 624;	
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h,fill:'none', stroke:'black', strokeWidth:3, opacity:1}));
 
-	h = 24;
-	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'gray', stroke: 'black',opacity: 0.7 }));
 	h = 1;	
 	var sw = 1;
 	for (var i = 0; i < 25; i++) {
@@ -871,8 +895,8 @@ quoteInfo.printQuote = function (data) {
 	quoteInfo.outputText(canvas, "金  額", font_size, 550, top);
 	quoteInfo.outputText(canvas, "備  考", font_size, 655, top);
 	// 印鑑枠	
-	canvas.add(new fabric.Rect({ top : 300, left : 530, width : 210, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
-	canvas.add(new fabric.Rect({ top : 300, left : 600, width : 70, height : 70, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Rect({ top : 340, left : 530, width : 150, height : 50, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Rect({ top : 340, left : 580, width : 50, height : 50, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	// 備考
 	font_size = 11;
 	canvas.add(new fabric.Rect({ top : 1040, left : left, width : w, height : 60, fill: 'none', stroke: 'black',strokeWidth: 2, opacity: 1 }));
@@ -898,12 +922,17 @@ quoteInfo.printQuote = function (data) {
 	canvas.setWidth(0);
 	document.body.style.cursor = "default";
 	return true;
+	});
 };
 
 // canvasにテキストを出力
 quoteInfo.outputText = function (canvas, text,font_size,left, top) {
 //	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size}));
-	canvas.add(new fabric.Text(text, { fontFamily: 'MS PGothic', left: left, top: top, fontSize: font_size * 1.2}));
+	canvas.add(new fabric.Text(text, { fontFamily: 'MS PGothic',fill: 'black',left: left, top: top, fontSize: font_size * 1.2}));
+};
+quoteInfo.outputTextBold = function (canvas, text,font_size,left, top) {
+//	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size}));
+	canvas.add(new fabric.Text(text, { fontFamily: 'MS PGothic', fontWeight:'bold',fill: 'black',left: left, top: top, fontSize: font_size * 1.2}));
 };
 quoteInfo.outputTextMono = function (canvas, text,font_size,left, top) {
 	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size * 1.2}));
