@@ -450,23 +450,22 @@ quoteInfo.quoteInputCheck = function (kind) {
 		for(var i = 0; i < ctrls.length;i++) {
 			var ctl = ctrls[i];
 			if (! ctl.validity.valid) {
-				if (ctl.id.indexOf("price_") == 0) {
-					err = "金額の入力値を確認して下さい";
-					break;
-				} else	if (ctl.id.indexOf("test_middle_class_name_") == 0) {
-					err = "試験中分類名の入力値を確認して下さい";
-					break;
-				} else	if (ctl.id.indexOf("unit_price_") == 0) {
-					err = "単価の入力値を確認して下さい";
-					break;
-				} else	if (ctl.id.indexOf("quantity_") == 0) {
-					err = "数量の入力値を確認して下さい";
-					break;
+				if (ctl.id.indexOf("test_middle_class_name_") == 0) {
+					if (! quoteInfo.checkDeleteRow(ctl.id)) {
+						err = "試験中分類名の入力値を確認して下さい";
+						result = false;
+						break;
+					} else {
+						result = true;
+						continue;
+					}
 				} else if (ctl.id == "estimate_monitors_num") {
 					err = "被験者数の入力値を確認して下さい";
+					result = false;
 					break;
 				} else if (ctl.id == "consumption_tax") {
 					err = "消費税率の入力値を確認して下さい";
+					result = false;
 					break;
 				}
 			}
@@ -675,7 +674,17 @@ quoteInfo.delQuoteRow = function(event) {
 	$("#specific_delete_check_" + no).val("1");
 	// 合計金額再計算
 	quoteInfo.calcSummary(null);
-}
+};
+// 削除フラグが１の行か調べる
+quoteInfo.checkDeleteRow = function(id) {
+	var no = quoteInfo.getMeisaiNo(id);
+	var del_check = $("#specific_delete_check_" + no).val();
+	if (del_check == "1") {
+		return true;
+	} else {
+		return false;
+	}
+};
 
 // テーブル行のデータ取得
 quoteInfo.getRowsData = function() {

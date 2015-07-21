@@ -80,7 +80,7 @@ form#estimateForm(method="post",action="javascript:return false;")
 			tr
 				td.form_title 消費税率
 				td
-					input.num_type#consumption_tax(type'text' name='consumption_tax' )
+					input.num_type#consumption_tax(type'text' name='consumption_tax' required="true")
 			tr
 				td.form_title 消費税
 				td
@@ -108,7 +108,7 @@ form#estimateForm(method="post",action="javascript:return false;")
 			tr
 				td.form_title 被験者数
 				td
-					input.num_type#estimate_monitors_num(type="number" name="estimate_monitors_num" min="0" max="1000" size="5" pattern="[0-9]{1,3}")
+					input.num_type#estimate_monitors_num(type="number" name="estimate_monitors_num" min="0" max="1000" size="5" pattern="[0-9]{1,3}" required="true")
 		table
 			tr
 				td.form_title 備考
