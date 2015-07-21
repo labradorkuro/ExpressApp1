@@ -344,7 +344,7 @@ scheduleCommon.getAuthList = function(auth) {
 scheduleCommon.checkKana = function(str) {
 	var result = true;
 	for(var cnt=0;cnt<str.length;cnt++){
-		if(str[cnt].match(/^[ァ-ヶー]*$/) == null){
+		if(str[cnt].match(/^[ 　ァ-ヶー]*$/) == null){
 			result = false;
 			break;
 		}

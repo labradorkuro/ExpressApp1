@@ -33,6 +33,7 @@ var insertConfig = function (connection, config, req, res) {
 	var updated_id = "";
 	var sql = 'INSERT INTO drc_sch.configuration(' 
 			+ 'drc_name,'
+			+ 'drc_zipcode,'
 			+ 'drc_address1,'
 			+ 'drc_address2,'
 			+ 'drc_telno,'
@@ -46,11 +47,12 @@ var insertConfig = function (connection, config, req, res) {
 			+ 'updated,' // 
 			+ 'updated_id' // 更新者ID
 			+ ') values (' 
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)'
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)'
 			;
 	// SQL実行
 	var query = connection.query(sql, [
 		config.drc_name,
+		config.drc_zipcode,
 		config.drc_address1,
 		config.drc_address2,
 		config.drc_telno,
@@ -78,20 +80,22 @@ var updateConfig = function (connection, config, req, res) {
 	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.configuration SET ' 
 			+ 'drc_name = $1,'
-			+ 'drc_address1 = $2,'
-			+ 'drc_address2 = $3,'
-			+ 'drc_telno = $4,'
-			+ 'drc_faxno = $5,'
-			+ 'consumption_tax = $6,'
-			+ 'quote_form_memo_define_1 = $7,' 
-			+ 'quote_form_memo_define_2 = $8,' 
-			+ 'quote_form_memo_define_3 = $9,' 
-			+ 'updated_id = $10,' // 更新者ID
-			+ 'updated = $11'
-			+ " WHERE id = $12";
+			+ 'drc_zipcode = $2,'
+			+ 'drc_address1 = $3,'
+			+ 'drc_address2 = $4,'
+			+ 'drc_telno = $5,'
+			+ 'drc_faxno = $6,'
+			+ 'consumption_tax = $7,'
+			+ 'quote_form_memo_define_1 = $8,' 
+			+ 'quote_form_memo_define_2 = $9,' 
+			+ 'quote_form_memo_define_3 = $10,' 
+			+ 'updated_id = $11,' // 更新者ID
+			+ 'updated = $12'
+			+ " WHERE id = $13";
 		// SQL実行
 	var query = connection.query(sql, [
 		config.drc_name,
+		config.drc_zipcode,
 		config.drc_address1,
 		config.drc_address2,
 		config.drc_telno,

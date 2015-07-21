@@ -4,6 +4,7 @@ exports.configuration_get = function (req, res) {
 		var sql = 'SELECT ' 
 			+ 'id,' 
 			+ 'drc_name,' 
+			+ 'drc_zipcode,' 
 			+ 'drc_address1,' 
 			+ 'drc_address2,' 
 			+ 'drc_telno,' 

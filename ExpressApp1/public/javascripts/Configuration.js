@@ -51,6 +51,7 @@ config_form.getConfig = function() {
 	.done(function (config_response) {
 //		configuration = config_response;
 		$("#drc_name").val(config_response.drc_name);
+		$("#drc_zipcode").val(config_response.drc_zipcode);
 		$("#drc_address1").val(config_response.drc_address1);
 		$("#drc_address2").val(config_response.drc_address2);
 		$("#drc_telno").val(config_response.drc_telno);

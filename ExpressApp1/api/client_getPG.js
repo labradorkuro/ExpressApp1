@@ -38,7 +38,7 @@ var getPagingParams = function (req) {
 var client_get_list = function (req, res) {
 	var index_no = Number(req.query.no);
 //	var index_str = ['','0-9','A-Z','ｱ-ｵ','ｶ-ｺ','ｻ-ｿ','ﾀ-ﾄ','ﾅ-ﾉ','ﾊ-ﾎ','ﾏ-ﾓ','ﾔ-ﾖ','ﾗ-ﾛ','ﾜ-ﾝ'];
-	var index_str = ['','0-9','A-Z','ア-オ','カ-コ','サ-ソ','タ-ト','ナ-ノ','ハ-ホ','マ-モ','ヤ-ヨ','ラ-ロ','ワ-ン'];
+	var index_str = ['','ア-オ','カ-コ','サ-ソ','タ-ト','ナ-ノ','ハ-ホ','マ-モ','ヤ-ヨ','ラ-ロ','ワ-ン'];
 	var pg_params = getPagingParams(req);
 //	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd LIKE \'' + index_str[index_no] + '%\'';
 //	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd ~* \'^[' + index_str[index_no] + ']\'';

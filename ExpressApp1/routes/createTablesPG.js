@@ -366,6 +366,7 @@ exports.create = function (req, res) {
 		"CREATE TABLE IF NOT EXISTS drc_sch.configuration (" 
 			+ "id SERIAL,"					// ID
 			+ "drc_name VARCHAR(256),"		// 自社会社名
+			+ "drc_zipcode VARCHAR(16),"	// 郵便番号
 			+ "drc_address1 VARCHAR(128),"	// 住所１
 			+ "drc_address2 VARCHAR(128),"	// 住所２
 			+ "drc_telno VARCHAR(16),"		// 電話番号

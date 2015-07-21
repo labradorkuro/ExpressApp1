@@ -24,11 +24,11 @@ quoteInfo.getMyInfo = function() {
 	.done(function (config_response) {
 //		configuration = config_response;
 		quoteInfo.drc_info.name = config_response.drc_name;
-		quoteInfo.drc_info.zipcode = '〒530-0044'//config_response.drc_zipcode;
+		quoteInfo.drc_info.zipcode = '〒'+ config_response.drc_zipcode;
 		quoteInfo.drc_info.address1 = config_response.drc_address1;
 		quoteInfo.drc_info.address2 = config_response.drc_address2;
-		quoteInfo.drc_info.telno = "TEL : " + config_response.drc_telno;
-		quoteInfo.drc_info.faxno = "FAX : " + config_response.drc_faxno;
+		quoteInfo.drc_info.telno = "TEL:" + config_response.drc_telno;
+		quoteInfo.drc_info.faxno = "FAX:" + config_response.drc_faxno;
 		quoteInfo.drc_info.consumption_tax = config_response.consumption_tax;
 		quoteInfo.drc_info.quote_form_memo_1 = config_response.quote_form_memo_define_1;
 		quoteInfo.drc_info.quote_form_memo_2 = config_response.quote_form_memo_define_2;
@@ -202,6 +202,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 // 見積書ダイアログ表示
 quoteInfo.openQuoteFormDialog = function (event) {
 	// 自社情報のセット
+	$("#drc_zipcode").text(quoteInfo.drc_info.zipcode);
 	$("#drc_address1").text(quoteInfo.drc_info.address1);
 	$("#drc_address2").text(quoteInfo.drc_info.address2);
 	$("#drc_tel_fax").text(quoteInfo.drc_info.telno + " " + quoteInfo.drc_info.faxno);
@@ -794,23 +795,39 @@ quoteInfo.printQuote = function (data) {
 	font_size = 16;
 	var left = 80;
 	top = 155;
-	if (data.client_name_1 != null)
+	if (data.client_name_1 != "") {
 		quoteInfo.outputTextBold(canvas, data.client_name_1, font_size, left, top);
+		if ((data.client_name_2 == "") && (data.prepared_division == "") && (data.prepared_name == "")) {
+			top += font_size + 6 + 4;
+			canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+		}
+	}
 	top += font_size + 6;
-	if (data.client_name_2 != null)
+	if (data.client_name_2 != "") {
 		quoteInfo.outputTextBold(canvas, data.client_name_2, font_size, left, top);
+		if ((data.prepared_division == "") && (data.prepared_name == "")) {
+			top += font_size + 6 + 4;
+			canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+		}
+	}
 	top += font_size + 6;
-	if (data.prepared_division != null)
+	if (data.prepared_division != "") {
 		quoteInfo.outputTextBold(canvas, data.prepared_division, font_size, left, top);
+		if (data.prepared_name == "") {
+			top += font_size + 6 + 4;
+			canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+		}
+	}
 	top += font_size + 6;
-	if (data.prepared_name != null)
+	if (data.prepared_name != "") {
 		quoteInfo.outputTextBold(canvas, data.prepared_name, font_size, left, top);
-	top += font_size + 6 + 4;
-	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+		top += font_size + 6 + 4;
+		canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+	}
 	// 見積内容	
-	top += font_size + 10;
+	top += font_size + 6;
 	font_size = 12;
-	quoteInfo.outputText(canvas, "下記の通りお見積り申し上げます", font_size, left, top);
+	quoteInfo.outputTextBold(canvas, "下記の通りお見積り申し上げます", font_size, left, top);
 	top += font_size + 10;
 	font_size = 14;
 	quoteInfo.outputTextBold(canvas, "件名：" + data.quote_title, font_size, left, top);

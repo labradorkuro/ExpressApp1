@@ -30,6 +30,10 @@ block content
 							td
 								input#drc_name(type="text" name="drc_name" size="80" placeholder="自社名")
 						tr
+							td.form_title_s 郵便番号
+							td
+								input#drc_zipcode(type="text" name="drc_zipcode" pattern="^[0-9]{3}-[0-9]{4}$" size="40" placeholder="郵便番号")
+						tr
 							td.form_title_s 自社住所１
 							td
 								input#drc_address1(type="text" name="drc_address1" size="80" placeholder="自社住所１")

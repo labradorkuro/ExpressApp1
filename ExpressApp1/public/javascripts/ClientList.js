@@ -41,7 +41,7 @@ clientList.createMessageDialog = function () {
 
 // リスト画面の生成（初期化）
 clientList.init = function(toolbar) {
-	for(var i = 1;i <= 12;i++) {
+	for(var i = 1;i <= 10;i++) {
 		var target = "#tabs-" + i;
 		// Tab毎に必要な要素を追加する
 		if (toolbar)
