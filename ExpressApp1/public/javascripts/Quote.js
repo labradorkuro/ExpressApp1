@@ -788,7 +788,7 @@ quoteInfo.printQuote = function (data) {
 	var canvas = new fabric.Canvas('canvas', { backgroundColor : "#ffffff" });
 	canvas.setHeight(1500);
 	canvas.setWidth(900);
-	var doc = new jsPDF();
+	var doc = new jsPDF('p','pt','a4');
 	fabric.Image.fromURL('images/logo_DRC.jpg',function(img) {
 		img.left = 460;
 		img.top = 167;
@@ -797,11 +797,11 @@ quoteInfo.printQuote = function (data) {
 		canvas.add(img);
 	
 	var top = 100;
-	var font_size = 20;
+	var font_size = 24;
 	// タイトル	
-	quoteInfo.outputText(canvas, data.title, font_size, 330, 100);
+	quoteInfo.outputTextBold(canvas, data.title, font_size, 330, 100);
 	// 請求先情報	
-	font_size = 16;
+	font_size = 18;
 	var left = 80;
 	top = 155;
 	if (data.client_name_1 != "") {
@@ -835,117 +835,118 @@ quoteInfo.printQuote = function (data) {
 	}
 	// 見積内容	
 	top += font_size + 6;
-	font_size = 12;
+	font_size = 16;
 	quoteInfo.outputTextBold(canvas, "下記の通りお見積り申し上げます", font_size, left, top);
 	top += font_size + 10;
-	font_size = 14;
+	font_size = 18;
 	quoteInfo.outputTextBold(canvas, "件名：" + data.quote_title, font_size, left, top);
 	top += font_size + 4 + 4;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
 
 	top += font_size;
-	font_size = 12;
+	font_size = 16;
 	quoteInfo.outputTextBold(canvas, "有効期限：" + data.quote_expire, font_size, left, top);
-	top += font_size + 4 + 4;
+	top += font_size + 4;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 1 }));	// 下線
-	top += font_size;
-	font_size = 20;
-	quoteInfo.outputText(canvas, "御見積合計金額　" + scheduleCommon.addYenMark(scheduleCommon.numFormatter(data.quote_total_price)) + ".-", font_size, left, top);
+	top += 8;
+	font_size = 22;
+	quoteInfo.outputTextBold(canvas, "御見積合計金額　" + scheduleCommon.addYenMark(scheduleCommon.numFormatter(data.quote_total_price)) + ".-", font_size, left, top);
 	top += font_size + 4 + 4;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : 340, height : 2 }));	// 下線
 	// 見積情報
-	font_size = 12;
+	font_size = 14;
 	left = 560;
 	top = 100;
 	if (data.quote_issue_date != null)
-		quoteInfo.outputText(canvas, "見積日：" + data.quote_issue_date, font_size, left, top);
+		quoteInfo.outputTextBold(canvas, "見積日：" + data.quote_issue_date, font_size, left, top);
 	top += font_size + 8;
 	if (data.quote_no != null)
-		quoteInfo.outputText(canvas, "見積番号：" + data.quote_no, font_size, left, top);
+		quoteInfo.outputTextBold(canvas, "見積番号：" + data.quote_no, font_size, left, top);
 	// 自社情報
 	left = 530;
 	top += 60;
-	font_size = 14;
+	font_size = 17;
 	quoteInfo.outputTextBold(canvas, data.drc_name, font_size, left, top);
 	top += font_size + 10;
-	font_size = 12;
-	quoteInfo.outputText(canvas, data.drc_zipcode, font_size, left, top);
+	font_size = 14;
+	quoteInfo.outputTextBold(canvas, data.drc_zipcode, font_size, left, top);
 	top += font_size + 6;
-	font_size = 12;
-	quoteInfo.outputText(canvas, data.drc_address1, font_size, left, top);
+	font_size = 14;
+	quoteInfo.outputTextBold(canvas, data.drc_address1, font_size, left, top);
 	top += font_size + 6;
-	quoteInfo.outputText(canvas, data.drc_address2, font_size, left, top);
+	quoteInfo.outputTextBold(canvas, data.drc_address2, font_size, left, top);
 	top += font_size + 6;
-	font_size = 12;
+	font_size = 14;
 	quoteInfo.outputTextMono(canvas, data.drc_tel, font_size, left, top);
 	top += font_size + 6;
 	quoteInfo.outputTextMono(canvas, data.drc_fax, font_size, left, top);
 	top += font_size + 6;
-	font_size = 14;
-	quoteInfo.outputText(canvas, data.drc_division_name, font_size, left, top);
+	font_size = 16;
+	quoteInfo.outputTextBold(canvas, data.drc_division_name, font_size, left, top);
 	top += font_size + 6;
-	quoteInfo.outputText(canvas, data.drc_prepared, font_size, left, top);
+	quoteInfo.outputTextBold(canvas, data.drc_prepared, font_size, left, top);
 	
 	// 明細表
 	left = 60;
-	top = 400;
+	top = 424;
 	var w = 680;
 	h = 24;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'gray', stroke: 'black',opacity: 0.7 }));
 
-	var h = 624;	
+	var h = 600;	
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h,fill:'none', stroke:'black', strokeWidth:3, opacity:1}));
 
 	h = 1;	
 	var sw = 1;
-	for (var i = 0; i < 25; i++) {
+	for (var i = 0; i < 24; i++) {
 		top += 24;
 		if (i == 0) sw = 2; else sw = 1;
-		if (i >= 22) sw = 2;
+		if (i >= 21) sw = 2;
 		canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'none', stroke: 'black', strokeWidth: sw, opacity: 1 }));
 	}
-	top = 400;
-	h = 624;
+	top = 424;
+	h = 600;
 	canvas.add(new fabric.Rect({ top : top, left : 280, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Rect({ top : top, left : 330, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Rect({ top : top, left : 390, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Rect({ top : top, left : 510, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Rect({ top : top, left : 630, width : 1, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	
-	top = 400;
+	top = 428;
 	font_size = 16;
-	quoteInfo.outputText(canvas, "件　　名", font_size, 130, top);
-	quoteInfo.outputText(canvas, "数量", font_size, 290, top);
-	quoteInfo.outputText(canvas, "単位"  , font_size, 345, top);
-	quoteInfo.outputText(canvas, "単　価", font_size, 430, top);
-	quoteInfo.outputText(canvas, "金  額", font_size, 550, top);
-	quoteInfo.outputText(canvas, "備  考", font_size, 655, top);
+	quoteInfo.outputTextBold(canvas, "件　　名", font_size, 130, top);
+	quoteInfo.outputTextBold(canvas, "数量", font_size, 290, top);
+	quoteInfo.outputTextBold(canvas, "単位"  , font_size, 345, top);
+	quoteInfo.outputTextBold(canvas, "単　価", font_size, 430, top);
+	quoteInfo.outputTextBold(canvas, "金  額", font_size, 550, top);
+	quoteInfo.outputTextBold(canvas, "備  考", font_size, 655, top);
 	// 印鑑枠	
-	canvas.add(new fabric.Rect({ top : 340, left : 530, width : 150, height : 50, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
-	canvas.add(new fabric.Rect({ top : 340, left : 580, width : 50, height : 50, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Rect({ top : 360, left : 530, width : 150, height : 50, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Rect({ top : 360, left : 580, width : 50, height : 50, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 	// 備考
-	font_size = 11;
+	font_size = 10;
 	canvas.add(new fabric.Rect({ top : 1040, left : left, width : w, height : 60, fill: 'none', stroke: 'black',strokeWidth: 2, opacity: 1 }));
-	quoteInfo.outputText(canvas, "備  考", font_size, 70, 1045);
-	quoteInfo.outputText(canvas, data.memo, font_size, 120, 1045);
+	quoteInfo.outputTextBold(canvas, "備  考", font_size, 70, 1045);
+	quoteInfo.outputTextBold(canvas, data.memo, font_size, 100, 1045);
 
 
 	// 明細データの出力
-	quoteInfo.outputQuoteList(canvas, data, 424, 16);
+	quoteInfo.outputQuoteList(canvas, data, 452, 16);
 
 	canvas.calcOffset();
 	canvas.renderAll();
 	// canvasからイメージを取得してPDFに追加する
 //	doc.addImage( $('canvas').get(0).toDataURL('image/jpeg'),'JPEG',0,0);
-	doc.addImage( $('canvas').get(0).toDataURL('image/svg+xml'),'SVG',0,0);
+//	doc.addImage( $('canvas').get(0).toDataURL('image/svg+xml'),'SVG',0,0);
+	doc.addImage( canvas.toDataURL({format:'png',quality:1.0,multiplier:1}),'PNG',0,0);
 	var filename = "御見積書";// + data.quote_issue_date + "_" + data.quote_no + "_" + data.client_name_1 + ".pdf";
 	if (data.quote_issue_date != null) filename += "_" + data.quote_issue_date;
 	if (data.quote_no != null) filename += "_" + data.quote_no;
 	if (data.client_name_1 != null) filename += "_" + data.client_name_1;
 	filename += ".pdf";
 	doc.save(filename);
-	canvas.setHeight(0);
-	canvas.setWidth(0);
+	//canvas.setHeight(0);
+	//canvas.setWidth(0);
 	document.body.style.cursor = "default";
 	return true;
 	});
@@ -954,14 +955,14 @@ quoteInfo.printQuote = function (data) {
 // canvasにテキストを出力
 quoteInfo.outputText = function (canvas, text,font_size,left, top) {
 //	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size}));
-	canvas.add(new fabric.Text(text, { fontFamily: 'MS PGothic',fill: 'black',left: left, top: top, fontSize: font_size * 1.2}));
+	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo UI',left: left, top: top, fontSize: font_size}));
 };
 quoteInfo.outputTextBold = function (canvas, text,font_size,left, top) {
 //	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size}));
-	canvas.add(new fabric.Text(text, { fontFamily: 'MS PGothic', fontWeight:'bold',fill: 'black',left: left, top: top, fontSize: font_size * 1.2}));
+	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo UI', fontWeight:'bold',left: left, top: top, fontSize: font_size}));
 };
 quoteInfo.outputTextMono = function (canvas, text,font_size,left, top) {
-	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size * 1.2}));
+	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', left: left, top: top, fontSize: font_size }));
 };
 
 // 見積明細データの出力
@@ -973,22 +974,22 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);	// 試験中分類名
 		if (row.quantity > 0)
 			quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row.quantity,5), font_size, 285, top);	// 数量
-		quoteInfo.outputText(canvas, row.unit, font_size, 340, top);					// 単位
+		quoteInfo.outputText(canvas, row.unit, font_size, 350, top);					// 単位
 //		quoteInfo.outputTextMono(canvas, "\\" + scheduleCommon.numFormatter(row.unit_price,10), font_size, 420, top);// 単価
 		if (row.unit_price > 0)
-			quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(row.unit_price,12)), font_size, 400, top);// 単価
+			quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(row.unit_price,12)), font_size, 410, top);// 単価
 		var pr = scheduleCommon.numFormatter(Math.round(row.price),12);
 		if (row.price < 0) {
 			pr = scheduleCommon.numFormatter(Math.round(row.price),12);
 			pr = pr.replace("  -","▲ ");
-			quoteInfo.outputTextMono(canvas, pr, font_size, 510, top);				// 金額
+			quoteInfo.outputTextMono(canvas, pr, font_size, 520, top);				// 金額
 		} else {
-			quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(pr), font_size, 520, top);				// 金額
+			quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(pr), font_size, 530, top);				// 金額
 		}
 		if (row.specific_memo.length > 0) {
 			var memo_top = top;
 			var memo_font_size = font_size;
-			var memo_line = Math.ceil(row.specific_memo.length / 8);
+			var memo_line = Math.ceil(row.specific_memo.length / 7);
 			var lines = "";
 			if (memo_line  > 1) {
 				memo_top += 6;
@@ -999,21 +1000,21 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 			} else {
 				lines = row.specific_memo;
 			}
-			quoteInfo.outputText(canvas, lines, memo_font_size, 632, memo_top);		// 備考
+			quoteInfo.outputTextBold(canvas, lines, memo_font_size, 632, memo_top);		// 備考
 		}
 		top += 24;
 		total += Number(row.price);
 	}
-	top = top_wk + (22 * 24);
+	top = top_wk + (21 * 24);
 	var tax = total * (quoteInfo.currentConsumption_tax / 100);
-	quoteInfo.outputText(canvas, "（合計）", font_size, 450, top);
-	quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(total,12)), font_size, 520, top);		 
+	quoteInfo.outputTextBold(canvas, "（合計）", font_size, 450, top);
+	quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(total,12)), font_size, 530, top);		 
 	top += 24;
-	quoteInfo.outputText(canvas, "（消費税）", font_size, 435, top);
-	quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(tax,12)), font_size, 520, top);		 
+	quoteInfo.outputTextBold(canvas, "（消費税）", font_size, 435, top);
+	quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(tax,12)), font_size, 530, top);		 
 	top += 24;
-	quoteInfo.outputText(canvas, " 総合計 ", font_size, 445, top);
-	quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(total + tax,12)), font_size, 520, top);		 
+	quoteInfo.outputTextBold(canvas, " 総合計 ", font_size, 445, top);
+	quoteInfo.outputTextMono(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(total + tax,12)), font_size, 530, top);		 
 };
 
 // 備考を選択したらテキストエリアにコピーする

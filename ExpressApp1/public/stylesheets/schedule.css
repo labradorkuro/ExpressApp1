@@ -1381,7 +1381,7 @@ table.client_list {
     /*width:80%;*/
 }
 canvas#canvas {
-    height:900px;
+    height:1500px;
     width:900px;
     visibility:hidden;
 }
@@ -1519,6 +1519,6 @@ div.client_grid {
   src: local(MSMincho);
 }
 @font-face {
-  font-family: 'MS Gothic';
-  src: local(MSPMincho);
+  font-family: 'MS PGothic';
+  src: local(MSPGothic);
 }
