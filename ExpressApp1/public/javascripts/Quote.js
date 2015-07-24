@@ -831,7 +831,7 @@ quoteInfo.printQuote = function (data) {
 	if (data.prepared_name != "") {
 		quoteInfo.outputTextBold(canvas, data.prepared_name, font_size, left, top);
 		top += font_size + 6 + 4;
-		canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+		canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 1 }));	// 下線
 	}
 	// 見積内容	
 	top += font_size + 6;
@@ -841,7 +841,7 @@ quoteInfo.printQuote = function (data) {
 	font_size = 18;
 	quoteInfo.outputTextBold(canvas, "件名：" + data.quote_title, font_size, left, top);
 	top += font_size + 4 + 4;
-	canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+	canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 1 }));	// 下線
 
 	top += font_size;
 	font_size = 16;
