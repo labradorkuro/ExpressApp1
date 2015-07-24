@@ -226,10 +226,18 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		quoteInfo.eventBind("");
 		quoteInfo.calcSummary();
 	}
+	$("#billing_company_name_1").val("");
+	$("#billing_company_name_2").val("");
+	$("#billing_division").val("");
+	$("#billing_person").val("");
+
 	$("#billing_company_name_1").val(entry.client_name_1);
 	$("#billing_company_name_2").val(entry.client_name_2);
 	$("#billing_division").val(entry.client_division_name);
-	$("#billing_person").val(entry.client_person_name + " " + entry.client_person_compellation);
+	if (entry.client_person_name != "") {
+		$("#billing_person").val(entry.client_person_name + " " + entry.client_person_compellation);
+	}
+
 	$("#drc_division_name").text("  試験課 " + entry.test_large_class_name);
 	$("#drc_test_person").text("  担当者 " + entry.sales_person_id);
 	$("#quote_title").val(entry.entry_title);
