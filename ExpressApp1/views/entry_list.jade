@@ -9,8 +9,12 @@ html
 		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
 		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
 		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
-		script(src="javascripts/jspdf.min.js")
-		script(src="javascripts/jspdf.plugin.addimage.js")
+		script(src="javascripts/jsPDF/jspdf.js")
+		script(src="javascripts/jsPDF/plugins/addimage.js")
+		script(src="javascripts/jsPDF/plugins/svg.js")
+		script(src="javascripts/jsPDF/plugins/png_support.js")
+		script(src="javascripts/jsPDF/libs/png_support/png.js")
+		script(src="javascripts/jsPDF/libs/png_support/zlib.js")
 		script(src="javascripts/filesaver.min.js")
 		script(src="javascripts/fabric.min.js")
 		script(src="javascripts/jquery.cookie.js")
@@ -110,3 +114,4 @@ html
 					div
 						span#message 
 				canvas#canvas
+				span#print_image

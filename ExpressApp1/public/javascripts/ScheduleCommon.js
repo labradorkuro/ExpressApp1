@@ -351,5 +351,32 @@ scheduleCommon.checkKana = function(str) {
 	}
 	return result;
 }
+scheduleCommon.checkUserAgent = function(window) {
+	var userAgent = window.navigator.userAgent.toLowerCase();
+	var appVersion = window.navigator.appVersion.toLowerCase();
 
+    if (userAgent.indexOf('msie') != -1) {
+        //IE6～9（おそらく）
+        if (appVersion.indexOf("msie 6.") != -1) {
+            //IE6での処理
+        }else if (appVersion.indexOf("msie 7.") != -1) {
+            //IE7での処理
+        }else if (appVersion.indexOf("msie 8.") != -1) {
+            //IE8での処理
+        }else if (appVersion.indexOf("msie 9.") != -1) {
+            //IE9での処理
+        }
+		return "IE";
+    }else if (userAgent.indexOf('chrome') != -1) {
+        //Chrome/Opera（最新版）での処理
+		return 'chrome';
+    }else if (userAgent.indexOf('safari') != -1) {
+        //Safariでの処理
+		return 'safari';
+    }else if (userAgent.indexOf('firefox') != -1) {
+        //Firefoxでの処理
+		return 'firefox';
+    }
+	return '';
+}
 // end
