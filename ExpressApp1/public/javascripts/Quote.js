@@ -984,7 +984,7 @@ quoteInfo.createSVG = function (data) {
 			quoteInfo.outputText(canvas, data.client_name_1, font_size, left, top);
 			if ((data.client_name_2 == "") && (data.prepared_division == "") && (data.prepared_name == "")) {
 				top += font_size + 6 + 4;
-				canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+				canvas.add(new fabric.Rect({ top : top, left : left, width : 300, height : 1 }));	// 下線
 			}
 		}
 		top += font_size + 6;
@@ -992,7 +992,7 @@ quoteInfo.createSVG = function (data) {
 			quoteInfo.outputText(canvas, data.client_name_2, font_size, left, top);
 			if ((data.prepared_division == "") && (data.prepared_name == "")) {
 				top += font_size + 6 + 4;
-				canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+				canvas.add(new fabric.Rect({ top : top, left : left, width : 300, height : 1 }));	// 下線
 			}
 		}
 		top += font_size + 6;
@@ -1000,14 +1000,14 @@ quoteInfo.createSVG = function (data) {
 			quoteInfo.outputText(canvas, data.prepared_division, font_size, left, top);
 			if (data.prepared_name == "") {
 				top += font_size + 6 + 4;
-				canvas.add(new fabric.Rect({ top : top, left : left, width : 200, height : 1 }));	// 下線
+				canvas.add(new fabric.Rect({ top : top, left : left, width : 300, height : 1 }));	// 下線
 			}
 		}
 		top += font_size + 6;
 		if (data.prepared_name != "") {
 			quoteInfo.outputText(canvas, data.prepared_name, font_size, left, top);
 			top += font_size + 6 + 4;
-			canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 1 }));	// 下線
+			canvas.add(new fabric.Rect({ top : top, left : left, width : 300, height : 1 }));	// 下線
 		}
 		// 見積内容	
 		top += font_size + 6;
