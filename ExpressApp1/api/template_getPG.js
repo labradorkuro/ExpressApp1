@@ -25,7 +25,7 @@ exports.template_get_list = function (req, res) {
 // 登録されているテンプレートのリストを取得（item_type指定あり・なし）
 exports.template_get_all = function (req, res) {
 	var sql ="";
-	console.log("template_get_all:" + req.params.item_type);
+	//console.log("template_get_all:" + req.params.item_type);
 	if (req.params.item_type) {
 		// item_typeの指定あり
 		sql = 'SELECT ' 

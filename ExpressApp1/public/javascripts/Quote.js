@@ -1186,13 +1186,13 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		if (row.specific_memo.length > 0) {
 			var memo_top = top;
 			var memo_font_size = font_size;
-			var memo_line = Math.ceil(row.specific_memo.length / 18);
+			var memo_line = Math.ceil(row.specific_memo.length / 13);
 			var lines = "";
 			if (memo_line  > 1) {
-				memo_top += 6;
+				//memo_top += 6;
 				memo_font_size = Math.round(memo_font_size / (memo_line));
 				for(var k = 0;k < memo_line + 1;k++) {
-					lines += row.specific_memo.substring((k * 35),(k * 35) + 35) + "\n";
+					lines += row.specific_memo.substring((k * 12),(k * 12) + 12) + "\n";
 				}
 			} else {
 				lines = row.specific_memo;
