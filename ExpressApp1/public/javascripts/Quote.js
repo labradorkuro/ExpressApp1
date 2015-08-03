@@ -1097,15 +1097,15 @@ quoteInfo.createSVG = function (data) {
 		quoteInfo.outputTextBold(canvas, "数量", font_size, 290, top);
 		quoteInfo.outputTextBold(canvas, "単位"  , font_size, 345, top);
 		quoteInfo.outputTextBold(canvas, "単　価", font_size, 430, top);
-		quoteInfo.outputTextBold(canvas, "金  額", font_size, 550, top);
-		quoteInfo.outputTextBold(canvas, "備  考", font_size, 655, top);
+		quoteInfo.outputTextBold(canvas, "金　額", font_size, 550, top);
+		quoteInfo.outputTextBold(canvas, "備　考", font_size, 720, top);
 		// 印鑑枠	
 		canvas.add(new fabric.Rect({ top : 380, left : 630, width : 180, height : 60, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Rect({ top : 380, left : 690, width : 60, height : 60, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		// 備考
 		font_size = 12;
 		canvas.add(new fabric.Rect({ top : 1080, left : left, width : w, height : 80, fill: 'none', stroke: 'black',strokeWidth: 1, opacity: 1 }));
-		quoteInfo.outputTextBold(canvas, "備  考", font_size, 60, 1085);
+		quoteInfo.outputTextBold(canvas, "備　考", font_size, 60, 1085);
 		quoteInfo.outputTextBold(canvas, data.memo, font_size, 60, 1110);
 
 
@@ -1139,7 +1139,7 @@ quoteInfo.outputTextBold = function (canvas, text,font_size,left, top) {
 	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo', fontWeight:'bold',left: left, top: top, fontSize: font_size}));
 };
 quoteInfo.outputTextMono = function (canvas, text,font_size,left, top) {
-	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', left: left, top: top, fontSize: font_size }));
+	canvas.add(new fabric.Text(text, { fontFamily: 'MS Gothic', left: left, top: top, fontSize: font_size }));
 };
 
 // 見積明細データの出力
