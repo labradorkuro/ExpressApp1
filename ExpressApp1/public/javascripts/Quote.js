@@ -1183,19 +1183,26 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 			if (ua == 'chrome') left += (len * (font_size / 2));
 			quoteInfo.outputTextMono(canvas, pr, font_size, left, top);
 		}
-		if (row.specific_memo.length > 0) {
+		len = row.specific_memo.length;
+		if (len > 0) {
+			
 			var memo_top = top;
 			var memo_font_size = font_size;
-			var memo_line = Math.ceil(row.specific_memo.length / 13);
 			var lines = "";
-			if (memo_line  > 1) {
-				//memo_top += 6;
-				memo_font_size = Math.round(memo_font_size / (memo_line));
-				for(var k = 0;k < memo_line + 1;k++) {
-					lines += row.specific_memo.substring((k * 12),(k * 12) + 12) + "\n";
-				}
-			} else {
+			if (len <= 13) {
 				lines = row.specific_memo;
+			} else if ((len > 13) && (len <=26)) {
+				memo_font_size /= 2;
+				memo_top += 4;
+				for(var k = 0;k < 2;k++) {
+					lines += row.specific_memo.substring((k * 21),(k * 21) + 21) + "\n";
+				}
+			} else if (len > 26) {
+				memo_font_size /= 3;
+				memo_top += 2;
+				for(var k = 0;k < 3;k++) {
+					lines += row.specific_memo.substring((k * 21),(k * 21) + 21) + "\n";
+				}
 			}
 			quoteInfo.outputText(canvas, lines, memo_font_size, 632, memo_top);		// 備考
 		}
