@@ -482,7 +482,7 @@ var quote_get_list = function (req, res) {
 		+ 'quote_delete_check' 
 		+ ' FROM drc_sch.quote_info'
 		// 合計金額を求めるサブクエリー
-		+ ' LEFT JOIN (SELECT entry_no,quote_no,sum(price) AS total_price FROM drc_sch.quote_specific_info GROUP BY entry_no,quote_no) AS quote_specific ON (quote_info.entry_no = quote_specific.entry_no AND quote_info.quote_no = quote_specific.quote_no )'
+		+ ' LEFT JOIN (SELECT entry_no,quote_no,sum(price) AS total_price FROM drc_sch.quote_specific_info WHERE quote_specific_info.specific_delete_check = 0 GROUP BY entry_no,quote_no) AS quote_specific ON (quote_info.entry_no = quote_specific.entry_no AND quote_info.quote_no = quote_specific.quote_no )'
 		+ ' WHERE quote_delete_check = $1 AND quote_info.entry_no = $2 ORDER BY ' 
 		+ pg_params.sidx + ' ' + pg_params.sord 
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;

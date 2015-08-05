@@ -95,7 +95,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		url: '/quote_get/' + no + '/?quote_delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','見積番号', '見積日','有効期限','合計金額','被験者数','消費税率','PDF発行','受注ステータス','備考','','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','見積番号', '見積日','有効期限','合計金額(税抜）','被験者数','消費税率','PDF発行','受注ステータス','備考','','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no' , index: 'entry_no', width: 80, align: "center" },				// 案件番号
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
