@@ -56,6 +56,7 @@ var path = require('path');
 
 
 var app = express();
+drc_version = '(Ver.1.0.1)';
 
 // all environments
 app.set('port', process.env.PORT || 80);

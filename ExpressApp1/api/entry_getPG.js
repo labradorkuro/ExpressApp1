@@ -310,7 +310,7 @@ var entry_get_detail = function (req, res) {
 		+ 'entry_info.updated_id'												// 更新者ID
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)' 
-		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd)' 
+		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)' 
 		+ ' LEFT JOIN drc_sch.client_list AS out_list ON(entry_info.outsourcing_cd = out_list.client_cd)' 

@@ -7,7 +7,7 @@ exports.login_post = function (req, res) {
 	var auth = 'f01:0,f02:0,f03:2,f04:0,f05:0,f06:0,f07:0,f08:0,f09:0,f10:0,f11:1,f12:1,f13:2';	// 最低権限で初期化
 	var uid = req.body.uid;
 	var pass = req.body.passwd;
-	
+	var title = 'DRC試験スケジュール管理' + drc_version;
 	if ((uid === "drc_admin") && (pass === "schedule")) {
 		req.session.login = true;
 		req.session.uid = uid;
@@ -15,7 +15,7 @@ exports.login_post = function (req, res) {
 		auth = 'f01:2,f02:2,f03:2,f04:2,f05:2,f06:2,f07:2,f08:2,f09:2,f10:2,f11:2,f12:2,f13:2';	// 最低権限で初期化
 		res.cookie('userid', uid,{maxAge:1000 * 3600 * 24});
 		res.cookie('user_auth', auth,{maxAge:1000 * 3600 * 24});
-		res.render('portal', { title: 'DRC試験スケジュール管理' , userid: uid , name: "管理者" });
+		res.render('portal', { title: title , userid: uid , name: "管理者" });
 		saveInfo(1,req.session.uid,req.session.name,JSON.stringify(req.headers['user-agent']));
 		return;
 	}
@@ -48,7 +48,7 @@ exports.login_post = function (req, res) {
 							connection.end();
 							res.cookie('userid', uid,{maxAge:1000 * 3600 * 24});
 							res.cookie('user_auth', auth,{maxAge:1000 * 3600 * 24});
-							res.render('portal', { title: 'DRC試験スケジュール管理' , userid: req.session.uid ,name:req.session.name});
+							res.render('portal', { title: title , userid: req.session.uid ,name:req.session.name});
 							saveInfo(1,req.session.uid,req.session.name,JSON.stringify(req.headers['user-agent']));
 						}
 					});
@@ -67,7 +67,7 @@ exports.logout_post = function (req, res) {
 	saveInfo(2,req.session.uid,req.session.name,JSON.stringify(req.headers['user-agent']));
 	req.session.destroy();
 	var msg = 'ログインしてください。';
-	res.render('index', { title: 'DRC試験スケジュール管理', msg: msg });
+	res.render('index', { title: title, msg: msg });
 
 };
 
