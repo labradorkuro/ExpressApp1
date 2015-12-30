@@ -162,6 +162,12 @@ pool = mysql.createPool({
 
 });
  * **/	
+process.on('uncaughtException',function(err) {
+	console.log(err);
+});
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
+  var msg = 'System Build:2015.12.30';
+  console.log(msg);
 });
