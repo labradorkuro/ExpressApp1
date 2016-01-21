@@ -1,11 +1,26 @@
+var express = require('express');
+var router = express.Router();
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var multer = require('multer');
+var upload = multer();
+
+var routes = require('./routes/index');
+//var users = require('./routes/users');
+var session = require('express-session');
+var methodOverride = require('method-override');
+var errorHandler = require('errorhandler');
+
+var app = express();
 
 
 /**
  * Module dependencies.
  */
 var fs = require('fs');
-var express = require('express');
-var routes = require('./routes');
 var client_list = require('./routes/client_list');
 var user_list = require('./routes/user_list');
 var division_list = require('./routes/division_list');
@@ -55,37 +70,43 @@ var http = require('http');
 var path = require('path');
 
 
-var app = express();
-drc_version = '(Ver.1.0.1)';
+drc_version = '(Ver.1.0.2)';
 
 // all environments
 app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.use(express.cookieParser('secret', 'drc_secreted_key'));
-app.use(express.session({ key: 'session_id' }));
-var logs = fs.createWriteStream('./access.log', {flags: 'w'});
-app.use(express.logger({
-  format: 'default',
-  stream: logs
-}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}));
 
-app.use(express.favicon(path.join(__dirname, 'public/favicon.ico')));
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.bodyParser());
-app.use(express.methodOverride());
-app.use(app.router);
+app.use(cookieParser());
+
+app.use(session({ key: 'session_id',resave: false,saveUninitialized: false,secret:'ExpressApp1' }));
+var logs = fs.createWriteStream('./access.log', {flags: 'w'});
+app.use(logger('dev',{imediate:true,stream:logs}));
+//app.use(morgan({ stream: logs }));
+//app.use(logger({
+//  format: 'default',
+//  stream: logs
+//}));
+
+app.use(favicon(path.join(__dirname, 'public/favicon.ico')));
+app.use(methodOverride());
+//app.use(app.router);
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/', routes);
+//app.use('/users', users);
+
 // development only
+
 if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
+  app.use(errorHandler());
 }
 
-app.get('/index', routes.index);
-app.get('/', routes.index);
+//router.get('/',routes.index);
+//router.get('/index',routes.index);
 app.get('/client_list', client_list.list);			// 顧客マスタ
 app.get('/user_list', user_list.list);				// 社員マスタ
 app.get('/test_item_list', test_item_list.list);	// 試験分類リスト
@@ -105,19 +126,19 @@ app.get('/configuration',configuration.list);
 app.get('/auth_settings',auth_settings.list);
 app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
-app.post('/entry_post', entry_post.entry_post);
-app.post('/quote_post', entry_post.quote_post);
-app.post('/workitem_post', workitem_post.workitem_post);
-app.post('/template_post', template_post.template_post);
-app.post('/template_update', template_post.template_update);
-app.post('/template_delete', template_post.template_delete);
-app.post('/schedule_post', schedule_post.schedule_post);
-app.post('/user_post', user_post.user_post);
-app.post('/password_post', user_post.password_post);
-app.post('/division_post', division_post.division_post);
+app.post('/entry_post', upload.array(), entry_post.entry_post);
+app.post('/quote_post', upload.array(), entry_post.quote_post);
+app.post('/workitem_post', upload.array(), workitem_post.workitem_post);
+app.post('/template_post', upload.array(), template_post.template_post);
+app.post('/template_update', upload.array(), template_post.template_update);
+app.post('/template_delete', upload.array(), template_post.template_delete);
+app.post('/schedule_post', upload.array(), schedule_post.schedule_post);
+app.post('/user_post', upload.array(), user_post.user_post);
+app.post('/password_post', upload.array(), user_post.password_post);
+app.post('/division_post', upload.array(), division_post.division_post);
 app.get('/entry_get/:no?', entry_get.entry_get);
-app.get('/entry_get/gantt/:start/:end/:test_type', entry_get.entry_get_list_gantt);
 app.get('/entry_get/cal/:start/:end/:test_type', entry_get.entry_get_list_cal);
+app.get('/entry_get/gantt/:start/:end/:test_type', entry_get.entry_get_list_gantt);
 app.get('/quote_get/:entry_no?', entry_get.quote_get);
 app.get('/report_gantt/:entry_no?', entry_get.report_gantt);
 app.get('/quote_specific_get_grid/:entry_no/:quote_no', entry_get.quote_specific_get_grid);
@@ -140,17 +161,17 @@ app.post('/print_pdf/:entry_no?', print_pdf.print_pdf);
 app.get('/client_get/:no?', client_get.client_get);
 app.get('/client_division_get', client_get.client_division_get);
 app.get('/client_person_get', client_get.client_person_get);
-app.post('/client_post', client_post.client_post);
-app.post('/client_division_post', client_post.client_division_post);
-app.post('/client_person_post', client_post.client_person_post);
-app.post('/billing_info_post', billing_post.billing_post);
+app.post('/client_post', upload.array(), client_post.client_post);
+app.post('/client_division_post', upload.array(), client_post.client_division_post);
+app.post('/client_person_post', upload.array(), client_post.client_person_post);
+app.post('/billing_info_post', upload.array(), billing_post.billing_post);
 app.get('/billing_info_get', billing_get.billing_get);
 app.get('/billing_get_total/:entry_no', billing_get.billing_get_total);
-app.post('/test_item_post', test_item_post.test_item_post);
+app.post('/test_item_post', upload.array(), test_item_post.test_item_post);
 app.get('/test_item_get/:class', test_item_get.test_item_get);
-app.post('/config_post/:id', config_post.configuration_post);
+app.post('/config_post/:id', upload.array(), config_post.configuration_post);
 app.get('/config_get/:id', config_get.configuration_get);
-app.post('/auth_post', auth_settings_post.auth_settings_post);
+app.post('/auth_post', upload.array(), auth_settings_post.auth_settings_post);
 app.get('/auth_get_all', auth_settings_get.auth_settings_get_all);
 app.get('/auth_get/:pno', auth_settings_get.auth_settings_get);
 /** mysql -> pg に変更 2014.11.13
@@ -162,12 +183,47 @@ pool = mysql.createPool({
 
 });
  * **/	
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+
+
+module.exports = app;
+
 process.on('uncaughtException',function(err) {
 	console.log(err);
 });
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-  var msg = 'System Build:2015.12.30';
+  var msg = 'System Build:2016.01.21';
   console.log(msg);
 });

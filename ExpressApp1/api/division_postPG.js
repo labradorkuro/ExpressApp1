@@ -64,6 +64,7 @@ var insertDivision = function (connection, division, req, res) {
 		connection.end();
 		if (err) {
 			console.log(err);
+			res.send({ error_msg: 'データベースの登録に失敗しました。' });
 		} else {
 			res.send(division);
 		}
@@ -93,6 +94,7 @@ var updateDivision = function (connection, division, req, res) {
 		connection.end();
 		if (err) {
 			console.log(err);
+			res.send({ error_msg: 'データベースの登録に失敗しました。' });
 		} else {
 			res.send(division);
 		}

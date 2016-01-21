@@ -67,6 +67,7 @@ exports.logout_post = function (req, res) {
 	saveInfo(2,req.session.uid,req.session.name,JSON.stringify(req.headers['user-agent']));
 	req.session.destroy();
 	var msg = 'ログインしてください。';
+	var title = 'DRC試験スケジュール管理' + drc_version;
 	res.render('index', { title: title, msg: msg });
 
 };

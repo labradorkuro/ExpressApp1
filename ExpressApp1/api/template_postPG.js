@@ -38,6 +38,8 @@ exports.template_update = function(req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(template);
 		});
 	});
 };
@@ -64,6 +66,8 @@ exports.template_delete  = function(req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(template);
 		});
 	});
 	
@@ -124,6 +128,8 @@ var insert_template = function (template, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(template);
 		});
 	});
 };
@@ -159,6 +165,8 @@ var update_template = function (template, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(template);
 		});
 	});
 };
@@ -182,6 +190,8 @@ var delete_template = function (template, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(template);
 		});
 	});
 };

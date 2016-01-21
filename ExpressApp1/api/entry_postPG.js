@@ -324,6 +324,8 @@ var updateEntryInfo = function(entry, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(entry);
 		});
 	});
 };

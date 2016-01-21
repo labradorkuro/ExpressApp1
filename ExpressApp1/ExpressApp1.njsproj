@@ -5,7 +5,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>ExpressApp7</Name>
     <RootNamespace>ExpressApp7</RootNamespace>
-    <NodeExeArguments>--debug=5858 C:\Users\武則\Documents\workspace\ExpressApp1\ExpressApp1\app.js</NodeExeArguments>
+    <NodeExeArguments>--debug=5858 g:\workspace\Projects\ExpressApp1\ExpressApp1\app.js</NodeExeArguments>
     <DebuggerPort>
     </DebuggerPort>
     <ScriptArguments>

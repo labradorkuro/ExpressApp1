@@ -567,14 +567,17 @@ entryList.saveEntry = function () {
 
 // checkboxのチェック状態確認と値設定
 entryList.checkCheckbox = function () {
-	if ($("#delete_check").prop("checked")) {
-		$("#delete_check").val('1');
+	$("#delete_check").val(0);
+	$("#input_check").val(0);
+	$("#confirm_check").val(0);
+	if ($("#delete_check:checked").val()) { //prop("checked")) {
+		$("#delete_check").val(1);
 	}
 	if ($("#input_check:checked").val()) {
-		$("#input_check").val('1');
+		$("#input_check").val(1);
 	}
 	if ($("#confirm_check:checked").val()) {
-		$("#confirm_check").val('1');
+		$("#confirm_check").val(1);
 	}
 };
 

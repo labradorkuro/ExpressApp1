@@ -93,6 +93,8 @@ var insert_workitem = function (workitem, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(workitem);
 		});
 	});
 };
@@ -134,6 +136,8 @@ var update_workitem = function (workitem, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(workitem);
 		});
 	});
 };
@@ -157,6 +161,8 @@ var delete_workitem = function (workitem, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(workitem);
 		});
 	});
 };

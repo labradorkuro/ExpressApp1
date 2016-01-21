@@ -8,8 +8,18 @@
     "email": ""
   },
   "dependencies": {
-    "express": "^3.5.1",
+    "express": "^4.13.3",
     "jade": "*",
-    "stylus": "^0.44.0-beta2"
+    "stylus": "*",
+    "body-parser": "*",
+    "cookie-parser": "*",
+    "errorhandler": "*",
+    "express-session": "*",
+    "grunt": "*",
+    "method-override": "*",
+    "morgan": "*",
+    "multer": "*",
+    "pg": "*",
+    "serve-favicon": "*"
   }
 }

@@ -98,6 +98,8 @@ var insertSchedule = function (schedule, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(schedule);
 		});
 	});
 };
@@ -143,6 +145,8 @@ var updateSchedule = function (schedule, req, res) {
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
+			connection.end();
+			res.send(schedule);
 		});
 	});
 };
