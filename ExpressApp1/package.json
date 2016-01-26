@@ -8,18 +8,19 @@
     "email": ""
   },
   "dependencies": {
-    "express": "^4.13.3",
-    "jade": "*",
-    "stylus": "*",
     "body-parser": "*",
     "cookie-parser": "*",
     "errorhandler": "*",
+    "express": "^4.13.3",
     "express-session": "*",
     "grunt": "*",
+    "jade": "*",
     "method-override": "*",
     "morgan": "*",
     "multer": "*",
     "pg": "*",
-    "serve-favicon": "*"
+    "sequelize": "^3.18.0",
+    "serve-favicon": "*",
+    "stylus": "*"
   }
 }

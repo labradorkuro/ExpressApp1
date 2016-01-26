@@ -13,7 +13,7 @@ var routes = require('./routes/index');
 var session = require('express-session');
 var methodOverride = require('method-override');
 var errorHandler = require('errorhandler');
-
+var Sequelize = require('sequelize');
 var app = express();
 
 
@@ -64,6 +64,8 @@ var auth_settings_post = require('./api/auth_settings_postPG');
 var auth_settings_get = require('./api/auth_settings_getPG');
 //mysql = require('mysql');
 pg = require('pg');
+
+var sequelize = new Sequelize('postgres://drc_root:drc_r00t@@localhost:5432/drc_sch');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
 
 var http = require('http');
