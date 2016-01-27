@@ -71,8 +71,8 @@ connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
 var http = require('http');
 var path = require('path');
 
-
-drc_version = '(Ver.1.0.2)';
+// Version
+drc_version = '(Ver.1.0.3(çÏã∆íÜ))';
 
 // all environments
 app.set('port', process.env.PORT || 80);
