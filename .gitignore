@@ -157,3 +157,5 @@ $RECYCLE.BIN/
 #
 ExpressApp1/.ntvs_analysis.dat
 ExpressApp1/node_modules/
+ExpressApp1/public/jquery.jqGrid-4.6.0/
+ExpressApp1/public/jquery-ui-1.10.4.custom/
