@@ -1,9 +1,36 @@
 ﻿// テーブルの生成と変更処理
 
+var config = require('config');
+var done = function (res) {
+	return function () {
+		res.send('Done.\n');
+	};
+},
+	dberr = function (res) {
+		return function (e) {
+			res.statusCode = 500;
+			res.send(e);
+		};
+	};
+
 
 // テーブルの生成
 exports.create = function (req, res) {
-  	var sql = [
+	// 2016.01.27 Ver1.0.3からSequelizeを使うようにした。
+	// modelsの中のModel定義を読み込んでテーブルを生成する。（存在しない場合）
+	var sequelize = require('../libs/dbconn')(config);
+	var models = require('../models')(sequelize);
+	var options = { "schema": "drc_sch" };
+	for (var key in models) {
+		var model = models[key];
+		if (model != undefined) {
+			if (model instanceof sequelize.Model) {
+				model.sync(options);
+			}
+		}
+	}
+
+	var sql = [
 		// 案件情報
 		"CREATE TABLE IF NOT EXISTS drc_sch.entry_info ("
 			+ "entry_no VARCHAR(10) NOT NULL,"		// 案件No
@@ -36,7 +63,7 @@ exports.create = function (req, res) {
 			+ "prompt_report_limit_date_2 DATE,"	// 速報提出期限２
 			+ "prompt_report_submit_date_2 DATE,"	// 速報提出日２
 			+ "consumption_tax INT2,"				// 消費税率
-			+ "entry_memo VARCHAR(1024),"			// メモ		
+			+ "entry_memo VARCHAR(1024),"			// メモ
 			+ "delete_check INT2,"					// 削除フラグ
 			+ "delete_reason VARCHAR(255),"			// 削除理由
 			+ "input_check_date DATE,"				// 入力日
@@ -58,10 +85,10 @@ exports.create = function (req, res) {
 			+ "billing_number VARCHAR(16),"	// 経理さんが入力する請求番号
 			+ "pay_planning_date DATE,"		// 請求日
 			+ "pay_complete_date DATE,"		// 入金日
-			+ "pay_amount DECIMAL(9),"		// 税抜請求金額 
-			+ "pay_amount_tax DECIMAL(9),"	// 消費税額 
-			+ "pay_amount_total DECIMAL(9),"// 請求金額合計 
-			+ "pay_complete DECIMAL(9),"	// 入金額 
+			+ "pay_amount DECIMAL(9),"		// 税抜請求金額
+			+ "pay_amount_tax DECIMAL(9),"	// 消費税額
+			+ "pay_amount_total DECIMAL(9),"// 請求金額合計
+			+ "pay_complete DECIMAL(9),"	// 入金額
 			+ "pay_result INT2,"			// 請求区分
 			+ "client_cd VARCHAR(8),"		// クライアントCD
 			+ "client_name VARCHAR(128),"		// クライアント名（入力値）
@@ -85,7 +112,7 @@ exports.create = function (req, res) {
 			+ "quote_date DATE,"			// 見積日
 //			+ "entry_title VARCHAR(128),"	// 試験タイトル
 			+ "monitors_num INT4,"			// 被験者数
-			+ "quote_submit_check INT2,"	// 見積書提出済フラグ	
+			+ "quote_submit_check INT2,"	// 見積書提出済フラグ
 			+ "order_status INT2,"			// 受注ステータス
 			+ "expire_date VARCHAR(128),"		// 見積有効期限
 			+ "quote_form_memo VARCHAR(1024),"	// 見積書備考
@@ -131,7 +158,7 @@ exports.create = function (req, res) {
 		"CREATE TABLE IF NOT EXISTS drc_sch.division_info ("	// 事業部マスタ
 			+ "division VARCHAR(2),"							// 事業部ID
 			+ "division_name VARCHAR(32),"						// 事業部名
-			+ "delete_check INT2," 
+			+ "delete_check INT2,"
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
@@ -144,7 +171,7 @@ exports.create = function (req, res) {
 			+ "item_name VARCHAR(128),"		// 分類名
 			+ "item_type INT2 default 1,"	// 分類区分（1:大分類、2:中分類）
 			+ "memo VARCHAR(128),"			// メモ
-			+ "delete_check INT2," 
+			+ "delete_check INT2,"
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
@@ -157,7 +184,7 @@ exports.create = function (req, res) {
 			+ "item_cd VARCHAR(4),"		// 大分類CD
 			+ "item_name VARCHAR(128),"	// 大分類名
 			+ "memo VARCHAR(128),"		// メモ
-			+ "delete_check INT2," 
+			+ "delete_check INT2,"
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32),"			// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
@@ -171,7 +198,7 @@ exports.create = function (req, res) {
 			+ "item_cd VARCHAR(4),"			// 中分類CD
 			+ "item_name VARCHAR(128),"		// 中分類名
 			+ "memo VARCHAR(128),"			// メモ
-			+ "delete_check INT2," 
+			+ "delete_check INT2,"
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32),"			// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
@@ -179,26 +206,26 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY(id));",
 
 		// 案件番号管理テーブル
-		"CREATE TABLE IF NOT EXISTS drc_sch.entry_number (" 
+		"CREATE TABLE IF NOT EXISTS drc_sch.entry_number ("
 			+ "entry_date DATE,"				// 案件登録日付
 			+ "entry_count INT4"				// 案件登録数
 			+ ", PRIMARY KEY(entry_date));",
-/**	
+/**
 		// 試験（見積）番号管理テーブル
-		"CREATE TABLE IF NOT EXISTS drc_sch.quote_number (" 
+		"CREATE TABLE IF NOT EXISTS drc_sch.quote_number ("
 			+ "quote_date DATE,"				// 試験（見積）登録日付
 			+ "quote_count INT4"				// 試験（見積）登録数
 			+ ", PRIMARY KEY(quote_date));",
 
 		// 試験（見積）明細番号管理テーブル
-		"CREATE TABLE IF NOT EXISTS drc_sch.quote_detail_number (" 
+		"CREATE TABLE IF NOT EXISTS drc_sch.quote_detail_number ("
 			+ "quote_no VARCHAR(9),"			// 試験（見積）番号（yymmdd###)
 			+ "quote_detail_count INT4,"		// 試験（見積）明細登録数
-			+ "entry_no VARCHAR(10)" 
+			+ "entry_no VARCHAR(10)"
 			+ ", PRIMARY KEY(entry_no));",
 **/
 		// ガントチャート作業項目テーブル
-		"CREATE TABLE IF NOT EXISTS drc_sch.workitem_schedule (" 
+		"CREATE TABLE IF NOT EXISTS drc_sch.workitem_schedule ("
 			+ "work_item_id SERIAL,"			// 作業項目ID
 			+ "entry_no VARCHAR(10),"			// 案件番号（yymmdd-###)
 			+ "work_title VARCHAR(128),"		// 作業項目名称
@@ -218,7 +245,7 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY(work_item_id, entry_no));",
 
 		// 試験スケジュールデータ
-		"CREATE TABLE IF NOT EXISTS drc_sch.test_schedule (" 
+		"CREATE TABLE IF NOT EXISTS drc_sch.test_schedule ("
 			+ "schedule_id SERIAL,"				// スケジュールID
 			+ "entry_no VARCHAR(10) NOT NULL,"	// 案件No
 			+ "quote_no VARCHAR(3),"			// 見積番号
@@ -239,15 +266,15 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY(schedule_id,entry_no, start_date));",
 
 		// 社員マスタ
-		"CREATE TABLE IF NOT EXISTS drc_sch.user_list (" 
-			+ "uid VARCHAR(32) NOT NULL," 
+		"CREATE TABLE IF NOT EXISTS drc_sch.user_list ("
+			+ "uid VARCHAR(32) NOT NULL,"
 			+ "password VARCHAR(32),"
-			+ "name VARCHAR(128)," 
-			+ "u_no VARCHAR(32)," 
-			+ "start_date DATE," 
-			+ "base_cd VARCHAR(2)," 
-			+ "division VARCHAR(2)," 
-			+ "telno VARCHAR(16)," 
+			+ "name VARCHAR(128),"
+			+ "u_no VARCHAR(32),"
+			+ "start_date DATE,"
+			+ "base_cd VARCHAR(2),"
+			+ "division VARCHAR(2),"
+			+ "telno VARCHAR(16),"
 			+ "title VARCHAR(128),"
 			+ "auth_no INT2,"									// 権限パターン番号
 			+ "delete_check INT2,"								// 削除フラグ
@@ -258,14 +285,14 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY (uid));",
 
 		// 権限マスタ
-		"CREATE TABLE IF NOT EXISTS drc_sch.auth_settings (" 
-			+ "id SERIAL," 
+		"CREATE TABLE IF NOT EXISTS drc_sch.auth_settings ("
+			+ "id SERIAL,"
 			+ "name VARCHAR(128),"								// 機能名
 			+ "code VARCHAR(3),"								// 機能コード
 			+ "auth_no VARCHAR(3),"								// 権限パターン番号
-			+ "auth_value INT2,"								// 権限設定値 0:なし、1:R、2:RW 
-			+ "memo VARCHAR(128),"	
-			+ "delete_check INT2," 
+			+ "auth_value INT2,"								// 権限設定値 0:なし、1:R、2:RW
+			+ "memo VARCHAR(128),"
+			+ "delete_check INT2,"
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32)," // 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
@@ -273,11 +300,11 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY (id));",
 /**
 		// 権限設定リスト
-		"CREATE TABLE IF NOT EXISTS drc_sch.role_list (" 
-			+ "rid VARCHAR(32) NOT NULL," 
-			+ "uid VARCHAR(32)," 
-			+ "memo VARCHAR(128)," 
-			+ "delete_check INT2," 
+		"CREATE TABLE IF NOT EXISTS drc_sch.role_list ("
+			+ "rid VARCHAR(32) NOT NULL,"
+			+ "uid VARCHAR(32),"
+			+ "memo VARCHAR(128),"
+			+ "delete_check INT2,"
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP," // 作成日
 			+ "created_id VARCHAR(32)," // 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP," // 更新日
@@ -285,12 +312,12 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY (rid));",
 **/
 		// 得意先リスト
-		"CREATE TABLE IF NOT EXISTS drc_sch.client_list (" 
-			+ "client_cd VARCHAR(8) NOT NULL,"	// 得意先コード 
+		"CREATE TABLE IF NOT EXISTS drc_sch.client_list ("
+			+ "client_cd VARCHAR(8) NOT NULL,"	// 得意先コード
 			+ "name_1 VARCHAR(128),"			// 得意先名１
 			+ "name_2 VARCHAR(128),"			// 得意先名２
 			+ "kana VARCHAR(128),"				// カナ
-			+ "email VARCHAR(128),"				// メールアドレス 
+			+ "email VARCHAR(128),"				// メールアドレス
 			+ "zipcode VARCHAR(16),"			// 郵便番号
 			+ "address_1 VARCHAR(255),"			// 住所１
 			+ "address_2 VARCHAR(255),"			// 住所２
@@ -305,12 +332,12 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY (client_cd));",
 
 		// 得意先部署マスタ
-		"CREATE TABLE IF NOT EXISTS drc_sch.client_division_list (" 
-			+ "client_cd VARCHAR(8) NOT NULL,"	// 得意先コード 
-			+ "division_cd VARCHAR(8) NOT NULL," // 部署コード 
+		"CREATE TABLE IF NOT EXISTS drc_sch.client_division_list ("
+			+ "client_cd VARCHAR(8) NOT NULL,"	// 得意先コード
+			+ "division_cd VARCHAR(8) NOT NULL," // 部署コード
 			+ "name VARCHAR(512),"				// 部署名
 			+ "kana VARCHAR(1024),"				// カナ
-			+ "email VARCHAR(128),"				// メールアドレス 
+			+ "email VARCHAR(128),"				// メールアドレス
 			+ "zipcode VARCHAR(16),"			// 郵便番号
 			+ "address_1 VARCHAR(255),"			// 住所１
 			+ "address_2 VARCHAR(255),"			// 住所２
@@ -328,15 +355,15 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY (client_cd,division_cd));",
 
 		// 得意先担当者マスタ
-		"CREATE TABLE IF NOT EXISTS drc_sch.client_person_list (" 
-			+ "client_cd VARCHAR(8) NOT NULL,"		// 得意先コード 
-			+ "division_cd VARCHAR(8) NOT NULL,"	// 部署コード 
+		"CREATE TABLE IF NOT EXISTS drc_sch.client_person_list ("
+			+ "client_cd VARCHAR(8) NOT NULL,"		// 得意先コード
+			+ "division_cd VARCHAR(8) NOT NULL,"	// 部署コード
 			+ "person_id VARCHAR(32),"				// 担当者ID
 			+ "name VARCHAR(512),"					// 担当者名
 			+ "kana VARCHAR(1024),"					// カナ
 			+ "compellation VARCHAR(16),"			// 敬称
 			+ "title VARCHAR(16),"					// 役職名
-			+ "email VARCHAR(128),"					// メールアドレス 
+			+ "email VARCHAR(128),"					// メールアドレス
 			+ "memo VARCHAR(128),"					// メモ
 			+ "delete_check INT2 DEFAULT 0,"		// 削除フラグ
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
@@ -345,8 +372,68 @@ exports.create = function (req, res) {
 			+ "updated_id VARCHAR(32)"							// 更新者ID
 			+ ", PRIMARY KEY (client_cd,division_cd,person_id));",
 
+			// 委託先リスト	追加　2016.01.28 t.tanaka
+			"CREATE TABLE IF NOT EXISTS drc_sch.itakusaki_list ("
+				+ "client_cd VARCHAR(8) NOT NULL,"	// 得意先コード
+				+ "name_1 VARCHAR(128),"			// 得意先名１
+				+ "name_2 VARCHAR(128),"			// 得意先名２
+				+ "kana VARCHAR(128),"				// カナ
+				+ "email VARCHAR(128),"				// メールアドレス
+				+ "zipcode VARCHAR(16),"			// 郵便番号
+				+ "address_1 VARCHAR(255),"			// 住所１
+				+ "address_2 VARCHAR(255),"			// 住所２
+	 			+ "tel_no VARCHAR(16),"				// 電話番号
+	 			+ "fax_no VARCHAR(16),"				// FAX番号
+				+ "memo VARCHAR(128),"				// メモ
+				+ "delete_check INT2 DEFAULT 0,"	// 削除フラグ
+				+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+				+ "created_id VARCHAR(32),"							// 作成者ID
+				+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+				+ "updated_id VARCHAR(32)"							// 更新者ID
+				+ ", PRIMARY KEY (client_cd));",
+
+			// 委託先部署マスタ
+			"CREATE TABLE IF NOT EXISTS drc_sch.itakusaki_division_list ("
+				+ "client_cd VARCHAR(8) NOT NULL,"	// 得意先コード
+				+ "division_cd VARCHAR(8) NOT NULL," // 部署コード
+				+ "name VARCHAR(512),"				// 部署名
+				+ "kana VARCHAR(1024),"				// カナ
+				+ "email VARCHAR(128),"				// メールアドレス
+				+ "zipcode VARCHAR(16),"			// 郵便番号
+				+ "address_1 VARCHAR(255),"			// 住所１
+				+ "address_2 VARCHAR(255),"			// 住所２
+	 			+ "tel_no VARCHAR(16),"				// 電話番号
+	 			+ "fax_no VARCHAR(16),"				// FAX番号
+	 			+ "billing_limit VARCHAR(8),"		// 請求締日
+	 			+ "payment_date VARCHAR(8),"		// 支払日
+				+ "holiday_support VARCHAR(128),"	// 休日対応
+				+ "memo VARCHAR(128),"				// メモ
+				+ "delete_check INT2 DEFAULT 0,"	// 削除フラグ
+				+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+				+ "created_id VARCHAR(32),"							// 作成者ID
+				+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+				+ "updated_id VARCHAR(32)"							// 更新者ID
+				+ ", PRIMARY KEY (client_cd,division_cd));",
+
+			// 委託先担当者マスタ
+			"CREATE TABLE IF NOT EXISTS drc_sch.itakusaki_person_list ("
+				+ "client_cd VARCHAR(8) NOT NULL,"		// 得意先コード
+				+ "division_cd VARCHAR(8) NOT NULL,"	// 部署コード
+				+ "person_id VARCHAR(32),"				// 担当者ID
+				+ "name VARCHAR(512),"					// 担当者名
+				+ "kana VARCHAR(1024),"					// カナ
+				+ "compellation VARCHAR(16),"			// 敬称
+				+ "title VARCHAR(16),"					// 役職名
+				+ "email VARCHAR(128),"					// メールアドレス
+				+ "memo VARCHAR(128),"					// メモ
+				+ "delete_check INT2 DEFAULT 0,"		// 削除フラグ
+				+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
+				+ "created_id VARCHAR(32),"							// 作成者ID
+				+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
+				+ "updated_id VARCHAR(32)"							// 更新者ID
+				+ ", PRIMARY KEY (client_cd,division_cd,person_id));",
 		// 作業項目テンプレートテーブル
-		"CREATE TABLE IF NOT EXISTS drc_sch.workitem_template (" 
+		"CREATE TABLE IF NOT EXISTS drc_sch.workitem_template ("
 			+ "template_id SERIAL,"			// テンプレートID
 			+ "template_cd VARCHAR(8),"		// テンプレートCD
 			+ "template_name VARCHAR(256),"	// テンプレート名
@@ -363,7 +450,7 @@ exports.create = function (req, res) {
 			+ ", PRIMARY KEY(template_id,template_name));",
 
 		// 動作設定情報
-		"CREATE TABLE IF NOT EXISTS drc_sch.configuration (" 
+		"CREATE TABLE IF NOT EXISTS drc_sch.configuration ("
 			+ "id SERIAL,"					// ID
 			+ "drc_name VARCHAR(256),"		// 自社会社名
 			+ "drc_zipcode VARCHAR(16),"	// 郵便番号
@@ -381,7 +468,7 @@ exports.create = function (req, res) {
 			+ "updated_id VARCHAR(32)"							// 更新者ID
 			+ ", PRIMARY KEY(id));",
 		// ログイン履歴情報
-		"CREATE TABLE IF NOT EXISTS drc_sch.login_status (" 
+		"CREATE TABLE IF NOT EXISTS drc_sch.login_status ("
 			+ "id SERIAL,"					// ID
 			+ "uid VARCHAR(32),"			// ＩＤ
 			+ "name VARCHAR(128),"			// 名前
@@ -402,4 +489,5 @@ exports.create = function (req, res) {
 		//コネクション解放
 		res.render('portal', { title: 'DRC 試験スケジュール管理' });
 	});
+
 };

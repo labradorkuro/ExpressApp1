@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var upload = multer();
-
+var config = require('config');
 var routes = require('./routes/index');
 //var users = require('./routes/users');
 var session = require('express-session');
@@ -22,6 +22,7 @@ var app = express();
  */
 var fs = require('fs');
 var client_list = require('./routes/client_list');
+var itakusaki_list = require('./routes/itakusaki_list');
 var user_list = require('./routes/user_list');
 var division_list = require('./routes/division_list');
 var schedule = require('./routes/schedule');
@@ -54,6 +55,8 @@ var login_post = require('./api/login_post');
 var print_pdf = require('./api/print_pdf');
 var client_get = require('./api/client_getPG');
 var client_post = require('./api/client_postPG');
+var itakusaki_get = require('./api/itakusaki_getPG');     // 2016.01.29 ÂßîË®óÂÖà„Éû„Çπ„Çø
+var itakusaki_post = require('./api/itakusaki_postPG');   // 2016.01.29 ÂßîË®óÂÖà„Éû„Çπ„Çø
 var billing_post = require('./api/billing_postPG');
 var billing_get = require('./api/billing_getPG');
 var test_item_post = require('./api/test_item_postPG');
@@ -64,15 +67,18 @@ var auth_settings_post = require('./api/auth_settings_postPG');
 var auth_settings_get = require('./api/auth_settings_getPG');
 //mysql = require('mysql');
 pg = require('pg');
+var sequelize = require('./libs/dbconn')(config);
+var models = require('./models')(sequelize);
 
-var sequelize = new Sequelize('postgres://drc_root:drc_r00t@@localhost:5432/drc_sch');
+
+//var sequelize = new Sequelize('postgres://drc_root:drc_r00t@@localhost:5432/drc_sch');
 connectionString = "tcp://drc_root:drc_r00t@@localhost:5432/drc_sch";
 
 var http = require('http');
 var path = require('path');
 
-
-drc_version = '(Ver.1.0.2)';
+// Version
+drc_version = '(Ver.1.0.3 (‰ΩúÊ•≠‰∏≠))';
 
 // all environments
 app.set('port', process.env.PORT || 80);
@@ -85,7 +91,6 @@ app.use(cookieParser());
 
 app.use(session({ key: 'session_id',resave: false,saveUninitialized: false,secret:'ExpressApp1' }));
 var logs = fs.createWriteStream('./access.log', {flags: 'w'});
-app.use(logger('dev',{imediate:true,stream:logs}));
 //app.use(morgan({ stream: logs }));
 //app.use(logger({
 //  format: 'default',
@@ -105,17 +110,25 @@ app.use('/', routes);
 
 if ('development' == app.get('env')) {
   app.use(errorHandler());
+	// Database migration
+	var sync = require('./routes/sync');
+	app.get('/devel/sync/:table', sync.one(models));
+	app.post('/devel/sync', sync.all(sequelize));
+  app.use(logger('dev',{imediate:true}));
 }
-
+if ('production' == app.get('env')) {
+  app.use(logger('dev',{imediate:true,stream:logs}));
+}
 //router.get('/',routes.index);
 //router.get('/index',routes.index);
-app.get('/client_list', client_list.list);			// å⁄ãqÉ}ÉXÉ^
-app.get('/user_list', user_list.list);				// é–àıÉ}ÉXÉ^
-app.get('/test_item_list', test_item_list.list);	// ééå±ï™óﬁÉäÉXÉg
-app.get('/division_list', division_list.list);		// ïîñÂÉäÉXÉg
-app.get('/schedule', schedule.list);				// ÉKÉìÉgÉ`ÉÉÅ[Ég
-app.get('/template', template.list);				// ÉKÉìÉgÉ`ÉÉÅ[ÉgÇÃÉeÉìÉvÉåÅ[Ég
-app.get('/calendar', calendar.list);				// ééå±ÉXÉPÉWÉÖÅ[Éã
+app.get('/client_list', client_list.list);			//
+app.get('/itakusaki_list', itakusaki_list.list);			//
+app.get('/user_list', user_list.list);				//
+app.get('/test_item_list', test_item_list.list);	//
+app.get('/division_list', division_list.list);		//
+app.get('/schedule', schedule.list);				//
+app.get('/template', template.list);				//
+app.get('/calendar', calendar.list);				//
 app.post('/login',login.login);
 app.post('/portal',portal.portal);
 app.get('/portal',portal.portal);
@@ -166,6 +179,14 @@ app.get('/client_person_get', client_get.client_person_get);
 app.post('/client_post', upload.array(), client_post.client_post);
 app.post('/client_division_post', upload.array(), client_post.client_division_post);
 app.post('/client_person_post', upload.array(), client_post.client_person_post);
+
+app.get('/itakusaki_get/:no?', itakusaki_get.itakusaki_get);                  // 2016.01.29 ÂßîË®óÂÖà„Éû„Çπ„Çø
+app.get('/itakusaki_division_get', itakusaki_get.itakusaki_division_get);     // 2016.01.29 ÂßîË®óÂÖà„Éû„Çπ„Çø
+app.get('/itakusaki_person_get', itakusaki_get.itakusaki_person_get);         // 2016.01.29 ÂßîË®óÂÖà„Éû„Çπ„Çø
+app.post('/itakusaki_post', upload.array(),itakusaki_post.itakusaki_post);                      // 2016.01.29 ÂßîË®óÂÖà„Éû„Çπ„Çø
+app.post('/itakusaki_division_post', upload.array(),itakusaki_post.itakusaki_division_post);    // 2016.01.29 ÂßîË®óÂÖà„Éû„Çπ„Çø
+app.post('/itakusaki_person_post', upload.array(),itakusaki_post.itakusaki_person_post);        // 2016.01.29 ÂßîË®óÂÖà„Éû„Çπ„Çø
+
 app.post('/billing_info_post', upload.array(), billing_post.billing_post);
 app.get('/billing_info_get', billing_get.billing_get);
 app.get('/billing_get_total/:entry_no', billing_get.billing_get_total);
@@ -176,7 +197,7 @@ app.get('/config_get/:id', config_get.configuration_get);
 app.post('/auth_post', upload.array(), auth_settings_post.auth_settings_post);
 app.get('/auth_get_all', auth_settings_get.auth_settings_get_all);
 app.get('/auth_get/:pno', auth_settings_get.auth_settings_get);
-/** mysql -> pg Ç…ïœçX 2014.11.13
+/** mysql -> pg ÔøΩ…ïœçX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',
 	user : 'drc_root',
@@ -184,7 +205,7 @@ pool = mysql.createPool({
 	database : 'drc_sch'
 
 });
- * **/	
+ * **/
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

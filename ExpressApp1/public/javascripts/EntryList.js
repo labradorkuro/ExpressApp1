@@ -22,7 +22,7 @@ $(function() {
 	test_itemList.createTestItemSelectDialog();	// 試験分類選択用
 	billingList.createBillingListDialog();		// 請求情報リスト用
 	billingList.createBillingFormDialog();		// 請求情報編集選択用
-	// 検索用オプションの初期化	
+	// 検索用オプションの初期化
 	$("#entry_status_01").prop("checked", true);
 	$("#entry_status_02").prop("checked", true);
 	$("#entry_status_03").prop("checked", true);
@@ -50,7 +50,7 @@ $(function() {
 	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
 	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);
 	$("#agent_name").bind('click' , {}, entryList.openClientListDialog);
-	$("#outsourcing_name").bind('click' , {}, entryList.openClientListDialog);
+	$("#outsourcing_name").bind('click' , {}, entryList.openItakusakiListDialog);	// 委託先
 
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$("#test_middle_class_name").bind('click',{}, test_itemList.openTestItemSelectDialog);
@@ -68,11 +68,11 @@ $(function() {
 	$("#ref_entry").bind('click' , {}, entryList.openEntryDialog);
 
 	quoteInfo.enableQuoteButtons(false,0);
-	
+
 	// 削除分を表示のチェックイベント
 	$("#entry_delete_check_disp").bind('change', entryList.changeEntryOption);
 	$("#quote_delete_check_disp").bind('change', quoteInfo.changeQuoteOption);
-	
+
 	$("#entry_status_01").bind('change', entryList.changeEntryOption);
 	$("#entry_status_02").bind('change', entryList.changeEntryOption);
 	$("#entry_status_03").bind('change', entryList.changeEntryOption);
@@ -310,8 +310,9 @@ entryList.createGrid = function () {
 	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize();
 };
-entryList.createClientList = function() {
+entryList.createClientList = function(func) {
 	// 得意先リスト画面生成
+	clientList.func = func;	// 2016.01.29 t.tanaka
 	clientList.init(false,"1.0em");
 	// 得意先選択ダイアログ用のタブ生成
 	clientList.createClientListTabs();
@@ -392,7 +393,7 @@ entryList.reportLimitFormatter = function (cellval, options, rowObject) {
 		var count = scheduleCommon.calcDateCount(today, cellval);
 		if (count <= 0) {
 			// 提出期限を過ぎている
-			if ((rowObject.report_submit_date == null) || (rowObject.report_submit_date == "")) { 
+			if ((rowObject.report_submit_date == null) || (rowObject.report_submit_date == "")) {
 				// 提出日が入力されていない
 				result = "<label style='color:red;font-weight:bold;'>【遅延】 " + cellval + "</>";
 			}
@@ -407,14 +408,14 @@ entryList.statusFormatter = function (cellval, options, rowObject) {
 };
 // 仮受注チェックのフォーマッター
 entryList.orderAcceptFormatter = function (cellval, options, rowObject) {
-	if (cellval == 0) 
+	if (cellval == 0)
 		return "本登録";
 	else
 		return "仮登録";
 };
 // 受託区分チェックのフォーマッター
 entryList.orderTypeFormatter = function (cellval, options, rowObject) {
-	if (cellval == 1) 
+	if (cellval == 1)
 		return "社内実施";
 	else if (cellval == 2)
 		return "外部国内";
@@ -462,7 +463,7 @@ entryList.openEntryDialog = function (event) {
 // クライアント参照ダイアログ表示
 entryList.openClientListDialog = function (event) {
 	// アイウエオ順のタブと中のグリッドの生成
-	entryList.createClientList();
+	entryList.createClientList(0);
 	$("#client_list_dialog").dialog({
 		buttons: {
 			"選択": function () {
@@ -478,11 +479,25 @@ entryList.openClientListDialog = function (event) {
 					if (entryList.selectAgent()) {
 						$(this).dialog('close');
 					}
-				} else if (event.target.id == 'outsourcing_name') {
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+	$("#client_list_dialog").dialog("open");
+};
+// 委託先参照ダイアログ表示
+entryList.openItakusakiListDialog = function (event) {
+	// アイウエオ順のタブと中のグリッドの生成
+	entryList.createClientList(1);
+	$("#client_list_dialog").dialog({
+		buttons: {
+			"選択": function () {
 					if (entryList.selectOutsourcing()) {
 						$(this).dialog('close');
 					}
-				}
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -515,7 +530,7 @@ entryList.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) 
 		success: function (quote_list) {
 			entryList.setQuoteInfo(quote_list, consumption_tax);
 			// 請求情報から請求金額、入金金額合計を取得して表示
-			entryList.requestBillingTotal(entry_no);	
+			entryList.requestBillingTotal(entry_no);
 		}
 	});
 
@@ -659,9 +674,9 @@ entryList.onloadEntryReq = function (e) {
 		quoteInfo.currentConsumption_tax = entry.consumption_tax;
 		// formに取得したデータを埋め込む
 		entryList.setEntryForm(entry);
-		$("#entry_memo_ref").text(entry.entry_memo);	
+		$("#entry_memo_ref").text(entry.entry_memo);
 		// 見積情報の取得
-		entryList.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
+		entryList.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);
 	}
 };
 // 請求金額、入金額取得リクエストのコールバック
@@ -710,7 +725,7 @@ entryList.setEntryForm = function (entry) {
 	$("#test_middle_class_cd").val(entry.test_middle_class_cd);		// 試験中分類CD
 	$("#test_middle_class_name").val(entry.test_middle_class_name);	// 試験中分類名
 	$("#entry_title").val(entry.entry_title);						// 案件名
-	
+
 	$("#order_accepted_date").val(entry.order_accepted_date);	// 受注日付
 	$("#order_accept_check").val(entry.order_accept_check);		// 仮受注日チェック
 	$("#acounting_period_no").val(entry.acounting_period_no);	// 会計期No
@@ -724,7 +739,7 @@ entryList.setEntryForm = function (entry) {
 	$("#entry_amount_billing").val(entry.entry_amount_billing);	// 案件請求合計金額
 	$("#entry_amount_deposit").val(entry.entry_amount_deposit); // 案件入金合計金額
 	$("#test_person_id").val(entry.test_person_id);				// 試験担当者ID
-	
+
 	$("#report_limit_date").val(entry.report_limit_date);		// 報告書提出期限
 	$("#report_submit_date").val(entry.report_submit_date);		// 報告書提出日
 	$("#prompt_report_limit_date_1").val(entry.prompt_report_limit_date_1);		// 速報提出期限1

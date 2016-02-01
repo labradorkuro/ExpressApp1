@@ -68,6 +68,11 @@
     <Compile Include="api\workitem_post.js" />
     <Compile Include="api\workitem_postPG.js" />
     <Compile Include="app.js" />
+    <Compile Include="config\development.json" />
+    <Compile Include="libs\dbconn\index.js" />
+    <Compile Include="models\index.js" />
+    <Compile Include="models\itakusaki.js" />
+    <Compile Include="models\sight_info.js" />
     <Compile Include="public\javascripts\AdminMenu.js" />
     <Compile Include="public\javascripts\BillingList.js" />
     <Compile Include="public\javascripts\ClientMaster.js" />
@@ -116,6 +121,7 @@
     <Compile Include="routes\login.js" />
     <Compile Include="routes\portal.js" />
     <Compile Include="routes\quote_form.js" />
+    <Compile Include="routes\sync.js" />
     <Compile Include="routes\template.js" />
     <Compile Include="routes\schedule.js" />
     <Compile Include="routes\test_management.js" />
@@ -151,6 +157,7 @@
     <Content Include="views\entry_list.jade" />
     <Content Include="views\entry_edit.jade" />
     <Content Include="views\entry_refer.jade" />
+    <Content Include="views\error.jade" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
     <Content Include="views\password_form.jade" />
@@ -172,6 +179,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
+    <Folder Include="libs\dbconn\" />
+    <Folder Include="models\" />
+    <Folder Include="config\" />
+    <Folder Include="libs\" />
     <Folder Include="tools\" />
     <Folder Include="public\" />
     <Folder Include="public\images\" />

@@ -3,6 +3,14 @@
 // 得意先マスタの登録、編集の処理
 //
 $(function () {
+	var func_name = $("#main_tab").text();
+	clientList.func = 0;
+	if(func_name === "顧客管理") {
+		clientList.func = 0;
+	} else if (func_name === "委託先管理") {
+		clientList.func = 1;
+	}
+
 	$("#tabs").tabs();
 	// 権限チェック
 	clientList.checkAuth();

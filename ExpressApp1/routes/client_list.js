@@ -1,6 +1,6 @@
 ﻿
 /*
- * GET users listing.
+ * 顧客マスタ管理画面
  */
 
 exports.list = function (req, res) {
@@ -8,6 +8,6 @@ exports.list = function (req, res) {
 		msg = 'ログインしてください。';
 		res.render('index', { title: 'DRC試験スケジュール管理', msg: msg });
 	} else {
-		res.render('client_list', { title: 'DRC 試験スケジュール管理'   , userid: req.session.uid , name: req.session.name });
+		res.render('client_list', { title: 'DRC 試験スケジュール管理' ,func_name: '顧客管理' ,target_name:'得意先' , userid: req.session.uid , name: req.session.name });
 	}
 };

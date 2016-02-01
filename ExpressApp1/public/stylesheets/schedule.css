@@ -118,7 +118,7 @@ div.gt_left_top1_div {
     border-right:1px #777777 solid;
     width:100%;
     height:49px;
-    
+
 }
 div.gt_left_top2_div {
     position:relative;
@@ -168,7 +168,7 @@ div.gt_right_top1_div {
     width:100%;
     height:24px;
     background-color:#ecf9d2;
-    
+
 }
 div.gt_right_top2_div {
     position:relative;
@@ -344,7 +344,7 @@ a.gt_mode_button {
 	line-height: 2.0em;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 #ff0000;    
+	box-shadow: 0 3px 0 #ff0000;
     font-weight:bold;
     cursor:pointer;
 }
@@ -378,7 +378,7 @@ a.gt_workitem_button {
 	line-height: 1.0em;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 #0e8c73;    
+	box-shadow: 0 3px 0 #0e8c73;
     font-weight:bold;
     box-shadow: 0 3px 0 #0e8c73;
     cursor:pointer;
@@ -413,7 +413,7 @@ a.gt_template_button {
 	line-height: 1.0em;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 #0e8c73;    
+	box-shadow: 0 3px 0 #0e8c73;
     font-weight:bold;
     box-shadow: 0 3px 0 #0e8c73;
     cursor:pointer;
@@ -449,7 +449,7 @@ a.gt_template_select_button {
 	line-height: 1.0em;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 #0e8c73;    
+	box-shadow: 0 3px 0 #0e8c73;
     font-weight:bold;
     box-shadow: 0 3px 0 #0e8c73;
     cursor:pointer;
@@ -472,7 +472,7 @@ a.gt_workitem_band {
     font-size:12px;
     display:inline-block;
     outline: none;
-    
+
     height:16px;
     padding-top:0.25em;
     margin-top:3px;
@@ -486,7 +486,7 @@ a.gt_workitem_band {
 	line-height: 16px;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 #061150;    
+	box-shadow: 0 3px 0 #061150;
     font-weight:bold;
 }
 a.gt_workitem_band:hover {
@@ -507,7 +507,7 @@ a.gt_workitem_progress {
     font-size:12px;
     display:inline-block;
     outline: none;
-    
+
     height:16px;
     padding-top:0.25em;
     margin-top:3px;
@@ -521,7 +521,7 @@ a.gt_workitem_progress {
 	line-height: 16px;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 #061150;    
+	box-shadow: 0 3px 0 #061150;
     font-weight:bold;
 }
 
@@ -605,6 +605,19 @@ div.main_menu_row_b {
     border-right:2px #4cff00 solid;
     width:900px;
     height:140px;
+    margin-left:auto;
+    margin-right:auto;
+
+}
+div.main_menu_row_c {
+    position:relative;
+    margin-top:20px;
+    border-top:2px #4cff00 solid;
+    border-bottom:2px #4cff00 solid;
+    border-left:2px #4cff00 solid;
+    border-right:2px #4cff00 solid;
+    width:900px;
+    height:220px;
     margin-left:auto;
     margin-right:auto;
 
@@ -744,7 +757,7 @@ a.tool_button_a {
 	line-height: 2.0em;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 darkolivegreen;    
+	box-shadow: 0 3px 0 darkolivegreen;
     font-weight:bold;
     cursor:pointer;
 }
@@ -820,7 +833,7 @@ a.form_button {
 	line-height: 2.0em;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 darkolivegreen;    
+	box-shadow: 0 3px 0 darkolivegreen;
     font-weight:bold;
     cursor:pointer;
 }
@@ -933,7 +946,7 @@ div.cal_date {
     border-right:1px solid #777777;
     padding-top:6px;
     padding-right:4px;
- 
+
 }
 div.cal_day {
     position:relative;
@@ -1137,7 +1150,7 @@ a.cal_add_button {
 	line-height: 16px;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 1px 0 #0e8c73;    
+	box-shadow: 0 1px 0 #0e8c73;
     font-weight:bold;
     box-shadow: 0 1px 0 #0e8c73;
     cursor:pointer;
@@ -1169,7 +1182,7 @@ a.schedule_band {
     font-size:12px;
     display:inline-block;
     outline: none;
-    
+
     height:28px;
     padding-top:0.25em;
     margin-top:3px;
@@ -1183,7 +1196,7 @@ a.schedule_band {
 	line-height: 16px;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 #061150;    
+	box-shadow: 0 3px 0 #061150;
     font-weight:bold;
     cursor:pointer;
 }
@@ -1250,7 +1263,7 @@ a.general_button:hover{
 }
 #tabs .ui-tabs-panel {
     overflow: hidden;
-    
+
 }
 select#entry_list {
     width: 200px;
@@ -1261,7 +1274,7 @@ select#quote_list {
 
 div#entry_dialog {
     height: 600px;
-    
+
 }
 span.remark {
     color:red;
@@ -1435,7 +1448,7 @@ a.template_select_button {
 	line-height: 1.0em;
 	-webkit-transition: none;
 	transition: none;
-	box-shadow: 0 3px 0 #0e8c73;    
+	box-shadow: 0 3px 0 #0e8c73;
     font-weight:bold;
     box-shadow: 0 3px 0 #0e8c73;
     cursor:pointer;
@@ -1472,21 +1485,21 @@ form#configForm {
 }
 
 /* ツールチップ*/
-div.tooltip {  
+div.tooltip {
     width: 120px;
-    position: absolute;  
+    position: absolute;
     left: -9999px;
-    background: white;  
-    padding: 1px;  
-    border: 1px solid #AAA;  
-}  
-  
-div.tooltip p{  
-    color: black;  
-    background: white;  
+    background: white;
+    padding: 1px;
+    border: 1px solid #AAA;
+}
+
+div.tooltip p{
+    color: black;
+    background: white;
     padding: 4px 4px;
     word-wrap:break-word;
-}  
+}
 
 table.auth_table {
     border-collapse:collapse;

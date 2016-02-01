@@ -18,14 +18,14 @@ html(ng-app="app")
 	body(ng-app)
 		div#drc_app
 			div.titlebar
-				span.titlebar 
+				span.titlebar
 					a(href="portal") Home
 				img.titlebar_logo(src="images/drc_logo.jpg")
 				span.titlebar= title
 			div#tabs
 				ul
 					li
-						a(href="#tabs-0") 顧客管理
+						a#main_tab(href="#tabs-0") #{func_name}
 				div#tabs-0
 					div.admin_div
 						include client_list_form
@@ -37,4 +37,4 @@ html(ng-app="app")
 				include client_person_form
 		div#message_dialog
 			div
-				span#message 
+				span#message
