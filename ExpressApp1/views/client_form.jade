@@ -4,40 +4,40 @@
 form#clientForm(method="post",action="javascript:return false;")
 	table
 		tr
-			td.form_title 得意先コード(半角英数カナ)
-			td(colspan="3") 
-				input#client_cd(type="text" name="client_cd" maxlength="8" placeholder="得意先コード(半角英数カナ)" required="true")
+			td.form_title #{target_name}コード(半角英数カナ)
+			td(colspan="3")
+				input#client_cd(type="text" name="client_cd" maxlength="8" placeholder="#{target_name}コード(半角英数カナ)" required="true")
 		tr
-			td.form_title 得意先名１
-			td 
-				input#name_1(type="text" name="name_1" maxlength="64" placeholder="得意先名１" required="true")
-			td.form_title 得意先名２
-			td 
-				input#name_2(type="text" name="name_2" maxlength="64" placeholder="得意先名２")
+			td.form_title #{target_name}名１
+			td
+				input#name_1(type="text" name="name_1" maxlength="64" placeholder="#{target_name}名１" required="true")
+			td.form_title #{target_name}名２
+			td
+				input#name_2(type="text" name="name_2" maxlength="64" placeholder="#{target_name}名２")
 		tr
 			td.form_title カナ
-			td 
+			td
 				input#kana(type="text" name="kana" maxlength="64" placeholder="カナ(全角カナ)" required="true")
 		tr
 			td.form_title 郵便番号
-			td 
+			td
 				input#zipcode(type="text" name="zipcode" pattern="^[0-9]{3}-[0-9]{4}$" placeholder="郵便番号")
 			td.form_title メールアドレス
-			td 
+			td
 				input#email(type="email" name="email" maxlength="128" placeholder="メールアドレス")
 		tr
 			td.form_title 住所１
-			td 
+			td
 				input#address_1(type="text" name="address_1" maxlength="127" placeholder="住所１")
 			td.form_title 住所２
-			td 
+			td
 				input#address_2(type="text" name="address_2" maxlength="127" placeholder="住所２")
 		tr
 			td.form_title 電話番号
-			td 
+			td
 				input#tel_no(type="text" name="tel_no" maxlength="16" placeholder="電話番号")
 			td.form_title FAX番号
-			td 
+			td
 				input#fax_no(type="text" name="fax_no" maxlength="16" placeholder="FAX番号")
 	hr
 	table

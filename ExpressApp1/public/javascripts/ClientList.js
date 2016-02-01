@@ -2,7 +2,7 @@
 // 得意先入力、リスト表示に関する処理
 //
 var clientList = clientList || {};
-
+clientList.func = 0;										// 0:顧客管理、1:委託先管理
 clientList.currentClientListTabNo = 0;	// 得意先リストで選択中のタブ番号
 clientList.currentClient = {};			// 選択中の得意先情報
 clientList.currentClientDivision = {};	// 選択中の得意先部署情報
@@ -43,6 +43,7 @@ clientList.createMessageDialog = function () {
 clientList.init = function(toolbar) {
 	for(var i = 1;i <= 10;i++) {
 		var target = "#tabs-" + i;
+		$(target).empty();
 		// Tab毎に必要な要素を追加する
 		if (toolbar)
 			clientList.createToolbar(target, "client", i);
@@ -120,20 +121,29 @@ clientList.createClientListTabs = function () {
 			var no = ui.newTab.index() + 1;
 			clientList.currentClientListTabNo = ui.newTab.index();
 			clientList.createClientListGrid(no);
-			clientList.createClientDivisionListGrid(no);
-			clientList.createClientPersonListGrid(no);
+			clientList.createClientDivisionListGrid(no, '0');
+			clientList.createClientPersonListGrid(no, '0', '0');
 		}
 	});
 };
 // 得意先リストの生成
 clientList.createClientListGrid = function (no) {
+	var fname = "得意先";
+	var url = '/client_get';
+	if (clientList.func === 0) {
+		fname = "得意先"
+		url = '/client_get';
+	} else if (clientList.func === 1) {
+		fname = "委託先"
+		url = '/itakusaki_get';
+	}
 	var delchk = ($("#client_delete_check_disp_" + no).prop("checked")) ? 1:0;
 	// 得意先リストのグリッド
 	jQuery("#client_list_" + no).jqGrid({
-		url: '/client_get?no=' + no + '&delete_check=' + delchk,
+		url: url + '?no=' + no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['得意先コード', '得意先名１', '得意先名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者'],
+		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center" },
 			{ name: 'name_1', index: 'name_1', width: 200, align: "left" },
@@ -159,7 +169,7 @@ clientList.createClientListGrid = function (no) {
 		sortname: 'client_cd',
 		viewrecords: true,
 		sortorder: "desc",
-		caption: "得意先リスト",
+		caption: fname + "リスト",
 		onSelectRow: clientList.onSelectClientList
 	});
 	jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false });
@@ -191,8 +201,14 @@ clientList.onSelectClientList = function (rowid) {
 clientList.createClientDivisionListGrid = function (no, client_cd) {
 	var delchk = ($("#client_division_delete_check_disp_" + no).prop("checked")) ? 1:0;
 	// 得意先リストのグリッド
+	var url = '/client_division_get';
+	if (clientList.func === 0) {
+		url = '/client_division_get';
+	} else if (clientList.func === 1) {
+		url = '/itakusaki_division_get';
+	}
 	jQuery("#client_division_list_" + no).jqGrid({
-		url: '/client_division_get?client_cd=' + client_cd + '&delete_check=' + delchk,
+		url: url + '?client_cd=' + client_cd + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
 		colNames: ['クライアントCD','部署コード','部署名', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','請求締日','支払日','休日対応','メモ','作成日','作成者','更新日','更新者'],
@@ -251,8 +267,14 @@ clientList.onSelectClientDivisionList = function (rowid) {
 clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 	var delchk = ($("#client_person_delete_check_disp_" + no).prop("checked")) ? 1:0;
 	// 得意先リストのグリッド
+	var url = '/client_person_get';
+	if (clientList.func === 0) {
+		url = '/client_person_get';
+	} else if (clientList.func === 1) {
+		url = '/itakusaki_person_get';
+	}
 	jQuery("#client_person_list_" + no).jqGrid({
-		url: '/client_person_get?client_cd=' + client_cd + '&division_cd=' + division_cd + '&delete_check=' + delchk,
+		url: url + '?client_cd=' + client_cd + '&division_cd=' + division_cd + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
 		colNames: ['','','担当者コード','担当者名', 'カナ','敬称','役職名','メールアドレス','メモ','作成日','作成者','更新日','更新者'],
@@ -338,7 +360,7 @@ clientList.openClientDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
-	
+
 	$("#client_dialog").dialog("open");
 };
 // 編集用ダイアログの表示
@@ -359,7 +381,7 @@ clientList.openClientDivisionDialog = function (event) {
 		division.client_cd = clientList.currentClient.client_cd;
 		division.client_name = clientList.currentClient.name_1 + " " + clientList.currentClient.name_2;
 		clientList.setClientDivisionForm(division);
-	
+
 		$("#client_division_dialog").dialog("open");
 	}
 };
@@ -382,7 +404,7 @@ clientList.openClientPersonDialog = function (event) {
 		person.division_cd = clientList.currentClientDivision.division_cd;
 		person.division_name = clientList.currentClientDivision.name;
 		clientList.setClientPersonForm(person);
-	
+
 		$("#client_person_dialog").dialog("open");
 	}
 };
@@ -390,11 +412,11 @@ clientList.openClientPersonDialog = function (event) {
 clientList.getFormData = function (form_id, delete_check_id) {
 	clientList.checkCheckbox(delete_check_id);
 	var form = new FormData(document.querySelector("#" + form_id));
-	
+
 	// checkboxのチェックがないとFormDataで値が取得されないので値を追加する
 	if (!$("#" + delete_check_id).prop("checked")) {
 		form.append(delete_check_id, '0');
-	} 
+	}
 	return form;
 };
 // checkboxのチェック状態確認と値設定
@@ -533,12 +555,18 @@ clientList.clientPersonInputCheck = function () {
 
 // 得意先情報の保存
 clientList.saveClient = function () {
+	var url = '/client_post';
+	if (clientList.func === 0) {
+		url = '/client_post';
+	} else if (clientList.func === 1) {
+		url = '/itakusaki_post';
+	}
 	// 入力値チェック
 	if (clientList.clientInputCheck()) {
 		// formデータの取得
 		var form = clientList.getFormData("clientForm","delete_check");
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '/client_post', true);
+		xhr.open('POST', url, true);
 		xhr.responseType = 'json';
 		xhr.onload = clientList.onloadClientSave;
 		xhr.send(form);
@@ -554,12 +582,18 @@ clientList.onloadClientSave = function (event) {
 };
 // 部署情報の保存
 clientList.saveClientDivision = function () {
+	var url = '/client_division_post';
+	if (clientList.func === 0) {
+		url = '/client_division_post';
+	} else if (clientList.func === 1) {
+		url = '/itakusaki_division_post';
+	}
 	// 入力値チェック
 	if (clientList.clientDivisionInputCheck()) {
 		// formデータの取得
 		var form = clientList.getFormData("clientDivisionForm","division_delete_check");
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '/client_division_post', true);
+		xhr.open('POST', url, true);
 		xhr.responseType = 'json';
 		xhr.onload = clientList.onloadClientDivisionSave;
 		xhr.send(form);
@@ -575,12 +609,18 @@ clientList.onloadClientDivisionSave = function (event) {
 };
 // 担当者情報の保存
 clientList.saveClientPerson = function () {
+	var url = '/client_person_post';
+	if (clientList.func === 0) {
+		url = '/client_person_post';
+	} else if (clientList.func === 1) {
+		url = '/itakusaki_person_post';
+	}
 	// 入力値チェック
 	if (clientList.clientPersonInputCheck()) {
 		// formデータの取得
 		var form = clientList.getFormData("clientPersonForm","person_delete_check");
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '/client_person_post', true);
+		xhr.open('POST', url, true);
 		xhr.responseType = 'json';
 		xhr.onload = clientList.onloadClientPersonSave;
 		xhr.send(form);
@@ -678,7 +718,7 @@ clientList.clearPerson = function () {
 
 // 得意先情報をフォームにセットする
 clientList.setClientForm = function (client) {
-	
+
 	$("#client_cd").val(client.client_cd);
 	$("#name_1").val(client.name_1);
 	$("#name_2").val(client.name_2);
@@ -694,7 +734,7 @@ clientList.setClientForm = function (client) {
 };
 // 部署情報をフォームにセットする
 clientList.setClientDivisionForm = function (division) {
-	
+
 	$("#division_client_cd").val(division.client_cd);
 	$("#division_client_name").val(division.client_name);
 	$("#division_cd").val(division.division_cd);
@@ -714,7 +754,7 @@ clientList.setClientDivisionForm = function (division) {
 };
 // 担当者情報をフォームにセットする
 clientList.setClientPersonForm = function (person) {
-	
+
 	$("#person_client_cd").val(person.client_cd);
 	$("#person_client_name").val(person.client_name);
 	$("#person_division_cd").val(person.division_cd);

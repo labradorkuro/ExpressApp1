@@ -17,7 +17,7 @@ block content
 		img.titlebar_logo(src="images/drc_logo.jpg")
 		span.titlebar= title
 		span.login_user(style='text-align:right')= "名前：" + name + "さん"
-			span [ 
+			span [
 			a(href="/logout") ログアウト
 			span ]
 		a.titlebar_button#edit_password パスワード変更
@@ -41,9 +41,10 @@ block content
 			a.menu_button_a(href="calendar#tabs-4") 食品ヒト試験
 			a.menu_button_a(href="calendar#tabs-5") in vitro試験
 			a.menu_button_a(href="calendar#tabs-6") 外注
-		div.main_menu_row_b#admin_menu
+		div.main_menu_row_c#admin_menu
 			div.menu_title 管理メニュー
 			a.menu_button_a#admin_client_menu(href="client_list") 顧客管理
+			a.menu_button_a#admin_itakusaki_menu(href="itakusaki_list") 委託先管理
 			a.menu_button_a#admin_division_menu(href="division_list") 事業部マスタ
 			a.menu_button_a#admin_user_menu(href="user_list") 社員マスタ
 			a.menu_button_a#admin_testitem_menu(href="test_item_list") 試験分類マスタ
@@ -57,4 +58,4 @@ block content
 			include password_form
 		div#message_dialog
 			div
-				span#message 
+				span#message

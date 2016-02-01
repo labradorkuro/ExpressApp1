@@ -9,12 +9,6 @@ html
 		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
 		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
 		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
-		script(src="javascripts/jsPDF/jspdf.js")
-		script(src="javascripts/jsPDF/plugins/addimage.js")
-		script(src="javascripts/jsPDF/plugins/svg.js")
-		script(src="javascripts/jsPDF/plugins/png_support.js")
-		script(src="javascripts/jsPDF/libs/png_support/png.js")
-		script(src="javascripts/jsPDF/libs/png_support/zlib.js")
 		script(src="javascripts/filesaver.min.js")
 		script(src="javascripts/fabric.min.js")
 		script(src="javascripts/jquery.cookie.js")
@@ -28,11 +22,11 @@ html
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
 	body
 		div.titlebar
-			span.titlebar 
+			span.titlebar
 				a(href="portal") Home
 			img.titlebar_logo(src="images/drc_logo.jpg")
 			span.titlebar= title
-			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。" 
+			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。"
 		div#tabs
 			ul
 				li
@@ -44,23 +38,23 @@ html
 					a.tool_button_a#entry_billing 請求情報
 					fieldset.search_option_set
 						label.search_option_check#entry_delete_disp(value=1)
-							input.search_option_check#entry_delete_check_disp(type="checkbox") 
+							input.search_option_check#entry_delete_check_disp(type="checkbox")
 							| 削除分を表示
 					fieldset.search_option_set
 						label.search_option_check#entry_status_01_label(value=1)
-							input.search_option_check#entry_status_01(type="checkbox") 
+							input.search_option_check#entry_status_01(type="checkbox")
 							| 引合
 						label.search_option_check#entry_status_02_label(value=1)
-							input.search_option_check#entry_status_02(type="checkbox") 
+							input.search_option_check#entry_status_02(type="checkbox")
 							| 見積
 						label.search_option_check#entry_status_03_label(value=1)
-							input.search_option_check#entry_status_03(type="checkbox") 
+							input.search_option_check#entry_status_03(type="checkbox")
 							| 依頼
 						label.search_option_check#entry_status_04_label(value=1)
-							input.search_option_check#entry_status_04(type="checkbox") 
+							input.search_option_check#entry_status_04(type="checkbox")
 							| 完了
 						label.search_option_check#entry_status_05_label(value=1)
-							input.search_option_check#entry_status_05(type="checkbox") 
+							input.search_option_check#entry_status_05(type="checkbox")
 							| 失注
 				div.admin_div
 					table#entry_list
@@ -72,38 +66,38 @@ html
 					a.tool_button_a#add_quote 追 加
 					a.tool_button_a#edit_quote 編 集
 					label.search_option_check#quote_delete_disp(value=1)
-						input.search_option_check#quote_delete_check_disp(type="checkbox") 
+						input.search_option_check#quote_delete_check_disp(type="checkbox")
 						| 削除分を表示
 				div.admin_div
 					table#quote_list
 					div#quote_list_pager
 				div.toolbar
-					label.search_option_check#quote_specific_delete_disp(value=1) 
-						input.search_option_check#quote_specific_delete_check_disp(type="checkbox") 
+					label.search_option_check#quote_specific_delete_disp(value=1)
+						input.search_option_check#quote_specific_delete_check_disp(type="checkbox")
 						| 削除分を表示
 				div.admin_div
 					table#quote_specific_list
 					div#quote_specific_list_pager
-				div#entry_dialog 
+				div#entry_dialog
 					include entry_form
-				div#quoteForm_dialog 
+				div#quoteForm_dialog
 					include quote_form
-				div#client_list_dialog 
+				div#client_list_dialog
 					include client_list_form
-				div#billing_list_dialog 
+				div#billing_list_dialog
 					div.toolbar
 						a.tool_button_a#add_billing 追 加
 						a.tool_button_a#edit_billing 編 集
 						fieldset.search_option_set
 							label.search_option_check#billig_delete_disp(value=1)
-								input.search_option_check#billing_delete_check_disp(type="checkbox") 
+								input.search_option_check#billing_delete_check_disp(type="checkbox")
 								| 削除分を表示
 					div.admin_div
 						table#billing_info_list
 						div#billing_info_list_pager
-				div#billing_form_dialog 
+				div#billing_form_dialog
 					include billing_info_form
-				div#test_item_list_dialog 
+				div#test_item_list_dialog
 					div.admin_div
 						table#test_item_list_large
 						div#test_item_list_large_pager
@@ -112,6 +106,6 @@ html
 						div#test_item_list_middle_pager
 				div#message_dialog
 					div
-						span#message 
+						span#message
 				canvas#canvas
 				span#print_image

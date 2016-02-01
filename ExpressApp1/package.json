@@ -20,7 +20,12 @@
     "multer": "*",
     "pg": "*",
     "sequelize": "^3.18.0",
+    "sequelize-cli": "^1.7.1",
     "serve-favicon": "*",
+    "config": "^1.19.0",
     "stylus": "*"
+  },
+  "scripts": {
+      "start": "node app.js"
   }
 }

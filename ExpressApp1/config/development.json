@@ -1,0 +1,13 @@
+﻿{
+	"sequelize" :{
+		"database": "drc_sch",
+		"username": "drc_root",
+		"password": "drc_r00t@",
+		"options": {
+      "host": "localhost", 
+      "port":   5432,
+			"dialect": "postgres"
+		}
+	}
+}
+
