@@ -19,7 +19,12 @@ exports.entry_get = function (req, res) {
 //			entry_get_list_term(req, res);
 //		}
 //	}
-	if ((req.params.no != undefined) && (req.params.no != '')) {
+	console.log(req.query);
+	if (req.query.searchField != undefined) {
+		// 虫メガネの検索ダイアログからの検索実行
+		entry_get_list_searchField(req, res);
+	}
+	else if ((req.params.no != undefined) && (req.params.no != '')) {
 		entry_get_detail(req, res);
 	} else {
 		entry_get_list(req, res);
@@ -38,6 +43,147 @@ var getPagingParams = function (req) {
 	if (req.query.sord) pg_param.sord = req.query.sord;
 	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
 	return pg_param;
+};
+// 検索条件の解析
+var parse_search_params = function(searchField,searchOper,searchString) {
+	if (searchField === "") {
+		return "";
+	}
+	// 検索対象列名の置換
+	if (searchField === "test_large_class_name") {
+		searchField = "test_large_class.item_name";
+	}
+	else if (searchField === "test_middle_class_name") {
+		searchField = "test_middle_class.item_name";
+	}
+	else if (searchField === "pay_result") {
+		searchField = "subq2.pay_result";
+		if ((searchOper === "eq") && (searchString === "未登録")){
+			searchOper = ' IS NULL';
+		} else {
+			if (searchString === "請求待ち") {
+				searchString = 0;
+			} else if (searchString === "請求可") {
+				searchString = 1;
+			} else if (searchString === "請求済") {
+				searchString = 2;
+			} else if (searchString === "入金済") {
+				searchString = 3;
+			}
+		}
+	} else if (searchField === "report_limit_date") {
+		searchField = "to_char(report_limit_date, 'YYYY/MM/DD')";
+	} else if (searchField === "entry_no") {
+		searchField = "entry_info.entry_no";
+	} else if (searchField === "client_name_1") {
+		searchField = "client_list.name_1";
+	}
+	// 演算子指定の解析
+	if (searchOper === "eq") {
+		searchOper = " = '" + searchString + "'";
+	} else if (searchOper === "ne") {
+		searchOper = " <> " + searchString;
+	} else if (searchOper === "lt") {
+		searchOper = " < " + searchString;
+	} else if (searchOper === "le") {
+		searchOper = " <= " + searchString;
+	} else if (searchOper === "gt") {
+		searchOper = " > " + searchString;
+	} else if (searchOper === "ge") {
+		searchOper = " >= " + searchString;
+	} else if (searchOper === "bw") {
+		searchOper = " LIKE '" + searchString + "%'";
+	} else if (searchOper === "bn") {
+		searchOper = " NOT LIKE '" + searchString + "%'";
+	} else if (searchOper === "ew") {
+		searchOper = " LIKE '%" + searchString + "'";
+	} else if (searchOper === "en") {
+		searchOper = " NOT LIKE '%" + searchString + "'";
+	} else if (searchOper === "in") {
+		searchOper = " LIKE '%" + searchString + "%'";
+	} else if (searchOper === "ni") {
+		searchOper = " NOT LIKE '%" + searchString + "%'";
+	} else if (searchOper === "cn") {
+			searchOper = " LIKE '%" + searchString + "%'";
+	} else if (searchOper === "nc") {
+			searchOper = " NOT LIKE '%" + searchString + "%'";
+	} else if (searchOper === "nu") {
+			searchOper = " IS NULL ";
+	} else if (searchOper === "nn") {
+			searchOper = " IS NOT NULL ";
+	}
+	return searchField +  searchOper;
+}
+// 案件リストの検索
+var entry_get_list_searchField = function (req, res) {
+	var searchField = req.query.searchField;
+	var searchString = req.query.searchString;
+	var searchOper = req.query.searchOper;
+	var params = parse_search_params(searchField,searchOper,searchString);
+	var pg_params = getPagingParams(req);
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.entry_info WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND delete_check = $1';
+	var sql = 'SELECT '
+		+ 'entry_info.entry_no,'
+		+ 'entry_title,'
+		+ "to_char(inquiry_date, 'YYYY/MM/DD') AS inquiry_date,"
+		+ "to_char(report_limit_date, 'YYYY/MM/DD') AS report_limit_date,"
+		+ "to_char(report_submit_date, 'YYYY/MM/DD') AS report_submit_date,"
+		+ 'subq.pay_complete,'
+		+ 'subq2.pay_result,'
+		+ 'subq3.pay_result_1,'
+		+ 'entry_status,'
+		+ 'sales_person_id,'
+		+ 'quote_no,'
+//		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date,"
+		+ "entry_info.client_cd,"
+		+ "client_list.name_1 AS client_name_1,"
+		+ "client_list.name_2 AS client_name_2,"
+		+ "client_list.address_1 AS client_address_1,"
+		+ "client_list.address_2 AS client_address_2,"
+		+ "client_division_list.address_1 AS client_division_address_1,"
+		+ "client_division_list.address_2 AS client_division_address_2,"
+		+ "client_list.tel_no AS client_tel_no,"
+		+ "client_list.fax_no AS client_fax_no,"
+		+ "client_division_list.tel_no AS client_division_tel_no,"
+		+ "client_division_list.fax_no AS client_division_fax_no,"
+		+ "client_division_list.division_cd AS client_division_cd,"
+		+ "client_division_list.name AS client_division_name,"
+		+ "client_person_list.person_id AS client_person_id,"
+		+ "client_person_list.name AS client_person_name,"
+		+ "client_person_list.compellation AS client_person_compellation,"
+		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date,"
+		+ 'order_accept_check,'
+		+ 'order_type,'
+		+ 'entry_info.test_large_class_cd,'
+		+ 'test_large_class.item_name AS test_large_class_name,'
+		+ 'entry_info.test_middle_class_cd,'
+		+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'test_person_id,'
+		+ 'consumption_tax,'
+		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
+		+ 'entry_info.created_id,'
+		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
+		+ 'entry_info.updated_id'
+		+ ' FROM drc_sch.entry_info'
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
+		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
+		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)'
+		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)'
+		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)'
+		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
+		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
+		// 請求情報のサブクエリ 請求区分を表示するため
+		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
+		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_result_1 FROM drc_sch.billing_info WHERE (pay_result = 1 AND billing_info.delete_check = 0) GROUP BY entry_no) as subq3 ON(subq3.entry_no = entry_info.entry_no)'
+		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND';
+		if (params != '') {
+			sql += ' ' +  params + ' AND';
+		}
+		sql += ' entry_info.delete_check = $1  ORDER BY '
+		+ pg_params.sidx + ' ' + pg_params.sord
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+		console.log(sql);
+	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
 };
 // 案件リストの取得
 var entry_get_list = function (req, res) {
@@ -182,11 +328,15 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 	pg.connect(connectionString, function (err, connection) {
 		if (err) {
 			console.log(err);
+			connection.end();
+			res.send(result);
 		}
 		// 最初に件数を取得する
 		connection.query(sql_count, params, function (err, results) {
 			if (err) {
 				console.log(err);
+				connection.end();
+				res.send(result);
 			} else {
 				// 取得した件数からページ数を計算する
 				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
@@ -195,6 +345,8 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 				connection.query(sql, params, function (err, results) {
 					if (err) {
 						console.log(err);
+						connection.end();
+						res.send(result);
 					} else {
 						result.records = results.rows.length;
 						result.page = pg_params.page;
@@ -313,7 +465,7 @@ var entry_get_detail = function (req, res) {
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)'
 		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)'
-		+ ' LEFT JOIN drc_sch.itakusaki_list AS out_list ON(entry_info.outsourcing_cd = out_list.client_cd)' 
+		+ ' LEFT JOIN drc_sch.itakusaki_list AS out_list ON(entry_info.outsourcing_cd = out_list.client_cd)'
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)'
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)'
 		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON(entry_info.agent_cd = agent_division_list.client_cd AND entry_info.agent_division_cd = agent_division_list.division_cd)'

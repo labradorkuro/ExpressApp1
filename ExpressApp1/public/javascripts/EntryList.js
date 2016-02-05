@@ -258,7 +258,7 @@ entryList.createGrid = function () {
 		colModel: [
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter},
 			{ name: 'pay_result_1', hidden:true},
-			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter},
+			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter,search:false},
 			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter},
 			{ name: 'report_submit_date', index: '', hidden:true },
 			{ name: 'entry_no', index: 'entry_no', width: 100, align: "center" ,sortable:true},
@@ -307,7 +307,7 @@ entryList.createGrid = function () {
 		caption: "案件リスト",
 		onSelectRow:entryList.onSelectEntry
 	});
-	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false });
+	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false});
 	scheduleCommon.changeFontSize();
 };
 entryList.createClientList = function(func) {

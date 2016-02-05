@@ -453,6 +453,9 @@ clientList.clientInputCheck = function () {
 				} else if (ctl.id == "zipcode") {
 					err = "郵便番号の入力値を確認して下さい";
 					break;
+				} else if (ctl.id == "email") {
+					err = "メールアドレスの入力値を確認して下さい";
+					break;
 				}
 			}
 		}
@@ -496,6 +499,9 @@ clientList.clientDivisionInputCheck = function () {
 				} else if (ctl.id == "division_zipcode") {
 					err = "郵便番号の入力値を確認して下さい";
 					break;
+				} else if (ctl.id == "division_email") {
+					err = "メールアドレスの入力値を確認して下さい";
+					break;
 				}
 			}
 		}
@@ -536,6 +542,9 @@ clientList.clientPersonInputCheck = function () {
 					break;
 				} else if (ctl.id == "person_kana") {
 					err = "カナの入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "person_email") {
+					err = "メールアドレスの入力値を確認して下さい";
 					break;
 				}
 			}
