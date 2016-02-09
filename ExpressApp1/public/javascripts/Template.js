@@ -5,7 +5,7 @@ $(function() {
 	GanttTemplate.checkAuth();
 	$.datepicker.setDefaults( $.datepicker.regional[ "ja" ] ); // 日本語化
 	$( "#tabs" ).tabs();
-					
+
 	var today = scheduleCommon.getToday("{0}/{1}/{2}");
 	GanttTemplate.start_date = today;
 	GanttTemplate.disp_span = 1;
@@ -15,6 +15,8 @@ $(function() {
 	templateEdit.createTemplateNameDialog();
 	$("#start_date").bind('change',templateEdit.changeStart_date);
 	$("#end_date").bind('change',templateEdit.changeEnd_date);
+	// 試験大分類リストの取得と表示
+	templateEdit.getLargeItemList();
 });
 
 var templateEdit = templateEdit || {};
@@ -78,7 +80,7 @@ templateEdit.createTemplateNameDialog = function () {
 				class: "save-btn",
 				click: function () {
 					// 保存処理
-					GanttTemplate.newRow($("#template_cd_nf").val(), $("#template_name_nf").val());
+					GanttTemplate.newRow($("#template_cd_nf").val(), $("#template_name_nf").val(), $("#template_test_type_nf").val());
 					$(this).dialog('close');
 				}
 			},
@@ -88,7 +90,7 @@ templateEdit.createTemplateNameDialog = function () {
 				click: function () {
 					// 更新処理
 					templateEdit.updateTemplate();
-					
+
 					$(this).dialog('close');
 				}
 			},
@@ -98,7 +100,7 @@ templateEdit.createTemplateNameDialog = function () {
 				click: function () {
 					// 保存処理
 					templateEdit.deleteTemplateConfirm();
-					
+
 					$(this).dialog('close');
 				}
 			},
@@ -119,6 +121,7 @@ templateEdit.setFormData = function (workitem) {
 	$("#template_id").val(workitem.template_id);		// hidden項目
 	$("#template_cd").val(workitem.template_cd);		// hidden項目
 	$("#template_name").val(workitem.template_name);	// hidden項目
+	$("#template_test_type").val(workitem.test_type);	// hidden項目
 	$("#work_title").val(workitem.work_title);
 	var sd = scheduleCommon.calcDateCount("2000/01/01",workitem.start_date);
 	$("#start_date").val(sd);
@@ -155,7 +158,7 @@ templateEdit.openDialog = function (event) {
 	templateEdit.setFormData(template);
 	if (template.template_id != -1) {
 		// 更新
-		$(".ui-dialog-buttonpane button:contains('追加')").button("disable"); 
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
 
@@ -163,7 +166,7 @@ templateEdit.openDialog = function (event) {
 		// 追加
 		$("#start_date").attr('max',365);
 		$("#end_date").attr('max',365);
-		$(".ui-dialog-buttonpane button:contains('追加')").button("enable"); 
+		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("disable");
 	}
@@ -205,9 +208,9 @@ templateEdit.exchangeDayCountToDateString = function(form) {
 	if (ed == "") ed = 1; else ed = Number(ed);
 	var end_date = scheduleCommon.addDate(new Date(2000,0,1,0,0,0,0),ed - 1);
 	form.append("end_date_date",scheduleCommon.getDateString(end_date,"{0}/{1}/{2}"));
-	
+
 };
- 
+
 // テンプレートの削除確認ダイアログ表示
 templateEdit.deleteTemplateConfirm = function () {
 	scheduleCommon.showConfirmDialog("#messageDlg", "テンプレートの削除", "このテンプレートを削除しますか？", templateEdit.deleteTemplate);
@@ -219,10 +222,11 @@ templateEdit.deleteItemConfirm = function () {
 
 // テンプレートの更新（名前の変更）
 templateEdit.updateTemplate = function () {
+	$("#template_cd").val($("#template_cd_nf").val());
+	$('#template_name').val($("#template_name_nf").val());
+	$('#template_test_type').val($("#template_test_type_nf").val());
 	// formデータの取得
 	var form = templateEdit.getFormData();
-	form.append('template_cd',$("#template_cd_nf").val());
-	form.append('template_name',$("#template_name_nf").val());
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/template_update', true);
 	xhr.responseType = 'json';
@@ -233,9 +237,9 @@ templateEdit.updateTemplate = function () {
 // テンプレートの削除
 templateEdit.deleteTemplate = function () {
 	$("#messageDlg").dialog("close");
+	$('#template_cd').val($("#template_cd_nf").val());
 	// formデータの取得
 	var form = templateEdit.getFormData();
-	form.append('template_cd',$("#template_cd_nf").val());
 	var xhr = new XMLHttpRequest();
 	xhr.open('POST', '/template_delete', true);
 	xhr.responseType = 'json';
@@ -264,14 +268,16 @@ templateEdit.getFormData = function () {
 templateEdit.onloadTemplateReq = function (e) {
 	if (this.status == 200) {
 		var workitem = this.response;
-		// ガントチャート表示の更新処理		
+		// ガントチャート表示の更新処理
 		templateEdit.GanttTemplateInit();
 	}
 };
 
 // 初期化
 templateEdit.GanttTemplateInit = function () {
-	GanttTemplate.Init("ganttTemplate");
+	for(var i= 1;i <= 6;i++) {
+		GanttTemplate.Init("ganttTemplate_" + i,"L0" + i);
+	}
 };
 
 // テンプレートをDBに追加する
@@ -292,21 +298,42 @@ templateEdit.onAddTemplate = function () {
 templateEdit.openTemplateNameDialog = function (event) {
 	$("#template_cd_nf").val("");
 	$("#template_name_nf").val("");
+	$("#template_test_type_nf").val("");
 	if (event.target.className == "gt_workitem_button") {
 		var template = $(event.target).data('template');
 		$("#template_cd_nf").val(template.template_cd);
 		$("#template_cd_nf").attr('readonly',true);
 		$("#template_name_nf").val(template.template_name);
-		$(".ui-dialog-buttonpane button:contains('追加')").button("disable"); 
+		$("#template_test_type_nf").val(template.test_type);
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
 	} else {
+		var template = $(event.target).data('ganttdata');
 		$("#template_cd_nf").attr('readonly',false);
-		$(".ui-dialog-buttonpane button:contains('追加')").button("enable"); 
+		$("#template_test_type_nf").val(template.test_type);
+		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("disable");
 	}
 	$("#template_name_dialog").dialog("open");
+};
+
+// 試験大分類リストの取得リクエスト 2016.0209
+templateEdit.getLargeItemList = function() {
+	$.ajax("/large_item_list_get" , {
+		type: 'GET',
+		dataType: 'json',
+		contentType : 'application/json',
+		success: templateEdit.onGetLargeItemList
+		});
+};
+// 試験大分類リストの取得リクエストレスポンス 20016.02.09
+templateEdit.onGetLargeItemList = function(large_item_list) {
+	$("#template_test_type_nf").empty();
+	$.each(large_item_list.rows,function() {
+		$("#template_test_type_nf").append($("<option value=" + this.item_cd + ">" + this.item_name + "</option>"));
+	});
 };
 
 // 開始日の変更イベント

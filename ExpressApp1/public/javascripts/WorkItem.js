@@ -8,7 +8,7 @@ $(function() {
 	$( "#tabs" ).tabs();
 	// 社員マスタからリストを取得する
 	scheduleCommon.getUserInfo("_ref");
-					
+
 	var today = scheduleCommon.getToday("{0}/{1}/{2}");
 	GanttTable.start_date = today;
 	GanttTable.disp_span = 1;
@@ -23,6 +23,8 @@ $(function() {
 	workitemEdit.createTemplateNameDialog();
 	workitemEdit.createEntryDialog();
 	workitemEdit.createMessageDialog();
+	// 試験大分類リストの取得と表示
+	workitemEdit.getLargeItemList();
 });
 
 var workitemEdit = workitemEdit || {};
@@ -190,12 +192,12 @@ workitemEdit.openDialog = function (event) {
 	var workitem = $(target).data("workitem");
 	workitemEdit.setFormData(workitem);
 	if (workitem.work_item_id != -1) {
-		$(".ui-dialog-buttonpane button:contains('追加')").button("disable"); 
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
 
 	} else {
-		$(".ui-dialog-buttonpane button:contains('追加')").button("enable"); 
+		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('削除')").button("disable");
 	}
@@ -250,7 +252,7 @@ workitemEdit.getFormData = function () {
 workitemEdit.onloadWorkitemReq = function (e) {
 	if (this.status == 200) {
 		var workitem = this.response;
-		// ガントチャート表示の更新処理		
+		// ガントチャート表示の更新処理
 		workitemEdit.ganttTableInit();
 	}
 };
@@ -314,12 +316,12 @@ workitemEdit.selectTemplate = function (entry_no, template_cd) {
 			var start_offset = scheduleCommon.calcDateCount("2000/01/01", temp[i].start_date) - 1;
 			var end_offset = scheduleCommon.calcDateCount("2000/01/01", temp[i].end_date) - 1;
 			var workitem = {
-				entry_no: entry_no, 
+				entry_no: entry_no,
 				work_item_id: -1,
-				work_title: temp[i].work_title, 
+				work_title: temp[i].work_title,
 				start_date_result: "",
 				end_date_result: "",
-				item_type: temp[i].item_type, 
+				item_type: temp[i].item_type,
 				priority_item_id: temp[i].priority_item_id,
 				subsequent_item_id: 0,
 				progress:0,
@@ -347,6 +349,7 @@ workitemEdit.onSaveToTemplate = function (event) {
 	$('#entry_no_nf').val("");
 	$('#template_name_nf').val(workitem.entry_title);
 	$('#entry_no_nf').val(workitem.entry_no);
+	$("#template_test_type_nf").val(workitem.test_type);
 	workitemEdit.openTemplateNameDialog();
 };
 
@@ -371,14 +374,16 @@ workitemEdit.saveTemplate = function (template_cd, template_name, entry_no) {
 			}
 			// テンプレート化する時は起点の日を2000年1月1日とする
 			var template = {
-				template_id: -1, 
+				template_id: -1,
 				template_cd: template_cd,
-				template_name: template_name, 
-				work_title: workitem.work_title , 
-				start_date: "2000/01/01", 
+				template_name: template_name,
+				work_title: workitem.work_title ,
+				start_date: "2000/01/01",
 				end_date: "2000/01/01",
 				priority_item_id: 0,
-				item_type: workitem.item_type
+				item_type: workitem.item_type,
+				template_test_type: $("#template_test_type_nf").val(),
+				delete_check:0
 			};
 			// 求めた各日数を起点の日に加算して日付とする
 			var sd = scheduleCommon.addDate(scheduleCommon.dateStringToDate(template.start_date), start_offset);
@@ -421,7 +426,7 @@ workitemEdit.addWorkitem = function (workitem) {
 };
 
 workitemEdit.onAddWorkitem = function () {
-	// ガントチャート表示の更新処理		
+	// ガントチャート表示の更新処理
 	workitemEdit.ganttTableInit();
 };
 
@@ -433,7 +438,7 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 	// テーブルを作成してリストを表示する
 	$("#template_table").append("<tr><th>テンプレート名</th><th>項目名</th><th>種別</th>");
 
-	var template = $.get('/template_get_all?delete_check=' + 0, function (template_response) {
+	var template = $.get('/template_get_all?test_type=' + 	workitemEdit.currentWorkitem.test_type + '&delete_check=' + 0, function (template_response) {
 		var temp = template_response;
 		if (temp.length > 0) {
 			// 同一テンプレート名毎の件数を取得する
@@ -480,7 +485,7 @@ workitemEdit.openSelectTemplateDialog = function (event) {
 		}
 		$("#select_template_dialog").dialog("open");
 	});
-	
+
 };
 workitemEdit.openTemplateNameDialog = function (event) {
 	$("#template_name_dialog").dialog("open");
@@ -514,9 +519,9 @@ workitemEdit.requestEntryData = function (no) {
 		var entry = response;
 		// formに取得したデータを埋め込む
 		workitemEdit.setEntryForm(entry);
-		//$("#entryForm #entry_memo_ref").text(entry.entry_memo);		
+		//$("#entryForm #entry_memo_ref").text(entry.entry_memo);
 		// 見積情報の取得
-		workitemEdit.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);		
+		workitemEdit.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);
 	});
 };
 // 請求金額、入金額取得リクエスト
@@ -538,7 +543,7 @@ workitemEdit.requestQuoteInfo = function(entry_no, large_item_cd, consumption_ta
 	$.get('/quote_specific_get_list_for_entryform/' + entry_no + '?large_item_cd=' + large_item_cd, function (quote_list) {
 			workitemEdit.setQuoteInfo(quote_list, consumption_tax);
 			// 請求情報から請求金額、入金金額合計を取得して表示
-			workitemEdit.requestBillingTotal(entry_no);	
+			workitemEdit.requestBillingTotal(entry_no);
 	});
 };
 workitemEdit.setQuoteInfo = function (quote_list, consumption_tax) {
@@ -591,7 +596,7 @@ workitemEdit.setEntryForm = function (entry) {
 	$("#entryForm #test_middle_class_cd").val(entry.test_middle_class_cd);		// 試験中分類CD
 	$("#entryForm #test_middle_class_name").val(entry.test_middle_class_name);	// 試験中分類名
 	$("#entryForm #entry_title").val(entry.entry_title);						// 案件名
-	
+
 	$("#entryForm #order_accepted_date").val(entry.order_accepted_date);	// 受注日付
 	$("#entryForm #order_accept_check").val(entry.order_accept_check);		// 仮受注日チェック
 	$("#entryForm #acounting_period_no").val(entry.acounting_period_no);	// 会計期No
@@ -605,7 +610,7 @@ workitemEdit.setEntryForm = function (entry) {
 	$("#entryForm #entry_amount_billing").val(entry.entry_amount_billing);	// 案件請求合計金額
 	$("#entryForm #entry_amount_deposit").val(entry.entry_amount_deposit); // 案件入金合計金額
 	$("#entryForm #test_person_id").val(entry.test_person_id);				// 試験担当者ID
-	
+
 	$("#entryForm #report_limit_date").val(entry.report_limit_date);		// 報告書提出期限
 	$("#entryForm #report_submit_date").val(entry.report_submit_date);		// 報告書提出日
 	$("#entryForm #prompt_report_limit_date_1").val(entry.prompt_report_limit_date_1);		// 速報提出期限1
@@ -699,4 +704,20 @@ workitemEdit.clearEntry = function () {
 	entry.updated = "";				// 更新日
 	entry.updated_id = "";			// 更新者ID
 	return entry;
+};
+// 試験大分類リストの取得リクエスト 2016.0209
+workitemEdit.getLargeItemList = function() {
+	$.ajax("/large_item_list_get" , {
+		type: 'GET',
+		dataType: 'json',
+		contentType : 'application/json',
+		success: workitemEdit.onGetLargeItemList
+		});
+};
+// 試験大分類リストの取得リクエストレスポンス 20016.02.09
+workitemEdit.onGetLargeItemList = function(large_item_list) {
+	$("#template_test_type_nf").empty();
+	$.each(large_item_list.rows,function() {
+		$("#template_test_type_nf").append($("<option value=" + this.item_cd + ">" + this.item_name + "</option>"));
+	});
 };

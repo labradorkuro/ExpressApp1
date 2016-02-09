@@ -5,6 +5,11 @@ form#templateNameForm(method="post",action="javascript:return false;")
 			td.form_title テンプレートCD
 			td 
 				input#template_cd_nf(type="text" name="template_cd_nf" maxlength="8" size="12" pattern="[a-zA-Z0-9]{1,8}" placeholder="テンプレートCD")
+		tr
+			td.form_title 試験大分類
+			td
+				select#template_test_type_nf(name="template_test_type_nf")
+		tr
 			td.form_title テンプレート名
 			td 
 				input#template_name_nf(type="text" name="template_name_nf" maxlength="128" size="12" placeholder="テンプレート名")

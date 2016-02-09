@@ -1,6 +1,6 @@
 ﻿//
 // ガントチャートのテンプレート生成
-// 
+//
 
 var GanttTemplate =  GanttTemplate || {};
 GanttTemplate.ganttData = null;
@@ -24,13 +24,14 @@ GanttTemplate.checkAuth = function() {
 	}
 };
 // 初期化
-GanttTemplate.Init = function (id){
+GanttTemplate.Init = function (id, test_type){
 	$('#' + id).empty();
 	var ganttData = {};
 	ganttData.name = "テンプレート名";
 	ganttData.desc = "作業項目";
 	ganttData.from = "2000/01/01";
 	ganttData.to = "2000/06/30";
+	ganttData.test_type = test_type;
 	ganttData.data = [];
 
 	// ガントチャートの生成
@@ -40,40 +41,41 @@ GanttTemplate.Init = function (id){
 GanttTemplate.createGanttTemplate = function (target_id,ganttData) {
 	var target = $('#' + target_id);
 	// 外枠
-	var tbl = $('<div class="gantt_table"></div');
+	var tbl = $('<div class="gantt_table" id="' + ganttData.test_type +  '"></div');
 	// 左側（表示するスケジュールの名称などを表示するエリア）
-	var left_div = $('<div class="gt_left_div"></div>');
-		
+	var left_div = $('<div class="gt_left_div" id="' + ganttData.test_type +'"></div>');
+
 	var left_top = $('<div class="gt_left_top_div"></div>');
 	var add_template_button = $('<a class="gt_mode_button" id="mode_button-' + target_id + '">テンプレート追加</a>');
 	// ボタン押下イベント設定
 	$(add_template_button).bind('click',templateEdit.openTemplateNameDialog);
+	$(add_template_button).data('ganttdata',ganttData);		// 2016.02.09
 	var left_top1 = $('<div class="gt_left_top1_div"></div>');
 	// 権限チェック
 	if (GanttTemplate.writtable) {
 		$(left_top1).append(add_template_button);
 	}
 	var left_top2 = $('<div class="gt_left_top2_div"></div>');
-		
+
 	var category1 = $('<div class="gt_category1_div"><label class="gt_label">' + ganttData.name + '</label></div>');
 	var category2 = $('<div class="gt_category2_div"><label class="gt_label">' + ganttData.desc + '</label></div>');
-		
+
 	// 右側（スケジュールのガントチャートを表示するエリア）
-	var right_div = $('<div class="gt_right_div">');
-	
+	var right_div = $('<div class="gt_right_div" id="' + ganttData.test_type +'"></div>');
+
 	var right_top = $('<div class="gt_right_top_div"></div>');
 	var right_top1 = $('<div class="gt_right_top1_div"></div>');
 	var right_top2 = $('<div class="gt_right_top2_div"></div>');
 	var right_top3 = $('<div class="gt_right_top3_div"></div>');
 	target.append(tbl);
-		
+
 	$(tbl).append(left_div);
 	$(left_div).append(left_top);
 	$(left_top).append(left_top1);
 	$(left_top).append(left_top2);
 	$(left_top2).append(category1);
 	$(left_top2).append(category2);
-		
+
 	$(tbl).append(right_div);
 	$(right_div).append(right_top);
 	$(right_top).append(right_top1);
@@ -164,13 +166,13 @@ GanttTemplate.createDateHeader = function (parent, startDate) {
 // 登録されているテンプレートを表示する行の生成
 GanttTemplate.createRows = function (ganttData, left_div, right_div) {
 	GanttTemplate.searchData(ganttData, left_div, right_div);
-};	
+};
 //
 // 表示するテンプレートデータの検索
 GanttTemplate.searchData = function (ganttData, left_div, right_div) {
-	
+
 	$.ajax({
-		url: '/template_name_list',		// 登録されているテンプレートの名前リスト（＝件数）を取得する
+		url: '/template_name_list/'+ ganttData.test_type,		// 登録されているテンプレートの名前リスト（＝件数）を取得する 2016.02.08 test_typeの指定を追加
 		cache: false,
 		dataType: 'json',
 		success: function (template_name_list) {
@@ -180,29 +182,30 @@ GanttTemplate.searchData = function (ganttData, left_div, right_div) {
 	});
 
 };
-// 
+//
 // ガントチャートを表示する行の生成
 GanttTemplate.createTemplateRows = function(ganttData, template_name_list,left_div,right_div) {
     if (template_name_list != null) {
-		var w1 = GanttTemplate.dateWidth * GanttTemplate.dateCount;
+			var w1 = GanttTemplate.dateWidth * GanttTemplate.dateCount;
 
-        var rows = template_name_list;
-		for (var i in rows) {
-			var lines = 1;
-			var left_row = $("<div class='gt_left_row_div'></div>");
-            $(left_div).append(left_row);
-            var right_row = $("<div class='gt_right_row_div'></div>");
-            $(right_div).append(right_row);		
-			// テンプレートを表示するための行を追加する
-			GanttTemplate.addTemplateRow(rows[i],left_row,right_row, lines);
-			// 保存されているテンプレートデータを検索して表示する
-			GanttTemplate.searchTemplateData(ganttData, rows[i].template_cd, left_row, right_row, lines);
-        }
+      var rows = template_name_list;
+			for (var i in rows) {
+				var lines = 1;
+				var left_row = $("<div class='gt_left_row_div'></div>");
+	      $(left_div).append(left_row);
+	      var right_row = $("<div class='gt_right_row_div'></div>");
+	      $(right_div).append(right_row);
+				// テンプレートを表示するための行を追加する
+				GanttTemplate.addTemplateRow(rows[i],left_row,right_row, lines);
+				// 保存されているテンプレートデータを検索して表示する
+				GanttTemplate.searchTemplateData(ganttData, rows[i].template_cd, left_row, right_row, lines);
+      }
     }
 };
 GanttTemplate.addTemplateRow = function(temp, left_row, right_row,lines) {
 	var w1 = GanttTemplate.dateWidth * GanttTemplate.dateCount;
-	var template = { template_cd: temp.template_cd, template_name: temp.template_name,template_id:-1,work_title:"",start_date:"2000/01/01",end_date:"2000/01/01",start_date_result:"",end_date_result:"",priority_item_id:"",subsequent_item_id:"",progress:0,item_type:0};
+	var template = { template_cd: temp.template_cd, template_name: temp.template_name,test_type:temp.test_type,template_id:-1,
+		work_title:"",start_date:"2000/01/01",end_date:"2000/01/01",start_date_result:"",end_date_result:"",priority_item_id:"",subsequent_item_id:"",progress:0,item_type:0};
 	// 項目名の表示
 	//var left_row = $("<div class='gt_left_row_div'></div>");
 	// テンプレート名表示エリア
@@ -232,7 +235,7 @@ GanttTemplate.addTemplateRow = function(temp, left_row, right_row,lines) {
 	$(left_row).css("height", height);
 	$(cate1).css('height',height);
 	$(cate2).css('height', height);
-	// テンプレート			
+	// テンプレート
     //$(left_div).append(left_row);
 	$(cate1).append(title);
     $(left_row).append(cate1);
@@ -242,23 +245,22 @@ GanttTemplate.addTemplateRow = function(temp, left_row, right_row,lines) {
 	$(right_row).attr("id", "template_right_" + template.template_cd);
 	$(right_row).css("left", "0px");
 	$(right_row).css("width", w1 + "px");
-    //$(right_div).append(right_row);		
+    //$(right_div).append(right_row);
 	$(right_row).css("height", height);
 	// Droppable設定
 	$(right_row).droppable({ drop: GanttTemplate.drop });
 };
 
 // 新しくテンプレート行を追加する
-GanttTemplate.newRow = function(template_cd, template_name) {
-	var temp = { template_cd: template_cd, template_name: template_name};
-	var left_div = $("div.gt_left_div");
-	var right_div = $("div.gt_right_div");
+GanttTemplate.newRow = function(template_cd, template_name, test_type) {
+	var temp = { template_cd: template_cd, template_name: template_name, test_type:test_type};
+	var left_div = $("div.gt_left_div#" + test_type);
+	var right_div = $("div.gt_right_div#" + test_type);
 
 	var left_row = $("<div class='gt_left_row_div'></div>");
-    $(left_div).append(left_row);
-    var right_row = $("<div class='gt_right_row_div'></div>");
-    $(right_div).append(right_row);		
-
+  $(left_div).append(left_row);
+  var right_row = $("<div class='gt_right_row_div'></div>");
+  $(right_div).append(right_row);
 	GanttTemplate.addTemplateRow(temp, left_row, right_row,1);
 };
 
@@ -269,12 +271,12 @@ GanttTemplate.searchTemplateData = function (ganttData, template_cd, left_row, r
 	var template_milestone_list = $.get('/template_get_list/' + template_cd + '/1?delete_check=0', {});
 	// 作業項目データの検索
 	var template_list = $.get('/template_get_list/' + template_cd + '/0?delete_check=0', {});
-	var lines = 1;	
+	var lines = 1;
 	$.when(template_list, template_milestone_list)
     .done(function (template_listResponse, template_milestoneResponse) {
-		// 項目追加したマイルストーンの表示		
+		// 項目追加したマイルストーンの表示
 		var lines = GanttTemplate.createTemplateMilestoneRows(ganttData, template_milestoneResponse[0], left_row, right_row, exist_lines);
-		// 作業項目の表示		
+		// 作業項目の表示
 		GanttTemplate.createTemplateItemRows(ganttData, template_listResponse[0], left_row, right_row, exist_lines + lines);
 		var child = $(right_row).children();
 		if (child.length === 0) {
@@ -315,7 +317,7 @@ GanttTemplate.createTemplateMilestoneRows = function (ganttData, template_list, 
 		//$(left_div).append(left_row);
 		$(left_row).append(cate1);
 		$(left_row).append(cate2);
-			
+
 		//var right_row = $("<div class='gt_right_row_div'></div>");
 		$(right_row).css("left", "0px");
 		$(right_row).css("width", w1 + "px");
@@ -335,7 +337,7 @@ GanttTemplate.createTemplateMilestoneRows = function (ganttData, template_list, 
 			} else if (date_infos.length > lines) {
 				// 1行おきに行を替えて表示する
 				ms = GanttTemplate.milestone(exist_lines + total_lines + (j % lines), ganttData, rows[j].start_date, rows[j].work_title, color);
-			}	
+			}
 			if (ms != null) {
 				// 要素の追加とイベント登録
 				$(ms).css("cursor","pointer");
@@ -362,7 +364,7 @@ GanttTemplate.milestoneBind = function (ms,template, ganttData) {
 GanttTemplate.createTemplateItemRows = function (ganttData, template_list, left_row, right_row, exist_lines) {
 	if (template_list != null) {
 		var w1 = GanttTemplate.dateWidth * GanttTemplate.dateCount;
-		
+
 		var rows = template_list;
 		var lines = rows.length;
 		// 表示に必要な行数（高さ）を算出する
@@ -375,12 +377,12 @@ GanttTemplate.createTemplateItemRows = function (ganttData, template_list, left_
 			// 表示位置を調整する
 			//top = top + (GanttTemplate.rowHeight * i);
 			// 高さを調整する
-			var height2 = GanttTemplate.rowHeight; 
+			var height2 = GanttTemplate.rowHeight;
 			if (rows[i].progress > 0) {
 				// 進捗度が0以上なら表示領域を確保する
 				height1 = height1 + GanttTemplate.rowHeight;
 				height2 = (GanttTemplate.rowHeight * 2);
-			}			
+			}
 			$(left_row).css("height", height1 + "px");
 			$(cate1).css('top', top + "px");
 			$(cate2).css('top', top + "px");
@@ -457,7 +459,7 @@ GanttTemplate.milestone = function (dispLine, GanttData, dispDate, caption, colo
 GanttTemplate.template_band = function (top, GanttData, template, color) {
 	//var top = (dispLine * GanttTemplate.rowHeight) + 4;
 	var ms = $('<a class="gt_workitem_band">' + template.work_title + '</a>');
-	$(ms).attr('id', template.template_id);	
+	$(ms).attr('id', template.template_id);
 	// 表示位置の計算
 	var dc = scheduleCommon.calcDateCount(GanttData.from, template.start_date) - 1;
 	var start = GanttTemplate.dateWidth * dc;
@@ -478,7 +480,7 @@ GanttTemplate.template_band = function (top, GanttData, template, color) {
 		if (template.progress === 0) {
 			$(ms).css("background-color", "red");
 		}
-	}	
+	}
 	$(ms).css("cursor","pointer");
 	$(ms).css("left", start + "px");
 	$(ms).css("width", w + "px");
@@ -538,7 +540,7 @@ GanttTemplate.drop = function (event, ui) {
 	var sd = scheduleCommon.addDate(scheduleCommon.dateStringToDate(ganttData.from), date_offset);
 	// 現在の作業日数を求める
 	var count = scheduleCommon.calcDateCount(template.start_date, template.end_date) - 1;
-	// 移動先の日付に作業日数を加算して終了日を求める	
+	// 移動先の日付に作業日数を加算して終了日を求める
 	var ed = scheduleCommon.addDate(sd, count);
 	// 新しい日付を設定する
 	template.start_date = scheduleCommon.getDateString(sd, "{0}/{1}/{2}");
@@ -555,4 +557,3 @@ GanttTemplate.dragStart = function (event, ui) {
 	// ドロップした時に編集ダイアログの表示を止めるためにフラグを入れる
 	$(event.target).data('drag','on');
 };
-

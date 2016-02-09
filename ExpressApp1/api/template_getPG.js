@@ -28,82 +28,87 @@ exports.template_get_all = function (req, res) {
 	//console.log("template_get_all:" + req.params.item_type);
 	if (req.params.item_type) {
 		// item_typeの指定あり
-		sql = 'SELECT ' 
-			+ 'template_id,' 
-			+ 'template_cd,' 
-			+ 'template_name,' 
-			+ 'work_title,' 
-			+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,' 
-			+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,' 
-			+ 'priority_item_id,' 
-			+ 'item_type' 
+		sql = 'SELECT '
+			+ 'template_id,'
+			+ 'template_cd,'
+			+ 'template_name,'
+			+ 'test_type,'
+			+ 'work_title,'
+			+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,'
+			+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,'
+			+ 'priority_item_id,'
+			+ 'item_type'
 			+ ' FROM drc_sch.workitem_template WHERE delete_check = $1 AND item_type = $2 ORDER BY template_id';
 		return template_get_list_for_gantt(res, sql, [req.query.delete_check,req.params.item_type]);
 	} else {
 		// item_typeの指定なし
-		sql = 'SELECT ' 
-			+ 'template_id,' 
-			+ 'template_cd,' 
-			+ 'template_name,' 
-			+ 'work_title,' 
-			+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,' 
-			+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,' 
-			+ 'priority_item_id,' 
-			+ 'item_type' 
-			+ ' FROM drc_sch.workitem_template WHERE delete_check = $1 ORDER BY template_id';
-		return template_get_list_for_gantt(res, sql, [req.query.delete_check]);
+		sql = 'SELECT '
+			+ 'template_id,'
+			+ 'template_cd,'
+			+ 'template_name,'
+			+ 'test_type,'
+			+ 'work_title,'
+			+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,'
+			+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,'
+			+ 'priority_item_id,'
+			+ 'item_type'
+			+ ' FROM drc_sch.workitem_template WHERE delete_check = $1 AND test_type = $2 ORDER BY template_id';
+		return template_get_list_for_gantt(res, sql, [req.query.delete_check,req.query.test_type]);
 	}
 };
 
 // テンプレート名とその名前で登録されている項目数を取得する
 exports.template_name_list = function(req, res) {
 //	var sql = 'SELECT template_name, count(work_title) AS item_count FROM drc_sch.workitem_template WHERE delete_check = 0 GROUP BY template_name';
-	var sql = 'SELECT DISTINCT template_cd, template_name FROM drc_sch.workitem_template WHERE delete_check = 0';
-	return template_get_list_for_gantt(res, sql, []);
+	var sql = 'SELECT DISTINCT template_cd, template_name, test_type FROM drc_sch.workitem_template WHERE test_type = $1 AND delete_check = 0';
+	return template_get_list_for_gantt(res, sql, [req.params.test_type]);
 
 };
 
 
 // テンプレートリストの取得
 var template_get_list_all = function (req, res) {
-	var sql = 'SELECT ' 
-		+ 'template_id,' 
-		+ 'template_cd,' 
-		+ 'template_name,' 
-		+ 'work_title,' 
-		+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,' 
-		+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,' 
-		+ 'priority_item_id,' 
-		+ 'item_type' 
+	var sql = 'SELECT '
+		+ 'template_id,'
+		+ 'template_cd,'
+		+ 'template_name,'
+		+ 'test_type,'
+		+ 'work_title,'
+		+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,'
+		+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,'
+		+ 'priority_item_id,'
+		+ 'item_type'
 		+ ' FROM drc_sch.workitem_template WHERE template_cd = $1 and delete_check = $2 ORDER BY template_id';
 	return template_get_list_for_gantt(res, sql, [req.params.template_cd, req.query.delete_check]);
 };
 
 // テンプレートリストの取得
 var template_get_list = function (req, res) {
-	var sql = 'SELECT ' 
-		+ 'template_id,' 
-		+ 'template_cd,' 
-		+ 'template_name,' 
-		+ 'work_title,' 
-		+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,' 
-		+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,' 
-		+ 'priority_item_id,' 
-		+ 'item_type' 
+	var sql = 'SELECT '
+		+ 'template_id,'
+		+ 'template_cd,'
+		+ 'template_name,'
+		+ 'test_type,'
+		+ 'work_title,'
+		+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,'
+		+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,'
+		+ 'priority_item_id,'
+		+ 'item_type'
 		+ ' FROM drc_sch.workitem_template WHERE template_cd = $1 and item_type = $2 and delete_check = $3 ORDER BY template_id';
 	return template_get_list_for_gantt(res, sql, [req.params.template_cd, req.params.item_type,req.query.delete_check]);
 };
 // テンプレートリストの取得
 var template_get = function (req, res) {
-	var sql = 'SELECT ' 
-		+ 'template_id,' 
-		+ 'template_cd,' 
-		+ 'template_name,' 
-		+ 'work_title,' 
-		+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,' 
-		+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,' 
-		+ 'priority_item_id,' 
-		+ 'item_type' 
+	var sql = 'SELECT '
+		+ 'template_id,'
+		+ 'template_cd,'
+		+ 'template_name,'
+		+ 'test_type,'
+		+ 'work_title,'
+		+ 'to_char(start_date, \'YYYY/MM/DD\') AS start_date,'
+		+ 'to_char(end_date, \'YYYY/MM/DD\') AS end_date,'
+		+ 'priority_item_id,'
+		+ 'item_type'
 		+ ' FROM drc_sch.workitem_template WHERE template_id = $1 and delete_check = $2 ORDER BY template_id';
 	return template_get_list_for_gantt(res, sql, [req.params.template_id, req.query.delete_check]);
 };

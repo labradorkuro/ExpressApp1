@@ -437,6 +437,7 @@ exports.create = function (req, res) {
 			+ "template_id SERIAL,"			// テンプレートID
 			+ "template_cd VARCHAR(8),"		// テンプレートCD
 			+ "template_name VARCHAR(256),"	// テンプレート名
+			+ "test_type VARCHAR(4),"				// 大分類CD 2016.02.08 追加
 			+ "work_title VARCHAR(128),"	// 項目名称
 			+ "start_date DATE,"			// 作業開始予定日
 			+ "end_date DATE,"				// 作業終了予定日

@@ -164,7 +164,7 @@ app.get('/workitem_get/:entry_no/:item_type', workitem_get.workitem_get);
 app.get('/template_get_all/:item_type?', template_get.template_get_all);
 app.get('/template_get_list/:template_cd/:item_type?', template_get.template_get_list);
 app.get('/template_get/:template_id', template_get.template_get);
-app.get('/template_name_list', template_get.template_name_list);
+app.get('/template_name_list/:test_type', template_get.template_name_list);
 app.get('/schedule_get/:schedule_id?', schedule_get.schedule_get);
 app.get('/schedule_get/term/:start/:end/:base_cd/:test_large_item_cd', schedule_get.schedule_get);
 app.get('/user_get/:uid?', user_get.user_get);
@@ -192,6 +192,7 @@ app.get('/billing_info_get', billing_get.billing_get);
 app.get('/billing_get_total/:entry_no', billing_get.billing_get_total);
 app.post('/test_item_post', upload.array(), test_item_post.test_item_post);
 app.get('/test_item_get/:class', test_item_get.test_item_get);
+app.get('/large_item_list_get', test_item_get.get_large_item_list);                             // 2016.02.08 テンプレート用にリスト取得APIを追加
 app.post('/config_post/:id', upload.array(), config_post.configuration_post);
 app.get('/config_get/:id', config_get.configuration_get);
 app.post('/auth_post', upload.array(), auth_settings_post.auth_settings_post);

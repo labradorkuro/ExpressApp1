@@ -34,10 +34,10 @@ quoteInfo.getMyInfo = function() {
 		quoteInfo.drc_info.quote_form_memo_2 = config_response.quote_form_memo_define_2;
 		quoteInfo.drc_info.quote_form_memo_3 = config_response.quote_form_memo_define_3;
 		// 見積書の最下の備考の選択肢設定
-		$("#quote_form_memo_select").append($("<option value=''></option>")); 
-		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_1 + "'>" + quoteInfo.drc_info.quote_form_memo_1 + "</option>")); 
-		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_2 + "'>" + quoteInfo.drc_info.quote_form_memo_2 + "</option>")); 
-		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_3 + "'>" + quoteInfo.drc_info.quote_form_memo_3 + "</option>")); 
+		$("#quote_form_memo_select").append($("<option value=''></option>"));
+		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_1 + "'>" + quoteInfo.drc_info.quote_form_memo_1 + "</option>"));
+		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_2 + "'>" + quoteInfo.drc_info.quote_form_memo_2 + "</option>"));
+		$("#quote_form_memo_select").append($("<option value='" + quoteInfo.drc_info.quote_form_memo_3 + "'>" + quoteInfo.drc_info.quote_form_memo_3 + "</option>"));
 		quoteInfo.currentConsumption_tax = config_response.consumption_tax;
 	});
 };
@@ -88,8 +88,8 @@ quoteInfo.createQuoteFormDialog = function () {
 };
 // 見積情報リストグリッドの生成(noは案件番号）
 quoteInfo.createQuoteInfoGrid = function (no) {
-	
-	// checkboxの状態取得	
+
+	// checkboxの状態取得
 	var delchk = quoteInfo.getQuoteDeleteCheckDispCheck();
 	jQuery("#quote_list").jqGrid({
 		url: '/quote_get/' + no + '/?quote_delete_check=' + delchk,
@@ -124,7 +124,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		onSelectRow:quoteInfo.onSelectQuote,
 		caption: "見積情報"
 	});
-	jQuery("#quote_list").jqGrid('navGrid', '#quote_list_pager', { edit: false, add: false, del: false });
+	jQuery("#quote_list").jqGrid('navGrid', '#quote_list_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
 };
 // グリッド表示用（見積書提出フラグ）
@@ -160,7 +160,7 @@ quoteInfo.numFormatterC = function(num) {
 };
 // 見積明細リストグリッドの生成
 quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) {
-	// checkboxの状態取得	
+	// checkboxの状態取得
 	var delchk = quoteInfo.getQuoteSpecificDeleteCheckDispCheck();
 	jQuery("#quote_specific_list").jqGrid({
 		url: '/quote_specific_get_grid/' + entry_no + '/' + quote_no + '/?specific_delete_check=' + delchk + '&large_item_cd=' + large_item_cd,
@@ -195,7 +195,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 		sortorder: "asc",
 		caption: "試験（見積）情報"
 	});
-	jQuery("#quote_specific_list").jqGrid('navGrid', '#quote_specific_list_pager', { edit: false, add: false, del: false });
+	jQuery("#quote_specific_list").jqGrid('navGrid', '#quote_specific_list_pager', { edit: false, add: false, del: false, search:false });
 	scheduleCommon.changeFontSize();
 };
 
@@ -257,7 +257,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		} else if (order_index != ""){
 			// 受注確定になっている見積がある場合で、選択中のものでない場合、受注確定のラジオボタンを無効化する
 			$("#order_status_2").css("display","none");
-		} 
+		}
 	}
 	$("#quoteForm_dialog").dialog("open");
 };
@@ -285,7 +285,7 @@ quoteInfo.checkOrderStatus = function() {
 // 見積明細の検索とテーブル設定
 quoteInfo.searchSpecificInfo = function(entry_no,quote_no,large_item_cd) {
 	$.ajax({
-		url: '/quote_specific_get_list/' + entry_no + '/' + quote_no + '?large_item_cd=' + large_item_cd, 
+		url: '/quote_specific_get_list/' + entry_no + '/' + quote_no + '?large_item_cd=' + large_item_cd,
 		cache: false,
 		dataType: 'json',
 		success: function (specific_list) {
@@ -321,7 +321,7 @@ quoteInfo.addSpecificInfoToTable = function(specific_list) {
 quoteInfo.onSelectQuote = function(rowid) {
 	// 編集ボタンを表示
 	quoteInfo.enableQuoteButtons(true, 2);
-	quoteInfo.currentQuoteRowId = rowid;	
+	quoteInfo.currentQuoteRowId = rowid;
 	// 明細グリッドの再表示
 	var entry = quoteInfo.getSelectEntry();
 	var quote = quoteInfo.getSelectQuote();
@@ -329,7 +329,7 @@ quoteInfo.onSelectQuote = function(rowid) {
 	quoteInfo.currentConsumption_tax = quote.consumption_tax;
 	$("#quote_specific_list").GridUnload();
 	quoteInfo.createQuoteSpecificGrid(entry.entry_no, quote.quote_no, entry.test_large_class_cd);
-	
+
 };
 
 // 明細追加、編集ボタンの表示・非表示
@@ -651,16 +651,16 @@ quoteInfo.addRowCreate = function(no) {
 
 	id = "unit_price_" + no;
 	var unit_price = $("<td><input type='number' min='0' max='99999999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='9' placeholder='単価' pattern='[0-9]{1,8}'/></td>");
-	
+
 	id = "price_" + no;
 	var price = $("<td><input type='number'  min='-99999999' max='99999999' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' pattern='[0-9]{1,8}'/></td>");
 
 	id = "summary_check_" + no;
 	var summary = $("<td><label><input type='checkbox' id='" + id + "' name='" + id + "' checked='true'/>集計する</label></td>");
-	
+
 	id = "specific_memo_" + no;
 	var memo = $("<td><input type='text' id='" + id + "' name='" + id + "' size='12' placeholder='備考'/></td>");
-	
+
 	id = "del_row_btn_" + no;
 	var button = $("<td><input type='button' id='" + id + "' class='del_row_btn' name='" + id + "' value='行削除'/><input type='hidden' id='specific_delete_check_" + no + "' name='specific_delete_check_" + no + "' value='0'/></td>");
 
@@ -726,7 +726,7 @@ quoteInfo.openTestItemSelectDialog = function (event) {
 // 明細項目のidから明細行番号を取得する
 quoteInfo.getMeisaiNo = function(id) {
 	var no = "";
-	if (id != "") { 
+	if (id != "") {
 		var s = id.split("_");
 		if (s.length > 0) {
 			no = s[s.length - 1];
@@ -803,12 +803,12 @@ quoteInfo.createPDF = function (data) {
 		img.scaleX = 0.25;
 		img.scaleY = 0.25;
 		canvas.add(img);
-	
+
 		var top = 100;
 		var font_size = 24;
-		// タイトル	
+		// タイトル
 		quoteInfo.outputTextBold(canvas, data.title, font_size, 330, 100);
-		// 請求先情報	
+		// 請求先情報
 		font_size = 18;
 		var left = 80;
 		top = 155;
@@ -841,7 +841,7 @@ quoteInfo.createPDF = function (data) {
 			top += font_size + 6 + 4;
 			canvas.add(new fabric.Rect({ top : top, left : left, width : 250, height : 1 }));	// 下線
 		}
-		// 見積内容	
+		// 見積内容
 		top += font_size + 6;
 		font_size = 16;
 		quoteInfo.outputTextBold(canvas, "下記の通りお見積り申し上げます", font_size, left, top);
@@ -893,7 +893,7 @@ quoteInfo.createPDF = function (data) {
 		quoteInfo.outputTextBold(canvas, data.drc_division_name, font_size, left, top);
 		top += font_size + 6;
 		quoteInfo.outputTextBold(canvas, data.drc_prepared, font_size, left, top);
-	
+
 		// 明細表
 		left = 60;
 		top = 424;
@@ -901,10 +901,10 @@ quoteInfo.createPDF = function (data) {
 		h = 24;
 		canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'gray', stroke: 'black',opacity: 0.7 }));
 
-		var h = 600;	
+		var h = 600;
 		canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h,fill:'none', stroke:'black', strokeWidth:1, opacity:1}));
 
-		h = 0;	
+		h = 0;
 		var sw = 1;
 		for (var i = 0; i < 24; i++) {
 			top += 24;
@@ -919,7 +919,7 @@ quoteInfo.createPDF = function (data) {
 		canvas.add(new fabric.Rect({ top : top, left : 390, width : 0, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Rect({ top : top, left : 510, width : 0, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Rect({ top : top, left : 630, width : 0, height : h, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
-	
+
 		top = 428;
 		font_size = 16;
 		quoteInfo.outputTextBold(canvas, "件　　名", font_size, 130, top);
@@ -928,7 +928,7 @@ quoteInfo.createPDF = function (data) {
 		quoteInfo.outputTextBold(canvas, "単　価", font_size, 430, top);
 		quoteInfo.outputTextBold(canvas, "金  額", font_size, 550, top);
 		quoteInfo.outputTextBold(canvas, "備  考", font_size, 655, top);
-		// 印鑑枠	
+		// 印鑑枠
 		canvas.add(new fabric.Rect({ top : 360, left : 530, width : 150, height : 50, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Rect({ top : 360, left : 580, width : 50, height : 50, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		// 備考
@@ -971,12 +971,12 @@ quoteInfo.createSVG = function (data) {
 		img.scaleX = 0.3;
 		img.scaleY = 0.3;
 		canvas.add(img);
-	
+
 		var top = 80;
 		var font_size = 32;
-		// タイトル	
+		// タイトル
 		quoteInfo.outputText(canvas, data.title, font_size, 350, top);
-		// 請求先情報	
+		// 請求先情報
 		font_size = 22;
 		var left = 50;
 		top = 155;
@@ -1009,7 +1009,7 @@ quoteInfo.createSVG = function (data) {
 			top += font_size + 6 + 4;
 			canvas.add(new fabric.Rect({ top : top, left : left, width : 300, height : 1 }));	// 下線
 		}
-		// 見積内容	
+		// 見積内容
 		top += font_size + 6;
 		font_size = 18;
 		quoteInfo.outputText(canvas, "下記の通りお見積り申し上げます", font_size, left, top);
@@ -1063,7 +1063,7 @@ quoteInfo.createSVG = function (data) {
 		quoteInfo.outputText(canvas, data.drc_division_name, font_size, left + 20, top);
 		top += font_size + 6;
 		quoteInfo.outputText(canvas, data.drc_prepared, font_size, left + 20, top);
-	
+
 		// 明細表
 		left = 50;
 		top = 460;
@@ -1071,10 +1071,10 @@ quoteInfo.createSVG = function (data) {
 		h = 24;
 		canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill: 'gray', stroke: 'black',opacity: 0.7 }));
 
-		var h = 600;	
+		var h = 600;
 		canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h,fill:'none', stroke:'black', strokeWidth:1, opacity:1}));
 
-		h = 1;	
+		h = 1;
 		var sw = 1;
 		for (var i = 0; i < 24; i++) {
 			top += 24;
@@ -1090,7 +1090,7 @@ quoteInfo.createSVG = function (data) {
 		canvas.add(new fabric.Line([390,460,390,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Line([510,460,510,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Line([630,460,630,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
-	
+
 		top = 460;
 		font_size = 16;
 		quoteInfo.outputTextBold(canvas, "件　　名", font_size, 130, top);
@@ -1099,7 +1099,7 @@ quoteInfo.createSVG = function (data) {
 		quoteInfo.outputTextBold(canvas, "単　価", font_size, 430, top);
 		quoteInfo.outputTextBold(canvas, "金　額", font_size, 550, top);
 		quoteInfo.outputTextBold(canvas, "備　考", font_size, 720, top);
-		// 印鑑枠	
+		// 印鑑枠
 		canvas.add(new fabric.Rect({ top : 380, left : 630, width : 180, height : 60, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Rect({ top : 380, left : 690, width : 60, height : 60, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		// 備考
@@ -1153,10 +1153,10 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	for (var i in data.rows) {
 		var row = data.rows[i];
 		// 試験中分類名
-		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);	
+		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);
 		// 数量
 		if (row.quantity > 0)
-			quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row.quantity,5), font_size, 295, top);	
+			quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row.quantity,5), font_size, 295, top);
 		// 単位
 		quoteInfo.outputText(canvas, row.unit, font_size, 350, top);
 		// 単価
@@ -1185,7 +1185,7 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		}
 		len = row.specific_memo.length;
 		if (len > 0) {
-			
+
 			var memo_top = top;
 			var memo_font_size = font_size;
 			var lines = "";
@@ -1216,30 +1216,30 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	var len = total_str.indexOf("\\");
 	left = 530;
 	if (ua == 'chrome') left += (len * (font_size / 2));
-	quoteInfo.outputTextMono(canvas, total_str, font_size, left, top);		 
+	quoteInfo.outputTextMono(canvas, total_str, font_size, left, top);
 	top += 24;
 	quoteInfo.outputTextBold(canvas, "（消費税）", font_size, 435, top);
 	var tax_str = scheduleCommon.addYenMark(scheduleCommon.numFormatter(tax,12));
 	len = tax_str.indexOf("\\");
 	left = 530;
 	if (ua == 'chrome') left += (len * (font_size / 2));
-	quoteInfo.outputTextMono(canvas, tax_str, font_size, left, top);		 
+	quoteInfo.outputTextMono(canvas, tax_str, font_size, left, top);
 	top += 24;
 	quoteInfo.outputTextBold(canvas, " 総合計 ", font_size, 455, top);
 	var tt = scheduleCommon.addYenMark(scheduleCommon.numFormatter(total + tax,12));
 	len = tt.indexOf("\\");
 	left = 530;
 	if (ua == 'chrome') left += (len * (font_size / 2));
-	quoteInfo.outputTextMono(canvas, tt, font_size, left, top);		 
+	quoteInfo.outputTextMono(canvas, tt, font_size, left, top);
 };
 
 // 備考を選択したらテキストエリアにコピーする
 quoteInfo.selectMemoList = function(event) {
-	
+
 	var val = $("#quote_form_memo_select option:selected").val();
 	var memo = $("#quote_form_memo").val();
 	memo = memo + val + "\n";
 	$("#quote_form_memo").val(memo);
 	$("#quote_form_memo_select").val("");
-	
+
 };

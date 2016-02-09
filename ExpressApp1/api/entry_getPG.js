@@ -58,31 +58,63 @@ var parse_search_params = function(searchField,searchOper,searchString) {
 	}
 	else if (searchField === "pay_result") {
 		searchField = "subq2.pay_result";
-		if ((searchOper === "eq") && (searchString === "未登録")){
-			searchOper = ' IS NULL';
-		} else {
-			if (searchString === "請求待ち") {
-				searchString = 0;
-			} else if (searchString === "請求可") {
-				searchString = 1;
-			} else if (searchString === "請求済") {
-				searchString = 2;
-			} else if (searchString === "入金済") {
-				searchString = 3;
-			}
+		if (searchString === "未登録") {
+				if (searchOper === "eq") {
+					searchOper = ' IS NULL';
+				} else {
+					searchOper = ' IS NOT NULL';
+				}
+
+		}	else if (searchString === "請求待ち") {
+			searchString = 0;
+		} else if (searchString === "請求可") {
+			searchString = 1;
+		} else if (searchString === "請求済") {
+			searchString = 2;
+		} else if (searchString === "入金済") {
+			searchString = 3;
 		}
+	} else if (searchField === "pay_complete") {
+			searchField = "subq.pay_complete";
+			if (searchString === "有") {
+					if (searchOper === "eq") {
+						searchOper = ' IS NOT NULL';
+					} else {
+						searchOper = ' IS NULL';
+					}
+			}
 	} else if (searchField === "report_limit_date") {
 		searchField = "to_char(report_limit_date, 'YYYY/MM/DD')";
+	} else if (searchField === "inquiry_date") {
+		searchField = "to_char(inquiry_date, 'YYYY/MM/DD')";
 	} else if (searchField === "entry_no") {
 		searchField = "entry_info.entry_no";
 	} else if (searchField === "client_name_1") {
 		searchField = "client_list.name_1";
+	} else if (searchField === "entry_status") {
+		if (searchString === "引合") {
+			searchString = '01';
+		} else if (searchString === "見積") {
+			searchString = '02';
+		} else if (searchString === "依頼") {
+			searchString = '03';
+		} else if (searchString === "完了") {
+			searchString = '04';
+		} else if (searchString === "失注") {
+			searchString = '05';
+		}
+	} else if (searchField === "order_accept_check") {
+		if (searchString === "本登録") {
+			searchString = 0;
+		} else if (searchString === "仮登録") {
+			searchString = 1;
+		}
 	}
 	// 演算子指定の解析
 	if (searchOper === "eq") {
 		searchOper = " = '" + searchString + "'";
 	} else if (searchOper === "ne") {
-		searchOper = " <> " + searchString;
+		searchOper = " <> '" + searchString + "'";
 	} else if (searchOper === "lt") {
 		searchOper = " < " + searchString;
 	} else if (searchOper === "le") {
