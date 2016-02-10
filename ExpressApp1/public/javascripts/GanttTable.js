@@ -405,13 +405,19 @@ GanttTable.createReportRows = function (ganttData, report_list, left_row, right_
 
 // 項目追加したマイルストーンを表示する
 GanttTable.createWorkitemMilestoneRows = function (ganttData, workitem_list, entry_no, entry_title,left_row, right_row, dateCount, exist_lines) {
+	var today = scheduleCommon.getToday("{0}/{1}/{2}");
 	var total_lines = 0;
 	if (workitem_list != null) {
 		var w1 = GanttTable.dateWidth * dateCount;
 		var date_infos = [];
 		var rows = workitem_list;
 		for (var i = 0;i < rows.length;i++) {
-			date_infos.push(rows[i].start_date);
+			// 日付を入力していない場合の対応 2016.02.10
+			var start_date = rows[i].start_date;
+			if ((start_date === null) || (start_date === "")) {
+				start_date = today;
+			}
+			date_infos.push(start_date);
 		}
 		// 表示に必要な行数（高さ）を算出する
 		var lines = GanttTable.checkDateSpan(date_infos);
@@ -439,17 +445,22 @@ GanttTable.createWorkitemMilestoneRows = function (ganttData, workitem_list, ent
 		var color = "yellow";
 		var ms = null;
 		for (var j = 0; j < rows.length; j++) {
-			if ((ganttData.from > rows[j].start_date) || (ganttData.to < rows[j].start_date)) continue;
+			// 日付を入力していない場合の対応 2016.02.10
+			var start_date = rows[j].start_date;
+			if ((start_date === null) || (start_date === "")) {
+				start_date = today;
+			}
+			if ((ganttData.from > start_date) || (ganttData.to < start_date)) continue;
 			if (lines === 1) {
 				// 全てが1行に表示可能
 				// マイルストーン追加
-				ms = GanttTable.milestone(exist_lines + total_lines, ganttData, rows[j].start_date, rows[j].work_title, color);
+				ms = GanttTable.milestone(exist_lines + total_lines, ganttData, start_date, rows[j].work_title, color);
 			} else if (lines === date_infos.length) {
 				// 1行毎に1つのマイルストーンを表示する(全てが重なる）
-				ms = GanttTable.milestone(exist_lines + j + total_lines, ganttData, rows[j].start_date, rows[j].work_title, color);
+				ms = GanttTable.milestone(exist_lines + j + total_lines, ganttData, start_date, rows[j].work_title, color);
 			} else if (date_infos.length > lines) {
 				// 1行おきに行を替えて表示する
-				ms = GanttTable.milestone(exist_lines + total_lines + (j % lines), ganttData, rows[j].start_date, rows[j].work_title, color);
+				ms = GanttTable.milestone(exist_lines + total_lines + (j % lines), ganttData, start_date, rows[j].work_title, color);
 			}
 			if (ms != null) {
 				$(ms).css("cursor","pointer");
@@ -566,7 +577,13 @@ GanttTable.checkDateSpan = function (dates) {
 
 // マイルストーンの要素を作成する
 GanttTable.milestone = function (dispLine, GanttData, dispDate, caption, color) {
+//	var today = scheduleCommon.getToday("{0}/{1}/{2}");
 	var top = (dispLine * GanttTable.rowHeight) + 4;
+//	var date_str = dispDate;
+//	if ((dispDate === null) || (dispDate === "")) {
+//		dispDate = today;
+//		date_str = "未定"
+//	}
 	var ms = $('<a class="gt_milestone"><img class="gt_milestone_img" src="images/milestone_' + color + '.png" width="24px" height="24px" title="milestone"/>' + caption + '(' + dispDate + ')</a>');
 	// 表示位置の計算
 	var dc = scheduleCommon.calcDateCount(GanttData.from, dispDate) - 1;
@@ -581,26 +598,34 @@ GanttTable.milestone = function (dispLine, GanttData, dispDate, caption, color) 
 
 // 作業項目の表示
 GanttTable.workitem_band = function (top, GanttData, workitem, entry_title,color) {
+	var today = scheduleCommon.getToday("{0}/{1}/{2}");
 	//var top = (dispLine * GanttTable.rowHeight) + 4;
 	var ms = $('<a class="gt_workitem_band">' + workitem.work_title + '</a>');
 	workitem.entry_title = entry_title;
 	$(ms).attr('id', workitem.work_item_id);
 	// 表示位置の計算
-	var dc = scheduleCommon.calcDateCount(GanttData.from, workitem.start_date) - 1;
+	var start_date = workitem.start_date;
+	var end_date = workitem.end_date;
+	if ((start_date === null) || (start_date === "")) {
+		start_date = today;
+	}
+	if ((end_date === null) || (end_date === "")) {
+		end_date = today;
+	}
+	var dc = scheduleCommon.calcDateCount(GanttData.from, start_date) - 1;
 	var start = GanttTable.dateWidth * dc;
-	dc = scheduleCommon.calcDateCount(GanttData.from, workitem.end_date);
-	if (GanttData.to < workitem.end_date) {
+	dc = scheduleCommon.calcDateCount(GanttData.from, end_date);
+	if (GanttData.to < end_date) {
 		// はみ出し防止
 		dc = scheduleCommon.calcDateCount(GanttData.from, GanttData.to);
 	}
 	var end = GanttTable.dateWidth * dc;
 	var w = end - start;
-	if ((workitem.end_date < GanttData.from) || (GanttData.to < workitem.start_date)) {
+	if ((end_date < GanttData.from) || (GanttData.to < start_date)) {
 		// はみ出し防止
 		return null;
 	}
-	var today = scheduleCommon.getToday("{0}/{1}/{2}");
-	dc = scheduleCommon.calcDateCount(workitem.start_date, today);
+	dc = scheduleCommon.calcDateCount(start_date, today);
 	if (dc > 1) {
 		if (workitem.progress === 0) {
 			$(ms).css("background-color", "red");

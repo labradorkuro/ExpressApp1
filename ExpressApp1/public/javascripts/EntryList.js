@@ -727,9 +727,21 @@ entryList.setEntryForm = function (entry) {
 	$("#entry_title").val(entry.entry_title);						// 案件名
 
 	$("#order_accepted_date").val(entry.order_accepted_date);	// 受注日付
-	$("#order_accept_check").val(entry.order_accept_check);		// 仮受注日チェック
+	// 仮受注チェック
+	if (entry.order_accept_check === 0) {
+			$("#order_accept_check_0").prop('checked', true);
+	} else if (entry.order_accept_check === 1) {
+		$("#order_accept_check_1").prop('checked', true);
+	}
 	$("#acounting_period_no").val(entry.acounting_period_no);	// 会計期No
-	$("#order_type").val(entry.order_type);						// 受託区分
+	// 受託区分
+	if (entry.order_type === 1) {
+		$("#order_type_01").prop('checked', true);
+	} else if (entry.order_type === 2) {
+		$("#order_type_02").prop('checked', true);
+	} else if (entry.order_type === 3) {
+		$("#order_type_03").prop('checked', true);
+	}
 	$("#contract_type").val(entry.contract_type);				// 契約区分
 	$("#outsourcing_cd").val(entry.outsourcing_cd);				// 委託先CD
 	$("#outsourcing_name").val(entry.outsourcing_name);			// 委託先CD

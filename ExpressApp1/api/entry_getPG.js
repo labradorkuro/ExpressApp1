@@ -44,7 +44,7 @@ var getPagingParams = function (req) {
 	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
 	return pg_param;
 };
-// 検索条件の解析
+// 検索条件（虫眼鏡アイコンの検索）の解析
 var parse_search_params = function(searchField,searchOper,searchString) {
 	if (searchField === "") {
 		return "";
@@ -146,7 +146,7 @@ var parse_search_params = function(searchField,searchOper,searchString) {
 	}
 	return searchField +  searchOper;
 }
-// 案件リストの検索
+// 案件リストの検索（虫めがねアイコンの検索）
 var entry_get_list_searchField = function (req, res) {
 	var searchField = req.query.searchField;
 	var searchString = req.query.searchString;
