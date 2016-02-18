@@ -117,8 +117,10 @@ div.gt_left_top1_div {
     border-left:none;
     border-right:1px #777777 solid;
     width:100%;
-    height:49px;
-
+    height:33px;
+    font-weight: bold;
+    padding-left: 10px;
+    padding-top: 16px;
 }
 div.gt_left_top2_div {
     position:relative;
@@ -130,7 +132,6 @@ div.gt_left_top2_div {
     width:100%;
     height:24px;
     background-color:#ecf9d2;
-
 }
 
 
@@ -168,7 +169,6 @@ div.gt_right_top1_div {
     width:100%;
     height:24px;
     background-color:#ecf9d2;
-
 }
 div.gt_right_top2_div {
     position:relative;
@@ -734,7 +734,6 @@ div.toolbar {
     font-size:small;
     margin-bottom:10px;
 }
-
 a.tool_button_a {
     position:relative;
     float:left;
@@ -789,7 +788,20 @@ a.tool_button_b {
 }
 
 a.tool_button_b:hover {
-        background: #777777;
+    background: #777777;
+}
+label.toolbar_label {
+  margin-left: 10px;
+  font-size: 1.5em;
+  color: green;
+  top: 10px;
+}
+div.toolbar_fields {
+    display: inline-block;
+}
+input.select_date {
+}
+select.select_span {
 }
 input.search_option_check {
     float:left;
@@ -1251,10 +1263,6 @@ a.general_button:hover{
 /* 入力フィールドの右詰 */
 .num_type {
     text-align: right;
-}
-.select_date {
-    font-size: 1.5em;
-    color: green;
 }
 
 #tabs {

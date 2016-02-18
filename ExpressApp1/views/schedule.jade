@@ -24,8 +24,16 @@ html
 			a.tool_button_a#prev_btn 前へ
 			a.tool_button_a#today_btn 今日
 			a.tool_button_a#next_btn 次へ
-			label.select_date 日付選択
-			input.datepicker.select_date#select_date
+			div.toolbar_fields
+				label.toolbar_label 日付選択&nbsp;
+				input.datepicker.select_date#select_date
+			div.toolbar_fields
+				label.toolbar_label 表示期間&nbsp;
+				select.select_span#disp_span
+					option(value="1") 1ヶ月
+					option(value="3") 3ヶ月
+					option(value="6") 6ヶ月
+					option(value="12") 12ヶ月
 		div#tabs
 			ul
 				li

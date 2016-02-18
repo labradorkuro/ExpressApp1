@@ -1,33 +1,38 @@
 ﻿//
 // ガントチャートの生成とデータの表示
 //
-
+"use strict";
 var GanttTable =  GanttTable || {};
 GanttTable.ganttData = null;
 GanttTable.start_date = "";		// 表示開始日付
 GanttTable.disp_span = 1;		// 表示期間（1：１ヶ月、3：3ヶ月、6：6ヶ月、12：12ヶ月）
 GanttTable.days = ['日','月','火','水','木','金','土'];
-GanttTable.days_color = ['red','black','black','black','black','black','blue'];
+GanttTable.days_color = ['red', 'black', 'black', 'black', 'black', 'black', 'blue'];
 GanttTable.dateWidth = 100;
 GanttTable.rowHeight = 32;
 GanttTable.auth = 0;			// ユーザ権限
 // 初期化
 GanttTable.Init = function (id, test_type, disp_mode){
-	$('#' + id).empty();
-	var startDate = GanttTable.start_date;
-	var d = scheduleCommon.dateStringToDate(GanttTable.start_date);
-	var endDate = scheduleCommon.getDateString(scheduleCommon.addDate(d, (GanttTable.disp_span * 30)), "{0}/{1}/{2}");
-	var ganttData = {};
-	ganttData.name = "案件名";
-	ganttData.desc = "作業項目";
-	ganttData.from = startDate;
-	ganttData.to = endDate;
-	ganttData.test_type = test_type;
-	ganttData.data = [];
+    $('#' + id).empty();
+    var startDate = GanttTable.start_date;
+    var d = scheduleCommon.dateStringToDate(GanttTable.start_date);
+    var endDate = scheduleCommon.getDateString(scheduleCommon.addDate(d, (GanttTable.disp_span * 30)), "{0}/{1}/{2}");
+    var ganttData = {};
+    ganttData.name = "案件名";
+    ganttData.desc = "作業項目";
+    ganttData.from = startDate;
+    ganttData.to = endDate;
+    ganttData.test_type = test_type;
+    ganttData.data = [];
 
-	// ガントチャートの生成
-	GanttTable.createGanttTable(id, startDate, endDate, test_type, disp_mode, ganttData);
+    // ガントチャートの生成
+    GanttTable.createGanttTable(id, startDate, endDate, test_type, disp_mode, ganttData);
 };
+// 表示期間のセット
+GanttTable.setDispSpan = function(span) {
+	GanttTable.disp_span = span;
+	GanttTable.dateWidth = 100 / GanttTable.disp_span;
+}
 // 前の日付へ移動
 GanttTable.prev = function () {
 	var startDate = GanttTable.start_date;
@@ -57,9 +62,8 @@ GanttTable.createGanttTable = function (target_id,start_date,end_date,test_type,
 	var left_div = $('<div class="gt_left_div"></div>');
 
 	var left_top = $('<div class="gt_left_top_div"></div>');
-	var left_top1 = $('<div class="gt_left_top1_div"><a class="_gt_mode_button" id="mode_button-' + target_id + '"></a></div>');	// 表示切替ボタン（将来バージョンで実装予定）
+	var left_top1 = $('<div class="gt_left_top1_div"></div>');
 	var left_top2 = $('<div class="gt_left_top2_div"></div>');
-
 	var category1 = $('<div class="gt_category1_div"><label class="gt_label">' + ganttData.name + '</label></div>');
 	var category2 = $('<div class="gt_category2_div"><label class="gt_label">' + ganttData.desc + '</label></div>');
 
@@ -94,8 +98,8 @@ GanttTable.createGanttTable = function (target_id,start_date,end_date,test_type,
 	GanttTable.createCalendarHeader(ganttData, right_top1, right_top2, right_top3, dateCount);
 	// スケジュール表示行の生成
 	GanttTable.createRows(ganttData, left_div, right_div, dateCount);
-	// 表示切替ボタンのイベント処理登録
-	//$("#mode_button-" + target_id).click(GanttTable.dispModeChange);	// 将来バージョンで実装予定
+	// 表示切替のイベント処理登録
+	//$("#gt_dispspan_" + target_id).change(GanttTable.dispSpanChange);	// 将来バージョンで実装予定
 };
 
 // カレンダー表示行生成
@@ -182,7 +186,14 @@ GanttTable.createMonthHeader = function (parent,startDate, dateCount) {
 GanttTable.createDateHeader = function (parent, startDate, dateCount) {
 	for (var j = 0; j < dateCount; j++) {
 		var nextDate = new Date(startDate.getTime() + ((24 * 3600 * 1000) * j));
-		var date_div = $('<div class="gt_cal_header_date" >' + nextDate.getDate() + '日(' + GanttTable.days[nextDate.getDay()] + ')</>');
+		var date_text = nextDate.getDate();
+		var date_div = $('<div class="gt_cal_header_date" ></>');
+		if (GanttTable.disp_span == 1) {
+			date_text = date_text + '日(' + GanttTable.days[nextDate.getDay()] + ')';
+			$(date_div).append(date_text);
+		} else if (GanttTable.disp_span < 12) {
+			$(date_div).append(date_text);
+		}
 		$(date_div).css("left", (j * GanttTable.dateWidth) + "px");
 		$(date_div).css("width", GanttTable.dateWidth + "px");
 		$(date_div).css("color", GanttTable.days_color[nextDate.getDay()]);
@@ -553,24 +564,28 @@ GanttTable.createWorkitemRows = function (ganttData, workitem_list, entry_no,ent
 GanttTable.checkDateSpan = function (dates) {
 	var lines = 1;
 	var max = 1;
-	if (dates.length >= 2) {
-		for (var i = 0; i < dates.length - 1; i++) {
-			// 日数計算
-			if ((dates[i] != null) && (dates[i + 1] != null)) {
-				var dc = Math.abs(scheduleCommon.calcDateCount(dates[i], dates[i + 1]) - 1);
-				if (dc <= 1) {
-					// 日数が1日未満なら行を追加するためにカウントアップ
-					lines++;
-					if (max < lines) {
+	if (GanttTable.disp_span === 1) { // 表示期間が１か月の場合は日付の間隔をチェックして表示行数を決める
+		if (dates.length >= 2) {
+			for (var i = 0; i < dates.length - 1; i++) {
+				// 日数計算
+				if ((dates[i] != null) && (dates[i + 1] != null)) {
+					var dc = Math.abs(scheduleCommon.calcDateCount(dates[i], dates[i + 1]) - 1);
+					if (dc <= 1) {
+						// 日数が1日未満なら行を追加するためにカウントアップ
+						lines++;
+						if (max < lines) {
+							max = lines;
+						}
+					} else {
+						// 日付が1日以上ずれた時はその時点の行数を保存してカウントを初期化する
 						max = lines;
+						lines = 1;
 					}
-				} else {
-					// 日付が1日以上ずれた時はその時点の行数を保存してカウントを初期化する
-					max = lines;
-					lines = 1;
 				}
 			}
 		}
+	} else {  // 表示期間が１ヶ月以上の場合は、各マイルストーン毎に行を生成する
+		max = dates.length;// test
 	}
 	return max;
 };
@@ -738,8 +753,9 @@ GanttTable.splitDateString = function(dateString) {
 	ymd = dateString.split("/");
 	return ymd;
 };
-
-GanttTable.dispModeChange = function() {
+// 表示期間の切り替え
+GanttTable.dispSpanChange = function(event, ui) {
+	GanttTable.disp_span = Number($(event.target).val());
 };
 // スケジュールのドロップイベント処理
 GanttTable.drop = function (event, ui) {

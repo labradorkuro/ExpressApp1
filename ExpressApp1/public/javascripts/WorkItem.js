@@ -11,13 +11,14 @@ $(function() {
 
 	var today = scheduleCommon.getToday("{0}/{1}/{2}");
 	GanttTable.start_date = today;
-	GanttTable.disp_span = 1;
+	GanttTable.setDispSpan(1);
 	workitemEdit.ganttTableInit();
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 	$("#prev_btn").click(workitemEdit.prev);
 	$("#next_btn").click(workitemEdit.next);
 	$("#today_btn").click(workitemEdit.today);
 	$("#select_date").change(workitemEdit.selectDate);
+	$("#disp_span").change(workitemEdit.selectDispSpan);
 	workitemEdit.createWorkitemDialog();
 	workitemEdit.createTemplateSelectDialog();
 	workitemEdit.createTemplateNameDialog();
@@ -280,6 +281,10 @@ workitemEdit.selectDate = function () {
 	GanttTable.start_date = $("#select_date").val();
 	workitemEdit.ganttTableInit();
 };
+workitemEdit.selectDispSpan = function(event,ui) {
+	GanttTable.setDispSpan(Number($(event.target).val()));
+	workitemEdit.ganttTableInit();
+}
 workitemEdit.ganttTableInit = function () {
 	GanttTable.Init("ganttTable_div1", "L01", 1);
 	GanttTable.Init("ganttTable_div2", "L02", 1);
