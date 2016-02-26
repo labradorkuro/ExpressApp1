@@ -230,12 +230,22 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	$("#billing_company_name_2").val("");
 	$("#billing_division").val("");
 	$("#billing_person").val("");
-
-	$("#billing_company_name_1").val(entry.client_name_1);
-	$("#billing_company_name_2").val(entry.client_name_2);
-	$("#billing_division").val(entry.client_division_name);
-	if (entry.client_person_name != "") {
-		$("#billing_person").val(entry.client_person_name + " " + entry.client_person_compellation);
+	if (entry.agent_cd == "") {
+		// 代理店設定がない時
+		$("#billing_company_name_1").val(entry.client_name_1);
+		$("#billing_company_name_2").val(entry.client_name_2);
+		$("#billing_division").val(entry.client_division_name);
+		if (entry.client_person_name != "") {
+			$("#billing_person").val(entry.client_person_name + " " + entry.client_person_compellation);
+		}
+	} else {
+		// 代理店設定がある時
+		$("#billing_company_name_1").val(entry.agent_name_1);
+		$("#billing_company_name_2").val(entry.agent_name_2);
+		$("#billing_division").val(entry.agent_division_name);
+		if (entry.agent_person_name != "") {
+			$("#billing_person").val(entry.agent_person_name + " " + entry.agent_person_compellation);
+		}
 	}
 
 	$("#drc_division_name").text("  試験課 " + entry.test_large_class_name);

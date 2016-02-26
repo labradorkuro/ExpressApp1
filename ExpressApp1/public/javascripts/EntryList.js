@@ -2,9 +2,10 @@
 // DRC殿試験案件スケジュール管理
 // 案件リスト画面の処理
 //
-$(function() {
-	// 権限チェック
-	entryList.checkAuth();
+$(function ()　{
+    'use strict';
+  // 権限チェック
+  entryList.checkAuth();
 	// 自社情報の取得
 	quoteInfo.getMyInfo();
 	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
@@ -666,6 +667,7 @@ entryList.onloadEntrySave = function (e) {
 entryList.onloadEntryReq = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
+		entryList.currentEntry = entry;	
 		// 消費税率
 		if (entry.consumption_tax == "") {
 			// デフォルトでシステム設定値を入れる
@@ -701,7 +703,7 @@ entryList.setEntryForm = function (entry) {
 	$("#sales_person_id").val(entry.sales_person_id);	// 案件ステータス
 //	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
 	$("#agent_cd").val(entry.agent_cd);					// 代理店コード
-	$("#agent_name").val(entry.agent_name);				// 代理店名
+	$("#agent_name").val(entry.agent_name_1);				// 代理店名
 	$("#agent_division_cd").val(entry.agent_division_cd);		// 所属部署CD
 	$("#agent_division_name").val(entry.agent_division_name);	// 所属部署名
 	$("#agent_division_memo").val(entry.agent_division_memo);	// 所属部署メモ
@@ -710,9 +712,7 @@ entryList.setEntryForm = function (entry) {
 	$("#agent_person_memo").val(entry.agent_person_memo);		// 担当者メモ
 
 	$("#client_cd").val(entry.client_cd);				// 得意先コード
-	var name_1 = entry.client_name_1;
-	var name_2 = entry.client_name_2;
-	$("#client_name").val(name_1 );								// 得意先名1
+	$("#client_name").val(entry.client_name_1);								// 得意先名1
 	$("#client_division_cd").val(entry.client_division_cd);		// 所属部署CD
 	$("#client_division_name").val(entry.client_division_name);	// 所属部署名
 	$("#client_division_memo").val(entry.client_division_memo);	// 所属部署メモ
@@ -796,9 +796,10 @@ entryList.clearEntry = function () {
 	entry.quote_no = "";			// 見積番号
 	entry.quote_issue_date = "";	// 見積書発行日
 	entry.agent_cd = "";			// 代理店コード
-	entry.agent_name = "";			// 得意先名
-	entry.agent_address_1 = "";		// 住所
-	entry.agent_address_2 = "";		// 住所
+	entry.agent_name_1 = "";			// 代理店名
+	entry.agent_name_2 = "";			// 代理店名
+	entry.agent_address_1 = "";		// 代理店住所
+	entry.agent_address_2 = "";		// 代理店住所
 	entry.agent_division_cd = "";	// 代理店担当者所属部署
 	entry.agent_division_name = "";	// 代理店担当者所属部署
 	entry.agent_person_id = "";		// 代理店担当者

@@ -439,13 +439,15 @@ var entry_get_detail = function (req, res) {
 		+ 'agent_cd,'															// 代理店CD
 		+ "agent_division_cd,"													// 代理店部署CD
 		+ "agent_person_id,"													// 代理店担当者ID
-		+ 'agent_list.name_1 AS agent_name,'									// 代理店名称
+		+ 'agent_list.name_1 AS agent_name_1,'									// 代理店名称1
+		+ 'agent_list.name_2 AS agent_name_2,'									// 代理店名称2
 		+ "agent_division_list.address_1 AS agent_address_1,"					// 代理店部署住所１
 		+ "agent_division_list.address_2 AS agent_address_2,"					// 代理店部署住所２
 		+ "agent_division_list.name AS agent_division_name,"					// 代理店部署名
 		+ "agent_division_list.memo AS agent_division_memo,"					// 代理店部署メモ
 		+ "agent_person_list.name AS agent_person_name,"						// 代理店担当者名
 		+ "agent_person_list.memo AS agent_person_memo,"						// 代理店担当者メモ
+		+ "agent_person_list.compellation AS agent_person_compellation,"
 		+ "entry_info.client_cd,"												// 得意先CD
 		+ "entry_info.client_division_cd,"										// 得意先部署CD
 		+ "entry_info.client_person_id,"										// 得意先担当者ID
@@ -457,6 +459,7 @@ var entry_get_detail = function (req, res) {
 		+ "client_division_list.memo AS client_division_memo,"					// 得意先部署メモ
 		+ "client_person_list.name AS client_person_name,"						// 得意先担当者名
 		+ "client_person_list.memo AS client_person_memo,"						// 得意先担当者メモ
+		+ "client_person_list.compellation AS client_person_compellation,"
 		+ 'entry_info.test_large_class_cd,'										// 試験大分類CD
 		+ 'test_large_class.item_name AS test_large_class_name,'				// 試験大分類名
 		+ 'entry_info.test_middle_class_cd,'									// 試験中分類CD
