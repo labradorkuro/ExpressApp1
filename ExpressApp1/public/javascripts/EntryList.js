@@ -50,6 +50,7 @@ $(function ()　{
 	// クライアント選択ダイアログを表示するイベント処理を登録する
 	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
 	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);
+	$("#billing_company_name_1").bind('click' , {}, entryList.openClientListDialog);	// 見積書画面
 	$("#agent_name").bind('click' , {}, entryList.openClientListDialog);
 	$("#outsourcing_name").bind('click' , {}, entryList.openItakusakiListDialog);	// 委託先
 
@@ -337,6 +338,14 @@ entryList.selectClient = function () {
 	$("#client_person_memo").val(clientList.currentClientPerson.memo);
 	return true;
 };
+// 見積書画面でのあて先選択時のイベント処理
+entryList.selectQuoteClient = function () {
+	$("#billing_company_cd").val(clientList.currentClient.client_cd);
+	$("#billing_company_name_1").val(clientList.currentClient.name_1);
+	$("#billing_division").val(clientList.currentClientDivision.name);
+	$("#billing_person").val(clientList.currentClientPerson.name);
+	return true;
+};
 
 entryList.selectAgent = function () {
 	$("#agent_cd").val(clientList.currentClient.client_cd);
@@ -474,6 +483,11 @@ entryList.openClientListDialog = function (event) {
 					}
 				} else if (event.target.id == 'billing_client_name') {
 					if (billingList.selectClient()) {
+						$(this).dialog('close');
+					}
+				} else if (event.target.id == 'billing_company_name_1') {
+					// 見積書画面のあて先選択
+					if (entryList.selectQuoteClient()) {
 						$(this).dialog('close');
 					}
 				} else if (event.target.id == 'agent_name') {
@@ -667,7 +681,7 @@ entryList.onloadEntrySave = function (e) {
 entryList.onloadEntryReq = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
-		entryList.currentEntry = entry;	
+		entryList.currentEntry = entry;
 		// 消費税率
 		if (entry.consumption_tax == "") {
 			// デフォルトでシステム設定値を入れる
