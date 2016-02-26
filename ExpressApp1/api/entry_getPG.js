@@ -453,10 +453,16 @@ var entry_get_detail = function (req, res) {
 		+ "entry_info.client_person_id,"										// 得意先担当者ID
 		+ "client_list.name_1 AS client_name_1,"								// 得意先名１
 		+ "client_list.name_2 AS client_name_2,"								// 得意先名２
-		+ "client_division_list.address_1 AS client_address_1,"					// 得意先部署住所１
-		+ "client_division_list.address_2 AS client_address_2,"					// 得意先部署住所２
+		+ "client_list.tel_no AS client_tel_no,"
+		+ "client_list.fax_no AS client_fax_no,"
+		+ "client_list.address_1 AS client_address_1,"					// 得意先住所１
+		+ "client_list.address_2 AS client_address_2,"					// 得意先住所２
 		+ "client_division_list.name AS client_division_name,"					// 得意先部署名
 		+ "client_division_list.memo AS client_division_memo,"					// 得意先部署メモ
+		+ "client_division_list.address_1 AS client_division_address_1,"
+		+ "client_division_list.address_2 AS client_division_address_2,"
+		+ "client_division_list.tel_no AS client_division_tel_no,"
+		+ "client_division_list.fax_no AS client_division_fax_no,"
 		+ "client_person_list.name AS client_person_name,"						// 得意先担当者名
 		+ "client_person_list.memo AS client_person_memo,"						// 得意先担当者メモ
 		+ "client_person_list.compellation AS client_person_compellation,"

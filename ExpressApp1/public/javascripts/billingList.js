@@ -92,7 +92,7 @@ billingList.createBillingFormDialog = function () {
 // 請求情報リストの生成
 billingList.createBillingListGrid = function () {
 	$("#billing_delete_check_disp").bind('change', billingList.changeOption);
-	// checkboxの状態取得	
+	// checkboxの状態取得
 	var delchk = billingList.getBillingDeleteCheckDispCheck();
 	var entry_no = $("#billing_entry_no").val();
 	// 請求情報リストのグリッド
@@ -146,7 +146,7 @@ billingList.createBillingListGrid = function () {
 };
 // 請求先選択イベント
 billingList.onSelectBillingList = function (rowid) {
-	billingList.currentBilling = $("#billing_info_list").getRowData(rowid);	
+	billingList.currentBilling = $("#billing_info_list").getRowData(rowid);
 	if (entryList.auth_entry_edit == 2) {
 		$("#edit_billing").css("display","inline");
 	} else {
@@ -173,20 +173,32 @@ billingList.openBillingFormDialog = function (event) {
 	billingList.clearPayResult();	// 請求区分のチェックをクリアする
 	var billing = billingList.clearBilling();
 	billingList.setBillingForm(billing);
-	var address1 = billingList.currentEntry.currentEntry.client_address_1;
-	if (billingList.currentEntry.currentEntry.client_division_address_1 != "") {
+	var address1 = "";
+	var address2 = "";
+	var tel = "";
+	var fax = "";
+	if ((billingList.currentEntry.currentEntry.client_address_1 != null) && (billingList.currentEntry.currentEntry.client_address_1 != "")) {
+		address1 = billingList.currentEntry.currentEntry.client_address_1;
+	}
+	if ((billingList.currentEntry.currentEntry.client_division_address_1 != null) && (billingList.currentEntry.currentEntry.client_division_address_1 != "")) {
 		address1 = billingList.currentEntry.currentEntry.client_division_address_1;
 	}
-	var address2 = billingList.currentEntry.currentEntry.client_address_2;
-	if (billingList.currentEntry.currentEntry.client_division_address_2 != "") {
+	if ((billingList.currentEntry.currentEntry.client_address_2 != null) && (billingList.currentEntry.currentEntry.client_address_2 != "")) {
+		address2 = billingList.currentEntry.currentEntry.client_address_2;
+	}
+	if ((billingList.currentEntry.currentEntry.client_division_address_2 != null) && (billingList.currentEntry.currentEntry.client_division_address_2 != "")) {
 		address2 = billingList.currentEntry.currentEntry.client_division_address_2;
 	}
-	var tel =billingList.currentEntry.currentEntry.client_tel_no;
-	if (billingList.currentEntry.currentEntry.client_division_tel_no != "") {
+	if ((billingList.currentEntry.currentEntry.client_tel_no != null) && (billingList.currentEntry.currentEntry.client_tel_no != "")) {
+		tel = billingList.currentEntry.currentEntry.client_tel_no;
+	}
+	if ((billingList.currentEntry.currentEntry.client_division_tel_no != null) && (billingList.currentEntry.currentEntry.client_division_tel_no != "")) {
 		tel = billingList.currentEntry.currentEntry.client_division_tel_no;
 	}
-	var fax =billingList.currentEntry.currentEntry.client_fax_no;
-	if (billingList.currentEntry.currentEntry.client_division_fax_no != "") {
+	if ((billingList.currentEntry.currentEntry.client_fax_no != null) && (billingList.currentEntry.currentEntry.client_fax_no != "")) {
+		fax = billingList.currentEntry.currentEntry.client_fax_no;
+	}
+	if ((billingList.currentEntry.currentEntry.client_division_fax_no != null) && (billingList.currentEntry.currentEntry.client_division_fax_no != "")) {
 		fax = billingList.currentEntry.currentEntry.client_division_fax_no;
 	}
 	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
@@ -195,7 +207,7 @@ billingList.openBillingFormDialog = function (event) {
 		// 編集ボタンから開いた場合
 		billingList.status = "edit";
 		//billingList.currentBilling.client_info = client_info;
-		billingList.setBillingForm(billingList.currentBilling);	
+		billingList.setBillingForm(billingList.currentBilling);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		// 権限チェック
 		if (entryList.auth_entry_edit == 2) {
@@ -226,7 +238,7 @@ billingList.openBillingFormDialog = function (event) {
 			client_person_name:billingList.currentEntry.currentEntry.client_person_name,
 			client_info: client_info
 		}
-		billingList.setBillingForm(billing);		
+		billingList.setBillingForm(billing);
 		// 権限チェック
 		if (entryList.auth_entry_add == 2) {
 			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
@@ -279,7 +291,7 @@ billingList.setBillingForm = function(billing) {
 	$("#pay_amount_total").val(billing.pay_amount_total);
 	$("#pay_complete").val(billing.pay_complete);
 //	$("#pay_result").val(billing.pay_result);
-	
+
 	if (billing.pay_result == "請求可") {
 		$("#pay_result_1").prop("checked",true);
 	} else if (billing.pay_result == "請求済") {
