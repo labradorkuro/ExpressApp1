@@ -553,6 +553,8 @@ entryList.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) 
 
 // 受注確定の見積データをフォームにセットする
 entryList.setQuoteInfo = function (quote_list, consumption_tax) {
+  entryList.currentEntry.entry_amount_price_notax = 0;	// 金額（税抜）
+  entryList.currentEntry.entry_amount_price = 0;	// 金額（税込）
 	if (quote_list != null) {
 		var total_price = 0;
 		var rows = quote_list.rows;
@@ -573,6 +575,8 @@ entryList.setQuoteInfo = function (quote_list, consumption_tax) {
 			$("#entry_amount_tax").val(scheduleCommon.numFormatter(tax,11));					// 消費税
 			$("#entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));	// 合計(税込)
 			$("#entry_consumption_tax").val(rows[0].consumption_tax);							// 消費税率
+			entryList.currentEntry.entry_amount_price_notax = total_price;	// 金額（税抜）
+			entryList.currentEntry.entry_amount_price = total_price + tax;	// 金額（税込）
 		}
 	}
 };
@@ -681,13 +685,19 @@ entryList.onloadEntrySave = function (e) {
 entryList.onloadEntryReq = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
-		entryList.currentEntry = entry;
 		// 消費税率
 		if (entry.consumption_tax == "") {
 			// デフォルトでシステム設定値を入れる
 			entry.consumption_tax = quoteInfo.drc_info.consumption_tax;
 		}
 		quoteInfo.currentConsumption_tax = entry.consumption_tax;
+		entryList.currentEntry = entry;  // 選択中の案件データを保存
+    // 請求金額の情報を初期化しておく
+    //entryList.currentEntry.billing_amount_total_notax = 0;  // 請求金額（税抜）
+    //entryList.currentEntry.entry_amount_billing = 0;       // 請求金額（税込）
+    entryList.currentEntry.entry_amount_price_notax = 0;	 // 金額（税抜）
+    //entryList.currentEntry.entry_amount_price = 0;	       // 金額（税込）
+    //entryList.currentEntry.entry_amount_deposit = 0;      // 入金済金額（税込）
 		// formに取得したデータを埋め込む
 		entryList.setEntryForm(entry);
 		$("#entry_memo_ref").text(entry.entry_memo);

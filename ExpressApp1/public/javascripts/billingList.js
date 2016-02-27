@@ -247,8 +247,8 @@ billingList.openBillingFormDialog = function (event) {
 		}
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 	}
-
-	$("#billing_form_dialog").dialog("open");
+	// 請求金額合計を取得する
+	billingList.requestBillingTotal(billingList.currentEntry.currentEntry.entry_no);
 };
 // 請求情報のクリア
 billingList.clearBilling = function() {
@@ -269,7 +269,8 @@ billingList.clearBilling = function() {
 			client_division_name:'',
 			client_person_id:'',
 			client_person_name:'',
-			client_info: ''
+			client_info: '',
+			delete_check:0
 	};
 	return billing;
 };
@@ -292,6 +293,7 @@ billingList.setBillingForm = function(billing) {
 	$("#pay_complete").val(billing.pay_complete);
 //	$("#pay_result").val(billing.pay_result);
 
+
 	if (billing.pay_result == "請求可") {
 		$("#pay_result_1").prop("checked",true);
 	} else if (billing.pay_result == "請求済") {
@@ -310,6 +312,7 @@ billingList.setBillingForm = function(billing) {
 	$("#billing_client_person_name").val(billing.client_person_name);
 	$("#billing_client_info").val(billing.client_info);
 	$("#billing_memo").val(billing.memo);
+	$("#billing_delete_check").prop("checked",billing.delete_check);
 };
 billingList.getBillingDeleteCheckDispCheck = function () {
 	var dc = $("#billing_delete_check_disp").prop("checked");
@@ -414,4 +417,25 @@ billingList.inputCheck = function () {
 		$("#message_dialog").dialog("open");
 	}
 	return result;
+};
+
+// 請求金額、入金額取得リクエスト
+billingList.requestBillingTotal = function (no) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/billing_get_total/' + no, true);
+	xhr.responseType = 'json';
+	xhr.onload = billingList.onloadBillingTotalReq;
+	xhr.send();
+};
+// 請求金額、入金額取得リクエストのコールバック
+billingList.onloadBillingTotalReq = function (e) {
+	if (this.status == 200) {
+		var amount_zan = 0;
+		var billing = this.response;
+		if (billingList.currentEntry.currentEntry.entry_amount_price_notax > 0) {
+			amount_zan = (billingList.currentEntry.currentEntry.entry_amount_price_notax - billing.amount_total_notax);
+		}
+		$("#pay_amount_zan").val(scheduleCommon.numFormatter(amount_zan,11));
+		$("#billing_form_dialog").dialog("open");
+	}
 };

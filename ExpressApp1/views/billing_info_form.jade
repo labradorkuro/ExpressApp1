@@ -40,14 +40,15 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 金額(税抜)
 			td 
-				input.num_type#pay_amount(type="number" pattern="[0-9]{1,8}" name="pay_amount" size="8")
+				input.num_type#pay_amount(type="number" pattern="[0-9]{1,8}" name="pay_amount" size="8" title="")
 			td
+			td.form_title 請求残金額（税抜）
 			td
-			td
+				input.num_type#pay_amount_zan(type="text" name="pay_amount_zan" size="8" readonly="true" title="")
 		tr
 			td.form_title_m 消費税
 			td 
-				input.num_type#pay_amount_tax(type="number" pattern="[0-9]{1,8}" name="pay_amount_tax" size="8")
+				input.num_type#pay_amount_tax(type="number" pattern="[0-9]{1,8}" name="pay_amount_tax" size="8" title="")
 			td
 				input#calc_tax_button(type="button" name="calc_tax_button" value="計算")
 			td.form_title_s 入金日
@@ -56,11 +57,11 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 合計(税込)
 			td 
-				input.num_type#pay_amount_total(type="number" pattern="[0-9]{1,8}" name="pay_amount_total" readonly="true" size="8")
+				input.num_type#pay_amount_total(type="number" pattern="[0-9]{1,8}" name="pay_amount_total" readonly="true" size="8" title="")
 			td
 			td.form_title_s 入金額
 			td
-				input.num_type#pay_complete(type="number" pattern="[0-9]{1,8}" name="pay_complete" size="8")
+				input.num_type#pay_complete(type="number" pattern="[0-9]{1,8}" name="pay_complete" size="8" title="")
 	table
 		tr
 			td(colspan=6) 請求先
