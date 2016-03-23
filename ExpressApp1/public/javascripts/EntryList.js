@@ -29,8 +29,10 @@ $(function ()　{
 	$("#entry_status_03").prop("checked", true);
 	$("#entry_status_04").prop("checked", false);
 	$("#entry_status_05").prop("checked", false);
+  // 試験大分類リストの取得とセット
+  entryList.getLargeItemList();
 	// グリッドの生成
-	entryList.createGrid();						// 案件リスト
+	//entryList.createGrid();						// 案件リストの生成はentryList.onGetLargeItemListへ移動した
 	quoteInfo.createQuoteInfoGrid(0);			// 見積リスト
 	quoteInfo.createQuoteSpecificGrid(0,0);		// 見積明細リスト
 	test_itemList.createTestLargeGrid();		// 試験大分類リスト
@@ -99,6 +101,8 @@ entryList.auth_entry_add = 0;			// 権限
 entryList.auto_quote_add = 0;			// 権限
 entryList.auth_entry_edit = 0;			// 権限
 entryList.auto_quote_edit = 0;			// 権限
+
+entryList.large_item_list = null;
 // 権限チェック
 entryList.checkAuth = function() {
 	var user_auth = scheduleCommon.getAuthList($.cookie('user_auth'));
@@ -247,15 +251,27 @@ entryList.createGrid = function () {
 	var sts03 = ($("#entry_status_03").prop("checked")) ? '03':'0';
 	var sts04 = ($("#entry_status_04").prop("checked")) ? '04':'0';
 	var sts05 = ($("#entry_status_05").prop("checked")) ? '05':'0';
+  // 試験大分類の絞り込み用チェックボックスの状態を取得
+  var large_items = entryList.getLargeItem_check();
+  var req_url = '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01
+                                                    + '&entry_status_02=' + sts02
+                                                    + '&entry_status_03=' + sts03
+                                                    + '&entry_status_04=' + sts04
+                                                    + '&entry_status_05=' + sts05;
+  // 試験大分類の絞り込み
+  for(var i = 0;i < large_items.length;i++) {
+    var item = large_items[i];
+    req_url += "&" + item.item_cd + "=" + item.value;
+  }
 	// 案件リストのグリッド
 	jQuery("#entry_list").jqGrid({
-		url: '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01 + '&entry_status_02=' + sts02 + '&entry_status_03=' + sts03 + '&entry_status_04=' + sts04 + '&entry_status_05=' + sts05,
+		url: req_url,
 		altRows: true,
 		datatype: "json",
 		colNames: ['請求区分','請求区分_1','未入金','報告書期限','report_submit_date','案件No', 'test_large_class_cd','試験大分類', '試験中分類','client_cd','クライアント名','client_division_cd','クライアント部署'
 				,'client_address_1','client_address_2','client_division_address_1','client_division_address_2'
 				,'client_tel_no','client_fax_no','client_division_tel_no','client_division_fax_no','client_person_id'
-				,'クライアント担当者','client_person_compellation','試験タイトル','問合せ日', '案件ステータス', '営業担当者'
+				,'クライアント担当者','client_person_compellation','代理店','試験タイトル','問合せ日', '案件ステータス', '営業担当者'
 				,'受注日','仮受注チェック','受託区分','試験担当者','消費税率','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter,searchoptions:{sopt:["eq","ne"]}},
@@ -282,6 +298,7 @@ entryList.createGrid = function () {
 			{ name: 'client_person_id', index: '', hidden:true },
 			{ name: 'client_person_name', index: 'client_person_name', width: 200, align: "center" , hidden:true},
 			{ name: 'client_person_compellation', index: 'client_person_compellation', hidden:true},
+      { name: 'agent_name_1', index: 'agent_name_1', width: 160, align: "center" ,sortable:true},
 			{ name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
 			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
 			{ name: 'entry_status', index: 'entry_status', width: 100 ,align: "center" ,formatter: entryList.statusFormatter,searchoptions:{sopt:["eq","ne"]}},
@@ -916,4 +933,47 @@ entryList.refreshEntryGridAfter = function() {
 	$("#entry_billing").css("display","none");
 	$("#edit_entry").css("display","none");
 	$("#entry_memo_ref").text("");
+};
+// 試験大分類リストの取得リクエスト
+entryList.getLargeItemList = function() {
+	$.ajax("/large_item_list_get" , {
+		type: 'GET',
+		dataType: 'json',
+		contentType : 'application/json',
+		success: entryList.onGetLargeItemList
+		});
+};
+// 試験大分類リストの取得リクエストレスポンス
+entryList.onGetLargeItemList = function(large_item_list) {
+  $("#largeItem_check").empty();
+  entryList.large_item_list = large_item_list;
+	$.each(large_item_list.rows,function() {
+    // 案件リストの絞り込み用にチェックボックスを追加する
+		$("#largeItem_check").append($("<label class='search_option_check'><input type='checkbox' class='search_option_check' value="
+        + this.item_cd + " id='largeItem_check_" + this.item_cd +"'>" + this.item_name + "</label>"));
+        // 追加した要素の変更イベント登録
+        $("#largeItem_check_" + this.item_cd).bind('change', entryList.changeEntryOption);
+	});
+  //entryList.largeItem_check_all();
+  entryList.createGrid();						// 案件リスト
+
+};
+// 案件リストの絞り込み用チェックボックスを全部選択状態にする
+entryList.largeItem_check_all = function() {
+  $.each(entryList.large_item_list.rows,function() {
+		$("#largeItem_check_" + this.item_cd).prop('checked', true);
+	});
+
+};
+// 案件リストの絞り込み用チェックボックスの選択状態を取得する
+entryList.getLargeItem_check = function() {
+  var items=[];
+  if (entryList.large_item_list != null) {
+    $.each(entryList.large_item_list.rows,function() {
+      var id = "largeItem_check_" + this.item_cd;
+      var ck = ($("#" + id).prop("checked")) ? '1':'0';
+      items.push({'item_cd':this.item_cd,'value':ck});
+  	});
+  }
+  return items;
 };

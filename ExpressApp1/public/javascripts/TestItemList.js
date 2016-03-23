@@ -412,7 +412,7 @@ test_itemList.inputCheck = function () {
 		return false;
 	} else {
 		return true;
-	
+
 	}
 
 };
