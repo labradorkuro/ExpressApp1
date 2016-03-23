@@ -332,7 +332,7 @@ entryList.createGrid = function () {
 entryList.createClientList = function(func) {
 	// 得意先リスト画面生成
 	clientList.func = func;	// 2016.01.29 t.tanaka
-	clientList.init(false,"1.0em");
+	clientList.init(true);
 	// 得意先選択ダイアログ用のタブ生成
 	clientList.createClientListTabs();
 	// 得意先,部署、担当者グリッドの生成
@@ -341,6 +341,10 @@ entryList.createClientList = function(func) {
 		clientList.createClientDivisionListGrid(i, "0");
 		clientList.createClientPersonListGrid(i, "0", "0");
 	}
+  // 編集用ダイアログの設定
+	clientList.createClientDialog('client','得意先情報',clientList.saveClient);
+	clientList.createClientDialog('client_division','部署情報',clientList.saveClientDivision);
+	clientList.createClientDialog('client_person','担当者情報',clientList.saveClientPerson);
 }
 
 // 得意先選択ダイアログの選択ボタン押下イベント処理
