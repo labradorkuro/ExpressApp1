@@ -117,6 +117,7 @@ clientList.createListGridElements = function(target, kind, no) {
 // 得意先リストのタブ生成と選択イベントの設定
 clientList.createClientListTabs = function () {
 	$("#tabs-client").tabs({
+		active:0,
 		activate: function (event, ui) {
 			var no = ui.newTab.index() + 1;
 			clientList.currentClientListTabNo = ui.newTab.index();

@@ -349,7 +349,7 @@ entryList.createClientList = function(func) {
 
 // 得意先選択ダイアログの選択ボタン押下イベント処理
 entryList.selectClient = function () {
-	$("#client_cd").val(clientList.currentClient.client_cd);
+	$("#entry_client_cd").val(clientList.currentClient.client_cd);
 	$("#client_name").val(clientList.currentClient.name_1);
 	$("#client_division_cd").val(clientList.currentClientDivision.division_cd);
 	$("#client_division_name").val(clientList.currentClientDivision.name);
@@ -756,7 +756,7 @@ entryList.setEntryForm = function (entry) {
 	$("#agent_person_name").val(entry.agent_person_name);		// 担当者名
 	$("#agent_person_memo").val(entry.agent_person_memo);		// 担当者メモ
 
-	$("#client_cd").val(entry.client_cd);				// 得意先コード
+	$("#entry_client_cd").val(entry.client_cd);				// 得意先コード
 	$("#client_name").val(entry.client_name_1);								// 得意先名1
 	$("#client_division_cd").val(entry.client_division_cd);		// 所属部署CD
 	$("#client_division_name").val(entry.client_division_name);	// 所属部署名

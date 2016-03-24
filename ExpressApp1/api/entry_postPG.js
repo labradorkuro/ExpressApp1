@@ -81,7 +81,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.entry_info(' 
+	var sql = 'INSERT INTO drc_sch.entry_info('
 			+ 'entry_no,'						// 案件No
 			+ 'quote_no,'						// 見積番号
 			+ 'inquiry_date,'					// 問合せ日
@@ -125,7 +125,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			+ 'created_id,'						// 作成者ID
 			+ 'updated,'						// 更新日
 			+ 'updated_id'						// 更新者ID
-			+ ') values (' 
+			+ ') values ('
 			+ '$1,'		// 案件No
 			+ '$2,'		// 見積番号
 			+ '$3,'		// 問合せ日
@@ -181,7 +181,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			entry.agent_cd,					// 代理店CD
 			entry.agent_division_cd,		// 代理店部署コード
 			entry.agent_person_id,			// 代理店担当者ID
-			entry.client_cd,				// 得意先コード
+			entry.entry_client_cd,				// 得意先コード
 			entry.client_division_cd,		// 得意先部署コード
 			entry.client_person_id,			// 得意先担当者ID
 			entry.test_large_class_cd,		// 試験大分類CD
@@ -230,7 +230,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 var updateEntryInfo = function(entry, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.entry_info SET ' 
+	var sql = 'UPDATE drc_sch.entry_info SET '
 			+ 'quote_no = $1,'						// 見積番号
 			+ 'inquiry_date = $2,'					// 問合せ日
 			+ 'entry_status = $3,'					// 案件ステータス
@@ -283,7 +283,7 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.agent_cd,					// 代理店CD
 			entry.agent_division_cd,		// 代理店部署コード
 			entry.agent_person_id,			// 代理店担当者ID
-			entry.client_cd,				// 得意先コード
+			entry.entry_client_cd,				// 得意先コード
 			entry.client_division_cd,		// 得意先部署コード
 			entry.client_person_id,			// 得意先担当者ID
 			entry.test_large_class_cd,		// 試験大分類CD
@@ -385,7 +385,7 @@ var entry_check = function (entry) {
 	entry.delete_check = Number(entry.delete_check);
 	entry.input_check = Number(entry.input_check);
 	entry.confirm_check = Number(entry.confirm_check);
-	
+
 	return entry;
 };
 
@@ -408,7 +408,7 @@ exports.quote_post = function (req, res) {
 // 見積情報の追加（見積番号が未取得の場合）
 var getQuoteNo = function(connection, quote, req, res) {
 	var sql = 'SELECT entry_no FROM drc_sch.quote_info WHERE entry_no = $1';
-	var rows = [];	
+	var rows = [];
 	// SQL実行（見積Noを決めるため）
 	var query = connection.query(sql, [quote.entry_no]);
 	query.on('row' , function (row) {
@@ -427,7 +427,7 @@ var getQuoteNo = function(connection, quote, req, res) {
 var getQuoteDetailNo = function (connection, quote, req, res) {
 	var count = 1;
 	var sql = 'SELECT quote_detail_count FROM drc_sch.quote_detail_number WHERE entry_no = $1';
-	var rows = [];	
+	var rows = [];
 	var query = connection.query(sql, [quote.entry_no]);
 	query.on('row' , function (row) {
 		rows.push(row);
@@ -447,7 +447,7 @@ var getQuoteDetailNo = function (connection, quote, req, res) {
 			query.on('error', function (error) {
 				console.log(sql + ' ' + error);
 			});
-			
+
 		} else {
 			// 明細登録カウントの更新
 			count = rows[0].quote_detail_count + 1;
@@ -473,7 +473,7 @@ var insertQuote = function (connection, quote, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.quote_info (' 
+	var sql = 'INSERT INTO drc_sch.quote_info ('
 		+ 'entry_no,'			// 案件番号
 		+ 'quote_no,'			// 見積番号
 		+ 'quote_date,'			// 見積日
@@ -488,7 +488,7 @@ var insertQuote = function (connection, quote, req, res) {
 		+ "created_id,"			// 作成者ID
 		+ "updated,"			// 更新日
 		+ "updated_id"			// 更新者ID
-		+ ") values (" 
+		+ ") values ("
 		+ "$1," // 案件No
 		+ "$2," // 見積番号
 		+ "$3," // 見積日
@@ -536,7 +536,7 @@ var insertQuote = function (connection, quote, req, res) {
 var updateQuote = function (connection,quote, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.quote_info SET ' 
+	var sql = 'UPDATE drc_sch.quote_info SET '
 		+ 'quote_date = $1,'			// 見積日
 		+ 'expire_date = $2,'			// 有効期限
 		+ 'monitors_num = $3,'			// 被験者数
@@ -652,7 +652,7 @@ var getSpecificInfo = function(connection,quote, req, res, no) {
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
 		});
-		
+
 		return true;
 	} else {
 		return false;
@@ -665,7 +665,7 @@ var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.quote_specific_info (' 
+	var sql = 'INSERT INTO drc_sch.quote_specific_info ('
 		+ 'entry_no,'				// 案件番号
 		+ 'quote_no,'				// 見積番号
 		+ 'quote_detail_no,'		// 明細番号
@@ -682,7 +682,7 @@ var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
 		+ "created_id,"			// 作成者ID
 		+ "updated,"			// 更新日
 		+ "updated_id"			// 更新者ID
-		+ ") values (" 
+		+ ") values ("
 		+ "$1," // 案件No
 		+ "$2," // 見積番号
 		+ "$3," // 明細番号
@@ -735,7 +735,7 @@ var insertQuoteSpecific = function (connection,quote, specific, req, res, no) {
 var updateQuoteSpecific = function (connection,quote, specific, req, res, no) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.quote_specific_info SET ' 
+	var sql = 'UPDATE drc_sch.quote_specific_info SET '
 		+ 'test_middle_class_cd = $1,'	// 試験中分類CD
 		+ 'test_middle_class_name = $2,'	// 試験中分類名称
 		+ 'unit = $3,'					// 単位
