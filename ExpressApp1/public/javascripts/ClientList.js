@@ -167,9 +167,9 @@ clientList.createClientListGrid = function (no) {
 		rowNum: 10,
 		rowList: [10],
 		pager: '#client_list_pager_' + no,
-		sortname: 'client_cd',
+		sortname: 'kana',
 		viewrecords: true,
-		sortorder: "desc",
+		sortorder: "asc",
 		caption: fname + "リスト",
 		onSelectRow: clientList.onSelectClientList
 	});
@@ -238,9 +238,9 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		rowNum: 5,
 		rowList: [5],
 		pager: '#client_division_list_pager_' + no,
-		sortname: 'division_cd',
+		sortname: 'kana',
 		viewrecords: true,
-		sortorder: "desc",
+		sortorder: "asc",
 		caption: "部署リスト",
 		onSelectRow: clientList.onSelectClientDivisionList
 	});
@@ -299,9 +299,9 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		rowNum: 5,
 		rowList: [5],
 		pager: '#client_person_list_pager_' + no,
-		sortname: 'person_id',
+		sortname: 'kana',
 		viewrecords: true,
-		sortorder: "desc",
+		sortorder: "asc",
 		caption: "担当者リスト",
 		onSelectRow: clientList.onSelectClientPersonList
 	});
@@ -693,7 +693,7 @@ clientList.clearClient = function () {
 clientList.clearDivision = function () {
 	var division = {};
 	division.client_cd = "";
-	division.division_cd = "";
+	division.division_cd = scheduleCommon.string_random();
 	division.name = "";
 	division.address_1 = "";
 	division.address_2 = "";
@@ -714,7 +714,7 @@ clientList.clearPerson = function () {
 	var person = {};
 	person.client_cd = "";
 	person.division = "";
-	person.person_id = "";
+	person.person_id = scheduleCommon.string_random();
 	person.name = "";
 	person.kana = "";
 	person.compellation = "";

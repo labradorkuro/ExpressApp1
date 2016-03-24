@@ -5,6 +5,19 @@ scheduleCommon.base_cd = [{ base_cd: "00", base_name: "共通" },{ base_cd: "01"
 scheduleCommon.entry_status = [{ entry_status: "01", status_name: "引合" },{ entry_status: "02", status_name: "見積" },{ entry_status: "03", status_name: "依頼" },{ entry_status: "04", status_name: "完了" },{ entry_status: "05", status_name: "失注" }];
 scheduleCommon.user_list = new Array();
 
+// ランダム文字列生成
+scheduleCommon.string_random = function() {
+	// 生成する文字列の長さ
+	var l = 8;
+	// 生成する文字列に含める文字セット
+	var c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	var cl = c.length;
+	var r = "";
+	for(var i=0; i<l; i++){
+	    r += c[Math.floor(Math.random()*cl)];
+	}
+	return r;
+}
 // 拠点コード
 scheduleCommon.getBase_cd = function (base_cd) {
 	for (var i in scheduleCommon.base_cd) {
@@ -90,7 +103,7 @@ scheduleCommon.getDivisionInfo = function () {
 	xhr.responseType = 'json';
 	xhr.onload = scheduleCommon.onloadDivisionReq;
 	xhr.send();
-	
+
 };
 scheduleCommon.onloadDivisionReq = function (e) {
 	if (this.status == 200) {
@@ -182,7 +195,7 @@ scheduleCommon.getTimeString = function (date, format_str) {
 };
 scheduleCommon.format = function (fmt, a) {
 	var rep_fn = undefined;
-	
+
 	if (typeof a == "object") {
 		rep_fn = function (m, k) { return a[ k ]; }
 	}
@@ -190,7 +203,7 @@ scheduleCommon.format = function (fmt, a) {
 		var args = arguments;
 		rep_fn = function (m, k) { return args[ parseInt(k) + 1 ]; }
 	}
-	
+
 	return fmt.replace(/\{(\w+)\}/g, rep_fn);
 };
 //
@@ -316,7 +329,7 @@ scheduleCommon.numFormatter = function(num,keta) {
 scheduleCommon.isNumber = function(x) {
 	if( typeof(x) != 'number' && typeof(x) != 'string' )
 		return false;
-	else 
+	else
 		return (x == parseFloat(x) && isFinite(x));
 };
 scheduleCommon.addYenMark = function(str) {
