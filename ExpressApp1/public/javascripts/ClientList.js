@@ -215,7 +215,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		colNames: ['クライアントCD','部署コード','部署名', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','請求締日','支払日','休日対応','メモ','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'client_cd', index: 'client_cd', hidden: true },
-			{ name: 'division_cd', index: 'division_cd', width:80, align: 'left' },
+			{ name: 'division_cd', index: 'division_cd', width:80, align: 'left' ,hidden:true},
 			{ name: 'name', index: 'name', width: 200 , align: "left" },
 			{ name: 'kana', index: 'kana', width: 200 , align: "left" },
 			{ name: 'zipcode', index: 'zipcode', width: 80 , align: "center" },
@@ -282,7 +282,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		colModel: [
 			{ name: 'client_cd', index: 'client_cd', hidden: true },
 			{ name: 'division_cd', index: 'division_cd', hidden: true },
-			{ name: 'person_id', index: 'person_id', width: 100 , align: "left" },
+			{ name: 'person_id', index: 'person_id', width: 100 , align: "left" ,hidden:true},
 			{ name: 'name', index: 'name', width: 100 , align: "left" },
 			{ name: 'kana', index: 'kana', width: 100 , align: "left" },
 			{ name: 'compellation', index: 'compellation', width: 80 , align: "left" },
@@ -325,7 +325,7 @@ clientList.createClientDialog = function (kind, title, saveFunc) {
 	$('#' + kind + '_dialog').dialog({
 		autoOpen: false,
 		width: 800,
-		height: 500,
+		height: 460,
 		title: title,
 		closeOnEscape: false,
 		modal: true,

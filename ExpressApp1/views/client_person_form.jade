@@ -13,16 +13,14 @@ form#clientPersonForm(method="post",action="javascript:return false;")
 				input#person_division_cd(type="hidden" name="person_division_cd")
 				input#person_division_name(type="text" name="person_division_name")
 		tr
-			td.form_title 担当者ID
-			td
-				input#person_id(type="text" name="person_id" maxlength="32" placeholder="担当者ID" required="true")
 			td.form_title 担当者名
 			td
+				input#person_id(type="hidden" name="person_id" maxlength="32" placeholder="担当者ID" required="true")
 				input#person_name(type="text" name="person_name" maxlength="128" placeholder="担当者名" required="true")
-		tr
 			td.form_title カナ
 			td
 				input#person_kana(type="text" name="person_kana" maxlength="512" placeholder="カナ" required="true")
+		tr
 			td.form_title 敬称
 			td
 				input#compellation(type="text" name="compellation" maxlength="8" placeholder="敬称")

@@ -9,12 +9,9 @@ form#clientDivisionForm(method="post",name="clientDivisionForm",action="javascri
 				input#division_client_cd(type="hidden" name="division_client_cd" )
 				input#division_client_name(type="text" name="division_client_name" readonly=true)
 		tr
-			td.form_title 部署コード
-			td
-				input#division_cd(type="text" name="division_cd" placeholder="部署コード" maxlength="8" required="true")
-		tr
 			td.form_title 部署名
 			td
+				input#division_cd(type="hidden" name="division_cd" placeholder="部署コード" maxlength="8" required="true")
 				input#division_name(type="text" name="division_name" maxlength="256" placeholder="部署名" required="true")
 			td.form_title カナ
 			td
