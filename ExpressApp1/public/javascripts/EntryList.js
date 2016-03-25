@@ -332,7 +332,8 @@ entryList.createGrid = function () {
 entryList.createClientList = function(func) {
 	// 得意先リスト画面生成
 	clientList.func = func;	// 2016.01.29 t.tanaka
-	clientList.init(true);
+	//clientList.init(true);
+  clientList.checkAuth();
 	// 得意先選択ダイアログ用のタブ生成
 	clientList.createClientListTabs();
 	// 得意先,部署、担当者グリッドの生成
