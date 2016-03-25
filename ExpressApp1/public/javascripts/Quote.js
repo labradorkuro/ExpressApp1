@@ -235,7 +235,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		$("#billing_company_name_1").val(entry.client_name_1);
 		$("#billing_company_name_2").val(entry.client_name_2);
 		$("#billing_division").val(entry.client_division_name);
-		if (entry.client_person_name != "") {
+		if ((entry.client_person_name != null) && (entry.client_person_name != "") ){
 			$("#billing_person").val(entry.client_person_name + " " + entry.client_person_compellation);
 		}
 	} else {
@@ -243,7 +243,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		$("#billing_company_name_1").val(entry.agent_name_1);
 		$("#billing_company_name_2").val(entry.agent_name_2);
 		$("#billing_division").val(entry.agent_division_name);
-		if (entry.agent_person_name != "") {
+		if ((entry.client_person_name != null) && (entry.client_person_name != "") ) {
 			$("#billing_person").val(entry.agent_person_name + " " + entry.agent_person_compellation);
 		}
 	}
