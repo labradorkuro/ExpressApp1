@@ -13,6 +13,10 @@ exports.itakusaki_division_get = function (req, res) {
 		client_division_get_list(req, res);
 	}
 };
+// 部署コード、部署名のリストを取得する
+exports.itakusaki_division_list = function (req, res) {
+	division_list(req, res);
+};
 exports.itakusaki_person_get = function (req, res) {
 	if ((req.params.person_id != undefined) && (req.params.person_id != '')) {
 		client_person_get_detail(req, res);
@@ -97,6 +101,33 @@ var client_division_get_list = function (req, res) {
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return client_get_list_for_grid(res, sql_count, sql, [req.query.client_cd,req.query.delete_check], pg_params);
 };
+
+//
+// 部署コード、部署名のリストを取得する
+var division_list = function (req, res) {
+	var division_list = [];
+	var sql = 'SELECT '
+		+ 'division_cd,'
+		+ 'name'
+		+ ' FROM drc_sch.itakusaki_division_list WHERE client_cd = $1 AND delete_check = $2 ORDER BY kana';
+  // SQL実行
+	pg.connect(connectionString, function (err, connection) {
+			// データを取得するためのクエリーを実行する
+			connection.query(sql, [req.query.client_cd,req.query.delete_check], function (err, results) {
+				if (err) {
+					console.log(err);
+					connection.end();
+					res.send(division_list);
+				} else {
+					division_list = results.rows;
+					connection.end();
+					res.send(division_list);
+				}
+			});
+		});
+};
+
+
 // 担当者情報リストの取得
 var client_person_get_list = function (req, res) {
 	var pg_params = getPagingParams(req);

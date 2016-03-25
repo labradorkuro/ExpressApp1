@@ -175,6 +175,7 @@ app.get('/quote_form', quote_form.form);
 app.post('/print_pdf/:entry_no?', print_pdf.print_pdf);
 app.get('/client_get/:no?', client_get.client_get);
 app.get('/client_division_get', client_get.client_division_get);
+app.get('/client_division_list', client_get.client_division_list);
 app.get('/client_person_get', client_get.client_person_get);
 app.post('/client_post', upload.array(), client_post.client_post);
 app.post('/client_division_post', upload.array(), client_post.client_division_post);
@@ -182,6 +183,7 @@ app.post('/client_person_post', upload.array(), client_post.client_person_post);
 
 app.get('/itakusaki_get/:no?', itakusaki_get.itakusaki_get);                  // 2016.01.29 委託先マスタ
 app.get('/itakusaki_division_get', itakusaki_get.itakusaki_division_get);     // 2016.01.29 委託先マスタ
+app.get('/itakusaki_division_list', itakusaki_get.itakusaki_division_list);
 app.get('/itakusaki_person_get', itakusaki_get.itakusaki_person_get);         // 2016.01.29 委託先マスタ
 app.post('/itakusaki_post', upload.array(),itakusaki_post.itakusaki_post);                      // 2016.01.29 委託先マスタ
 app.post('/itakusaki_division_post', upload.array(),itakusaki_post.itakusaki_division_post);    // 2016.01.29 委託先マスタ

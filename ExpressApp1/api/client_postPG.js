@@ -60,10 +60,10 @@ exports.client_person_post = function (req, res) {
 	if (person.person_client_cd === "" || person.person_division_cd === '' || person.person_id === '') {
 		res.send(person);
 	} else {
-		var sql = "SELECT client_cd, division_cd, person_id FROM drc_sch.client_person_list WHERE client_cd = $1 AND division_cd = $2 AND person_id = $3";
+		var sql = "SELECT client_cd, division_cd, person_id FROM drc_sch.client_person_list WHERE client_cd = $1 AND person_id = $2";
 		pg.connect(connectionString, function (err, connection) {
 			// SQL実行
-			connection.query(sql, [person.person_client_cd, person.person_division_cd, person.person_id], function (err, results) {
+			connection.query(sql, [person.person_client_cd, person.person_id], function (err, results) {
 				if (err) {
 					console.log(err);
 				} else {
@@ -99,33 +99,33 @@ var insertClient = function (connection, client, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.client_list(' 
-		+ 'client_cd,' 
-		+ 'name_1,' 
-		+ 'name_2,' 
+	var sql = 'INSERT INTO drc_sch.client_list('
+		+ 'client_cd,'
+		+ 'name_1,'
+		+ 'name_2,'
 		+ "kana," // カナ
-		+ "email," // メールアドレス 
+		+ "email," // メールアドレス
 		+ "zipcode," // 郵便番号
 		+ "address_1," // 住所１
 		+ "address_2," // 住所２
 		+ "tel_no," // 電話番号
 		+ "fax_no," // FAX番号
-		+ "memo," 
-		+ 'delete_check,' 
-		+ "created," 
-		+ 'created_id,' 
-		+ "updated," 
-		+ 'updated_id' 
-			+ ') values (' 
+		+ "memo,"
+		+ 'delete_check,'
+		+ "created,"
+		+ 'created_id,'
+		+ "updated,"
+		+ 'updated_id'
+			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)'
 			;
 	// SQL実行
 	var query = connection.query(sql, [
-		client.client_cd,	// クライアントCD	
+		client.client_cd,	// クライアントCD
 		client.name_1,		// クライアント名１
 		client.name_2,		// クライアント名２
 		client.kana,		// カナ
-		client.email,		// メールアドレス 
+		client.email,		// メールアドレス
 		client.zipcode,		// 郵便番号
 		client.address_1,	// 住所１
 		client.address_2,	// 住所２
@@ -151,35 +151,35 @@ var insertClient = function (connection, client, req, res) {
 var updateClient = function (connection, client, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.client_list SET ' 
-		+ 'client_cd = $1,' 
-		+ 'name_1 = $2,' 
-		+ 'name_2 = $3,' 
+	var sql = 'UPDATE drc_sch.client_list SET '
+		+ 'client_cd = $1,'
+		+ 'name_1 = $2,'
+		+ 'name_2 = $3,'
 		+ "kana = $4,"		// カナ
-		+ "email = $5,"		// メールアドレス 
+		+ "email = $5,"		// メールアドレス
 		+ "zipcode = $6,"	// 郵便番号
 		+ "address_1 = $7," // 住所１
 		+ "address_2 = $8," // 住所２
 		+ "tel_no = $9,"	// 電話番号
 		+ "fax_no = $10,"	// FAX番号
-		+ "memo = $11," 
+		+ "memo = $11,"
 		+ 'delete_check = $12,' // 削除フラグ
 		+ 'updated_id = $13,' // 更新者ID
-		+ 'updated = $14' 
+		+ 'updated = $14'
 		+ " WHERE client_cd = $15";
 	// SQL実行
 	var query = connection.query(sql, [
 		client.client_cd,
 		client.name_1,
-		client.name_2, 
+		client.name_2,
 		client.kana,		// カナ
-		client.email,		// メールアドレス 
+		client.email,		// メールアドレス
 		client.zipcode,		// 郵便番号
 		client.address_1,	// 住所１
 		client.address_2,	// 住所２
 		client.tel_no,		// 電話番号
 		client.fax_no,		// FAX番号
-		client.memo, 
+		client.memo,
 		client.delete_check,
 		updated_id,			// 更新者ID
 		updated,
@@ -201,12 +201,12 @@ var insertClientDivision = function (connection, division, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.client_division_list(' 
+	var sql = 'INSERT INTO drc_sch.client_division_list('
 		+ 'client_cd,'			// クライアントコード
 		+ 'division_cd,'		// 部署コード
 		+ 'name,'				// 部署名
 		+ "kana,"				// カナ
-		+ "email,"				// メールアドレス 
+		+ "email,"				// メールアドレス
 		+ "zipcode,"			// 郵便番号
 		+ "address_1,"			// 住所１
 		+ "address_2,"			// 住所２
@@ -216,21 +216,21 @@ var insertClientDivision = function (connection, division, req, res) {
 		+ "payment_date,"		// 支払日
 		+ "holiday_support,"	// 休日対応
 		+ "memo,"				// メモ
-		+ 'delete_check,' 
-		+ "created," 
-		+ 'created_id,' 
-		+ "updated," 
-		+ 'updated_id' 
-			+ ') values (' 
+		+ 'delete_check,'
+		+ "created,"
+		+ 'created_id,'
+		+ "updated,"
+		+ 'updated_id'
+			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)'
 			;
 	// SQL実行
 	var query = connection.query(sql, [
-		division.division_client_cd,// クライアントCD	
+		division.division_client_cd,// クライアントCD
 		division.division_cd,		// 部署CD
 		division.division_name,		// 部署名
 		division.division_kana,		// カナ
-		division.division_email,	// メールアドレス 
+		division.division_email,	// メールアドレス
 		division.division_zipcode,	// 郵便番号
 		division.division_address_1,// 住所１
 		division.division_address_2,// 住所２
@@ -259,12 +259,12 @@ var insertClientDivision = function (connection, division, req, res) {
 var updateClientDivision = function (connection, division, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.client_division_list SET ' 
+	var sql = 'UPDATE drc_sch.client_division_list SET '
 		+ 'client_cd = $1,'		// クライアントCD
 		+ 'division_cd = $2,'	// 部署CD
 		+ 'name = $3,'			// 部署名
 		+ "kana = $4,"			// カナ
-		+ "email = $5,"			// メールアドレス 
+		+ "email = $5,"			// メールアドレス
 		+ "zipcode = $6,"		// 郵便番号
 		+ "address_1 = $7,"		// 住所１
 		+ "address_2 = $8,"		// 住所２
@@ -280,11 +280,11 @@ var updateClientDivision = function (connection, division, req, res) {
 		+ " WHERE client_cd = $18 AND division_cd = $19";
 	// SQL実行
 	var query = connection.query(sql, [
-		division.division_client_cd,// クライアントCD	
+		division.division_client_cd,// クライアントCD
 		division.division_cd,		// 部署CD
 		division.division_name,		// 部署名
 		division.division_kana,		// カナ
-		division.division_email,	// メールアドレス 
+		division.division_email,	// メールアドレス
 		division.division_zipcode,	// 郵便番号
 		division.division_address_1,// 住所１
 		division.division_address_2,// 住所２
@@ -316,7 +316,7 @@ var insertClientPerson = function (connection, person, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.client_person_list(' 
+	var sql = 'INSERT INTO drc_sch.client_person_list('
 		+ 'client_cd,'			// クライアントコード
 		+ 'division_cd,'		// 部署コード
 		+ 'person_id,'			// 担当者ID
@@ -324,26 +324,26 @@ var insertClientPerson = function (connection, person, req, res) {
 		+ "kana,"				// カナ
 		+ "compellation,"		// 敬称
 		+ "title,"				// 役職名
-		+ "email,"				// メールアドレス 
+		+ "email,"				// メールアドレス
 		+ "memo,"				// メモ
-		+ 'delete_check,' 
-		+ "created," 
-		+ 'created_id,' 
-		+ "updated," 
-		+ 'updated_id' 
-			+ ') values (' 
+		+ 'delete_check,'
+		+ "created,"
+		+ 'created_id,'
+		+ "updated,"
+		+ 'updated_id'
+			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)'
 			;
 	// SQL実行
 	var query = connection.query(sql, [
-		person.person_client_cd,	// クライアントCD	
+		person.person_client_cd,	// クライアントCD
 		person.person_division_cd,	// 部署CD
 		person.person_id,			// 担当者ID
 		person.person_name,			// 担当者名
 		person.person_kana,			// カナ
 		person.compellation,		// 敬称
 		person.title,				// 役職名
-		person.person_email,		// メールアドレス 
+		person.person_email,		// メールアドレス
 		person.person_memo,			// メモ
 		person.person_delete_check,	// 削除フラグ
 		created,					// 作成日
@@ -364,7 +364,7 @@ var insertClientPerson = function (connection, person, req, res) {
 var updateClientPerson = function (connection, person, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.client_person_list SET ' 
+	var sql = 'UPDATE drc_sch.client_person_list SET '
 		+ 'client_cd = $1,'		// クライアントCD
 		+ 'division_cd = $2,'	// 部署CD
 		+ 'person_id = $3,'		// 担当者CD
@@ -372,28 +372,27 @@ var updateClientPerson = function (connection, person, req, res) {
 		+ "kana = $5,"			// カナ
 		+ "compellation = $6,"	// 敬称
 		+ "title = $7,"			// 役職名
-		+ "email = $8,"			// メールアドレス 
+		+ "email = $8,"			// メールアドレス
 		+ "memo = $9,"			// メモ
 		+ 'delete_check = $10,' // 削除フラグ
 		+ 'updated_id = $11,'	// 更新者ID
 		+ 'updated = $12'		// 更新日
-		+ " WHERE client_cd = $13 AND division_cd = $14 AND person_id = $15";
+		+ " WHERE client_cd = $13 AND person_id = $14";
 	// SQL実行
 	var query = connection.query(sql, [
-		person.person_client_cd,	// クライアントCD	
+		person.person_client_cd,	// クライアントCD
 		person.person_division_cd,	// 部署CD
 		person.person_id,			// 担当者ID
 		person.person_name,				// 担当者名
 		person.person_kana,				// カナ
 		person.compellation,		// 敬称
 		person.title,				// 役職名
-		person.person_email,				// メールアドレス 
+		person.person_email,				// メールアドレス
 		person.person_memo,				// メモ
 		person.person_delete_check,		// 削除フラグ
 		updated_id,					// 更新者ID
 		updated,					// 更新日
 		person.person_client_cd,	// クライアントCD
-		person.person_division_cd,	// 部署CD
 		person.person_id
 	], function (err, results) {
 		connection.end();
@@ -405,4 +404,3 @@ var updateClientPerson = function (connection, person, req, res) {
 		}
 	});
 };
-

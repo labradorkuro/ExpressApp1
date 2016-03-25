@@ -405,10 +405,39 @@ clientList.openClientPersonDialog = function (event) {
 		person.division_cd = clientList.currentClientDivision.division_cd;
 		person.division_name = clientList.currentClientDivision.name;
 		clientList.setClientPersonForm(person);
-
-		$("#client_person_dialog").dialog("open");
+		// 部署リストの取得リクエスト
+		clientList.getDivisionList(clientList.currentClientDivision.client_cd);
+		//$("#client_person_dialog").dialog("open");
 	}
 };
+// 部署コード、部署名リストの取得リクエスト
+clientList.getDivisionList = function(client_cd) {
+	var url = "";
+	if (clientList.func === 0) {
+		url = "/client_division_list";
+	} else {
+		url = "/itakusaki_division_list";
+	}
+	$.ajax(url + "?client_cd=" + client_cd + "&delete_check=0" , {
+		type: 'GET',
+		dataType: 'json',
+		contentType : 'application/json',
+		success: clientList.onGetDivisionList
+		});
+};
+// 部署コード、部署名リストの取得リクエスト応答
+clientList.onGetDivisionList = function(division_list) {
+	$("#person_division_cd").empty();
+	$.each(division_list,function() {
+    // 選択リストに部署リストを追加する
+		$("#person_division_cd").append($("<option value='" + this.division_cd + "'>" + this.name +  "</option>"));
+	});
+	var division_cd = $("#person_division_hidden").val();
+	$("#person_division_cd").val(division_cd);
+	$("#client_person_dialog").dialog("open");
+
+};
+
 // formデータの取得
 clientList.getFormData = function (form_id, delete_check_id) {
 	clientList.checkCheckbox(delete_check_id);
@@ -767,8 +796,8 @@ clientList.setClientPersonForm = function (person) {
 
 	$("#person_client_cd").val(person.client_cd);
 	$("#person_client_name").val(person.client_name);
-	$("#person_division_cd").val(person.division_cd);
-	$("#person_division_name").val(person.division_name);
+	$("#person_division_hidden").val(person.division_cd);
+	//$("#person_division_name").val(person.division_name);
 	$("#person_id").val(person.person_id);
 	$("#person_name").val(person.name);
 	$("#person_kana").val(person.kana);

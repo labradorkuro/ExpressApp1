@@ -60,10 +60,10 @@ exports.itakusaki_person_post = function (req, res) {
 	if (person.person_client_cd === "" || person.person_division_cd === '' || person.person_id === '') {
 		res.send(person);
 	} else {
-		var sql = "SELECT client_cd, division_cd, person_id FROM drc_sch.itakusaki_person_list WHERE client_cd = $1 AND division_cd = $2 AND person_id = $3";
+		var sql = "SELECT client_cd, division_cd, person_id FROM drc_sch.itakusaki_person_list WHERE client_cd = $1 AND person_id = $2";
 		pg.connect(connectionString, function (err, connection) {
 			// SQL実行
-			connection.query(sql, [person.person_client_cd, person.person_division_cd, person.person_id], function (err, results) {
+			connection.query(sql, [person.person_client_cd, person.person_id], function (err, results) {
 				if (err) {
 					console.log(err);
 				} else {
@@ -217,7 +217,7 @@ var insertClientDivision = function (connection, division, req, res) {
 		+ "holiday_support,"	// 休日対応
 		+ "memo,"				// メモ
 		+ 'delete_check,'
-		+ "created," 
+		+ "created,"
 		+ 'created_id,'
 		+ "updated,"
 		+ 'updated_id'
@@ -377,7 +377,7 @@ var updateClientPerson = function (connection, person, req, res) {
 		+ 'delete_check = $10,' // 削除フラグ
 		+ 'updated_id = $11,'	// 更新者ID
 		+ 'updated = $12'		// 更新日
-		+ " WHERE client_cd = $13 AND division_cd = $14 AND person_id = $15";
+		+ " WHERE client_cd = $13 AND person_id = $14";
 	// SQL実行
 	var query = connection.query(sql, [
 		person.person_client_cd,	// クライアントCD
@@ -393,7 +393,6 @@ var updateClientPerson = function (connection, person, req, res) {
 		updated_id,					// 更新者ID
 		updated,					// 更新日
 		person.person_client_cd,	// クライアントCD
-		person.person_division_cd,	// 部署CD
 		person.person_id
 	], function (err, results) {
 		connection.end();

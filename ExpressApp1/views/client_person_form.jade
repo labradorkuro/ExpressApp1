@@ -10,8 +10,8 @@ form#clientPersonForm(method="post",action="javascript:return false;")
 				input#person_client_name(type="text" name="person_client_name" readonly=true)
 			td.form_title 所属部署
 			td
-				input#person_division_cd(type="hidden" name="person_division_cd")
-				input#person_division_name(type="text" name="person_division_name")
+				input#person_division_hidden(type="hidden")
+				select#person_division_cd(name="person_division_cd")
 		tr
 			td.form_title 担当者名
 			td
