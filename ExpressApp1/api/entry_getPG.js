@@ -4,7 +4,6 @@
 var tools = require('../tools/tool');
 // 案件基本データのGET
 exports.entry_get = function (req, res) {
-	console.log(req.query);
 	if (req.query.searchField != undefined) {
 		// 虫メガネの検索ダイアログからの検索実行
 		entry_get_list_searchField(req, res);
@@ -223,7 +222,6 @@ var entry_get_list = function (req, res) {
 	sql	+= ' entry_info.delete_check = $1  ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	console.log(sql);
 	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
 };
 

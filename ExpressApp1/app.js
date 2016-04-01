@@ -142,6 +142,7 @@ app.get('/auth_settings',auth_settings.list);
 app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
 app.post('/entry_post', upload.array(), entry_post.entry_post);
+app.post('/entry_copy', upload.array(), entry_post.entry_copy);
 app.post('/quote_post', upload.array(), entry_post.quote_post);
 app.post('/workitem_post', upload.array(), workitem_post.workitem_post);
 app.post('/template_post', upload.array(), template_post.template_post);

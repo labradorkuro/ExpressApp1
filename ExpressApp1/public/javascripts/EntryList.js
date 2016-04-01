@@ -20,6 +20,7 @@ $(function ()　{
 	entryList.createEntryDialog();				// 案件入力用
 	quoteInfo.createQuoteFormDialog();			// 見積書発行用
 	entryList.createClientListDialog();			// 得意先選択用
+  entryList.createClientList(0);
 	test_itemList.createTestItemSelectDialog();	// 試験分類選択用
 	billingList.createBillingListDialog();		// 請求情報リスト用
 	billingList.createBillingFormDialog();		// 請求情報編集選択用
@@ -191,23 +192,32 @@ entryList.createEntryDialog = function () {
 		closeOnEscape: false,
 		modal: true,
         buttons:[
-            {
-                text: '追加',
-                class:'btn-entry_add',
-                click: function() {
-					if (entryList.saveEntry()) {
-						$(this).dialog('close');
-					}
-                }
-            },
+          {
+              text: '複写して追加',
+              class:'btn-entry_copy',
+              click: function() {
+                  if (entryList.copyEntry()) {
+                    $(this).dialog('close');
+                  }
+              }
+          },
+          {
+              text: '追加',
+              class:'btn-entry_add',
+              click: function() {
+                  if (entryList.saveEntry()) {
+                    $(this).dialog('close');
+                  }
+              }
+          },
             {
                 text: '更新',
                 class:'btn-entry_update',
                 click: function() {
                     //ボタンを押したときの処理
-					if (entryList.saveEntry()) {
-						$(this).dialog('close');
-					}
+          					if (entryList.saveEntry()) {
+          						$(this).dialog('close');
+          					}
                 }
             },
             {
@@ -468,9 +478,11 @@ entryList.openEntryDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		// 権限チェック
 		if (entryList.auth_entry_edit == 2) {
-			$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+      $(".ui-dialog-buttonpane button:contains('複写して追加')").button("enable");
+      $(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 		} else {
 			$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+      $(".ui-dialog-buttonpane button:contains('複写して追加')").button("disable");
 		}
 	} else if ($(event.target).attr('id') == 'add_entry') {
 		// 追加ボタンの処理
@@ -481,13 +493,15 @@ entryList.openEntryDialog = function (event) {
 			$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		}
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+    $(".ui-dialog-buttonpane button:contains('複写して追加')").button("disable");
 	} else if ($(event.target).attr('id') == 'ref_entry') {
 		// 請求情報画面からの参照
 		$("#entry_dialog").dialog({modal:false});	// 参照の時はモードレス
 		var no = entryList.getSelectEntry();
 		entryList.requestEntryData(no);
 		$(".btn-entry_add").button("disable");
-		$(".btn-entry_update").button("disable");
+    $(".btn-entry_update").button("disable");
+    $(".btn-entry_copy").button("disable");
 	}
 
 	$("#entry_dialog").dialog("open");
@@ -620,6 +634,23 @@ entryList.saveEntry = function () {
 		xhr.send(form);
 		return true;
 };
+// 複写して追加
+entryList.copyEntry = function () {
+		// 入力値チェック
+		if (!entryList.entryInputCheck()) {
+			return false;
+		}
+		// checkboxのチェック状態確認と値設定
+		entryList.checkCheckbox();
+		// formデータの取得
+		var form = entryList.getFormData();
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/entry_copy', true);
+		xhr.responseType = 'json';
+		xhr.onload = entryList.onloadEntryCopy;
+		xhr.send(form);
+		return true;
+};
 
 // checkboxのチェック状態確認と値設定
 entryList.checkCheckbox = function () {
@@ -698,6 +729,13 @@ entryList.getFormData = function () {
 
 // 案件データ保存後のコールバック
 entryList.onloadEntrySave = function (e) {
+	if (this.status == 200) {
+		var entry = this.response;
+		entryList.reloadGrid();
+	}
+};
+// 案件データ複写して追加後のコールバック
+entryList.onloadEntryCopy = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
 		entryList.reloadGrid();
