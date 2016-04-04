@@ -324,7 +324,7 @@ entryList.createGrid = function () {
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
 			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: scheduleCommon.personFormatter  },
 		],
-		height:"230px",
+		height:240,
 		//width:960,
 		shrinkToFit:false,
 		rowNum: 10,
@@ -334,11 +334,17 @@ entryList.createGrid = function () {
 		viewrecords: true,
 		sortorder: "desc",
 		caption: "案件リスト",
-		onSelectRow:entryList.onSelectEntry
+		onSelectRow:entryList.onSelectEntry,
+    loadComplete:entryList.loadCompleteEntryList
 	});
 	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false});
 	scheduleCommon.changeFontSize();
 };
+// loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
+entryList.loadCompleteEntryList = function(data) {
+  var rowNum = Number($("#entry_list").getGridParam('rowNum'));
+  $("#entry_list").setGridHeight(rowNum * 24);
+}
 entryList.createClientList = function(func) {
 	// 得意先リスト画面生成
 	clientList.func = func;	// 2016.01.29 t.tanaka
