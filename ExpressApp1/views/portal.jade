@@ -24,7 +24,9 @@ block content
 	div.main_menu
 		div.main_menu_row#entry_menu
 			div.menu_title(style="background-color:MediumSeaGreen") 営業管理
-			a.menu_button_c(href="entry_list") 案件リスト
+			a.menu_button_b(href="entry_list") 案件リスト
+			a.menu_button_b(href="uriage_list") 売上集計
+			a.menu_button_b(href="pay_planning") 入金予測
 		div.main_menu_row_b
 			div.menu_title(style="background-color:darkorange") 案件スケジュール（ガントチャート）
 			a.menu_button_a(href="schedule#tabs-1") SPF・UVAPF測定試験
@@ -44,6 +46,7 @@ block content
 		div.main_menu_row_c#admin_menu
 			div.menu_title 管理メニュー
 			a.menu_button_a#admin_client_menu(href="client_list") 顧客管理
+			a.menu_button_a#admin_shiharaibi_menu(href="shiharaibi_list") 支払日マスタ
 			a.menu_button_a#admin_itakusaki_menu(href="itakusaki_list") 委託先管理
 			a.menu_button_a#admin_division_menu(href="division_list") 事業部マスタ
 			a.menu_button_a#admin_user_menu(href="user_list") 社員マスタ

@@ -675,10 +675,10 @@ a.menu_button_a:hover{
 a.menu_button_b {
     float:left;
     top:0px;
-    font-size:1.5em;
+    font-size:1.2em;
     display:block;
-    width:120px;
-    height:100px;
+    width:270px;
+    height:60px;
     padding-top:20px;
     margin-top:20px;
     margin-left:20px;

@@ -38,6 +38,8 @@ var quote_form = require('./routes/quote_form');
 var test_item_list = require('./routes/test_item_list');
 var configuration = require('./routes/configuration');
 var auth_settings = require('./routes/auth_settings');
+var uriage_list = require('./routes/uriage_list')
+var pay_planning = require('./routes/pay_plan_list')
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -65,6 +67,7 @@ var config_post = require('./api/configuration_postPG');
 var config_get = require('./api/configuration_getPG');
 var auth_settings_post = require('./api/auth_settings_postPG');
 var auth_settings_get = require('./api/auth_settings_getPG');
+var uriage_summary = require('./api/uriage_getPG');
 //mysql = require('mysql');
 pg = require('pg');
 var sequelize = require('./libs/dbconn')(config);
@@ -201,6 +204,11 @@ app.get('/config_get/:id', config_get.configuration_get);
 app.post('/auth_post', upload.array(), auth_settings_post.auth_settings_post);
 app.get('/auth_get_all', auth_settings_get.auth_settings_get_all);
 app.get('/auth_get/:pno', auth_settings_get.auth_settings_get);
+
+app.get('/uriage_list', uriage_list.list);
+app.get('/pay_planning', pay_planning.list);
+
+app.get('/uriage_summary',uriage_summary.list);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',
