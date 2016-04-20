@@ -1,0 +1,42 @@
+doctype html
+html(lang="ja")
+	head
+		meta(charset="utf-8")
+		title= title
+		link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+		script(src="javascripts/jquery.cookie.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/UriageList.js")
+		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
+		link(rel="stylesheet" ,href="stylesheets/schedule.css")
+	body
+		div.titlebar
+			span.titlebar
+				a(href="portal") Home
+			img.titlebar_logo(src="images/drc_logo.jpg")
+			span.titlebar= title
+			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。"
+		div(style="margin-left:200px")
+			fieldset(style="border:none")
+				label
+					input(type="radio" name="search_option" checked=true)
+					| 全社&nbsp;
+				label
+					input(type="radio" name="search_option")
+					| 試験課別&nbsp;
+				label
+					input(type="radio" name="search_option")
+					| 顧客別&nbsp;&nbsp;&nbsp;&nbsp;
+				label 検索期間：&nbsp;
+				input.datepicker#start_date(type="text" name="start_date",placeholder="開始日付")
+				label &nbsp;～&nbsp;
+				input.datepicker#end_date(type="text" name="end_date",placeholder="終了日付")
+				a.form_button#search_button(style="float:none") 検索
+		div.result
+			table#uriage_list
+			div.grid_pager#uriage_pager
