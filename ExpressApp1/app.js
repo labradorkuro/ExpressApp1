@@ -208,7 +208,8 @@ app.get('/auth_get/:pno', auth_settings_get.auth_settings_get);
 app.get('/uriage_list', uriage_list.list);
 app.get('/pay_planning', pay_planning.list);
 
-app.get('/uriage_summary',uriage_summary.list);
+app.get('/uriage_summary',uriage_summary.summary);
+app.get('/uriage_detail',uriage_summary.list);
 /** mysql -> pg �ɕύX 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',
