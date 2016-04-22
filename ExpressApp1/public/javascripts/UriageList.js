@@ -145,7 +145,39 @@ uriageList.createGrid_division = function() {
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
+};
 
+// 検索集計結果を表示するグリッドの生成処理（顧客別）
+uriageList.createGrid_client = function() {
+  var sd = $("#start_date").val();
+  var ed = $("#end_date").val();
+  // 売上集計リストのグリッド
+  var req_url = "/uriage_summary?op=client&start_date=" + sd + "&end_date=" + ed;
+	jQuery("#uriage_list").jqGrid({
+		url: req_url,
+		altRows: true,
+		datatype: "json",
+		colNames: ['CD','顧客名','売上金額'],
+		colModel: [
+      { name: 'client_cd', index: 'client_cd', hidden:true, sortable:true},
+      { name: 'client', index: 'cilent', width: 300, align: "center" ,sortable:true},
+			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC }
+		],
+		height:240,
+		width:960,
+		shrinkToFit:false,
+		rowNum: 10,
+		rowList: [10,20,30,40,50],
+		pager: '#uriage_pager',
+		sortname: 'client_cd',
+		viewrecords: true,
+		sortorder: "desc",
+		caption: "売上集計(顧客別)",
+		onSelectRow:uriageList.onSelectUriageSummary,
+    loadComplete:uriageList.loadCompleteUgiageSummary
+	});
+	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
+	scheduleCommon.changeFontSize();
 };
 
 uriageList.onSelectUriageSummary = function(rowid) {
