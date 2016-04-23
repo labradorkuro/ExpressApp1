@@ -36,6 +36,7 @@ uriageList.onSearchButton = function(ui,event) {
     uriageList.createGrid_division();
   } else if ($("#search_option_client").prop('checked')) {
     // 顧客別
+    uriageList.createGrid_client();
   }
 }
 // 権限チェック
@@ -68,7 +69,7 @@ uriageList.createGrid_all = function() {
 		pager: '#uriage_pager',
 		sortname: 'title',
 		viewrecords: true,
-		sortorder: "desc",
+		sortorder: "asc",
 		caption: "売上集計(全社)",
 		onSelectRow:uriageList.onSelectUriageSummary,
     loadComplete:uriageList.loadCompleteUgiageSummary
@@ -105,7 +106,7 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 		pager: '#uriage_detail_pager',
 		sortname: 'entry_no',
 		viewrecords: true,
-		sortorder: "desc",
+		sortorder: "asc",
 		caption: "案件リスト",
 		onSelectRow:uriageList.onSelectUriageList,
     loadComplete:uriageList.loadCompleteUgiageList
@@ -138,7 +139,7 @@ uriageList.createGrid_division = function() {
 		pager: '#uriage_pager',
 		sortname: 'division_cd',
 		viewrecords: true,
-		sortorder: "desc",
+		sortorder: "asc",
 		caption: "売上集計(試験課別)",
 		onSelectRow:uriageList.onSelectUriageSummary,
     loadComplete:uriageList.loadCompleteUgiageSummary
@@ -169,9 +170,9 @@ uriageList.createGrid_client = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#uriage_pager',
-		sortname: 'client_cd',
+		sortname: 'entry_info.client_cd',
 		viewrecords: true,
-		sortorder: "desc",
+		sortorder: "asc",
 		caption: "売上集計(顧客別)",
 		onSelectRow:uriageList.onSelectUriageSummary,
     loadComplete:uriageList.loadCompleteUgiageSummary
@@ -189,10 +190,11 @@ uriageList.onSelectUriageSummary = function(rowid) {
   } else if ($("#search_option_division").prop('checked')) {
     // 試験課別
     var row = $("#uriage_list").getRowData(rowid);
-
     uriageList.createGrid_list("division",row.division_cd);
   } else if ($("#search_option_client").prop('checked')) {
     // 顧客別
+    var row = $("#uriage_list").getRowData(rowid);
+    uriageList.createGrid_list("client",row.client_cd);
   }
 
 };
