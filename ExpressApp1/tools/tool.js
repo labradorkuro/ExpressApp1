@@ -25,7 +25,7 @@
 	 */
 	format : function (fmt, a) {
 		var rep_fn = undefined;
-		
+
 		if (typeof a == "object") {
 			rep_fn = function (m, k) { return a[ k ]; }
 		}
@@ -33,7 +33,7 @@
 			var args = arguments;
 			rep_fn = function (m, k) { return args[ parseInt(k) + 1 ]; }
 		}
-		
+
 		return fmt.replace(/\{(\w+)\}/g, rep_fn);
 	},
 	// 日付項目のチェックと値変換
@@ -45,6 +45,20 @@
 			rtn = dt;
 		}
 		return rtn;
-	}
- 
+	},
+	getPagingParams : function (req) {
+  	var pg_param = {};
+  	pg_param.sidx = "id";
+  	pg_param.sord = "asc";
+  	pg_param.limit = 10;
+  	pg_param.offset = 0;
+  	pg_param.page = 1;
+  	if (req.query.rows) pg_param.limit = req.query.rows;
+  	if (req.query.page) pg_param.page = req.query.page;
+  	if (req.query.sidx) pg_param.sidx = req.query.sidx;
+  	if (req.query.sord) pg_param.sord = req.query.sord;
+  	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
+  	return pg_param;
+  }
+
 };

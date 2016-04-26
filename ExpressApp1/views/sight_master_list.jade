@@ -1,0 +1,26 @@
+doctype html
+html(lang="ja")
+	head
+		meta(charset="utf-8")
+		title= title
+		link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+		script(src="javascripts/jquery.cookie.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/SightMaster.js")
+		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
+		link(rel="stylesheet" ,href="stylesheets/schedule.css")
+	body
+		div.titlebar
+			span.titlebar
+				a(href="portal") Home
+			img.titlebar_logo(src="images/drc_logo.jpg")
+			span.titlebar= title
+			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。"
+		div.result
+			table#sight_list
+			div.grid_pager#sight_list_pager

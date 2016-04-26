@@ -16,6 +16,9 @@ var errorHandler = require('errorhandler');
 var Sequelize = require('sequelize');
 var app = express();
 
+pg = require('pg');
+sequelize = require('./libs/dbconn')(config);
+models = require('./models')(sequelize);
 
 /**
  * Module dependencies.
@@ -40,6 +43,7 @@ var configuration = require('./routes/configuration');
 var auth_settings = require('./routes/auth_settings');
 var uriage_list = require('./routes/uriage_list')
 var pay_planning = require('./routes/pay_plan_list')
+var sight_master = require('./routes/sight_master_list')
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -68,10 +72,8 @@ var config_get = require('./api/configuration_getPG');
 var auth_settings_post = require('./api/auth_settings_postPG');
 var auth_settings_get = require('./api/auth_settings_getPG');
 var uriage_summary = require('./api/uriage_getPG');
+var sight_info_get = require('./api/sight_getPG');
 //mysql = require('mysql');
-pg = require('pg');
-var sequelize = require('./libs/dbconn')(config);
-var models = require('./models')(sequelize);
 
 
 //var sequelize = new Sequelize('postgres://drc_root:drc_r00t@@localhost:5432/drc_sch');
@@ -210,7 +212,11 @@ app.get('/pay_planning', pay_planning.list);
 
 app.get('/uriage_summary',uriage_summary.summary);
 app.get('/uriage_detail',uriage_summary.list);
-/** mysql -> pg �ɕύX 2014.11.13
+
+app.get('/sight_master',sight_info_get.sight_master);
+app.get('/sight_info',sight_info_get.sight_info);
+app.get('/sight_master_list', sight_master.list);
+/** mysql -> pg 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',
 	user : 'drc_root',
