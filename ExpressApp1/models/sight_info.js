@@ -6,16 +6,15 @@
 var Sequelize = require('sequelize');
 module.exports = function (sequelize, DataTypes) {
 	return sequelize.define("sight_info", {
-		id: { type: Sequelize.INTEGER, autoIncrement: true , primaryKey: true },		
+		id: { type: Sequelize.INTEGER, autoIncrement: true , primaryKey: true },
 		client_cd:Sequelize.STRING(8),
-		shimebi: Sequelize.STRING,
-		shiharaibi: Sequelize.STRING,
-		shiharaitsuki: Sequelize.STRING,
+		shimebi: Sequelize.INTEGER,
+		sight_id: Sequelize.STRING,
 		memo: Sequelize.STRING,
 		delete_check: Sequelize.INTEGER,
 		create_id: Sequelize.STRING,
 		update_id: Sequelize.STRING
 
-		
+
 	});
 };

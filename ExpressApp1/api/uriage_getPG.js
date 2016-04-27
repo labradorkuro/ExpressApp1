@@ -1,3 +1,4 @@
+var tools = require('../tools/tool');
 //
 // 売上集計
 //
@@ -69,32 +70,16 @@ uriage_sum.sql_client = "select billing_info.entry_no, entry_info.entry_title ,s
 // 集計検索処理エントリーポイント
 exports.summary = function(req, res) {
   // グリッドのページング用パラメータの取得
-  var pg_params = uriage_sum.getPagingParams(req);
+  var pg_params = tools.getPagingParams(req);
   // 検索集計処理
   uriage_sum.getUriageSummary(req, res, pg_params);
 }
 exports.list = function(req, res) {
   // グリッドのページング用パラメータの取得
-  var pg_params = uriage_sum.getPagingParams(req);
+  var pg_params = tools.getPagingParams(req);
   // 検索集計処理
   uriage_sum.getUriageList(req, res, pg_params);
 }
-
-// グリッドのページング用パラメータ取得処理
-uriage_sum.getPagingParams = function (req) {
-	var pg_param = {};
-	pg_param.sidx = "entry_no";
-	pg_param.sord = "desc";
-	pg_param.limit = 10;
-	pg_param.offset = 0;
-	pg_param.page = 1;
-	if (req.query.rows) pg_param.limit = req.query.rows;
-	if (req.query.page) pg_param.page = req.query.page;
-	if (req.query.sidx) pg_param.sidx = req.query.sidx;
-	if (req.query.sord) pg_param.sord = req.query.sord;
-	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
-	return pg_param;
-};
 
 // 検索集計処理
 uriage_sum.getUriageSummary = function(req, res, pg_params) {
@@ -141,7 +126,6 @@ uriage_sum.getUriageList = function(req, res, pg_params) {
 }
 // クエリー実行
 uriage_sum.exeQuery = function(req, res, pg_params,sql_count,sql,params) {
-  console.log(sql);
   var result = { page: 1, total: 1, records: 0, rows: [] };
   // SQL実行
   pg.connect(connectionString, function (err, connection) {

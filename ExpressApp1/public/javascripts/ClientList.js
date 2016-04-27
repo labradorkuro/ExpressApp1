@@ -45,8 +45,10 @@ clientList.init = function(toolbar) {
 		var target = "#tabs-" + i;
 		$(target).empty();
 		// Tab毎に必要な要素を追加する
-		if (toolbar)
-			clientList.createToolbar(target, "client", i);
+		if (toolbar) {
+			var tb = clientList.createToolbar(target, "client", i);
+			clientList.createSightInfoBtn(tb, i);
+		}
 		clientList.createListGridElements(target, "client", i);
 		if (toolbar)
 			clientList.createToolbar(target, "client_division", i);
@@ -75,6 +77,8 @@ clientList.init = function(toolbar) {
 			$("#edit_client_person_" + i).bind('click' , {}, clientList.openClientPersonDialog);
 			// 削除分を表示のチェックイベント
 			$("#client_person_delete_check_disp_" + i).bind('change', clientList.changeClientPersonOption);
+			// 支払いサイト情報表示ボタンイベント
+			$("#sight_" + i).bind('click' , {}, clientList.openSightInfoDialog);
 		}
 	}
 };
@@ -99,8 +103,13 @@ clientList.createToolbar = function(target, kind, no) {
 	$(toolbar).append(edit_btn);
 	$(toolbar).append(delete_label);
 	$(target).append(toolbar);
-
+	return toolbar;
 };
+clientList.createSightInfoBtn = function(toolbar,no) {
+	var sight_btn = $("<a class='tool_button_a' id='sight_" + no  + "'>支払いサイト情報</a>");
+	$(toolbar).append(sight_btn);
+
+}
 // リスト画面のグリッド用テーブル要素を生成する
 clientList.createListGridElements = function(target, kind, no) {
 	var admin_div = $("<div class='admin_div'></div>");
@@ -811,8 +820,10 @@ clientList.setClientPersonForm = function (person) {
 clientList.buttonEnabledForTop = function(tab_no, kind) {
 	if (kind == 0) {
 		$("#edit_client_" + tab_no).css("display","none");
+		$("#sight_" + tab_no).css("display","none");
 	} else if (kind == 1) {
 		$("#edit_client_" + tab_no).css("display","inline");
+		$("#sight_" + tab_no).css("display","inline");
 	}
 };
 // 真ん中のツールバーのボタン制御
@@ -843,4 +854,74 @@ clientList.buttonEnabledForBottom = function(tab_no, kind ) {
 		// 編集を表示
 		$("#edit_client_person_" + tab_no).css("display","inline");
 	}
+};
+
+// 支払いサイト情報の表示
+clientList.createSightInfoDialog = function () {
+	$('#sight_info_dialog').dialog({
+		autoOpen: false,
+		width: 350,
+		height: 250,
+		title: '支払いサイト情報',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"登録": function () {
+				if (saveSightInfo()) {
+					$(this).dialog('close');
+				}
+			},
+			"削除": function () {
+				if (saveSightInfo()) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+				scheduleCommon.changeFontSize();
+			}
+		}
+	});
+	// 締日リスト生成
+	for(var i = 1;i <= 31;i++) {
+		$("#shimebi").append("<option value=" + i + ">" + i + "</option>");
+	}
+	clientList.getSightMasterList();
+};
+// 支払いサイト情報ダイアログの表示
+clientList.openSightInfoDialog = function (event) {
+	// フォームをクリアする
+	var sight_info = clientList.clearSightInfo();
+	clientList.setSightInfoForm(sight_info);
+	$(".ui-dialog-buttonpane button:contains('登録')").button("enable");
+	$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
+	$("#sight_info_dialog").dialog("open");
+};
+clientList.clearSightInfo = function() {
+	var sight_info = {};
+	sight_info.shimebi = 15;
+	sight_info.sight_id = 0;
+	return sight_info;
+};
+clientList.setSightInfoForm = function(sight_info) {
+	$("#shimebi").val(sight_info.shimebi);
+}
+// 支払日マスタからリストを取得する
+clientList.getSightMasterList = function() {
+	var url = "/sight_master?list=all";
+	$.ajax(url , {
+		type: 'GET',
+		dataType: 'json',
+		contentType : 'application/json',
+		success: clientList.onGetSightMasterList
+		});
+};
+// 支払日マスタの取得リクエスト応答
+clientList.onGetSightMasterList = function(list) {
+	$("#sight_id").empty();
+	$.each(list,function() {
+    // 選択リストに追加する
+		$("#sight_id").append($("<option value='" + this.id + "'>" + this.disp_str +  "</option>"));
+	});
+
 };

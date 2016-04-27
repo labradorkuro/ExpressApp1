@@ -31,4 +31,5 @@ $(function () {
 	clientList.createClientDialog('client_person','担当者情報',clientList.saveClientPerson);
 	// 日付選択用設定
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
+	clientList.createSightInfoDialog();
 });

@@ -8,7 +8,13 @@ exports.sight_master = function(req, res) {
   if (req.query.id) {
     sightDate.find(req.query.id, res);
   } else {
-    sightDate.list(req, res);
+    if (req.query.list == 'all') {
+      // 全件取得
+      sightDate.list_all(req, res);
+    } else {
+      // ページング（グリッド）用リスト取得
+      sightDate.list_grid(req, res);
+    }
   }
 }
 // 支払サイト情報の検索
@@ -24,8 +30,8 @@ sightDate.find = function(id,res) {
   })
 }
 
-// リスト取得
-sightDate.list = function(req, res) {
+// グリッド用リスト取得
+sightDate.list_grid = function(req, res) {
   var result = { page: 1, total: 1, records: 0, rows: [] };
   var pg_params = tools.getPagingParams(req);
   var attr = {where:{delete_check:0}};
@@ -49,5 +55,11 @@ sightDate.list = function(req, res) {
       res.send(result);
     });
   })
-
+}
+// 全件リスト取得
+sightDate.list_all = function(req, res) {
+  var attr = {where:{delete_check:0}};
+  sight_date.schema('drc_sch').findAll(attr).then(function(sight){
+    res.send(sight);
+  });
 }
