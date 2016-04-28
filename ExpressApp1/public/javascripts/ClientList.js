@@ -205,6 +205,7 @@ clientList.onSelectClientList = function (rowid) {
 		clientList.reloadPersonGrid(tabNo,"0");
 		// ツールバーボタンの制御
 		clientList.buttonEnabledForTop(tabNo,1);
+		clientList.getSightInfo(row.client_cd);
 	}
 };
 // 得意先部署リストの生成
@@ -867,12 +868,12 @@ clientList.createSightInfoDialog = function () {
 		modal: true,
 		buttons: {
 			"登録": function () {
-				if (saveSightInfo()) {
+				if (clientList.saveSightInfo()) {
 					$(this).dialog('close');
 				}
 			},
 			"削除": function () {
-				if (saveSightInfo()) {
+				if (clientList.delSightInfo()) {
 					$(this).dialog('close');
 				}
 			},
@@ -890,9 +891,6 @@ clientList.createSightInfoDialog = function () {
 };
 // 支払いサイト情報ダイアログの表示
 clientList.openSightInfoDialog = function (event) {
-	// フォームをクリアする
-	var sight_info = clientList.clearSightInfo();
-	clientList.setSightInfoForm(sight_info);
 	$(".ui-dialog-buttonpane button:contains('登録')").button("enable");
 	$(".ui-dialog-buttonpane button:contains('削除')").button("enable");
 	$("#sight_info_dialog").dialog("open");
@@ -905,6 +903,7 @@ clientList.clearSightInfo = function() {
 };
 clientList.setSightInfoForm = function(sight_info) {
 	$("#shimebi").val(sight_info.shimebi);
+	$("#sight_id").val(sight_info.sight_id);
 }
 // 支払日マスタからリストを取得する
 clientList.getSightMasterList = function() {
@@ -925,3 +924,30 @@ clientList.onGetSightMasterList = function(list) {
 	});
 
 };
+// 支払日サイト情報を取得する
+clientList.getSightInfo = function(client_cd) {
+	var url = "/sight_info?client_cd=" + client_cd;
+	// フォームをクリアする
+	var sight_info = clientList.clearSightInfo();
+	clientList.setSightInfoForm(sight_info);
+	$.ajax(url , {
+		type: 'GET',
+		dataType: 'json',
+		contentType : 'application/json',
+		success: clientList.onGetSightInfo
+		});
+};
+// 支払日サイト情報の取得リクエスト応答
+clientList.onGetSightInfo = function(sight_info) {
+		clientList.setSightInfoForm(sight_info);
+};
+
+// 支払いサイト情報の保存
+clientList.saveSightInfo = function() {
+
+}
+
+// 支払いサイト情報の削除（削除フラグセット）
+clientList.delSightInfo = function() {
+	
+}

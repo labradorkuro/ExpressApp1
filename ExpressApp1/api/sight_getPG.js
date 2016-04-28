@@ -3,6 +3,7 @@
 //
 var tools = require('../tools/tool');
 var sight_date = models['sight_date'];
+var sight_info = models['sight_info'];
 // 支払日マスタの検索
 exports.sight_master = function(req, res) {
   if (req.query.id) {
@@ -19,15 +20,23 @@ exports.sight_master = function(req, res) {
 }
 // 支払サイト情報の検索
 exports.sight_info = function(req, res) {
-
+  if (req.query.client_cd) {
+    sightInfo.find(req.query.client_cd, res);
+  }
 }
 
 var sightDate = sightDate || {}
+var sightInfo = sightInfo || {}
+
+
 // 指定されたidのデータを取得する
 sightDate.find = function(id,res) {
   sight_date.schema('drc_sch').findById(id).then(function(sight){
     res.send(sight);
-  })
+  }).catch(function(error){
+    console.log(error);
+    res.send("");
+  });
 }
 
 // グリッド用リスト取得
@@ -53,13 +62,33 @@ sightDate.list_grid = function(req, res) {
       }
       result.records = sight.length;
       res.send(result);
+    }).catch(function(error){
+      console.log(error);
+      res.send("");
     });
-  })
+  }).catch(function(error){
+    console.log(error);
+    res.send("");
+  });
 }
 // 全件リスト取得
 sightDate.list_all = function(req, res) {
   var attr = {where:{delete_check:0}};
   sight_date.schema('drc_sch').findAll(attr).then(function(sight){
     res.send(sight);
+  }).catch(function(error){
+    console.log(error);
+    res.send("");
+  });
+}
+
+// 支払いサイト情報の検索
+sightInfo.find = function(client_cd, res) {
+  var attr = {where:{client_cd:client_cd,delete_check:0}};
+  sight_info.schema('drc_sch').find(attr).then(function(sight){
+    res.send(sight);
+  }).catch(function(error){
+    console.log(error);
+    res.send("");
   });
 }

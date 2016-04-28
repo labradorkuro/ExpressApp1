@@ -9,7 +9,7 @@ module.exports = function (sequelize, DataTypes) {
 		id: { type: Sequelize.INTEGER, autoIncrement: true , primaryKey: true },
 		client_cd:Sequelize.STRING(8),
 		shimebi: Sequelize.INTEGER,
-		sight_id: Sequelize.STRING,
+		sight_id: Sequelize.INTEGER,
 		memo: Sequelize.STRING,
 		delete_check: Sequelize.INTEGER,
 		create_id: Sequelize.STRING,
