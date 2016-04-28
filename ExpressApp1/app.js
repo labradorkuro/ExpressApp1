@@ -73,6 +73,7 @@ var auth_settings_post = require('./api/auth_settings_postPG');
 var auth_settings_get = require('./api/auth_settings_getPG');
 var uriage_summary = require('./api/uriage_getPG');
 var sight_info_get = require('./api/sight_getPG');
+var sight_info_post = require('./api/sight_postPG');
 //mysql = require('mysql');
 
 
@@ -214,8 +215,9 @@ app.get('/uriage_summary',uriage_summary.summary);
 app.get('/uriage_detail',uriage_summary.list);
 
 app.get('/sight_master',sight_info_get.sight_master);
-app.get('/sight_info',sight_info_get.sight_info);
 app.get('/sight_master_list', sight_master.list);
+app.get('/sight_info',sight_info_get.sight_info);
+app.post('/sight_info_post',upload.array(),sight_info_post.sight_info_post);
 /** mysql -> pg 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',

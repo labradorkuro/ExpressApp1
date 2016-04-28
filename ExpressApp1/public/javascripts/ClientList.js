@@ -902,6 +902,7 @@ clientList.clearSightInfo = function() {
 	return sight_info;
 };
 clientList.setSightInfoForm = function(sight_info) {
+	$("#sight_client_cd").val(sight_info.client_cd);
 	$("#shimebi").val(sight_info.shimebi);
 	$("#sight_id").val(sight_info.sight_id);
 }
@@ -929,6 +930,7 @@ clientList.getSightInfo = function(client_cd) {
 	var url = "/sight_info?client_cd=" + client_cd;
 	// フォームをクリアする
 	var sight_info = clientList.clearSightInfo();
+	sight_info.client_cd = client_cd;
 	clientList.setSightInfoForm(sight_info);
 	$.ajax(url , {
 		type: 'GET',
@@ -944,10 +946,24 @@ clientList.onGetSightInfo = function(sight_info) {
 
 // 支払いサイト情報の保存
 clientList.saveSightInfo = function() {
-
+	var url = "/sight_info_post";
+	// フォームからデータを取得
+	var form = new FormData(document.querySelector("#sightInfoForm"));
+	form.append("delete_check", '0');
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', url, true);
+	xhr.responseType = 'json';
+	xhr.onload = clientList.onloadSaveSightInfo;
+	xhr.send(form);
+	return true;
+}
+clientList.onloadSaveSightInfo = function(event) {
+	if (this.status == 200) {
+		// success
+	}
 }
 
 // 支払いサイト情報の削除（削除フラグセット）
 clientList.delSightInfo = function() {
-	
+
 }
