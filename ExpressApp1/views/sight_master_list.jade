@@ -21,6 +21,19 @@ html(lang="ja")
 			img.titlebar_logo(src="images/drc_logo.jpg")
 			span.titlebar= title
 			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。"
-		div.result
-			table#sight_list
-			div.grid_pager#sight_list_pager
+		div#tabs
+			ul
+				li
+					a(href="#tabs-0") 支払日マスタ
+			div#tabs-0
+				div.toolbar
+					a.tool_button_a#add_sight 追 加
+					a.tool_button_a#edit_sight 編 集
+					label.search_option_check(value=1)
+						input.search_option_check#delete_check_disp(type="checkbox") 
+						| 削除分を表示
+				div.result
+					table#sight_list
+					div.grid_pager#sight_list_pager
+			div#sight_master_dialog
+				include sight_master_form

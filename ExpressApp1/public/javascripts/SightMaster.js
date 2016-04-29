@@ -4,10 +4,12 @@
 $(function ()　{
     'use strict';
   // 初期化
+  $("#tabs").tabs();
   sightMaster.init();
   // 権限チェック
   sightMaster.checkAuth();
 	// 日付選択用設定
+  $.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
 });
 
@@ -16,9 +18,13 @@ var sightMaster = sightMaster || {}
 
 // 初期化処理
 sightMaster.init = function() {
+  $("#edit_sight").css("display","none");
   // グリッドのクリア
   $("#sight_list").GridUnload();
   sightMaster.createGrid();
+  sightMaster.createSightMasterDialog();
+  $("#add_sight").bind('click',sightMaster.openSightMasterDialog);
+  $("#edit_sight").bind('click',sightMaster.openSightMasterDialog);
 }
 
 // 権限チェック
@@ -43,10 +49,10 @@ sightMaster.createGrid = function() {
       { name: 'shiharai_month', index: 'shiharai_month', width: 200, align: "center"},
       { name: 'memo', index: 'memo', width: 200, align: "center"},
       { name: 'delete_check', index: 'delete_check', width: 200, align: "center"},
-      { name: 'create_id', index: 'create_id', width: 200, align: "center"},
-      { name: 'createdAt', index: 'createdAt', width: 200, align: "center"},
-      { name: 'update_id', index: 'updated_id', width: 200, align: "center"},
-      { name: 'updatedAt', index: 'updatedAt', width: 200, align: "center"}
+      { name: 'create_id', index: 'create_id', hidden:true},
+      { name: 'createdAt', index: 'createdAt', hidden:true},
+      { name: 'update_id', index: 'updated_id', hidden:true},
+      { name: 'updatedAt', index: 'updatedAt', hidden:true}
 		],
 		height:240,
 		width:960,
@@ -67,9 +73,53 @@ sightMaster.createGrid = function() {
 };
 
 sightMaster.onSelectRow = function(rowid) {
-
+  var row = $("#sight_list").getRowData(rowid);
+  $("#edit_sight").css("display","inline");
+  $("#disp_str").val(row.disp_str);
+  $("#shiharaibi").val(row.shiharaibi);
+  $("#shiharai_month").val(row.shiharai_month);
 }
 
 sightMaster.loadComplete = function(event) {
+}
 
+sightMaster.createSightMasterDialog = function () {
+	$('#sight_master_dialog').dialog({
+		autoOpen: false,
+		width: 350,
+		height: 300,
+		title: '支払い日マスタ',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"追加": function () {
+				if (sightMaster.save()) {
+					$(this).dialog('close');
+				}
+			},
+			"更新": function () {
+				if (sightMaster.save()) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+				scheduleCommon.changeFontSize();
+			}
+		}
+	});
+	// 締日リスト生成
+	for(var i = 1;i <= 31;i++) {
+		$("#shiharaibi").append("<option value=" + i + ">" + i + "</option>");
+	}
+};
+// 支払いサイト情報ダイアログの表示
+sightMaster.openSightMasterDialog = function (event) {
+	$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+	$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+	$("#sight_master_dialog").dialog("open");
+};
+
+sightMaster.save = function() {
+  return true;
 }

@@ -1,0 +1,26 @@
+form#sightMasterForm(method="post" action="javascript:return false;")
+  table
+    tr
+      td.form_title 表示名
+      td
+        input#sight_id(type="hidden" name="sight_id")
+        input#disp_str(type="text" name="disp_str" required=true)
+    tr
+      td.form_title 支払日
+      td
+        select#shiharaibi(name="shiharaibi")
+    tr
+      td.form_title 支払月
+      td
+        select#shiharai_month(name="shiharai_month")
+          option(value=1) 翌月
+          option(value=2) 翌々月
+    tr
+      td.form_title メモ
+      td
+        input#memo(type="text" name="memo")
+    tr
+      td.form_title 削除フラグ
+      td
+        input#delete_check(type="checkbox" name="delete_check" value="1")
+        label 削除
