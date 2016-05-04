@@ -11,6 +11,7 @@ $(function ()　{
 	// 日付選択用設定
   $.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
+  $("#delete_check_disp").bind('change',sightMaster.dispDelete);
 });
 
 // 処理用オブジェクト
@@ -20,8 +21,7 @@ var sightMaster = sightMaster || {}
 sightMaster.init = function() {
   $("#edit_sight").css("display","none");
   // グリッドのクリア
-  $("#sight_list").GridUnload();
-  sightMaster.createGrid();
+  sightMaster.reloadGrid();
   sightMaster.createSightMasterDialog();
   $("#add_sight").bind('click',sightMaster.openSightMasterDialog);
   $("#edit_sight").bind('click',sightMaster.openSightMasterDialog);
@@ -34,10 +34,25 @@ sightMaster.checkAuth = function() {
 		var auth = user_auth[i];
 	}
 };
+
+sightMaster.dispDelete = function(event) {
+  sightMaster.reloadGrid();
+}
+sightMaster.reloadGrid = function() {
+  $("#sight_list").GridUnload();
+  sightMaster.createGrid();
+
+}
+
 // マスタのリスト表示するグリッドの生成処理（全社）
 sightMaster.createGrid = function() {
   var req_url = "/sight_master";
-	jQuery("#sight_list").jqGrid({
+  if ($("#delete_check_disp").prop("checked")) {
+    req_url += "?delete_check=1";
+  } else {
+    req_url += "?delete_check=0";
+  }
+  jQuery("#sight_list").jqGrid({
 		url: req_url,
 		altRows: true,
 		datatype: "json",
@@ -48,7 +63,7 @@ sightMaster.createGrid = function() {
       { name: 'shiharaibi', index: 'shiharaibi', width: 200, align: "center"},
       { name: 'shiharai_month', index: 'shiharai_month', width: 200, align: "center"},
       { name: 'memo', index: 'memo', width: 200, align: "center"},
-      { name: 'delete_check', index: 'delete_check', width: 200, align: "center"},
+      { name: 'delete_check', index: 'delete_check', hidden:true},
       { name: 'create_id', index: 'create_id', hidden:true},
       { name: 'createdAt', index: 'createdAt', hidden:true},
       { name: 'update_id', index: 'updated_id', hidden:true},
@@ -73,11 +88,15 @@ sightMaster.createGrid = function() {
 };
 
 sightMaster.onSelectRow = function(rowid) {
+  var sight = sightMaster.clear();
   var row = $("#sight_list").getRowData(rowid);
   $("#edit_sight").css("display","inline");
-  $("#disp_str").val(row.disp_str);
-  $("#shiharaibi").val(row.shiharaibi);
-  $("#shiharai_month").val(row.shiharai_month);
+  sight.sight_id = row.id;
+  sight.disp_str = row.disp_str;
+  sight.shiharaibi = row.shiharaibi;
+  sight.shiharai_month = row.shiharai_month;
+  sight.memo = row.memo;
+  sightMaster.setForm(sight);
 }
 
 sightMaster.loadComplete = function(event) {
@@ -110,16 +129,48 @@ sightMaster.createSightMasterDialog = function () {
 	});
 	// 締日リスト生成
 	for(var i = 1;i <= 31;i++) {
-		$("#shiharaibi").append("<option value=" + i + ">" + i + "</option>");
+		$("#sight_shiharaibi").append("<option value=" + i + ">" + i + "</option>");
 	}
 };
 // 支払いサイト情報ダイアログの表示
 sightMaster.openSightMasterDialog = function (event) {
 	$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 	$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+  if ($(event.target).attr('id') == 'add_sight') {
+    sightMaster.setForm(sightMaster.clear());
+  }
 	$("#sight_master_dialog").dialog("open");
 };
 
+sightMaster.setForm = function(sight) {
+  $("#sight_id").val(sight.sight_id);
+  $("#sight_disp_str").val(sight.disp_str);
+  $("#sight_shiharaibi").val(sight.shiharaibi);
+  $("#sight_shiharai_month").val(sight.shiharai_month);
+  $("#sight_memo").val(sight.memo);
+}
+sightMaster.clear = function() {
+  var sight = {sight_id:0,disp_str:"",shiharaibi:15,shiharai_month:1,memo:""};
+  return sight;
+}
 sightMaster.save = function() {
+  var url = "/sight_master_post";
+	// フォームからデータを取得
+	var form = new FormData(document.querySelector("#sightMasterForm"));
+  if (!$("#delete_check").prop("checked") ){
+    form.append("delete_check", '0');
+  }
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', url, true);
+	xhr.responseType = 'json';
+	xhr.onload = sightMaster.onSaveMaster;
+	xhr.send(form);
   return true;
+}
+
+sightMaster.onSaveMaster = function(event) {
+  if (this.status == 200) {
+		// success
+    sightMaster.reloadGrid();
+	}
 }

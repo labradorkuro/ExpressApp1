@@ -4,21 +4,21 @@ form#sightMasterForm(method="post" action="javascript:return false;")
       td.form_title 表示名
       td
         input#sight_id(type="hidden" name="sight_id")
-        input#disp_str(type="text" name="disp_str" required=true)
+        input#sight_disp_str(type="text" name="sight_disp_str" required=true)
     tr
       td.form_title 支払日
       td
-        select#shiharaibi(name="shiharaibi")
+        select#sight_shiharaibi(name="sight_shiharaibi")
     tr
       td.form_title 支払月
       td
-        select#shiharai_month(name="shiharai_month")
+        select#sight_shiharai_month(name="sight_shiharai_month")
           option(value=1) 翌月
           option(value=2) 翌々月
     tr
       td.form_title メモ
       td
-        input#memo(type="text" name="memo")
+        input#sight_memo(type="text" name="sight_memo")
     tr
       td.form_title 削除フラグ
       td

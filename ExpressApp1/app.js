@@ -217,6 +217,7 @@ app.get('/uriage_detail',uriage_summary.list);
 app.get('/sight_master',sight_info_get.sight_master);
 app.get('/sight_master_list', sight_master.list);
 app.get('/sight_info',sight_info_get.sight_info);
+app.post('/sight_master_post',upload.array(),sight_info_post.sight_master_post);
 app.post('/sight_info_post',upload.array(),sight_info_post.sight_info_post);
 /** mysql -> pg 2014.11.13
 pool = mysql.createPool({
@@ -268,6 +269,6 @@ process.on('uncaughtException',function(err) {
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-  var msg = 'System Build:2016.01.21';
+  var msg = '基幹システム(Build:2016.05.05)';
   console.log(msg);
 });
