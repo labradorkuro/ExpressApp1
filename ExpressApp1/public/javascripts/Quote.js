@@ -249,7 +249,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	}
 
 	$("#drc_division_name").text("  試験課 " + entry.test_large_class_name);
-	$("#drc_test_person").text("  担当者 " + entry.sales_person_id);
+	$("#drc_test_person").text("  担当者 " + scheduleCommon.personFormatter( entry.sales_person_id));
 	$("#quote_title").val(entry.entry_title);
 	// 権限チェック
 	if (entryList.auth_quote_edit == 2) {
