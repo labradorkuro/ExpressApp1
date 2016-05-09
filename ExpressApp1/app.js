@@ -84,7 +84,7 @@ var http = require('http');
 var path = require('path');
 
 // Version
-drc_version = '(Ver.1.0.3 (作業中))';
+drc_version = ' Ver.1.0.3（評価版）';
 
 // all environments
 app.set('port', process.env.PORT || 80);
