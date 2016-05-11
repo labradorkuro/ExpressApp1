@@ -884,6 +884,7 @@ clientList.createSightInfoDialog = function () {
 		}
 	});
 	// 締日リスト生成
+	$("#shimebi").append("<option value=0></option>");
 	for(var i = 1;i <= 31;i++) {
 		$("#shimebi").append("<option value=" + i + ">" + i + "</option>");
 	}
@@ -897,7 +898,7 @@ clientList.openSightInfoDialog = function (event) {
 };
 clientList.clearSightInfo = function() {
 	var sight_info = {};
-	sight_info.shimebi = 15;
+	sight_info.shimebi = 0;
 	sight_info.sight_id = 0;
 	return sight_info;
 };
@@ -919,6 +920,7 @@ clientList.getSightMasterList = function() {
 // 支払日マスタの取得リクエスト応答
 clientList.onGetSightMasterList = function(list) {
 	$("#sight_id").empty();
+	$("#sight_id").append($("<option value='0'></option>"));
 	$.each(list,function() {
     // 選択リストに追加する
 		$("#sight_id").append($("<option value='" + this.id + "'>" + this.disp_str +  "</option>"));
