@@ -269,6 +269,6 @@ process.on('uncaughtException',function(err) {
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-  var msg = '基幹システム(Build:2016.05.13)';
+  var msg = '基幹システム(Build:2016.05.11)';
   console.log(msg);
 });
