@@ -131,11 +131,13 @@ var getEntryNo = function (entry, req, res){
 				query = connection.query(sql, [now,count]);
 				query.on('end', function (result, err) {
 					if (entry.entry_no == "") {
-						// 案件情報の追加
-						insertEntryInfo(connection, entry, count, req, res);
-					} else {
-						// 案件情報を複写して追加
-						copyEntryInfo(connection, entry, count, req, res);
+						if (entry.copy_entry_no == "") {
+							// 案件情報の追加
+							insertEntryInfo(connection, entry, count, req, res);
+						} else {
+							// 案件情報を複写して追加
+							copyEntryInfo(connection, entry, count, req, res);
+						}
 					}
 				});
 				query.on('error', function (error) {
@@ -153,11 +155,13 @@ var getEntryNo = function (entry, req, res){
 				query = connection.query(sql, [count,now]);
 				query.on('end', function (result, err) {
 					if (entry.entry_no == "") {
-						// 案件情報の追加
-						insertEntryInfo(connection, entry, count, req, res);
-					} else {
-						// 案件情報を複写して追加
-						copyEntryInfo(connection, entry, count, req, res);
+						if (entry.copy_entry_no == "") {
+							// 案件情報の追加
+							insertEntryInfo(connection, entry, count, req, res);
+						} else {
+							// 案件情報を複写して追加
+							copyEntryInfo(connection, entry, count, req, res);
+						}
 					}
 				});
 				query.on('error', function (error) {
@@ -235,7 +239,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 };
 // 案件データをDBに複写して追加
 var copyEntryInfo = function(connection, entry, count, req, res) {
-	var org_entry_no = entry.entry_no;
+	var org_entry_no = entry.copy_entry_no;
 	entry.entry_no = getDateNo(count, '-');
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var created_id = req.session.uid;
@@ -587,10 +591,14 @@ var insertQuote = function (connection, quote, req, res) {
 
 // 見積情報の複写
 var copyQuote = function (quote, org_entry_no, req, res) {
+	var today = tools.getTimestamp("{0}/{1}/{2}");
 	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
+	quote.quote_date = null;
+	quote.quote_submit_check = 1;
+	quote.order_status = 1
 	pg.connect(connectionString, function (err, connection) {
 		// SQL実行
 		var query = connection.query(sqlInsertQuote, [

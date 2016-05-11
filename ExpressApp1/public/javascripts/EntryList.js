@@ -193,12 +193,10 @@ entryList.createEntryDialog = function () {
 		modal: true,
         buttons:[
           {
-              text: '複写して追加',
+              text: '複写',
               class:'btn-entry_copy',
               click: function() {
-                  if (entryList.copyEntry()) {
-                    $(this).dialog('close');
-                  }
+                  entryList.copyEntry();
               }
           },
           {
@@ -472,7 +470,7 @@ entryList.orderTypeFormatter = function (cellval, options, rowObject) {
 };
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {
-	$("#entry_dialog").dialog({modal:true});	// デフォルトはモーダル
+	$("#entry_dialog").dialog({modal:true,title:"案件情報"});	// デフォルトはモーダル
 	// フォームをクリアする
 	var entry = entryList.clearEntry();
 	entryList.setEntryForm(entry);
@@ -484,11 +482,11 @@ entryList.openEntryDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		// 権限チェック
 		if (entryList.auth_entry_edit == 2) {
-      $(".ui-dialog-buttonpane button:contains('複写して追加')").button("enable");
+      $(".ui-dialog-buttonpane button:contains('複写')").button("enable");
       $(".ui-dialog-buttonpane button:contains('更新')").button("enable");
 		} else {
 			$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
-      $(".ui-dialog-buttonpane button:contains('複写して追加')").button("disable");
+      $(".ui-dialog-buttonpane button:contains('複写')").button("disable");
 		}
 	} else if ($(event.target).attr('id') == 'add_entry') {
 		// 追加ボタンの処理
@@ -499,7 +497,7 @@ entryList.openEntryDialog = function (event) {
 			$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		}
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
-    $(".ui-dialog-buttonpane button:contains('複写して追加')").button("disable");
+    $(".ui-dialog-buttonpane button:contains('複写')").button("disable");
 	} else if ($(event.target).attr('id') == 'ref_entry') {
 		// 請求情報画面からの参照
 		$("#entry_dialog").dialog({modal:false});	// 参照の時はモードレス
@@ -640,22 +638,31 @@ entryList.saveEntry = function () {
 		xhr.send(form);
 		return true;
 };
-// 複写して追加
+// 複写
 entryList.copyEntry = function () {
-		// 入力値チェック
-		if (!entryList.entryInputCheck()) {
-			return false;
-		}
-		// checkboxのチェック状態確認と値設定
-		entryList.checkCheckbox();
-		// formデータの取得
-		var form = entryList.getFormData();
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '/entry_copy', true);
-		xhr.responseType = 'json';
-		xhr.onload = entryList.onloadEntryCopy;
-		xhr.send(form);
-		return true;
+  var today = scheduleCommon.getToday("{0}/{1}/{2}");
+  $("#entry_dialog").dialog({title:"案件情報のコピー"});	// デフォルトはモーダル
+  $("#copy_entry_no").val($("#entry_no").val());					// 案件No
+  $("#entry_no").val("");
+	$("#quote_no").val("");					// 見積番号
+	$("#inquiry_date").val(today);			// 問合せ日
+	$("#entry_status").val("01");			// 案件ステータス
+  $("#sales_person_id").val($.cookie('userid'));	// 入力者ID
+  $("#report_limit_date").val("");		// 報告書提出期限
+	$("#report_submit_date").val("");		// 報告書提出日
+	$("#prompt_report_limit_date_1").val("");		// 速報提出期限1
+	$("#prompt_report_submit_date_1").val("");	// 速報提出日1
+	$("#prompt_report_limit_date_2").val("");		// 速報提出期限2
+	$("#prompt_report_submit_date_2").val("");	// 速報提出日2
+  $("#order_accepted_date").val(""); // 受注日付
+	$("#order_accept_check").val(0);	// 仮受注日チェック
+  $("#entry_memo").val("");        // 備考
+  $("#input_check_date").val(today);			// 入力日
+  $("#input_operator_id").val($.cookie('userid'));	// 入力者ID
+  $(".btn-entry_add").button("enable");
+  $(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+  //$(".btn-entry_update").button("disable");
+  $(".btn-entry_copy").button("disable");
 };
 
 // checkboxのチェック状態確認と値設定
@@ -740,13 +747,6 @@ entryList.onloadEntrySave = function (e) {
 		entryList.reloadGrid();
 	}
 };
-// 案件データ複写して追加後のコールバック
-entryList.onloadEntryCopy = function (e) {
-	if (this.status == 200) {
-		var entry = this.response;
-		entryList.reloadGrid();
-	}
-};
 // 案件データ取得リクエストのコールバック
 entryList.onloadEntryReq = function (e) {
 	if (this.status == 200) {
@@ -786,7 +786,8 @@ entryList.onloadBillingTotalReq = function (e) {
 
 // 案件データをフォームにセットする
 entryList.setEntryForm = function (entry) {
-	$("#entry_no").val(entry.entry_no);					// 案件No
+  $("#copy_entry_no").val("");					       // 複写元案件No
+  $("#entry_no").val(entry.entry_no);					// 案件No
 	$("#quote_no").val(entry.quote_no);					// 見積番号
 	$("#inquiry_date").val(entry.inquiry_date);			// 問合せ日
 	$("#entry_status").val(entry.entry_status);			// 案件ステータス

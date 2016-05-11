@@ -6,6 +6,7 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title_s 案件番号
 			td 
+				input#copy_entry_no(type="hidden" name="copy_entry_no")
 				input#entry_no(type="text" name="entry_no" value=no readonly="true" placeholder="自動採番" size="12")
 			td.form_title_s 見積番号
 			td 

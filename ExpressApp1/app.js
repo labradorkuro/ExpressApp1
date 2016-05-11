@@ -84,7 +84,7 @@ var http = require('http');
 var path = require('path');
 
 // Version
-drc_version = ' Ver.1.0.3（評価版）';
+drc_version = ' Ver.1.0.3.1（評価版）';
 
 // all environments
 app.set('port', process.env.PORT || 80);
@@ -269,6 +269,6 @@ process.on('uncaughtException',function(err) {
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-  var msg = '基幹システム(Build:2016.05.05)';
+  var msg = '基幹システム(Build:2016.05.13)';
   console.log(msg);
 });
