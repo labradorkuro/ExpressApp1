@@ -3,21 +3,38 @@ var tools = require('../tools/tool');
 // 売上集計
 //
 var uriage_sum = uriage_sum || {};
+uriage_sum.sqlTotalAmount = 'SELECT '
+  + 'entry_no,'
+  + 'SUM(pay_amount_total) AS amount_total'
+  + ' FROM drc_sch.billing_info'
+  + " WHERE billing_info.delete_check = 0 group by entry_no";
+
+uriage_sum.sqlTotalComplete = 'SELECT '
+    + 'entry_no,'
+    + 'SUM(pay_complete) AS complete_total'
+    + ' FROM drc_sch.billing_info'
+    + " WHERE billing_info.delete_check = 0 AND pay_result = 3 AND (pay_complete_date BETWEEN $1 AND $2) group by entry_no";
 // 全社売上集計
 uriage_sum.sql_all_summary_count = "select count(*) as cnt from drc_sch.billing_info"
-  + " where billing_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2";
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND pay_result = 3 AND (pay_complete_date BETWEEN $1 AND $2)";
 
-uriage_sum.sql_all_summary = "select '全社集計' as title,sum(pay_complete) as uriage_sum"
-  + " from drc_sch.billing_info where billing_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2";
-// リスト取得用
+uriage_sum.sql_all_summary = "select '全社集計' as title,sum(pay_complete) as uriage_sum from drc_sch.billing_info"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND pay_result = 3 AND (pay_complete_date BETWEEN $1 AND $2)";
+// 案件リスト取得用
 uriage_sum.sql_all_count = "select count(*) as cnt from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
-  + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 "
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq ON(subq.entry_no = billing_info.entry_no)"
+  + " where (subq.amount_total <= subq.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 "
   + " AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 group by billing_info.entry_no";
 
 uriage_sum.sql_all = "select billing_info.entry_no,entry_info.entry_title,sum(pay_complete) as uriage_sum"
   + " from drc_sch.billing_info left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
-  + " where billing_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 group by billing_info.entry_no,entry_info.entry_title";
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq ON(subq.entry_no = billing_info.entry_no)"
+  + " where (subq.amount_total <= subq.complete_total) AND billing_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 group by billing_info.entry_no,entry_info.entry_title";
 
 // 試験課別売上集計
 uriage_sum.sql_division_summary_count = "select count(*) as cnt from drc_sch.billing_info"
@@ -32,7 +49,7 @@ uriage_sum.sql_division_summary = "select entry_info.test_large_class_cd as divi
   + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND test_large_class.delete_check = 0 "
   + " AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2"
   + " group by entry_info.test_large_class_cd,test_large_class.item_name";
-// リスト取得用
+// 案件リスト取得用
 uriage_sum.sql_division_count = "select count(*) as cnt from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
   + " left join drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)"
@@ -57,7 +74,7 @@ uriage_sum.sql_client_summary = "select entry_info.client_cd,client_list.name_1 
   + " where billing_info.delete_check = 0 AND client_list.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2"
   + " group by entry_info.client_cd,client_list.name_1";
 
-// リスト取得用
+// 案件リスト取得用
 uriage_sum.sql_client_count = "select count(*) from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
   + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 AND entry_info.client_cd = $3"
@@ -77,7 +94,7 @@ exports.summary = function(req, res) {
 exports.list = function(req, res) {
   // グリッドのページング用パラメータの取得
   var pg_params = tools.getPagingParams(req);
-  // 検索集計処理
+  // 案件リスト検索処理
   uriage_sum.getUriageList(req, res, pg_params);
 }
 
@@ -87,12 +104,15 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
   var sql_count = "";
   var params = [req.query.start_date,req.query.end_date];
   if (req.query.op == 'all') {
+    // 全社
     sql_count = uriage_sum.sql_all_summary_count;
     sql_summary = uriage_sum.sql_all_summary + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
+    // 試験課別
     sql_count = uriage_sum.sql_division_summary_count;
     sql_summary = uriage_sum.sql_division_summary + " ORDER BY entry_info.test_large_class_cd, "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'client') {
+    // 顧客別
     sql_count = uriage_sum.sql_client_summary_count;
     sql_summary = uriage_sum.sql_client_summary + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   }
@@ -100,7 +120,7 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
   uriage_sum.exeQuery(req,res,pg_params,sql_count,sql_summary,params);
 }
 
-// リスト取得
+// 案件リスト取得
 uriage_sum.getUriageList = function(req, res, pg_params) {
   var sql_summary = "";
   var sql_count = "";
