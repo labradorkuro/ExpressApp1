@@ -3,86 +3,106 @@ var tools = require('../tools/tool');
 // 売上集計
 //
 var uriage_sum = uriage_sum || {};
+// 請求金額合計を求める（案件全体）
 uriage_sum.sqlTotalAmount = 'SELECT '
   + 'entry_no,'
   + 'SUM(pay_amount_total) AS amount_total'
   + ' FROM drc_sch.billing_info'
   + " WHERE billing_info.delete_check = 0 group by entry_no";
-
+// 入金済合計金額を求める（指定期日まで）
 uriage_sum.sqlTotalComplete = 'SELECT '
     + 'entry_no,'
     + 'SUM(pay_complete) AS complete_total'
     + ' FROM drc_sch.billing_info'
-    + " WHERE billing_info.delete_check = 0 AND pay_result = 3 AND (pay_complete_date BETWEEN $1 AND $2) group by entry_no";
+    + " WHERE billing_info.delete_check = 0 AND pay_result = 3 AND (pay_complete_date <= $2) group by entry_no";
 // 全社売上集計
 uriage_sum.sql_all_summary_count = "select count(*) as cnt from drc_sch.billing_info"
   + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
   + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
   + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND pay_result = 3 AND (pay_complete_date BETWEEN $1 AND $2)";
 
-uriage_sum.sql_all_summary = "select '全社集計' as title,sum(pay_complete) as uriage_sum from drc_sch.billing_info"
+uriage_sum.sql_all_summary = "select '全社集計' as title,subq2.complete_total as uriage_sum from drc_sch.billing_info"
   + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
   + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
   + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND pay_result = 3 AND (pay_complete_date BETWEEN $1 AND $2)";
 // 案件リスト取得用
 uriage_sum.sql_all_count = "select count(*) as cnt from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
-  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq ON(subq.entry_no = billing_info.entry_no)"
-  + " where (subq.amount_total <= subq.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 "
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 "
   + " AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 group by billing_info.entry_no";
 
-uriage_sum.sql_all = "select billing_info.entry_no,entry_info.entry_title,sum(pay_complete) as uriage_sum"
+uriage_sum.sql_all = "select billing_info.entry_no,entry_info.entry_title,subq2.complete_total as uriage_sum"
   + " from drc_sch.billing_info left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
-  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq ON(subq.entry_no = billing_info.entry_no)"
-  + " where (subq.amount_total <= subq.complete_total) AND billing_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 group by billing_info.entry_no,entry_info.entry_title";
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2"
+  + " group by billing_info.entry_no,entry_info.entry_title,subq2.complete_total";
 
 // 試験課別売上集計
 uriage_sum.sql_division_summary_count = "select count(*) as cnt from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
   + " left join drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)"
-  + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND test_large_class.delete_check = 0 "
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND test_large_class.delete_check = 0 "
   + " AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 group by entry_info.test_large_class_cd";
 
-uriage_sum.sql_division_summary = "select entry_info.test_large_class_cd as division_cd,test_large_class.item_name as division,sum(pay_complete) as uriage_sum"
+uriage_sum.sql_division_summary = "select entry_info.test_large_class_cd as division_cd,test_large_class.item_name as division,subq2.complete_total as uriage_sum"
   + " from drc_sch.billing_info left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
   + " left join drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)"
-  + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND test_large_class.delete_check = 0 "
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND test_large_class.delete_check = 0 "
   + " AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2"
-  + " group by entry_info.test_large_class_cd,test_large_class.item_name";
+  + " group by entry_info.test_large_class_cd,test_large_class.item_name,subq2.complete_total";
 // 案件リスト取得用
 uriage_sum.sql_division_count = "select count(*) as cnt from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
   + " left join drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)"
-  + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND test_large_class.delete_check = 0 "
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND test_large_class.delete_check = 0 "
   + " AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 AND entry_info.test_large_class_cd = $3 group by billing_info.entry_no";
 
-uriage_sum.sql_division = "select billing_info.entry_no,entry_info.entry_title,sum(pay_complete) as uriage_sum"
+uriage_sum.sql_division = "select billing_info.entry_no,entry_info.entry_title,subq2.complete_total as uriage_sum"
   + " from drc_sch.billing_info left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
   //+ " left join drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)"
-  + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 "//AND test_large_class.delete_check = 0 "
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 "//AND test_large_class.delete_check = 0 "
   + " AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 AND entry_info.test_large_class_cd = $3"
-  + " group by billing_info.entry_no,entry_info.entry_title,entry_info.test_large_class_cd";
+  + " group by billing_info.entry_no,entry_info.entry_title,entry_info.test_large_class_cd,subq2.complete_total";
 // 顧客別売上集計
 uriage_sum.sql_client_summary_count = "select count(*) from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
   + " left join drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd) "
-  + " where billing_info.delete_check = 0 AND client_list.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND client_list.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2"
   + " group by entry_info.client_cd,client_list.name_1";
-uriage_sum.sql_client_summary = "select entry_info.client_cd,client_list.name_1 as client,sum(pay_complete) as uriage_sum from drc_sch.billing_info"
+uriage_sum.sql_client_summary = "select entry_info.client_cd,client_list.name_1 as client,subq2.complete_total as uriage_sum from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
   + " left join drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd) "
-  + " where billing_info.delete_check = 0 AND client_list.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2"
-  + " group by entry_info.client_cd,client_list.name_1";
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND client_list.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2"
+  + " group by entry_info.client_cd,client_list.name_1,subq2.complete_total";
 
 // 案件リスト取得用
 uriage_sum.sql_client_count = "select count(*) from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
-  + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 AND entry_info.client_cd = $3"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 AND entry_info.client_cd = $3"
   + " group by billing_info.entry_no";
-uriage_sum.sql_client = "select billing_info.entry_no, entry_info.entry_title ,sum(pay_complete) as uriage_sum from drc_sch.billing_info"
+uriage_sum.sql_client = "select billing_info.entry_no, entry_info.entry_title ,subq2.complete_total as uriage_sum from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
-  + " where billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 AND entry_info.client_cd = $3"
-  + " group by entry_info.client_cd,billing_info.entry_no, entry_info.entry_title";
+  + " LEFT JOIN (" + uriage_sum.sqlTotalAmount + ") AS subq1 ON(subq1.entry_no = billing_info.entry_no)"
+  + " LEFT JOIN (" + uriage_sum.sqlTotalComplete + ") AS subq2 ON(subq2.entry_no = billing_info.entry_no)"
+  + " where (subq1.amount_total <= subq2.complete_total) AND billing_info.delete_check = 0 AND entry_info.delete_check = 0 AND pay_result = 3 AND pay_complete_date BETWEEN $1 AND $2 AND entry_info.client_cd = $3"
+  + " group by entry_info.client_cd,billing_info.entry_no, entry_info.entry_title,subq2.complete_total";
 
 // 集計検索処理エントリーポイント
 exports.summary = function(req, res) {
