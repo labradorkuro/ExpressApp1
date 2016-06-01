@@ -19,7 +19,21 @@ exports.list = function(req, res) {
   // 案件リスト検索処理
   nyukin_yosoku.getNyukinYosokuList(req, res, pg_params);
 }
+// 入金予測日を算出するための基準とする日を決める
+nyukin_yosoku.getBaseDate = function(entry,billing_info) {
+  // 案件の請求日or報告書提出期限を基準日とする
+  // 請求情報があるか
+  if (billing_info != null) {
 
+  }
+}
+nyukin_yosoku.getBillingDate = function(billing_infos) {
+  var baseDate = null;
+  for(var i in billing_infos) {
+    var billing_info = billing_infos[i];
+
+  }
+}
 // 入金予測日を取得する
 nyukin_yosoku.getNyukinYosokuDate = function(baseDate, sight_info) {
   // 基準日と請求先の支払いサイト情報から入金予測日を決める
