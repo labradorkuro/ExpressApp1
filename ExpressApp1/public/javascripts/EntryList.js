@@ -474,7 +474,7 @@ entryList.openEntryDialog = function (event) {
 	// フォームをクリアする
 	var entry = entryList.clearEntry();
 	entryList.setEntryForm(entry);
-	$("#test_middle_class_list").text("");
+	$("#test_middle_class_list").val("");
 	if ($(event.target).attr('id') == 'edit_entry') {
 		// 編集ボタンから呼ばれた時は選択中の案件のデータを取得して表示する
 		var no = entryList.getSelectEntry();
@@ -608,7 +608,7 @@ entryList.setQuoteInfo = function (quote_list, consumption_tax) {
 				total_price += Number(rows[i].price);
 			}
 			// 中分類リスト
-			$("#test_middle_class_list").text(list);
+			$("#test_middle_class_list").val(list);
 			// 消費税込の合計金額
 			tax = total_price * (rows[0].consumption_tax / 100);
 			$("#entry_amount_price_notax").val(scheduleCommon.numFormatter(total_price,11));	// 金額(税抜)
