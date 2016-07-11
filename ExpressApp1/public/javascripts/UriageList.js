@@ -210,6 +210,7 @@ uriageList.createGrid_client = function() {
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
+  uriageList.getUriageTotal(sd,ed);
 };
 
 uriageList.onSelectUriageSummary = function(rowid) {
