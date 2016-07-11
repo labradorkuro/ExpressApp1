@@ -57,29 +57,48 @@ uriageList.createGrid_all = function() {
 		url: req_url,
 		altRows: true,
 		datatype: "json",
-		colNames: ['集計','売上金額'],
+		colNames: ['案件No.','試験大分類','試験中分類','クライアント名','代理店','試験タイトル','売上税抜','消費税','売上計','請求日','入金日',
+    '入金予定日','営業担当者'],
 		colModel: [
-      { name: 'title', index: 'title', width: 200, align: "center" },
-			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC }
+      { name: 'entry_no', index: 'entry_no', width: 200, align: "center" },
+			{ name: 'test_large_class_name', index: 'test_large_class_name', width: 160, align: "center" },
+      { name: 'test_middle_class_name', index: 'test_middle_class_name', width: 160, align: "center" },
+      { name: 'client_name', index: 'client_name', width: 160, align: "center" },
+      { name: 'agent_name', index: 'agent_name', width: 160, align: "center" },
+      { name: 'entry_title', index: 'entry_title', width: 160, align: "center" },
+      { name: 'uriage_sum', index: 'uriage_sum', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'uriage_tax', index: 'uriage_tax', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'uriage_total', index: 'uriage_total', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'seikyu_date', index: 'seikyu_date', width: 120, align: "center" },
+      { name: 'nyukin_date', index: 'nyukin_date', width: 120, align: "center" },
+      { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
+      { name: 'sales_person_name', index: 'sales_person_name', width: 160, align: "center" },
 		],
 		height:240,
-		width:960,
+		//width:960,
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#uriage_pager',
-		sortname: 'title',
+		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "売上集計(全社)",
-		onSelectRow:uriageList.onSelectUriageSummary,
     loadComplete:uriageList.loadCompleteUgiageSummary
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
-
+  uriageList.getUriageTotal(sd,ed);
 };
 
+// 売上集計総合計の取得
+uriageList.getUriageTotal = function(start_date, end_date) {
+    $.get('/uriage_total?start_date=' + start_date + '&end_date=' + end_date,function(response) {
+        if (response.uriage_total) {
+          $("#uriage_total").text('合計：' + uriageList.numFormatterC(response.uriage_total) + '円');
+        }
+    });
+}
 // 案件リストの表示用グリッド生成
 uriageList.createGrid_list = function(list_kind,division_cd) {
   var sd = $("#start_date").val();
@@ -93,14 +112,24 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 		url: req_url,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件No','試験名','売上金額'],
+    colNames: ['案件No.','試験大分類','試験中分類','クライアント名','代理店','試験タイトル','売上税抜','消費税','売上計','請求日','入金日',
+    '入金予定日','営業担当者'],
 		colModel: [
       { name: 'entry_no', index: 'entry_no', width: 200, align: "center" },
-      { name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
-			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC }
+			{ name: 'test_large_class_name', index: 'test_large_class_name', width: 160, align: "center" },
+      { name: 'test_middle_class_name', index: 'test_middle_class_name', width: 160, align: "center" },
+      { name: 'client_name', index: 'client_name', width: 160, align: "center" },
+      { name: 'agent_name', index: 'agent_name', width: 160, align: "center" },
+      { name: 'entry_title', index: 'entry_title', width: 160, align: "center" },
+      { name: 'uriage_sum', index: 'uriage_sum', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'uriage_tax', index: 'uriage_tax', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'uriage_total', index: 'uriage_total', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'seikyu_date', index: 'seikyu_date', width: 120, align: "center" },
+      { name: 'nyukin_date', index: 'nyukin_date', width: 120, align: "center" },
+      { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
+      { name: 'sales_person_name', index: 'sales_person_name', width: 160, align: "center" },
 		],
 		height:240,
-		width:960,
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
@@ -147,6 +176,7 @@ uriageList.createGrid_division = function() {
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
+  uriageList.getUriageTotal(sd,ed);
 };
 
 // 検索集計結果を表示するグリッドの生成処理（顧客別）

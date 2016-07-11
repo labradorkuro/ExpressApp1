@@ -213,6 +213,7 @@ app.get('/pay_planning', pay_planning.list);
 
 app.get('/uriage_summary',uriage_summary.summary);
 app.get('/uriage_detail',uriage_summary.list);
+app.get('/uriage_total',uriage_summary.total);
 
 app.get('/sight_master',sight_info_get.sight_master);
 app.get('/sight_master_list', sight_master.list);
