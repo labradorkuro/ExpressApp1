@@ -100,15 +100,16 @@ billingList.createBillingListGrid = function () {
 		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','請求番号serial','請求番号','請求日', '税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','請求先情報','備考','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','請求先情報','備考','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
 			{ name: 'billing_number', index: 'billing_number', width: 80, align: "center" },
 			{ name: 'pay_planning_date', index: 'pay_planning_date', width: 80, align: "center" },
-			{ name: 'pay_amount', index: 'pay_amount', width: 80, align: "right" },
+			{ name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 100, align: "center" },
+			{ name: 'pay_amount', index: 'pay_amount', width: 120, align: "right" },
 			{ name: 'pay_amount_tax', index: 'pay_amount_tax', width: 80, align: "right" },
-			{ name: 'pay_amount_total', index: 'pay_amount_total', width: 80, align: "right" },
+			{ name: 'pay_amount_total', index: 'pay_amount_total', width: 120, align: "right" },
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "right" },
 			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
@@ -245,6 +246,7 @@ billingList.clearBilling = function() {
 			billing_no:'',
 			billing_number:'',
 			pay_planning_date:'',
+			nyukin_yotei_date:'',
 			pay_complete_date:'',
 			pay_amount:0,
 			pay_amount_tax:0,
@@ -275,6 +277,7 @@ billingList.setBillingForm = function(billing) {
 	$("#billing_number").val(billing.billing_number);
 
 	$("#pay_planning_date").val(billing.pay_planning_date);
+	$("#nyukin_yotei_date").val(billing.nyukin_yotei_date);
 	$("#pay_complete_date").val(billing.pay_complete_date);
 	$("#pay_amount").val(billing.pay_amount);
 	$("#pay_amount_tax").val(billing.pay_amount_tax);

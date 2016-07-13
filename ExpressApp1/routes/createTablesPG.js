@@ -102,7 +102,8 @@ exports.create = function (req, res) {
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
-			+ "updated_id VARCHAR(32))",						// 更新者ID
+			+ "updated_id VARCHAR(32),",						// 更新者ID
+			+ "nyukin_yotei_date DATE)",		// 入金予定日 2016.07.13 追加
 //			+ ", PRIMARY KEY(entry_no,billing_no));",
 //		"CREATE INDEX drc_sch.billing_info_index ON drc_sch.billing_info(entry_no,billing_no);",
 		// 見積情報

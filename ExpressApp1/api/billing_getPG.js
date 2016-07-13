@@ -33,6 +33,7 @@ var billing_get_list = function (req, res) {
 		+ 'billing_no,'
 		+ 'billing_number,'
 		+ "to_char(pay_planning_date, 'YYYY/MM/DD') AS pay_planning_date,"
+		+ "to_char(nyukin_yotei_date, 'YYYY/MM/DD') AS nyukin_yotei_date,"
 		+ "to_char(pay_complete_date, 'YYYY/MM/DD') AS pay_complete_date,"
 		+ 'pay_amount,'
 		+ 'pay_amount_tax,'
@@ -108,6 +109,7 @@ var billing_get_detail = function (req, res) {
 		+ 'billing_no,'
 		+ 'billing_number,'
 		+ "to_char(pay_planning_date, 'YYYY/MM/DD') AS pay_planning_date,"
+		+ "to_char(nyukin_yotei_date, 'YYYY/MM/DD') AS nyukin_yotei_date,"
 		+ "to_char(pay_complete_date, 'YYYY/MM/DD') AS pay_complete_date,"
 		+ 'pay_amount,'
 		+ 'pay_amount_tax,'
@@ -160,7 +162,7 @@ var billing_get_detail = function (req, res) {
 // 請求金額、入金金額合計の取得
 exports.billing_get_total = function (req, res) {
 	var sql = 'SELECT '
-		+ 'SUM(pay_amount) AS amount_total_notax,' 
+		+ 'SUM(pay_amount) AS amount_total_notax,'
 		+ 'SUM(pay_amount_total) AS amount_total,'
 		+ 'SUM(pay_complete) AS complete_total'
 		+ ' FROM drc_sch.billing_info'
