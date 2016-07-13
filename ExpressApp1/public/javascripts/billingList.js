@@ -218,26 +218,15 @@ billingList.openBillingFormDialog = function (event) {
 	} else {
 		// 追加ボタンから開いた場合
 		billingList.status = "add";
-		var billing = {
-			billing_no:'',
-			billing_number:'',
-			pay_planning_date:'',
-			pay_complete_date:'',
-			pay_amount:0,
-			pay_amount_tax:0,
-			pay_amount_total:0,
-			pay_complete:0,
-			pay_result:0,
-			memo:'',
-			// 選択中の案件情報から得意先情報をコピーする（デフォルト設定として）
-			client_cd:billingList.currentEntry.currentEntry.client_cd,
-			client_name:billingList.currentEntry.currentEntry.client_name_1,
-			client_division_cd:billingList.currentEntry.currentEntry.client_division_cd,
-			client_division_name:billingList.currentEntry.currentEntry.client_division_name,
-			client_person_id:billingList.currentEntry.currentEntry.client_person_id,
-			client_person_name:billingList.currentEntry.currentEntry.client_person_name,
-			client_info: client_info
-		}
+		var billing = billingList.clearBilling();
+		// 選択中の案件情報から得意先情報をコピーする（デフォルト設定として）
+		billing.client_cd = billingList.currentEntry.currentEntry.client_cd;
+		billing.client_name = billingList.currentEntry.currentEntry.client_name_1;
+		billing.client_division_cd = billingList.currentEntry.currentEntry.client_division_cd;
+		billing.client_division_name = billingList.currentEntry.currentEntry.client_division_name;
+		billing.client_person_id = billingList.currentEntry.currentEntry.client_person_id;
+		billing.client_person_name = billingList.currentEntry.currentEntry.client_person_name;
+		billing.client_info = client_info
 		billingList.setBillingForm(billing);
 		// 権限チェック
 		if (entryList.auth_entry_add == 2) {
@@ -261,7 +250,7 @@ billingList.clearBilling = function() {
 			pay_amount_tax:0,
 			pay_amount_total:0,
 			pay_complete:0,
-			pay_result:0,
+			pay_result:"請求待ち",
 			memo:'',
 			client_cd:'',
 			client_name:'',
@@ -293,15 +282,17 @@ billingList.setBillingForm = function(billing) {
 	$("#pay_complete").val(billing.pay_complete);
 //	$("#pay_result").val(billing.pay_result);
 
-
+	$("#seikyu_date").text("請求日");
 	if (billing.pay_result == "請求可") {
 		$("#pay_result_1").prop("checked",true);
+		$("#seikyu_date").text("請求予定日");
 	} else if (billing.pay_result == "請求済") {
 		$("#pay_result_2").prop("checked",true);
 	} else if (billing.pay_result == "入金確認済") {
 		$("#pay_result_3").prop("checked",true);
 	} else if (billing.pay_result == "請求待ち") {
 		$("#pay_result_0").prop("checked",true);
+		$("#seikyu_date").text("請求予定日");
 	}
 
 	$("#billing_client_cd").val(billing.client_cd);
