@@ -72,6 +72,7 @@ var config_get = require('./api/configuration_getPG');
 var auth_settings_post = require('./api/auth_settings_postPG');
 var auth_settings_get = require('./api/auth_settings_getPG');
 var uriage_summary = require('./api/uriage_getPG');
+var nyukin_yosoku = require('./api/nyukin_yosoku_getPG');
 var sight_info_get = require('./api/sight_getPG');
 var sight_info_post = require('./api/sight_postPG');
 //mysql = require('mysql');
@@ -214,6 +215,10 @@ app.get('/pay_planning', pay_planning.list);
 app.get('/uriage_summary',uriage_summary.summary);
 app.get('/uriage_detail',uriage_summary.list);
 app.get('/uriage_total',uriage_summary.total);
+
+app.get('/nyukin_yosoku_summary',nyukin_yosoku.summary);
+app.get('/nyukin_yosoku_detail',nyukin_yosoku.list);
+app.get('/nyukin_yosoku_total',nyukin_yosoku.total);
 
 app.get('/sight_master',sight_info_get.sight_master);
 app.get('/sight_master_list', sight_master.list);

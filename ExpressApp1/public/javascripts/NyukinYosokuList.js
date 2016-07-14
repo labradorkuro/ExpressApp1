@@ -26,8 +26,8 @@ yosokuList.init = function() {
 // 検索ボタンクリック処理
 yosokuList.onSearchButton = function(ui,event) {
   // グリッドのクリア
-  $("#uriage_list").GridUnload();
-  $("#uriage_list_detail").GridUnload();
+  $("#yosoku_list").GridUnload();
+  $("#yosoku_list_detail").GridUnload();
   // グリッドの生成（検索集計、結果表示）
   if ($("#search_option_all").prop('checked')) {
     // 全社
@@ -52,8 +52,8 @@ yosokuList.createGrid_all = function() {
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
-  var req_url = "/uriage_summary?op=all&start_date=" + sd + "&end_date=" + ed;
-	jQuery("#uriage_list").jqGrid({
+  var req_url = "/nyukin_yosoku_summary?op=all&start_date=" + sd + "&end_date=" + ed;
+	jQuery("#yosoku_list").jqGrid({
 		url: req_url,
 		altRows: true,
 		datatype: "json",
@@ -66,9 +66,9 @@ yosokuList.createGrid_all = function() {
       { name: 'client_name', index: 'client_name', width: 160, align: "center" },
       { name: 'agent_name', index: 'agent_name', width: 160, align: "center" },
       { name: 'entry_title', index: 'entry_title', width: 160, align: "center" },
-      { name: 'uriage_sum', index: 'uriage_sum', width: 100, align: "right",formatter:yosokuList.numFormatterC },
-      { name: 'uriage_tax', index: 'uriage_tax', width: 100, align: "right",formatter:yosokuList.numFormatterC },
-      { name: 'uriage_total', index: 'uriage_total', width: 100, align: "right",formatter:yosokuList.numFormatterC },
+      { name: 'yosoku_sum', index: 'yosoku_sum', width: 100, align: "right",formatter:yosokuList.numFormatterC },
+      { name: 'yosoku_tax', index: 'yosoku_tax', width: 100, align: "right",formatter:yosokuList.numFormatterC },
+      { name: 'yosoku_total', index: 'yosoku_total', width: 100, align: "right",formatter:yosokuList.numFormatterC },
       { name: 'seikyu_date', index: 'seikyu_date', width: 120, align: "center" },
       { name: 'nyukin_date', index: 'nyukin_date', width: 120, align: "center" },
       { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
@@ -79,23 +79,23 @@ yosokuList.createGrid_all = function() {
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
-		pager: '#uriage_pager',
+		pager: '#yosoku_pager',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
-		caption: "売上集計(全社)",
+		caption: "入金予測集計(全社)",
     loadComplete:yosokuList.loadCompleteUgiageSummary
 	});
-	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
+	jQuery("#yosoku_list").jqGrid('navGrid', '#yosoku_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
   yosokuList.getUriageTotal(sd,ed);
 };
 
 // 売上集計総合計の取得
 yosokuList.getUriageTotal = function(start_date, end_date) {
-    $.get('/uriage_total?start_date=' + start_date + '&end_date=' + end_date,function(response) {
-        if (response.uriage_total) {
-          $("#uriage_total").text('合計：' + yosokuList.numFormatterC(response.uriage_total) + '円');
+    $.get('/nyukin_yosoku_total?start_date=' + start_date + '&end_date=' + end_date,function(response) {
+        if (response.nyukin_yosoku_total) {
+          $("#yosoku_total").text('合計：' + yosokuList.numFormatterC(response.nyukin_yosoku_total) + '円');
         }
     });
 }
@@ -104,11 +104,11 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
-  var req_url = "/uriage_detail?op=" + list_kind + "&start_date=" + sd + "&end_date=" + ed;
+  var req_url = "/nyukin_yosoku_detail?op=" + list_kind + "&start_date=" + sd + "&end_date=" + ed;
   if (division_cd != "") {
     req_url += "&division_cd=" + division_cd;
   }
-	jQuery("#uriage_list_detail").jqGrid({
+	jQuery("#yosoku_list_detail").jqGrid({
 		url: req_url,
 		altRows: true,
 		datatype: "json",
@@ -121,9 +121,9 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
       { name: 'client_name', index: 'client_name', width: 160, align: "center" },
       { name: 'agent_name', index: 'agent_name', width: 160, align: "center" },
       { name: 'entry_title', index: 'entry_title', width: 160, align: "center" },
-      { name: 'uriage_sum', index: 'uriage_sum', width: 100, align: "right",formatter:yosokuList.numFormatterC },
-      { name: 'uriage_tax', index: 'uriage_tax', width: 100, align: "right",formatter:yosokuList.numFormatterC },
-      { name: 'uriage_total', index: 'uriage_total', width: 100, align: "right",formatter:yosokuList.numFormatterC },
+      { name: 'yosoku_sum', index: 'yosoku_sum', width: 100, align: "right",formatter:yosokuList.numFormatterC },
+      { name: 'yosoku_tax', index: 'yosoku_tax', width: 100, align: "right",formatter:yosokuList.numFormatterC },
+      { name: 'yosoku_total', index: 'yosoku_total', width: 100, align: "right",formatter:yosokuList.numFormatterC },
       { name: 'seikyu_date', index: 'seikyu_date', width: 120, align: "center" },
       { name: 'nyukin_date', index: 'nyukin_date', width: 120, align: "center" },
       { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
@@ -133,7 +133,7 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
-		pager: '#uriage_detail_pager',
+		pager: '#yosoku_detail_pager',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
@@ -141,7 +141,7 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
 		onSelectRow:yosokuList.onSelectUriageList,
     loadComplete:yosokuList.loadCompleteUgiageList
 	});
-	jQuery("#uriage_list_detail").jqGrid('navGrid', '#uriage_detail_pager', { edit: false, add: false, del: false ,search:false});
+	jQuery("#yosoku_list_detail").jqGrid('navGrid', '#yosoku_detail_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
 };
 
@@ -150,8 +150,8 @@ yosokuList.createGrid_division = function() {
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
-  var req_url = "/uriage_summary?op=division&start_date=" + sd + "&end_date=" + ed;
-	jQuery("#uriage_list").jqGrid({
+  var req_url = "/nyukin_yosoku_summary?op=division&start_date=" + sd + "&end_date=" + ed;
+	jQuery("#yosoku_list").jqGrid({
 		url: req_url,
 		altRows: true,
 		datatype: "json",
@@ -159,22 +159,22 @@ yosokuList.createGrid_division = function() {
 		colModel: [
       { name: 'division_cd', index: 'division_cd', hidden:true, sortable:true},
       { name: 'division', index: 'division', width: 300, align: "center" ,sortable:true},
-			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:yosokuList.numFormatterC }
+			{ name: 'nyukin_yosoku_sum', index: 'nyukin_yosoku_sum', width: 200, align: "right",formatter:yosokuList.numFormatterC }
 		],
 		height:240,
 		width:960,
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
-		pager: '#uriage_pager',
+		pager: '#yosoku_pager',
 		sortname: 'division_cd',
 		viewrecords: true,
 		sortorder: "asc",
-		caption: "売上集計(試験課別)",
+		caption: "入金予測集計(試験課別)",
 		onSelectRow:yosokuList.onSelectUriageSummary,
     loadComplete:yosokuList.loadCompleteUgiageSummary
 	});
-	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
+	jQuery("#yosoku_list").jqGrid('navGrid', '#yosoku_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
   yosokuList.getUriageTotal(sd,ed);
 };
@@ -184,8 +184,8 @@ yosokuList.createGrid_client = function() {
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
-  var req_url = "/uriage_summary?op=client&start_date=" + sd + "&end_date=" + ed;
-	jQuery("#uriage_list").jqGrid({
+  var req_url = "/nyukin_yosoku_summary?op=client&start_date=" + sd + "&end_date=" + ed;
+	jQuery("#yosoku_list").jqGrid({
 		url: req_url,
 		altRows: true,
 		datatype: "json",
@@ -193,39 +193,39 @@ yosokuList.createGrid_client = function() {
 		colModel: [
       { name: 'client_cd', index: 'client_cd', hidden:true, sortable:true},
       { name: 'client', index: 'cilent', width: 300, align: "center" ,sortable:true},
-			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:yosokuList.numFormatterC }
+			{ name: 'nyukin_yosoku_sum', index: 'nyukin_yosoku_sum', width: 200, align: "right",formatter:yosokuList.numFormatterC }
 		],
 		height:240,
 		width:960,
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
-		pager: '#uriage_pager',
+		pager: '#yosoku_pager',
 		sortname: 'entry_info.client_cd',
 		viewrecords: true,
 		sortorder: "asc",
-		caption: "売上集計(顧客別)",
+		caption: "入金予測集計(顧客別)",
 		onSelectRow:yosokuList.onSelectUriageSummary,
     loadComplete:yosokuList.loadCompleteUgiageSummary
 	});
-	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
+	jQuery("#yosoku_list").jqGrid('navGrid', '#yosoku_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
   yosokuList.getUriageTotal(sd,ed);
 };
 
 yosokuList.onSelectUriageSummary = function(rowid) {
-  $("#uriage_list_detail").GridUnload();
+  $("#yosoku_list_detail").GridUnload();
   // グリッドの生成（検索集計、結果表示）
   if ($("#search_option_all").prop('checked')) {
     // 全社
     yosokuList.createGrid_list("all","");
   } else if ($("#search_option_division").prop('checked')) {
     // 試験課別
-    var row = $("#uriage_list").getRowData(rowid);
+    var row = $("#yosoku_list").getRowData(rowid);
     yosokuList.createGrid_list("division",row.division_cd);
   } else if ($("#search_option_client").prop('checked')) {
     // 顧客別
-    var row = $("#uriage_list").getRowData(rowid);
+    var row = $("#yosoku_list").getRowData(rowid);
     yosokuList.createGrid_list("client",row.client_cd);
   }
 
@@ -234,7 +234,7 @@ yosokuList.loadCompleteUgiageSummary = function(event) {
 
 };
 yosokuList.onSelectUriageList = function(rowid) {
-  var row = $("#uriage_list_detail").getRowData(rowid);
+  var row = $("#yosoku_list_detail").getRowData(rowid);
   yosokuList.openEntryDialog(row);
 };
 yosokuList.loadCompleteUgiageList = function(event) {
