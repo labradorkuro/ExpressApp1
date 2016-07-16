@@ -10,6 +10,7 @@ module.exports = function (sequelize, DataTypes) {
 		client_cd:Sequelize.STRING(8),
 		shimebi: Sequelize.INTEGER,
 		sight_id: Sequelize.INTEGER,
+		kyujitsu_setting: Sequelize.INTEGER,
 		memo: Sequelize.STRING,
 		delete_check: Sequelize.INTEGER,
 		create_id: Sequelize.STRING,
