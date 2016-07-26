@@ -14,8 +14,23 @@ billingList.eventBind = function() {
 	// 消費税の変更
 	$("#pay_amount_tax").bind("change",billingList.calc_amount);
 	$("#calc_tax_button").bind("click",billingList.calc_tax);
+	// 入金予定日計算ボタン
+	$("#nyukin_yotei_button").bind("click",billingList.calc_nyukin_yotei_date)
 };
 
+// 入金予定日の計算
+billingList.calc_nyukin_yotei_date = function() {
+	// 請求先の支払いサイト情報を取得する
+	var sight_info = nyukinYotei.getSightInfo(billingList.currentBilling.client_cd);
+	// 請求日と締日を参照して、支払年月を決定する
+	var seikyu_date = $("#pay_planning_date").val();
+	var year = nyukinYotei.getYear(seikyu_date, sight_info);
+	var month = nyukinYotei.getMonth(seikyu_date, sight_info);
+	// 入金予定日が営業日か判定し、休日の場合は前後に移動する
+	var date = nyukinYotei.getDate(year,month,seikyu_date,sight_info.kyujitsu_setting);
+	// 入金予定日を決定し、表示する
+	$("#nyukin_yotei_date").val(date);
+}
 // 消費税の計算実行(ボタン押下）
 billingList.calc_tax = function() {
 	if (billingList.inputCheck()) {
