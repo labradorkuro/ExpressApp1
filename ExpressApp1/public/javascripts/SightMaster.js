@@ -58,7 +58,7 @@ sightMaster.createGrid = function() {
 		datatype: "json",
 		colNames: ['id','表示名','支払日','支払月','メモ','削除フラグ','作成者','作成日','更新者','更新日'],
 		colModel: [
-      { name: 'id', index: 'id', width: 200, align: "center" },
+      { name: 'sight_id', index: 'sight_id', width: 200, align: "center" },
       { name: 'disp_str', index: 'disp_str', width: 200, align: "center" },
       { name: 'shiharaibi', index: 'shiharaibi', width: 200, align: "center"},
       { name: 'shiharai_month', index: 'shiharai_month', width: 200, align: "center"},
@@ -75,7 +75,7 @@ sightMaster.createGrid = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#sight_list_pager',
-		sortname: 'id',
+		sortname: 'sight_id',
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "支払日マスタ",

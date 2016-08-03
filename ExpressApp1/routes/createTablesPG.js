@@ -16,19 +16,6 @@ var done = function (res) {
 
 // テーブルの生成
 exports.create = function (req, res) {
-	// 2016.01.27 Ver1.0.3からSequelizeを使うようにした。
-	// modelsの中のModel定義を読み込んでテーブルを生成する。（存在しない場合）
-	//var sequelize = require('../libs/dbconn')(config);
-	//var models = require('../models')(sequelize);
-	var options = { "schema": "drc_sch" };
-	for (var key in models) {
-		var model = models[key];
-		if (model != undefined) {
-			if (model instanceof sequelize.Model) {
-				model.sync(options);
-			}
-		}
-	}
 
 	var sql = [
 		// 案件情報

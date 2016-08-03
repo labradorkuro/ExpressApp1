@@ -18,14 +18,14 @@ var sightInfo = sightInfo || {}
 
 // 支払い日マスタの保存処理（追加、更新）
 sightDate.save = function(req, res) {
-  var attr = {where:{id:req.body.sight_id,shiharaibi:req.body.sight_shiharaibi,
+  var attr = {where:{sight_id:req.body.sight_id,shiharaibi:req.body.sight_shiharaibi,
     shiharai_month:req.body.sight_shiharai_month,memo:req.body.sight_memo}};
   console.log(attr);
   // 検索
   sight_date.schema('drc_sch').find(attr).then(function(sight){
     if (sight) {
       // 更新
-      attr = {id:req.body.sight_id,shiharaibi:req.body.sight_shiharaibi,disp_str:req.body.sight_disp_str,
+      attr = {sight_id:req.body.sight_id,shiharaibi:req.body.sight_shiharaibi,disp_str:req.body.sight_disp_str,
         shiharai_month:req.body.sight_shiharai_month,memo:req.body.sight_memo,delete_check:req.body.delete_check};
       sight_date.schema('drc_sch').update(attr,{where:{id:req.body.sight_id}}).then(function(result) {
         res.send(attr);

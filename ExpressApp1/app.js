@@ -273,6 +273,35 @@ process.on('uncaughtException',function(err) {
 	console.log(err);
 });
 
+// 2016.01.27 Ver1.0.3からSequelizeを使うようにした。
+// modelsの中のModel定義を読み込んでテーブルを生成する。（存在しない場合）
+//var sequelize = require('../libs/dbconn')(config);
+//var models = require('../models')(sequelize);
+var sight_date = models['sight_date'];
+var sight_info = models['sight_info'];
+var options = { "schema": "drc_sch" };
+sight_info.sync(options);
+sight_date.sync(options);
+//sight_date.associate(models);
+sight_info.associate(models);
+/* 
+var options = { "schema": "drc_sch" };
+for (var key in models) {
+  var model = models[key];
+  if (model != undefined) {
+    if (model instanceof sequelize.Model) {
+      model.sync(options);
+    }
+  }
+}
+// associateの設定を行う
+Object.keys(models).forEach(function(modelName) {
+  if ("associate" in models[modelName]) {
+    models[modelName].associate(models);
+  }
+});
+*/
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
   var msg = '基幹システム(Build:2016.07.22)';

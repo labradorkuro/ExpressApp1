@@ -923,7 +923,7 @@ clientList.onGetSightMasterList = function(list) {
 	$("#sight_id").append($("<option value='0'></option>"));
 	$.each(list,function() {
     // 選択リストに追加する
-		$("#sight_id").append($("<option value='" + this.id + "'>" + this.disp_str +  "</option>"));
+		$("#sight_id").append($("<option value='" + this.sight_id + "'>" + this.disp_str +  "</option>"));
 	});
 
 };
