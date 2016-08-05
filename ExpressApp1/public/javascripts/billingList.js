@@ -21,15 +21,32 @@ billingList.eventBind = function() {
 // 入金予定日の計算
 billingList.calc_nyukin_yotei_date = function() {
 	// 請求先の支払いサイト情報を取得する
-	var sight_info = nyukinYotei.getSightInfo(billingList.currentBilling.client_cd);
-	// 請求日と締日を参照して、支払年月を決定する
-	var seikyu_date = $("#pay_planning_date").val();
-	var year = nyukinYotei.getYear(seikyu_date, sight_info);
-	var month = nyukinYotei.getMonth(seikyu_date, sight_info);
-	// 入金予定日が営業日か判定し、休日の場合は前後に移動する
-	var date = nyukinYotei.getDate(year,month,sight_info.shiharaibi,sight_info.kyujitsu_setting);
-	// 入金予定日を決定し、表示する
-	$("#nyukin_yotei_date").val(date);
+	var sight_info = {client_cd:0,shimebi:"",sight_id:0,kyujitsu_setting:0,memo:""};
+	nyukinYotei.getSightInfo(billingList.currentBilling.client_cd).then(function(data){
+			sight_info = data;
+			// 請求日と締日を参照して、支払年月を決定する
+			var seikyu_date = $("#pay_planning_date").val();
+			var shiharaibi = nyukinYotei.getShiharaibi(seikyu_date, sight_info);
+			// 入金予定日が営業日か判定し、休日の場合は前後に移動する
+			// 土日チェック
+			var date = nyukinYotei.checkHoliday_ss(shiharaibi,sight_info.kyujitsu_setting);
+			// 休日マスタ検索
+			nyukinYotei.checkHoliday_db(date).then(function(holiday){
+				if (holiday.length) {
+//					var date = new Date();
+					if (sight_info.kyujitsu_setting == 0) {
+						date = new Date(holiday[0].start_date);
+						date.setDate(date.getDate() - 1);
+					} else {
+						date = new Date(holiday[0].end_date);
+						date.setDate(date.getDate() + 1);
+					}
+				}
+				// 入金予定日を決定し、表示する
+				$("#nyukin_yotei_date").val(scheduleCommon.getDateString(date,'{0}/{1}/{2}'));
+
+			});
+	});
 }
 // 消費税の計算実行(ボタン押下）
 billingList.calc_tax = function() {

@@ -4,6 +4,9 @@
 var tools = require('../tools/tool');
 var sight_date = models['sight_date'];
 var sight_info = models['sight_info'];
+//sight_date.belongsTo(sight_info,{foreignKey: 'id',targetKey:'sight_id'});
+//sight_date.hasOne(sight_info,{foreignKey: 'sight_id'});
+
 // 支払日マスタの検索
 exports.sight_master = function(req, res) {
   if (req.query.id) {
@@ -43,7 +46,7 @@ sightDate.find = function(id,res) {
 sightDate.list_grid = function(req, res) {
   var result = { page: 1, total: 1, records: 0, rows: [] };
   var pg_params = tools.getPagingParams(req);
-  var attr = {where:{delete_check:req.query.delete_check}};
+  var attr = {attributes:['sight_id','disp_str','shiharaibi','shiharai_month','memo','delete_check','create_id','update_id'],where:{delete_check:req.query.delete_check}};
   sight_date.schema('drc_sch').count(attr).then(function(count) {
     // 取得した件数からページ数を計算する
     if (count) {
@@ -56,7 +59,7 @@ sightDate.list_grid = function(req, res) {
     sight_date.schema('drc_sch').findAll(attr).then(function(sight){
       for(var i in sight) {
         var row = { id: '', cell: [] };
-        row.id = sight[i].id;
+        row.id = sight[i].sight_id;
         row.cell = sight[i];
         result.rows.push(row);
       }
@@ -84,12 +87,7 @@ sightDate.list_all = function(req, res) {
 
 // 支払いサイト情報の検索
 sightInfo.find = function(client_cd, res) {
-  var attr = {
-    include: [{
-         model: sight_date
-     }],
-     where:{client_cd:client_cd,delete_check:0}
-  };
+  var attr = {where:{client_cd:client_cd,delete_check:0},include:[{model:models.sight_date}]};
   sight_info.schema('drc_sch').find(attr).then(function(sight){
     res.send(sight);
   }).catch(function(error){

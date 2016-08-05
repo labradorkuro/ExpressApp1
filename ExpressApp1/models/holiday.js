@@ -1,16 +1,16 @@
 ﻿//
 // 2016.01.27 t.tanaka
 // Model
-// 支払いサイト情報
+// 休日設定
 //
 var Sequelize = require('sequelize');
 
-var Sight_date = sequelize.define("sight_date", {
-	sight_id: { type: Sequelize.INTEGER, autoIncrement: true , primaryKey: true },
-	disp_str:Sequelize.STRING(128),
-	shiharaibi: Sequelize.INTEGER,
-	shiharai_month: Sequelize.INTEGER,
-	memo: Sequelize.STRING,
+var Holiday = sequelize.define("holiday", {
+	holiday_id: { type: Sequelize.INTEGER, autoIncrement: true , primaryKey: true },
+	holiday_name:Sequelize.STRING(128),
+	start_date: Sequelize.DATE,
+	end_date: Sequelize.DATE,
+	holiday_memo: Sequelize.STRING,
 	delete_check: {type:Sequelize.INTEGER,defaultvalue:0},
 	create_id: Sequelize.STRING,
 	update_id: Sequelize.STRING
@@ -22,5 +22,5 @@ var Sight_date = sequelize.define("sight_date", {
 	timestamps: false
 });
 module.exports = function (sequelize, DataTypes) {
-	return Sight_date;
+	return Holiday;
 };

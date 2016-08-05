@@ -58,10 +58,10 @@ sightMaster.createGrid = function() {
 		datatype: "json",
 		colNames: ['id','表示名','支払日','支払月','メモ','削除フラグ','作成者','作成日','更新者','更新日'],
 		colModel: [
-      { name: 'id', index: 'id', width: 200, align: "center" },
+      { name: 'sight_id', index: 'sight_id', width: 200, align: "center" },
       { name: 'disp_str', index: 'disp_str', width: 200, align: "center" },
       { name: 'shiharaibi', index: 'shiharaibi', width: 200, align: "center"},
-      { name: 'shiharai_month', index: 'shiharai_month', width: 200, align: "center"},
+      { name: 'shiharai_month', index: 'shiharai_month', width: 200, align: "center",formatter:sightMaster.shiharai_monthFormatter},
       { name: 'memo', index: 'memo', width: 200, align: "center"},
       { name: 'delete_check', index: 'delete_check', hidden:true},
       { name: 'create_id', index: 'create_id', hidden:true},
@@ -75,7 +75,7 @@ sightMaster.createGrid = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#sight_list_pager',
-		sortname: 'id',
+		sortname: 'sight_id',
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "支払日マスタ",
@@ -86,12 +86,34 @@ sightMaster.createGrid = function() {
 	scheduleCommon.changeFontSize();
 
 };
+sightMaster.shiharai_monthFormatter = function (cellval, options, rowObject) {
+	var result = "";
+	if (cellval != null) {
+		switch(cellval) {
+			case 0:result = "当月";
+			break;
+			case 1:result = "翌月";
+			break;
+			case 2:result = "翌々月";
+			break;
+      case 3:result = "3ヵ月後";
+			break;
+      case 4:result = "4ヵ月後";
+			break;
+      case 5:result = "5ヵ月後";
+			break;
+      case 6:result = "6ヵ月後";
+			break;
+		}
+	}
+	return result;
+};
 
 sightMaster.onSelectRow = function(rowid) {
   var sight = sightMaster.clear();
   var row = $("#sight_list").getRowData(rowid);
   $("#edit_sight").css("display","inline");
-  sight.sight_id = row.id;
+  sight.sight_id = row.sight_id;
   sight.disp_str = row.disp_str;
   sight.shiharaibi = row.shiharaibi;
   sight.shiharai_month = row.shiharai_month;

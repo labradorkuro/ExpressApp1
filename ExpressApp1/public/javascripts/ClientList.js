@@ -79,8 +79,11 @@ clientList.init = function(toolbar) {
 			$("#client_person_delete_check_disp_" + i).bind('change', clientList.changeClientPersonOption);
 			// 支払いサイト情報表示ボタンイベント
 			$("#sight_" + i).bind('click' , {}, clientList.openSightInfoDialog);
+
 		}
 	}
+	// 入力したclient_cdが既存か確認する
+	$("#client_cd").bind('blur' , {}, clientList.check_client_cd);
 };
 
 clientList.initSub = function(i,toolbar) {
@@ -900,12 +903,14 @@ clientList.clearSightInfo = function() {
 	var sight_info = {};
 	sight_info.shimebi = 0;
 	sight_info.sight_id = 0;
+	sight_info.kyujitsu_setting = 0;
 	return sight_info;
 };
 clientList.setSightInfoForm = function(sight_info) {
 	$("#sight_client_cd").val(sight_info.client_cd);
 	$("#shimebi").val(sight_info.shimebi);
 	$("#sight_id").val(sight_info.sight_id);
+	$("#kyujitsu_setting").val(sight_info.kyujitsu_setting);
 }
 // 支払日マスタからリストを取得する
 clientList.getSightMasterList = function() {
@@ -923,7 +928,7 @@ clientList.onGetSightMasterList = function(list) {
 	$("#sight_id").append($("<option value='0'></option>"));
 	$.each(list,function() {
     // 選択リストに追加する
-		$("#sight_id").append($("<option value='" + this.id + "'>" + this.disp_str +  "</option>"));
+		$("#sight_id").append($("<option value='" + this.sight_id + "'>" + this.disp_str +  "</option>"));
 	});
 
 };
@@ -968,4 +973,13 @@ clientList.onloadSaveSightInfo = function(event) {
 // 支払いサイト情報の削除（削除フラグセット）
 clientList.delSightInfo = function() {
 
+}
+
+clientList.check_client_cd = function(ui,event) {
+	$.ajax({type:'get',url:'/client_get?client_cd=' + $("#client_cd").val() }).then(function(client){
+		if (client) {
+			//alert('コードが既存です。')；
+			alert('既存のコードです');
+		}
+	});
 }
