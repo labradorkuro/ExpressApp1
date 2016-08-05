@@ -40,5 +40,26 @@ nyukinYotei.getShiharaibi = function(seikyu_date, sight_info) {
 // 入金予定日が営業日か判定し、休日の場合は前後に移動する
 nyukinYotei.checkHoliday = function(shiharaibi,kyujitsu_setting) {
   var date = shiharaibi;
+  var day = shiharaibi.getDay();
+  //
+  if (day == 0) {
+    // 日曜日の場合
+    if (kyujitsu_setting == 0) {
+      // 前へ移動
+      date.setDate(date.getDate() - 2);
+    } else {
+      // 後ろへ移動
+      date.setDate(date.getDate() + 1);
+    }
+  } else if (day == 6) {
+    // 土曜日の場合
+    if (kyujitsu_setting == 0) {
+      // 前へ移動
+      date.setDate(date.getDate() - 1);
+    } else {
+      // 後ろへ移動
+      date.setDate(date.getDate() + 2);
+    }
+  }
   return date;
 }

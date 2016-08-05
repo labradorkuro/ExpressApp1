@@ -91,7 +91,7 @@ sightMaster.onSelectRow = function(rowid) {
   var sight = sightMaster.clear();
   var row = $("#sight_list").getRowData(rowid);
   $("#edit_sight").css("display","inline");
-  sight.sight_id = row.id;
+  sight.sight_id = row.sight_id;
   sight.disp_str = row.disp_str;
   sight.shiharaibi = row.shiharaibi;
   sight.shiharai_month = row.shiharai_month;

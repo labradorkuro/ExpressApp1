@@ -9,3 +9,9 @@ form#sightInfoForm(method="post" action="javascript:return false;")
       td.form_title 支払日情報
       td
         select#sight_id(name="sight_id")
+    tr
+      td.form_title 休日対応
+      td
+        select#kyujitsu_setting(name="kyujitsu_setting")
+          option(value=0) 前へ
+          option(value=1) 後へ

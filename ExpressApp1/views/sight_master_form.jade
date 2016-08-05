@@ -13,8 +13,13 @@ form#sightMasterForm(method="post" action="javascript:return false;")
       td.form_title 支払月
       td
         select#sight_shiharai_month(name="sight_shiharai_month")
+          option(value=0) 当月
           option(value=1) 翌月
           option(value=2) 翌々月
+          option(value=3) 3ヶ月後 
+          option(value=4) 4ヶ月後
+          option(value=5) 5ヶ月後
+          option(value=6) 6ヶ月後
     tr
       td.form_title メモ
       td

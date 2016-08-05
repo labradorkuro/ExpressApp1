@@ -44,6 +44,7 @@ var auth_settings = require('./routes/auth_settings');
 var uriage_list = require('./routes/uriage_list')
 var pay_planning = require('./routes/pay_plan_list')
 var sight_master = require('./routes/sight_master_list')
+var holiday_master = require('./routes/holiday_master_list')  // 休日マスタ画面
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -75,6 +76,8 @@ var uriage_summary = require('./api/uriage_getPG');
 var nyukin_yosoku = require('./api/nyukin_yosoku_getPG');
 var sight_info_get = require('./api/sight_getPG');
 var sight_info_post = require('./api/sight_postPG');
+var holiday_get = require('./api/holiday_getPG');       // 休日マスタ
+var holiday_post = require('./api/holiday_postPG');
 //mysql = require('mysql');
 
 
@@ -211,20 +214,26 @@ app.get('/auth_get/:pno', auth_settings_get.auth_settings_get);
 
 app.get('/uriage_list', uriage_list.list);
 app.get('/pay_planning', pay_planning.list);
-
+// 売上集計関係
 app.get('/uriage_summary',uriage_summary.summary);
 app.get('/uriage_detail',uriage_summary.list);
 app.get('/uriage_total',uriage_summary.total);
-
+// 入金予測関係
 app.get('/nyukin_yosoku_summary',nyukin_yosoku.summary);
 app.get('/nyukin_yosoku_detail',nyukin_yosoku.list);
 app.get('/nyukin_yosoku_total',nyukin_yosoku.total);
-
+// 支払サイト関係
 app.get('/sight_master',sight_info_get.sight_master);
 app.get('/sight_master_list', sight_master.list);
 app.get('/sight_info',sight_info_get.sight_info);
 app.post('/sight_master_post',upload.array(),sight_info_post.sight_master_post);
 app.post('/sight_info_post',upload.array(),sight_info_post.sight_info_post);
+// 休日マスタ（金融機関休日登録）
+app.get('/holiday_master_list',holiday_master.list);  // route
+app.get('/holiday_get',holiday_get.holiday_get);   // api
+app.post('/holiday_post',upload.array(),holiday_post.holiday_post); //api
+
+
 /** mysql -> pg 2014.11.13
 pool = mysql.createPool({
 	host : 'localhost',
@@ -279,12 +288,14 @@ process.on('uncaughtException',function(err) {
 //var models = require('../models')(sequelize);
 var sight_date = models['sight_date'];
 var sight_info = models['sight_info'];
+var holiday = models['holiday'];
 var options = { "schema": "drc_sch" };
 sight_info.sync(options);
 sight_date.sync(options);
-//sight_date.associate(models);
+holiday.sync(options);
+
 sight_info.associate(models);
-/* 
+/*
 var options = { "schema": "drc_sch" };
 for (var key in models) {
   var model = models[key];

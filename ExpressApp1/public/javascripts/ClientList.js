@@ -900,12 +900,14 @@ clientList.clearSightInfo = function() {
 	var sight_info = {};
 	sight_info.shimebi = 0;
 	sight_info.sight_id = 0;
+	sight_info.kyujitsu_setting = 0;
 	return sight_info;
 };
 clientList.setSightInfoForm = function(sight_info) {
 	$("#sight_client_cd").val(sight_info.client_cd);
 	$("#shimebi").val(sight_info.shimebi);
 	$("#sight_id").val(sight_info.sight_id);
+	$("#kyujitsu_setting").val(sight_info.kyujitsu_setting);
 }
 // 支払日マスタからリストを取得する
 clientList.getSightMasterList = function() {
