@@ -27,7 +27,7 @@ billingList.calc_nyukin_yotei_date = function() {
 	var year = nyukinYotei.getYear(seikyu_date, sight_info);
 	var month = nyukinYotei.getMonth(seikyu_date, sight_info);
 	// 入金予定日が営業日か判定し、休日の場合は前後に移動する
-	var date = nyukinYotei.getDate(year,month,seikyu_date,sight_info.kyujitsu_setting);
+	var date = nyukinYotei.getDate(year,month,sight_info.shiharaibi,sight_info.kyujitsu_setting);
 	// 入金予定日を決定し、表示する
 	$("#nyukin_yotei_date").val(date);
 }

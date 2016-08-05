@@ -19,7 +19,7 @@ nyukinYotei.getSightInfo = function(client_cd) {
 
 // 請求日と締日を参照して、支払年を決定する
 nyukinYotei.getYear = function(seikyu_date, sight_info) {
-  var year = 1;
+  var year = 2016;
   return year;
 };
 
@@ -30,7 +30,7 @@ nyukinYotei.getMonth = function(seikyu_date, sight_info) {
 };
 
 // 入金予定日が営業日か判定し、休日の場合は前後に移動する
-nyukinYotei.getDate = function(year,month,date,kyujitsu_setting) {
-  var date = new Date(year,month,date);
-  return date;
+nyukinYotei.getDate = function(year,month,shiharaibi,kyujitsu_setting) {
+  var date = new Date(year,month,shiharaibi,0,0,0,0);
+  return scheduleCommon.getDateString(date,"{0}-{1}-{2}");
 }

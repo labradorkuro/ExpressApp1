@@ -84,7 +84,12 @@ sightDate.list_all = function(req, res) {
 
 // 支払いサイト情報の検索
 sightInfo.find = function(client_cd, res) {
-  var attr = {where:{client_cd:client_cd,delete_check:0}};
+  var attr = {
+    include: [{
+         model: sight_date
+     }],
+     where:{client_cd:client_cd,delete_check:0}
+  };
   sight_info.schema('drc_sch').find(attr).then(function(sight){
     res.send(sight);
   }).catch(function(error){
