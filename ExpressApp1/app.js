@@ -231,6 +231,7 @@ app.post('/sight_info_post',upload.array(),sight_info_post.sight_info_post);
 // 休日マスタ（金融機関休日登録）
 app.get('/holiday_master_list',holiday_master.list);  // route
 app.get('/holiday_get',holiday_get.holiday_get);   // api
+app.get('/holiday_search',holiday_get.holiday_search);   // api
 app.post('/holiday_post',upload.array(),holiday_post.holiday_post); //api
 
 

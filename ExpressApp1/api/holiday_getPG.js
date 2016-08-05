@@ -17,6 +17,10 @@ exports.holiday_get = function(req, res) {
     }
   }
 }
+// 指定された日を含む休日データを検索する
+exports.holiday_search = function(req, res) {
+  holiday_master.holiday_search(req, res);
+}
 
 var holiday_master = holiday_master || {}
 
@@ -25,6 +29,26 @@ var holiday_master = holiday_master || {}
 holiday_master.find = function(id,res) {
   holiday.schema('drc_sch').findById(id).then(function(sight){
     res.send(sight);
+  }).catch(function(error){
+    console.log(error);
+    res.send("");
+  });
+}
+// 全件リスト取得
+holiday_master.list_all = function(req, res) {
+  var attr = {where:{delete_check:0}};
+  holiday.schema('drc_sch').findAll(attr).then(function(hi){
+    res.send(hi);
+  }).catch(function(error){
+    console.log(error);
+    res.send("");
+  });
+}
+// 指定された日を含む休日データを検索する
+holiday_master.holiday_search = function(req, res) {
+  var attr = {where:{start_date:{$lt:req.query.target_date},end_date:{$gt:req.query.target_date},delete_check:0}};
+  holiday.schema('drc_sch').findAll(attr).then(function(hi){
+    res.send(hi);
   }).catch(function(error){
     console.log(error);
     res.send("");
@@ -61,16 +85,6 @@ holiday_master.list_grid = function(req, res) {
       console.log(error);
       res.send("");
     });
-  }).catch(function(error){
-    console.log(error);
-    res.send("");
-  });
-}
-// 全件リスト取得
-holiday_master.list_all = function(req, res) {
-  var attr = {where:{delete_check:0}};
-  holiday.schema('drc_sch').findAll(attr).then(function(hi){
-    res.send(hi);
   }).catch(function(error){
     console.log(error);
     res.send("");

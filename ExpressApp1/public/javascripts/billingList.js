@@ -28,9 +28,24 @@ billingList.calc_nyukin_yotei_date = function() {
 			var seikyu_date = $("#pay_planning_date").val();
 			var shiharaibi = nyukinYotei.getShiharaibi(seikyu_date, sight_info);
 			// 入金予定日が営業日か判定し、休日の場合は前後に移動する
-			var date = nyukinYotei.checkHoliday(shiharaibi,sight_info.kyujitsu_setting);
-			// 入金予定日を決定し、表示する
-			$("#nyukin_yotei_date").val(scheduleCommon.getDateString(date,'{0}/{1}/{2}'));
+			// 土日チェック
+			var date = nyukinYotei.checkHoliday_ss(shiharaibi,sight_info.kyujitsu_setting);
+			// 休日マスタ検索
+			nyukinYotei.checkHoliday_db(date).then(function(holiday){
+				if (holiday.length) {
+//					var date = new Date();
+					if (sight_info.kyujitsu_setting == 0) {
+						date = new Date(holiday[0].start_date);
+						date.setDate(date.getDate() - 1);
+					} else {
+						date = new Date(holiday[0].end_date);
+						date.setDate(date.getDate() + 1);
+					}
+				}
+				// 入金予定日を決定し、表示する
+				$("#nyukin_yotei_date").val(scheduleCommon.getDateString(date,'{0}/{1}/{2}'));
+
+			});
 	});
 }
 // 消費税の計算実行(ボタン押下）

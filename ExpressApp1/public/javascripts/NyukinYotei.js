@@ -38,7 +38,7 @@ nyukinYotei.getShiharaibi = function(seikyu_date, sight_info) {
 };
 
 // 入金予定日が営業日か判定し、休日の場合は前後に移動する
-nyukinYotei.checkHoliday = function(shiharaibi,kyujitsu_setting) {
+nyukinYotei.checkHoliday_ss = function(shiharaibi,kyujitsu_setting) {
   var date = shiharaibi;
   var day = shiharaibi.getDay();
   //
@@ -63,3 +63,8 @@ nyukinYotei.checkHoliday = function(shiharaibi,kyujitsu_setting) {
   }
   return date;
 }
+// 休日マスタに該当する休日データがあるか検索する
+nyukinYotei.checkHoliday_db = function(target_date) {
+  // 検索処理
+  return $.ajax({type:'get',url:'/holiday_search?target_date="' + target_date + '"'});
+};

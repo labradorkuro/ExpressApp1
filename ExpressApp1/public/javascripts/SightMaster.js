@@ -61,7 +61,7 @@ sightMaster.createGrid = function() {
       { name: 'sight_id', index: 'sight_id', width: 200, align: "center" },
       { name: 'disp_str', index: 'disp_str', width: 200, align: "center" },
       { name: 'shiharaibi', index: 'shiharaibi', width: 200, align: "center"},
-      { name: 'shiharai_month', index: 'shiharai_month', width: 200, align: "center"},
+      { name: 'shiharai_month', index: 'shiharai_month', width: 200, align: "center",formatter:sightMaster.shiharai_monthFormatter},
       { name: 'memo', index: 'memo', width: 200, align: "center"},
       { name: 'delete_check', index: 'delete_check', hidden:true},
       { name: 'create_id', index: 'create_id', hidden:true},
@@ -85,6 +85,28 @@ sightMaster.createGrid = function() {
 	jQuery("#sight_list").jqGrid('navGrid', '#sight_list_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
 
+};
+sightMaster.shiharai_monthFormatter = function (cellval, options, rowObject) {
+	var result = "";
+	if (cellval != null) {
+		switch(cellval) {
+			case 0:result = "当月";
+			break;
+			case 1:result = "翌月";
+			break;
+			case 2:result = "翌々月";
+			break;
+      case 3:result = "3ヵ月後";
+			break;
+      case 4:result = "4ヵ月後";
+			break;
+      case 5:result = "5ヵ月後";
+			break;
+      case 6:result = "6ヵ月後";
+			break;
+		}
+	}
+	return result;
 };
 
 sightMaster.onSelectRow = function(rowid) {
