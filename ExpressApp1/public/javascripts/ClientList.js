@@ -79,8 +79,11 @@ clientList.init = function(toolbar) {
 			$("#client_person_delete_check_disp_" + i).bind('change', clientList.changeClientPersonOption);
 			// 支払いサイト情報表示ボタンイベント
 			$("#sight_" + i).bind('click' , {}, clientList.openSightInfoDialog);
+
 		}
 	}
+	// 入力したclient_cdが既存か確認する
+	$("#client_cd").bind('blur' , {}, clientList.check_client_cd);
 };
 
 clientList.initSub = function(i,toolbar) {
@@ -970,4 +973,13 @@ clientList.onloadSaveSightInfo = function(event) {
 // 支払いサイト情報の削除（削除フラグセット）
 clientList.delSightInfo = function() {
 
+}
+
+clientList.check_client_cd = function(ui,event) {
+	$.ajax({type:'get',url:'/client_get?client_cd=' + $("#client_cd").val() }).then(function(client){
+		if (client) {
+			//alert('コードが既存です。')；
+			alert('既存のコードです');
+		}
+	});
 }

@@ -1,6 +1,6 @@
 ﻿// 得意先の取得
 exports.client_get = function (req, res) {
-	if ((req.params.client_cd != undefined) && (req.params.client_cd != '')) {
+	if ((req.query.client_cd != undefined) && (req.query.client_cd != '')) {
 		client_get_detail(req, res);
 	} else {
 		client_get_list(req, res);
@@ -26,7 +26,7 @@ exports.client_person_get = function (req, res) {
 };
 var getPagingParams = function (req) {
 	var pg_param = {};
-	pg_param.sidx = "uid";
+	pg_param.sidx = "client_cd";
 	pg_param.sord = "asc";
 	pg_param.limit = 10;
 	pg_param.offset = 0;
@@ -186,7 +186,6 @@ var client_get_list_for_grid = function (res, sql_count, sql, params, pg_params)
 };
 // 得意先データの取得
 var client_get_detail = function (req, res) {
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1';
 	var sql = 'SELECT '
 		+ 'client_cd,'
 		+ 'name_1,'
@@ -208,16 +207,17 @@ var client_get_detail = function (req, res) {
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
 		// データを取得するためのクエリーを実行する
-		connection.query(sql, [req.params.uid], function (err, results) {
+		console.log(sql + " " + req.query.client_cd);
+		connection.query(sql, [req.query.client_cd], function (err, results) {
 			if (err) {
 				console.log(err);
 			} else {
-				var user = [];
-				for (var i in results.rows) {
-					user = results.rows[i];
+				var client = null;
+				if (results.rows.length > 0) {
+					client = results.rows[0];
 				}
 				connection.end();
-				res.send(user);
+				res.send(client);
 			}
 		});
 	});
