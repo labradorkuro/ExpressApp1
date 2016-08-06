@@ -370,9 +370,11 @@ clientList.openClientDialog = function (event) {
 		clientList.setClientForm(clientList.currentClient);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		$("#client_cd").attr("disabled",true);
 	} else {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+		$("#client_cd").attr("disabled",false);
 	}
 
 	$("#client_dialog").dialog("open");
@@ -977,9 +979,11 @@ clientList.delSightInfo = function() {
 
 clientList.check_client_cd = function(ui,event) {
 	$.ajax({type:'get',url:'/client_get?client_cd=' + $("#client_cd").val() }).then(function(client){
-		if (client) {
-			//alert('コードが既存です。')；
-			alert('既存のコードです');
+		if (client.client_cd == $("#client_cd").val()) {
+			clientList.setClientForm(client);
+			$("#message").text("入力したコードは既に登録されています。そのまま登録すると現在のデータに上書きされます。");
+			$("#message_dialog").dialog("option", { title: "警告" });
+			$("#message_dialog").dialog("open");
 		}
 	});
 }
