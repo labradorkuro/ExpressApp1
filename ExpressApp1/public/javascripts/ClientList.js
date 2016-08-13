@@ -84,6 +84,10 @@ clientList.init = function(toolbar) {
 	}
 	// 入力したclient_cdが既存か確認する
 	$("#client_cd").bind('blur' , {}, clientList.check_client_cd);
+	// 支払サイト編集画面を開くボタン
+	// 支払いサイト情報表示ボタンイベント
+	$("#sight_info_btn").bind('click' , {}, clientList.openSightInfoDialog);
+
 };
 
 clientList.initSub = function(i,toolbar) {

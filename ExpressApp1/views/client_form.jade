@@ -5,8 +5,11 @@ form#clientForm(method="post",action="javascript:return false;")
 	table
 		tr
 			td.form_title #{target_name}コード(半角英数カナ)
-			td(colspan="3")
+			td
 				input#client_cd(type="text" name="client_cd" maxlength="8" placeholder="#{target_name}コード(半角英数カナ)" required="true")
+			td
+			td
+				input#sight_info_btn(type="button" name="sight_info_btn" value="支払サイト編集")
 		tr
 			td.form_title #{target_name}名１
 			td
@@ -21,7 +24,7 @@ form#clientForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title 郵便番号
 			td
-				input#zipcode(type="text" name="zipcode" pattern="^[0-9]{3}-[0-9]{4}$" placeholder="郵便番号")
+				input#zipcode(type="text" name="zipcode" pattern="^[0-9]{3}-[0-9]{4}$" placeholder="郵便番号" title="")
 			td.form_title メールアドレス
 			td
 				input#email(type="email" name="email" maxlength="128" placeholder="メールアドレス")
