@@ -45,6 +45,8 @@ $(function ()　{
 	// 案件編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_entry").bind('click' , {}, entryList.openEntryDialog);
 	$("#edit_entry").css("display","none");
+  // 案件リスト印刷ボタン
+	$("#entry_list_print").bind('click' , {}, entryList.entryListPrint);
 	// 見積追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
@@ -1027,3 +1029,13 @@ entryList.getLargeItem_check = function() {
   }
   return items;
 };
+
+// 案件リスト印刷
+entryList.entryListPrint = function() {
+  // グリッドのデータを取得する
+  var id = 1;
+  var row = null;
+  while((row = $("#entry_list").getRowData(id)) != null) {
+
+  }
+}
