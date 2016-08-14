@@ -1032,10 +1032,9 @@ entryList.getLargeItem_check = function() {
 
 // 案件リスト印刷
 entryList.entryListPrint = function() {
-  // グリッドのデータを取得する
-  var id = 1;
-  var row = null;
-  while((row = $("#entry_list").getRowData(id)) != null) {
+  window.open('/entry_list_print','_blank','');
+//  $.ajax({type:'get',url:'/entry_list_print'}).then(function(print_list){
+//    alert(print_list);
+//	});
 
-  }
 }

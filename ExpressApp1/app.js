@@ -151,6 +151,7 @@ app.get('/configuration',configuration.list);
 app.get('/auth_settings',auth_settings.list);
 app.get('/entry_edit/:no?',entry_edit.list);
 app.get('/entry_list', entry_list.list);
+app.get('/entry_list_print', entry_list.list_print);
 app.post('/entry_post', upload.array(), entry_post.entry_post);
 app.post('/entry_copy', upload.array(), entry_post.entry_copy);
 app.post('/quote_post', upload.array(), entry_post.quote_post);

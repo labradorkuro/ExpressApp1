@@ -1,0 +1,35 @@
+﻿doctype html
+html(lang="ja")
+	head
+		meta(charset="utf-8")
+		title= title
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="javascripts/jquery.cookie.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/entryListPrint.js")
+		link(rel="stylesheet" ,href="stylesheets/page_setting_landscape.css")
+		link(rel="stylesheet" ,href="stylesheets/printout.css",media="screen,print")
+	body
+		section.data_section
+			table
+				tr
+					td#title 案件リスト
+					td 印刷日
+					td#print_date 2016-08-14
+			table.data_table#entry_list_table(cellspacing="0")
+				tr
+					th.data_title.border_up_left(style="width:15mm") 請求区分
+					th.data_title.border_up_left(style="width:15mm") 未入金
+					th.data_title.border_up_left(style="width:20mm") 報告書期限
+					th.data_title.border_up_left(style="width:15mm") 案件No
+					th.data_title.border_up_left(style="width:30mm") 試験大分類
+					th.data_title.border_up_left(style="width:40mm") 試験中分類
+					th.data_title.border_up_left(style="width:30mm") クライアント名
+					th.data_title.border_up_left(style="width:30mm") 代理店
+					th.data_title.border_up_left(style="width:40mm") 試験タイトル
+					th.data_title.border_up_left(style="width:20mm") 案件ステータス
+					th.data_title.border_up_left(style="width:20mm") 問合せ日
+					th.data_title.border_up_left(style="width:20mm") 営業担当者
+					th.data_title.border_up_left(style="width:20mm") 仮受注チェック
+					th.data_title.border_up_left_right(style="width:20mm") 作成日
+					
