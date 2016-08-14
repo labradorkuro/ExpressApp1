@@ -132,6 +132,7 @@ if ('production' == app.get('env')) {
 //router.get('/',routes.index);
 //router.get('/index',routes.index);
 app.get('/client_list', client_list.list);			//
+app.get('/client_list_print', client_list.list_print);			//
 app.get('/itakusaki_list', itakusaki_list.list);			//
 app.get('/user_list', user_list.list);				//
 app.get('/test_item_list', test_item_list.list);	//

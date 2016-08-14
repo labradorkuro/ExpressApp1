@@ -48,6 +48,7 @@ clientList.init = function(toolbar) {
 		if (toolbar) {
 			var tb = clientList.createToolbar(target, "client", i);
 			clientList.createSightInfoBtn(tb, i);
+			clientList.createListPrintBtn(tb, i);
 		}
 		clientList.createListGridElements(target, "client", i);
 		if (toolbar)
@@ -79,6 +80,7 @@ clientList.init = function(toolbar) {
 			$("#client_person_delete_check_disp_" + i).bind('change', clientList.changeClientPersonOption);
 			// 支払いサイト情報表示ボタンイベント
 			$("#sight_" + i).bind('click' , {}, clientList.openSightInfoDialog);
+			$("#list_print_" + i).bind('click' , {}, clientList.clientListPrint);
 
 		}
 	}
@@ -112,9 +114,16 @@ clientList.createToolbar = function(target, kind, no) {
 	$(target).append(toolbar);
 	return toolbar;
 };
+// 支払サイト情報ボタンの作成
 clientList.createSightInfoBtn = function(toolbar,no) {
 	var sight_btn = $("<a class='tool_button_a' id='sight_" + no  + "'>支払いサイト情報</a>");
 	$(toolbar).append(sight_btn);
+
+}
+// 印刷ボタンの作成
+clientList.createListPrintBtn = function(toolbar,no) {
+	var print_btn = $("<a class='tool_button_a' id='list_print_" + no  + "'>印刷</a>");
+	$(toolbar).append(print_btn);
 
 }
 // リスト画面のグリッド用テーブル要素を生成する
@@ -990,4 +999,10 @@ clientList.check_client_cd = function(ui,event) {
 			$("#message_dialog").dialog("open");
 		}
 	});
+}
+// 案件リスト印刷
+clientList.clientListPrint = function(ui) {
+	var name = ui.currentTarget.id;
+	var sp = name.split('_');
+  window.open('/client_list_print?no=' + sp[sp.length - 1],'_blank','');
 }

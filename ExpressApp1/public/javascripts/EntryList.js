@@ -1033,8 +1033,4 @@ entryList.getLargeItem_check = function() {
 // 案件リスト印刷
 entryList.entryListPrint = function() {
   window.open('/entry_list_print','_blank','');
-//  $.ajax({type:'get',url:'/entry_list_print'}).then(function(print_list){
-//    alert(print_list);
-//	});
-
 }
