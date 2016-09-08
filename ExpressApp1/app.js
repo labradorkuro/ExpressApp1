@@ -17,6 +17,7 @@ var Sequelize = require('sequelize');
 var app = express();
 
 pg = require('pg');
+pg.defaults.poolSize = 100;
 sequelize = require('./libs/dbconn')(config);
 models = require('./models')(sequelize);
 

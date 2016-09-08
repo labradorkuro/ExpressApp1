@@ -18,7 +18,7 @@
     "method-override": "*",
     "morgan": "*",
     "multer": "*",
-    "pg": "4.4.3",
+    "pg": "4.4.5",
     "sequelize": "^3.18.0",
     "sequelize-cli": "^1.7.1",
     "serve-favicon": "*",
