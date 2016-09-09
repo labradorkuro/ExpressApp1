@@ -53,11 +53,18 @@ $(function ()　{
 	$("#edit_quote").bind('click' , {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 
 	// クライアント選択ダイアログを表示するイベント処理を登録する
-	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
+  $("#client_name").bind('click' , {}, entryList.openClientListDialog);
+  $("#client_name").bind('change' , {}, entryList.checkClientName);
+  $("#client_division_name").bind('change' , {}, entryList.checkClientDivisionName);
+  $("#client_person_name").bind('change' , {}, entryList.checkClientPersonName);
 	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);
-	$("#billing_company_name_1").bind('click' , {}, entryList.openClientListDialog);	// 見積書画面
-	$("#agent_name").bind('click' , {}, entryList.openClientListDialog);
-	$("#outsourcing_name").bind('click' , {}, entryList.openItakusakiListDialog);	// 委託先
+	$("#billing_company_name_1").bind('click' , {}, entryList.openClientListDialog);	 // 見積書画面
+  $("#agent_name").bind('click' , {}, entryList.openClientListDialog);               // 代理店名
+  $("#agent_name").bind('change' , {}, entryList.checkAgentName);                       // 代理店名
+  $("#agent_division_name").bind('change' , {}, entryList.checkAgentDivisionName);      // 代理店部署名
+  $("#agent_person_name").bind('change' , {}, entryList.checkAgentPersonName);          // 代理店担当者名
+  $("#outsourcing_name").bind('click' , {}, entryList.openItakusakiListDialog);	// 委託先
+  $("#outsourcing_name").bind('change' , {}, entryList.checkOutsourcingName);	// 委託先
 
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$("#test_middle_class_name").bind('click',{}, test_itemList.openTestItemSelectDialog);
@@ -287,7 +294,7 @@ entryList.createGrid = function () {
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter,searchoptions:{sopt:["eq","ne"]}},
 			{ name: 'pay_result_1', hidden:true},
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter,searchoptions:{sopt:["eq","ne"]}},
-			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter},
+			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'report_submit_date', index: '', hidden:true },
 			{ name: 'entry_no', index: 'entry_no', width: 100, align: "center" ,sortable:true},
 			{ name: 'test_large_class_cd', index: 'test_large_class_name', hidden:true },
@@ -310,7 +317,7 @@ entryList.createGrid = function () {
 			{ name: 'client_person_compellation', index: 'client_person_compellation', hidden:true},
       { name: 'agent_name_1', index: 'agent_name_1', width: 160, align: "center" ,sortable:true},
 			{ name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
-			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
+			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'entry_status', index: 'entry_status', width: 100 ,align: "center" ,formatter: entryList.statusFormatter,searchoptions:{sopt:["eq","ne"]}},
 			{ name: 'sales_person_id', index: 'sales_person_id', width: 100, align: "center", formatter: scheduleCommon.personFormatter,search:false },
 //			{ name: 'quoto_no', index: 'quoto_no', width: 80, align: "center" },
@@ -319,9 +326,9 @@ entryList.createGrid = function () {
 			{ name: 'order_type', index: 'order_type', width: 100, align: "center" ,formatter:entryList.orderTypeFormatter, hidden:true},
 			{ name: 'test_person_id', index: 'test_person_id', width: 100, align: "center", formatter: scheduleCommon.personFormatter, hidden:true },
 			{ name: 'consumption_tax', index: '', hidden:true },
-			{ name: 'created', index: 'created', width: 130, align: "center" },
+			{ name: 'created', index: 'created', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'created_id', index: 'created_id' , align: "center", formatter: scheduleCommon.personFormatter },
-			{ name: 'updated', index: 'updated', width: 130, align: "center" },
+			{ name: 'updated', index: 'updated', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: scheduleCommon.personFormatter  },
 		],
 		height:240,
@@ -1033,4 +1040,48 @@ entryList.getLargeItem_check = function() {
 // 案件リスト印刷
 entryList.entryListPrint = function() {
   window.open('/entry_list_print','_blank','');
+}
+// クライアント名をクリアしたらCDをクリアする
+entryList.checkClientName = function(event) {
+  if ($("#client_name").val() == "") {
+    $("#entry_client_cd").val("");
+    $("#client_division_cd").val("");
+    $("#client_person_id").val("");
+  }
+}
+entryList.checkClientDivisionName = function(event) {
+  if ($("#client_division_name").val() == "") {
+    $("#client_division_cd").val("");
+    $("#client_person_id").val("");
+  }
+}
+entryList.checkClientPersonName = function(event) {
+  if ($("#client_person_name").val() == "") {
+    $("#client_person_id").val("");
+  }
+}
+
+// 代理店名をクリアしたらCDをクリアする
+entryList.checkAgentName = function(event) {
+  if ($("#agent_name").val() == "") {
+    $("#agent_cd").val("");
+    $("#agent_division_cd").val("");
+    $("#agent_person_id").val("");
+  }
+}
+entryList.checkAgentDivisionName = function(event) {
+  if ($("#agent_division_name").val() == "") {
+    $("#agent_division_cd").val("");
+    $("#agent_person_id").val("");
+  }
+}
+entryList.checkAgentPersonName = function(event) {
+  if ($("#agent_person_name").val() == "") {
+    $("#agent_person_id").val("");
+  }
+}
+entryList.checkOutsourcingName = function(event) {
+  if ($("#outsourcing_name").val() == "") {
+    $("#outsourcing_cd").val("");
+  }
 }

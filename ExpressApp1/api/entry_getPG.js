@@ -141,13 +141,17 @@ var parse_search_params = function(searchField,searchOper,searchString) {
 	} else if (searchOper === "ne") {
 		searchOper = " <> '" + searchString + "'";
 	} else if (searchOper === "lt") {
-		searchOper = " < " + searchString;
+		searchOper = " < '" + searchString + "'";
+//		searchOper = " < " + searchString;
 	} else if (searchOper === "le") {
-		searchOper = " <= " + searchString;
+		searchOper = " <= '" + searchString + "'";
+//		searchOper = " <= " + searchString;
 	} else if (searchOper === "gt") {
-		searchOper = " > " + searchString;
+		searchOper = " > '" + searchString + "'";
+//		searchOper = " > " + searchString;
 	} else if (searchOper === "ge") {
-		searchOper = " >= " + searchString;
+		searchOper = " >= '" + searchString + "'";
+//		searchOper = " >= " + searchString;
 	} else if (searchOper === "bw") {
 		searchOper = " LIKE '" + searchString + "%'";
 	} else if (searchOper === "bn") {

@@ -622,6 +622,7 @@ clientList.clientPersonInputCheck = function () {
 
 // 得意先情報の保存
 clientList.saveClient = function () {
+	$("#client_cd").attr("disabled",false);
 	var url = '/client_post';
 	if (clientList.func === 0) {
 		url = '/client_post';
@@ -949,7 +950,7 @@ clientList.onGetSightMasterList = function(list) {
 };
 // 支払日サイト情報を取得する
 clientList.getSightInfo = function(client_cd) {
-	var url = "/sight_info?client_cd=" + client_cd;
+	var url = "/sight_info?client_cd='" + client_cd + "'";
 	// フォームをクリアする
 	var sight_info = clientList.clearSightInfo();
 	sight_info.client_cd = client_cd;
