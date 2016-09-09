@@ -206,36 +206,15 @@ billingList.openBillingFormDialog = function (event) {
 	billingList.clearPayResult();	// 請求区分のチェックをクリアする
 	var billing = billingList.clearBilling();
 	billingList.setBillingForm(billing);
-	var address1 = "";
-	var address2 = "";
-	var tel = "";
-	var fax = "";
-	if ((billingList.currentEntry.currentEntry.client_address_1 != null) && (billingList.currentEntry.currentEntry.client_address_1 != "")) {
-		address1 = billingList.currentEntry.currentEntry.client_address_1;
-	}
-	if ((billingList.currentEntry.currentEntry.client_division_address_1 != null) && (billingList.currentEntry.currentEntry.client_division_address_1 != "")) {
-		address1 = billingList.currentEntry.currentEntry.client_division_address_1;
-	}
-	if ((billingList.currentEntry.currentEntry.client_address_2 != null) && (billingList.currentEntry.currentEntry.client_address_2 != "")) {
-		address2 = billingList.currentEntry.currentEntry.client_address_2;
-	}
-	if ((billingList.currentEntry.currentEntry.client_division_address_2 != null) && (billingList.currentEntry.currentEntry.client_division_address_2 != "")) {
-		address2 = billingList.currentEntry.currentEntry.client_division_address_2;
-	}
-	if ((billingList.currentEntry.currentEntry.client_tel_no != null) && (billingList.currentEntry.currentEntry.client_tel_no != "")) {
-		tel = billingList.currentEntry.currentEntry.client_tel_no;
-	}
-	if ((billingList.currentEntry.currentEntry.client_division_tel_no != null) && (billingList.currentEntry.currentEntry.client_division_tel_no != "")) {
-		tel = billingList.currentEntry.currentEntry.client_division_tel_no;
-	}
-	if ((billingList.currentEntry.currentEntry.client_fax_no != null) && (billingList.currentEntry.currentEntry.client_fax_no != "")) {
-		fax = billingList.currentEntry.currentEntry.client_fax_no;
-	}
-	if ((billingList.currentEntry.currentEntry.client_division_fax_no != null) && (billingList.currentEntry.currentEntry.client_division_fax_no != "")) {
-		fax = billingList.currentEntry.currentEntry.client_division_fax_no;
-	}
+
+	// 請求先情報に表示する内容を取得する
+	var address1 = billingList.getAddress1();
+	var address2 = billingList.getAddress2();
+	var tel = billingList.getTel();
+	var fax = billingList.getFax();
 	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
 					+ " \ntel : " + tel + " \nfax : " + fax
+
 	if ($(event.target).attr('id') == 'edit_billing') {
 		// 編集ボタンから開いた場合
 		billingList.status = "edit";
@@ -272,6 +251,55 @@ billingList.openBillingFormDialog = function (event) {
 	// 請求金額合計を取得する
 	billingList.requestBillingTotal(billingList.currentEntry.currentEntry.entry_no);
 };
+
+// 住所１取得
+billingList.getAddress1 = function() {
+	var address1 = "";
+	if ((billingList.currentEntry.currentEntry.client_address_1 != null) && (billingList.currentEntry.currentEntry.client_address_1 != "")) {
+		address1 = billingList.currentEntry.currentEntry.client_address_1;
+	}
+	if ((billingList.currentEntry.currentEntry.client_division_address_1 != null) && (billingList.currentEntry.currentEntry.client_division_address_1 != "")) {
+		address1 = billingList.currentEntry.currentEntry.client_division_address_1;
+	}
+	return address1;
+}
+
+// 住所2取得
+billingList.getAddress2 = function() {
+	var address2 = "";
+	if ((billingList.currentEntry.currentEntry.client_address_2 != null) && (billingList.currentEntry.currentEntry.client_address_2 != "")) {
+		address2 = billingList.currentEntry.currentEntry.client_address_2;
+	}
+	if ((billingList.currentEntry.currentEntry.client_division_address_2 != null) && (billingList.currentEntry.currentEntry.client_division_address_2 != "")) {
+		address2 = billingList.currentEntry.currentEntry.client_division_address_2;
+	}
+	return address2;
+}
+
+// 電話番号取得
+billingList.getTel = function() {
+	var tel = "";
+	if ((billingList.currentEntry.currentEntry.client_tel_no != null) && (billingList.currentEntry.currentEntry.client_tel_no != "")) {
+		tel = billingList.currentEntry.currentEntry.client_tel_no;
+	}
+	if ((billingList.currentEntry.currentEntry.client_division_tel_no != null) && (billingList.currentEntry.currentEntry.client_division_tel_no != "")) {
+		tel = billingList.currentEntry.currentEntry.client_division_tel_no;
+	}
+	return tel;
+}
+
+// FAX番号取得
+billingList.getFax = function() {
+	var fax = "";
+	if ((billingList.currentEntry.currentEntry.client_fax_no != null) && (billingList.currentEntry.currentEntry.client_fax_no != "")) {
+		fax = billingList.currentEntry.currentEntry.client_fax_no;
+	}
+	if ((billingList.currentEntry.currentEntry.client_division_fax_no != null) && (billingList.currentEntry.currentEntry.client_division_fax_no != "")) {
+		fax = billingList.currentEntry.currentEntry.client_division_fax_no;
+	}
+	return fax;
+}
+
 // 請求情報のクリア
 billingList.clearBilling = function() {
 	var billing = {
