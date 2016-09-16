@@ -70,7 +70,7 @@ var parse_large_item_params = function(req) {
 	return params;
 }
 // 検索条件（虫眼鏡アイコンの検索）の解析
-var parse_search_params = function(searchField,searchOper,searchString) {
+var entry_parse_search_params = function(searchField,searchOper,searchString) {
 	if (searchField === "") {
 		return "";
 	}
@@ -181,7 +181,7 @@ var entry_get_list_searchField = function (req, res) {
 	var searchField = req.query.searchField;
 	var searchString = req.query.searchString;
 	var searchOper = req.query.searchOper;
-	var searchParams = parse_search_params(searchField,searchOper,searchString);
+	var searchParams = entry_parse_search_params(searchField,searchOper,searchString);
 	// 試験大分類の絞り込み用
 	var large_item_params = parse_large_item_params(req);
 	var pg_params = getPagingParams(req);

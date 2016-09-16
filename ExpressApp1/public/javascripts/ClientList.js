@@ -41,7 +41,7 @@ clientList.createMessageDialog = function () {
 
 // リスト画面の生成（初期化）
 clientList.init = function(toolbar) {
-	for(var i = 1;i <= 10;i++) {
+	for(var i = 1;i <= 11;i++) {
 		var target = "#tabs-" + i;
 		$(target).empty();
 		// Tab毎に必要な要素を追加する
@@ -171,7 +171,7 @@ clientList.createClientListGrid = function (no) {
 		datatype: "json",
 		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者'],
 		colModel: [
-			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center" },
+			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center"},
 			{ name: 'name_1', index: 'name_1', width: 200, align: "left" },
 			{ name: 'name_2', index: 'name_2', width: 100, align: "left" },
 			{ name: 'kana', index: 'kana', width: 100 , align: "left" },
@@ -190,7 +190,7 @@ clientList.createClientListGrid = function (no) {
 		height: "230px",
 		shrinkToFit:false,
 		rowNum: 10,
-		rowList: [10],
+		rowList: [10,20,30,40,50],
 		pager: '#client_list_pager_' + no,
 		sortname: 'kana',
 		viewrecords: true,
@@ -198,7 +198,11 @@ clientList.createClientListGrid = function (no) {
 		caption: fname + "リスト",
 		onSelectRow: clientList.onSelectClientList
 	});
-	jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false });
+	if (no < 11) {
+		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:false });
+	} else {
+		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:true },{},{},{},{overlay:false});
+	}
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForTop(no,0);
@@ -270,7 +274,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		caption: "部署リスト",
 		onSelectRow: clientList.onSelectClientDivisionList
 	});
-	jQuery("#client_division_list_" + no).jqGrid('navGrid', '#client_division_list_pager_' + no, { edit: false, add: false, del: false });
+	jQuery("#client_division_list_" + no).jqGrid('navGrid', '#client_division_list_pager_' + no, { edit: false, add: false, del: false,search:false });
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForMiddle(no,1);
@@ -331,7 +335,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		caption: "担当者リスト",
 		onSelectRow: clientList.onSelectClientPersonList
 	});
-	jQuery("#client_person_list_" + no).jqGrid('navGrid', '#client_person_list_pager_' + no, { edit: false, add: false, del: false });
+	jQuery("#client_person_list_" + no).jqGrid('navGrid', '#client_person_list_pager_' + no, { edit: false, add: false, del: false,search:false });
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForBottom(no,1);
