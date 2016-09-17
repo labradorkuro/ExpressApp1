@@ -196,7 +196,8 @@ clientList.createClientListGrid = function (no) {
 		viewrecords: true,
 		sortorder: "asc",
 		caption: fname + "リスト",
-		onSelectRow: clientList.onSelectClientList
+		onSelectRow: clientList.onSelectClientList,
+		loadComplete:clientList.loadCompleteList
 	});
 	if (no < 11) {
 		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:false });
@@ -209,6 +210,12 @@ clientList.createClientListGrid = function (no) {
 	clientList.buttonEnabledForMiddle(no,0);
 	clientList.buttonEnabledForBottom(no,0);
 };
+// loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
+clientList.loadCompleteList = function(data) {
+  var h = data.records * 24;
+	var tab_no = $("#tabs-client").tabs("option","active") + 1;
+  $("#client_list_" + tab_no).setGridHeight(h);
+}
 // 得意先選択イベント
 clientList.onSelectClientList = function (rowid) {
 	var no;
