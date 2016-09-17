@@ -11,6 +11,8 @@ $(function ()　{
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
   // 検索ボタンのクリックイベント登録
   $("#search_button").bind('click',uriageList.onSearchButton);
+  // リスト印刷ボタン
+	$("#uriage_list_print").bind('click' , {}, uriageList.uriageListPrint);
 });
 
 // 処理用オブジェクト
@@ -396,3 +398,8 @@ uriageList.setEntryForm = function (entry) {
 	$("#entryForm #updated").val(entry.updated);							// 更新日
 	$("#entryForm #updated_id").val(entry.updated_id);						// 更新者ID
 };
+
+// リスト印刷
+uriageList.uriageListPrint = function() {
+  window.open('/uriage_list_print','_blank','');
+}

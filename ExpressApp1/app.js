@@ -216,6 +216,7 @@ app.get('/auth_get_all', auth_settings_get.auth_settings_get_all);
 app.get('/auth_get/:pno', auth_settings_get.auth_settings_get);
 
 app.get('/uriage_list', uriage_list.list);
+app.get('/uriage_list_print', uriage_list.list_print);
 app.get('/pay_planning', pay_planning.list);
 // 売上集計関係
 app.get('/uriage_summary',uriage_summary.summary);

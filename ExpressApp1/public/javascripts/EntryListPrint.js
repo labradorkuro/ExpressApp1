@@ -10,6 +10,8 @@ $(function ()　{
 var entryListPrint = entryListPrint || {};
 // 画面に表示されているグリッドからデータを取得して印刷用のテーブルを作成する
 entryListPrint.makeListTable = function() {
+  var today = scheduleCommon.getToday("{0}/{1}/{2}");
+  $("#print_date").append($("<label>" + today + "</label>"));
   // 親ウィンドウの#entry_listを取得する
   var grid = window.opener.$("#entry_list");
   // グリッドのデータを取得する
@@ -29,7 +31,8 @@ entryListPrint.makeListTable = function() {
     "<td class='data_value border_up_left'>" + row.inquiry_date + "</td>" +
     "<td class='data_value border_up_left'>" + row.sales_person_id + "</td>" +
     "<td class='data_value border_up_left'>" + row.order_accept_check + "</td>" +
-    "<td class='data_value border_up_left_right'>" + row.created + "</td>"
+    "<td class='data_value border_up_left_right'>" + row.created + "</td>" +
+    "</tr>"
   );
     // テーブル行を追加する
     $("#entry_list_table").append(tr);

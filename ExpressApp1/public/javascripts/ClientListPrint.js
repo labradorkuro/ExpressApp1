@@ -10,6 +10,8 @@ $(function ()　{
 var clientListPrint = clientListPrint || {};
 // 画面に表示されているグリッドからデータを取得して印刷用のテーブルを作成する
 clientListPrint.makeListTable = function() {
+  var today = scheduleCommon.getToday("{0}/{1}/{2}");
+  $("#print_date").append($("<label>" + today + "</label>"));
   // 親ウィンドウの#entry_listを取得する
   var no = $("#list_no").val();
   var grid = window.opener.$("#client_list_" + no);
