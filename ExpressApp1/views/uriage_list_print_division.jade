@@ -1,0 +1,40 @@
+﻿doctype html
+html(lang="ja")
+	head
+		meta(charset="utf-8")
+		title= title
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="javascripts/jquery.cookie.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/uriageListPrintDivision.js")
+		link(rel="stylesheet" ,href="stylesheets/page_setting_landscape.css")
+		link(rel="stylesheet" ,href="stylesheets/printout.css",media="screen,print")
+	body
+		section.data_section
+			table
+				tr
+					td#title 売上集計
+					td 印刷日
+					td#print_date 
+			table.data_table#uriage_list_table(cellspacing="0")
+				tr
+					th.data_title.border_up_left(style="width:30mm") 試験課
+					th.data_title.border_up_left_right(style="width:30mm") 売上金額
+			p 内訳
+			table.data_table#uriage_list_detail_table(cellspacing="0")
+				tr
+					th.data_title.border_up_left(style="width:15mm") 案件No
+					th.data_title.border_up_left(style="width:30mm") 試験大分類
+					th.data_title.border_up_left(style="width:40mm") 試験中分類
+					th.data_title.border_up_left(style="width:30mm") クライアント名
+					th.data_title.border_up_left(style="width:30mm") 代理店
+					th.data_title.border_up_left(style="width:40mm") 試験タイトル
+					th.data_title.border_up_left(style="width:20mm") 売上（税抜き）
+					th.data_title.border_up_left(style="width:20mm") 消費税
+					th.data_title.border_up_left(style="width:20mm") 売上軽
+					th.data_title.border_up_left(style="width:20mm") 請求日
+					th.data_title.border_up_left(style="width:20mm") 入金予定日
+					th.data_title.border_up_left(style="width:20mm") 入金日
+					th.data_title.border_up_left_right(style="width:20mm") 営業担当者
+					
+					
