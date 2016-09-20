@@ -24,13 +24,13 @@ html(lang="ja")
 		div(style="margin-left:200px")
 			fieldset(style="border:none")
 				label
-					input#search_option_all(type="radio" name="search_option" checked=true)
+					input#search_option_all(type="radio" name="search_option" checked=true value="1")
 					| 全社&nbsp;
 				label
-					input#search_option_division(type="radio" name="search_option")
+					input#search_option_division(type="radio" name="search_option" value="2")
 					| 試験課別&nbsp;
 				label
-					input#search_option_client(type="radio" name="search_option")
+					input#search_option_client(type="radio" name="search_option" value="3")
 					| 顧客別&nbsp;&nbsp;&nbsp;&nbsp;
 				label 検索期間：&nbsp;
 				input.datepicker#start_date(type="text" name="start_date",placeholder="開始日付")

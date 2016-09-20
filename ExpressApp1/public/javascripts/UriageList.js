@@ -401,5 +401,15 @@ uriageList.setEntryForm = function (entry) {
 
 // リスト印刷
 uriageList.uriageListPrint = function() {
-  window.open('/uriage_list_print','_blank','');
+  // グリッドの生成（検索集計、結果表示）
+  if ($("#search_option_all").prop('checked')) {
+    // 全社
+    window.open('/uriage_list_print_all','_blank','');
+  } else if ($("#search_option_division").prop('checked')) {
+    // 試験課別
+    window.open('/uriage_list_print_division','_blank','');
+  } else if ($("#search_option_client").prop('checked')) {
+    // 顧客別
+    window.open('/uriage_list_print_client','_blank','');
+  }
 }

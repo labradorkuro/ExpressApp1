@@ -52,6 +52,10 @@ th.data_title {
 td.data_value {
   text-align: center;
 }
+td.data_value_num {
+  padding-right: 4px;
+  text-align: right;
+}
 .border_up_left {
   border-top: 1px solid;
   border-left: 1px solid;
