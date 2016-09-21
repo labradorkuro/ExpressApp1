@@ -1548,3 +1548,20 @@ div.client_grid {
   font-family: 'MS PGothic';
   src: local(MSPGothic);
 }
+fieldset.entry_search_set {
+    float:left;
+    border:solid 1px;
+    margin-left:4px;
+}
+
+.entry_search_start_date {
+  margin-top: 6px;
+  margin-left: 20px;
+}
+.entry_search_end_date {
+  margin-top: 6px;
+}
+
+.entry_search_keyword {
+  margin-top: 6px;
+}

@@ -59,6 +59,13 @@ html(lang="ja")
 							| 失注
 					fieldset.search_option_set#largeItem_check
 					a.tool_button_a#entry_list_print 印刷
+				div.toolbar
+					fieldset.entry_search_set
+						input.entry_search_keyword#entry_search_keyword(type="text" placeholder="キーワード")
+						input.datepicker.entry_search_start_date#search_start_date(type="text" placeholder="期間開始")
+						label &nbsp;～&nbsp;
+						input.datepicker.entry_search_end_date#search_end_date(type="text" placeholder="期間終了")
+					a.tool_button_a#entry_search 検索
 				div.admin_div
 					table#entry_list
 					div.grid_pager#entry_pager

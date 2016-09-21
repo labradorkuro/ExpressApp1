@@ -8,6 +8,10 @@ exports.entry_get = function (req, res) {
 		// 虫メガネの検索ダイアログからの検索実行
 		entry_get_list_searchField(req, res);
 	}
+	else if (req.query.keyword != undefined) {
+		// フリーキーワード検索
+		entry_get_searchKeyword(req, res);
+	}
 	else if ((req.params.no != undefined) && (req.params.no != '')) {
 		entry_get_detail(req, res);
 	} else {
@@ -175,6 +179,7 @@ var entry_parse_search_params = function(searchField,searchOper,searchString) {
 	}
 	return searchField +  searchOper;
 }
+
 // 案件リストの検索（虫めがねアイコンの検索）
 var entry_get_list_searchField = function (req, res) {
 	// 虫眼鏡の検索条件
@@ -207,6 +212,73 @@ var entry_get_list_searchField = function (req, res) {
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
 };
+
+// キーワードの検索文生成
+var getEntrySearchKeywordParam = function(keyword) {
+	var kw = "";
+	if ((keyword != "undefined") && (keyword != "")) {
+		kw = "(test_large_class.item_name LIKE '%" + keyword + "%' OR test_middle_class.item_name LIKE '%" + keyword + "%' OR entry_title LIKE '%" + keyword + "%' OR client_list.name_1 LIKE '%" + keyword + "%' OR " +
+					"client_list.name_2 LIKE '%" + keyword + "%' OR agent_list.name_1 LIKE '%" + keyword + "%')";
+	}
+	return kw;
+};
+var getEntrySearchStartDateParam = function(sd) {
+	var dd = "";
+	if ((sd != "undefined") && (sd != "")) {
+		dd = "(inquiry_date >='" + sd + "' OR order_accepted_date >='" + sd + "')";
+	}
+	return dd;
+}
+var getEntrySearchEndDateParam = function(ed) {
+	var dd = "";
+	if ((ed != "undefined") && (ed != "")) {
+		dd = "(inquiry_date <='" + ed + "' OR order_accepted_date <='" + ed + "')";
+	}
+	return dd;
+}
+
+// キーワード検索
+var entry_get_searchKeyword = function(req, res) {
+	var pg_params = getPagingParams(req);
+	// レコード件数取得用SQL生成
+	var sql_count = entry_get_list_sql_count();
+	// キーワードを検索するためのSQL生成
+	var keyword = getEntrySearchKeywordParam(req.query.keyword);
+	// 期間設定
+	var sd = getEntrySearchStartDateParam(req.query.search_start_date);
+	var ed = getEntrySearchEndDateParam(req.query.search_end_date);
+
+	if (keyword != '') {
+		sql_count += ' ' +  keyword + " AND ";
+	}
+	if (sd != '') {
+		sql_count += ' ' +  sd + " AND ";
+	}
+	if (ed != '') {
+		sql_count += ' ' +  ed + " AND ";
+	}
+	sql_count += ' entry_info.delete_check = $1';
+
+	console.log(sql_count);
+	// 案件リスト取得用SQL生成
+	var sql = entry_get_list_sql();
+	if (keyword != '') {
+		sql += ' ' +  keyword + " AND ";
+	}
+	if (sd != '') {
+		sql += ' ' +  sd + " AND ";
+	}
+	if (ed != '') {
+		sql += ' ' +  ed + " AND ";
+	}
+	sql	+= ' entry_info.delete_check = $1  ORDER BY '
+		+ pg_params.sidx + ' ' + pg_params.sord
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	console.log(sql);
+	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+
+};
+
 // 案件リストの取得
 var entry_get_list = function (req, res) {
 	// 試験大分類の絞り込み用
@@ -298,6 +370,7 @@ var entry_get_list_sql_count = function() {
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)'
+		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)'
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)'
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)'
 		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)

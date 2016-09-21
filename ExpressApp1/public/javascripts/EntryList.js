@@ -47,6 +47,8 @@ $(function ()　{
 	$("#edit_entry").css("display","none");
   // 案件リスト印刷ボタン
 	$("#entry_list_print").bind('click' , {}, entryList.entryListPrint);
+  // 案件検索ボタン
+	$("#entry_search").bind('click' , {}, entryList.entrySearch);
 	// 見積追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
@@ -261,7 +263,7 @@ entryList.createClientListDialog = function () {
 	});
 };
 
-entryList.createGrid = function () {
+entryList.getSearchOption = function () {
 	var delchk = ($("#entry_delete_check_disp").prop("checked")) ? 1:0;
 	var sts01 = ($("#entry_status_01").prop("checked")) ? '01':'0';
 	var sts02 = ($("#entry_status_02").prop("checked")) ? '02':'0';
@@ -270,7 +272,7 @@ entryList.createGrid = function () {
 	var sts05 = ($("#entry_status_05").prop("checked")) ? '05':'0';
   // 試験大分類の絞り込み用チェックボックスの状態を取得
   var large_items = entryList.getLargeItem_check();
-  var req_url = '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01
+  var option = '?delete_check=' + delchk + '&entry_status_01=' + sts01
                                                     + '&entry_status_02=' + sts02
                                                     + '&entry_status_03=' + sts03
                                                     + '&entry_status_04=' + sts04
@@ -278,8 +280,20 @@ entryList.createGrid = function () {
   // 試験大分類の絞り込み
   for(var i = 0;i < large_items.length;i++) {
     var item = large_items[i];
-    req_url += "&" + item.item_cd + "=" + item.value;
+    option += "&" + item.item_cd + "=" + item.value;
   }
+  return option;
+};
+
+entryList.createGrid = function () {
+  var option = entryList.getSearchOption();
+  var req_url = '/entry_get' + option;
+	// 案件リストのグリッド
+  entryList.createGridSub(req_url);
+};
+
+// 案件リストグリッド生成
+entryList.createGridSub = function (req_url) {
 	// 案件リストのグリッド
 	jQuery("#entry_list").jqGrid({
 		url: req_url,
@@ -1084,4 +1098,23 @@ entryList.checkOutsourcingName = function(event) {
   if ($("#outsourcing_name").val() == "") {
     $("#outsourcing_cd").val("");
   }
+}
+// 案件のキーワード検索
+entryList.entrySearch = function() {
+  $("#entry_list").GridUnload();
+  var option = entryList.getSearchOption();
+  // キーワード
+  var keyword = $("#entry_search_keyword").val();
+  // 期間設定
+  var search_start_date = $("#search_start_date").val();
+  var search_end_date = $("#search_end_date").val();
+
+  var req_url = '/entry_get' + option +
+    '&keyword=' + keyword +
+    '&search_start_date=' + search_start_date +
+    '&search_end_date=' + search_end_date;
+
+	// 案件リストのグリッド
+  entryList.createGridSub(req_url);
+
 }
