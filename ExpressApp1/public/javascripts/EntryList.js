@@ -48,7 +48,8 @@ $(function ()　{
   // 案件リスト印刷ボタン
 	$("#entry_list_print").bind('click' , {}, entryList.entryListPrint);
   // 案件検索ボタン
-	$("#entry_search").bind('click' , {}, entryList.entrySearch);
+  $("#entry_search").bind('click' , {}, entryList.entrySearch);
+  $("#entry_search_clear").bind('click' , {}, entryList.entrySearchClear);
 	// 見積追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
@@ -1101,6 +1102,29 @@ entryList.checkOutsourcingName = function(event) {
 }
 // 案件のキーワード検索
 entryList.entrySearch = function() {
+  $("#entry_list").GridUnload();
+  var option = entryList.getSearchOption();
+  // キーワード
+  var keyword = $("#entry_search_keyword").val();
+  // 期間設定
+  var search_start_date = $("#search_start_date").val();
+  var search_end_date = $("#search_end_date").val();
+
+  var req_url = '/entry_get' + option +
+    '&keyword=' + keyword +
+    '&search_start_date=' + search_start_date +
+    '&search_end_date=' + search_end_date;
+
+	// 案件リストのグリッド
+  entryList.createGridSub(req_url);
+
+}
+// 案件のキーワード検索クリア
+entryList.entrySearchClear = function() {
+  $("#entry_search_keyword").val("");
+  // 期間設定
+  $("#search_start_date").val("");
+  $("#search_end_date").val("");
   $("#entry_list").GridUnload();
   var option = entryList.getSearchOption();
   // キーワード

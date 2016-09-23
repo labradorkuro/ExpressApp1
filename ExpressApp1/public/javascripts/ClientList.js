@@ -49,6 +49,10 @@ clientList.init = function(toolbar) {
 			var tb = clientList.createToolbar(target, "client", i);
 			clientList.createSightInfoBtn(tb, i);
 			clientList.createListPrintBtn(tb, i);
+			if (i == 11) {
+				// 検索用ツールバーを生成する
+				clientList.createSearchToolbar(target);
+			}
 		}
 		clientList.createListGridElements(target, "client", i);
 		if (toolbar)
@@ -89,7 +93,9 @@ clientList.init = function(toolbar) {
 	// 支払サイト編集画面を開くボタン
 	// 支払いサイト情報表示ボタンイベント
 	$("#sight_info_btn").bind('click' , {}, clientList.openSightInfoDialog);
-
+	// キーワード検索
+	$("#search_client").bind('click',{},clientList.searchClient);
+	$("#search_client_clear").bind('click',{},clientList.searchClientClear);
 };
 
 clientList.initSub = function(i,toolbar) {
@@ -111,6 +117,21 @@ clientList.createToolbar = function(target, kind, no) {
 	$(toolbar).append(add_btn);
 	$(toolbar).append(edit_btn);
 	$(toolbar).append(delete_label);
+	$(target).append(toolbar);
+	return toolbar;
+};
+// キーワード検索用ツールバー
+clientList.createSearchToolbar = function(target) {
+	var toolbar = $("<div class='toolbar'></table>");
+	var fieldset = $("<fieldset class='entry_search_set'/>");
+	var keyword = $("<input class='entry_search_keyword' type='text' id='client_search_keyword' placeholder='キーワード'/>")
+	var search_btn = $("<a class='tool_button_a' id='search_client'>検索</a>");
+	var search_clear_btn = $("<a class='tool_button_a' id='search_client_clear'>クリア</a>");
+	$(fieldset).append(keyword);
+	$(toolbar).append(fieldset);
+	$(toolbar).append(search_btn);
+	$(toolbar).append(search_clear_btn);
+
 	$(target).append(toolbar);
 	return toolbar;
 };
@@ -146,14 +167,14 @@ clientList.createClientListTabs = function () {
 		activate: function (event, ui) {
 			var no = ui.newTab.index() + 1;
 			clientList.currentClientListTabNo = ui.newTab.index();
-			clientList.createClientListGrid(no);
+			clientList.createClientListGrid(no,"");
 			clientList.createClientDivisionListGrid(no, '0');
 			clientList.createClientPersonListGrid(no, '0', '0');
 		}
 	});
 };
 // 得意先リストの生成
-clientList.createClientListGrid = function (no) {
+clientList.createClientListGrid = function (no, keyword) {
 	var fname = "得意先";
 	var url = '/client_get';
 	if (clientList.func === 0) {
@@ -164,9 +185,14 @@ clientList.createClientListGrid = function (no) {
 		url = '/itakusaki_get';
 	}
 	var delchk = ($("#client_delete_check_disp_" + no).prop("checked")) ? 1:0;
+	url += '?no=' + no + '&delete_check=' + delchk;
+	if (keyword != "") {
+		// キーワード検索
+		url += '&keyword=' + keyword;
+	}
 	// 得意先リストのグリッド
 	jQuery("#client_list_" + no).jqGrid({
-		url: url + '?no=' + no + '&delete_check=' + delchk,
+		url: url,
 		altRows: true,
 		datatype: "json",
 		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者'],
@@ -728,7 +754,7 @@ clientList.changeClientPersonOption = function (event) {
 // 得意先リストグリッドの再ロード
 clientList.reloadGrid = function () {
 	$("#client_list_" + (clientList.currentClientListTabNo + 1)).GridUnload();
-	clientList.createClientListGrid(clientList.currentClientListTabNo + 1);
+	clientList.createClientListGrid(clientList.currentClientListTabNo + 1,"");
 };
 // 部署リストグリッドの再ロード
 clientList.reloadDivisionGrid = function (client_cd) {
@@ -1017,4 +1043,19 @@ clientList.clientListPrint = function(ui) {
 	var name = ui.currentTarget.id;
 	var sp = name.split('_');
   window.open('/client_list_print?no=' + sp[sp.length - 1],'_blank','');
+}
+
+// キーワード検索
+clientList.searchClient = function() {
+	$("#client_list_11").GridUnload();
+	var keyword = $("#client_search_keyword").val();
+	clientList.createClientListGrid(11, keyword);
+
+}
+// キーワード検索クリア
+clientList.searchClientClear = function() {
+	$("#client_list_11").GridUnload();
+	$("#client_search_keyword").val("");
+	clientList.createClientListGrid(11, "");
+
 }

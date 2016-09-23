@@ -4,11 +4,45 @@ exports.client_get = function (req, res) {
 		// 虫メガネの検索ダイアログからの検索実行
 		client_get_list_searchField(req, res);
 	}
+	else if (req.query.keyword != undefined) {
+		// フリーキーワード検索
+		client_get_searchKeyword(req, res);
+	}
 	else if ((req.query.client_cd != undefined) && (req.query.client_cd != '')) {
 		client_get_detail(req, res);
 	} else {
 		client_get_list(req, res);
 	}
+};
+
+// 顧客マスタのキーワード検索
+var client_get_searchKeyword = function (req, res) {
+	var keyword = getClientSearchKeywordParam(req.query.keyword);
+	var pg_params = getPagingParams(req);
+	// レコード件数取得用SQL生成
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1';
+	if (keyword != '') {
+		sql_count += ' AND ' +  keyword;
+	}
+	// 案件リスト取得用SQL生成
+	var sql = client_get_list_sql(11);
+	if (keyword != '') {
+		sql += ' AND ' +  keyword;
+	}
+	sql += ' ORDER BY '
+		+ pg_params.sidx + ' ' + pg_params.sord
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	console.log(sql);
+	return client_get_list_for_grid(res, sql_count, sql, [req.query.delete_check], pg_params);
+};
+// キーワードの検索文生成
+var getClientSearchKeywordParam = function(keyword) {
+	var kw = "";
+	if ((keyword != "undefined") && (keyword != "")) {
+		kw = "(client_list.name_1 LIKE '%" + keyword + "%' OR client_list.name_2 LIKE '%" + keyword + "%' OR client_list.address_1 LIKE '%" + keyword + "%' OR client_list.address_2 LIKE '%" + keyword + "%' OR " +
+					"client_list.kana LIKE '%" + keyword + "%')";
+	}
+	return kw;
 };
 
 // 顧客マスタの検索（虫めがねアイコンの検索）

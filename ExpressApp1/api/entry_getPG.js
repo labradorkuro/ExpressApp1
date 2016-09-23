@@ -222,6 +222,7 @@ var getEntrySearchKeywordParam = function(keyword) {
 	}
 	return kw;
 };
+// 期間開始
 var getEntrySearchStartDateParam = function(sd) {
 	var dd = "";
 	if ((sd != "undefined") && (sd != "")) {
@@ -229,6 +230,7 @@ var getEntrySearchStartDateParam = function(sd) {
 	}
 	return dd;
 }
+// 期間終了
 var getEntrySearchEndDateParam = function(ed) {
 	var dd = "";
 	if ((ed != "undefined") && (ed != "")) {
@@ -239,6 +241,8 @@ var getEntrySearchEndDateParam = function(ed) {
 
 // キーワード検索
 var entry_get_searchKeyword = function(req, res) {
+	// 試験大分類の絞り込み用
+	var large_item_params = parse_large_item_params(req);
 	var pg_params = getPagingParams(req);
 	// レコード件数取得用SQL生成
 	var sql_count = entry_get_list_sql_count();
@@ -248,6 +252,9 @@ var entry_get_searchKeyword = function(req, res) {
 	var sd = getEntrySearchStartDateParam(req.query.search_start_date);
 	var ed = getEntrySearchEndDateParam(req.query.search_end_date);
 
+	if (large_item_params != '') {
+		sql_count += ' ' +  large_item_params + ' AND';
+	}
 	if (keyword != '') {
 		sql_count += ' ' +  keyword + " AND ";
 	}
@@ -259,9 +266,11 @@ var entry_get_searchKeyword = function(req, res) {
 	}
 	sql_count += ' entry_info.delete_check = $1';
 
-	console.log(sql_count);
 	// 案件リスト取得用SQL生成
 	var sql = entry_get_list_sql();
+	if (large_item_params != '') {
+		sql += ' ' + large_item_params + ' AND ';
+	}
 	if (keyword != '') {
 		sql += ' ' +  keyword + " AND ";
 	}
@@ -274,7 +283,6 @@ var entry_get_searchKeyword = function(req, res) {
 	sql	+= ' entry_info.delete_check = $1  ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	console.log(sql);
 	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
 
 };
