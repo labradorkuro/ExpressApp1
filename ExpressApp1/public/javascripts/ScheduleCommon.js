@@ -392,4 +392,7 @@ scheduleCommon.checkUserAgent = function(window) {
     }
 	return '';
 }
+scheduleCommon.setQuotation = function(str) {
+	return "\"" + str + "\"";
+}
 // end

@@ -10,6 +10,7 @@ html(lang="ja")
 		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
 		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
 		script(src="javascripts/jquery.cookie.js")
+		script(src="javascripts/filesaver.min.js")
 		script(src="javascripts/ScheduleCommon.js")
 		script(src="javascripts/UriageList.js")
 		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
@@ -42,6 +43,7 @@ html(lang="ja")
 					input.datepicker#end_date(type="text" name="end_date",placeholder="終了日付")
 				a.form_button#search_button(style="float:none") 検索
 				a.form_button#uriage_list_print(style="float:none")  印刷
+				a.form_button#uriage_list_csv(style="float:none")  CSVファイル
 		div.result
 			table#uriage_list
 			div.grid_pager#uriage_pager

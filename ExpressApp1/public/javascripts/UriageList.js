@@ -13,6 +13,8 @@ $(function ()　{
   $("#search_button").bind('click',uriageList.onSearchButton);
   // リスト印刷ボタン
 	$("#uriage_list_print").bind('click' , {}, uriageList.uriageListPrint);
+  // リストCSVボタン
+	$("#uriage_list_csv").bind('click' , {}, uriageList.uriageListCsv);
 });
 
 // 処理用オブジェクト
@@ -99,6 +101,8 @@ uriageList.getUriageTotal = function(start_date, end_date,keyword) {
     $.get('/uriage_total?start_date=' + start_date + '&end_date=' + end_date + '&keyword=' + keyword,function(response) {
         if (response.uriage_total) {
           $("#uriage_total").text('合計：' + uriageList.numFormatterC(response.uriage_total) + '円');
+        } else {
+          $("#uriage_total").text("");
         }
     });
 }
@@ -415,4 +419,92 @@ uriageList.uriageListPrint = function() {
     // 顧客別
     window.open('/uriage_list_print_client','_blank','');
   }
+}
+
+// CSVファイル
+uriageList.uriageListCsv = function() {
+  var today = scheduleCommon.getToday("{0}_{1}_{2}");
+  var filename = "売上集計_" + today;
+  var detail_text = "";
+  var summary_text = "";
+  var empty_line = "\r\n\r\n";
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = null;
+  // グリッドの生成（検索集計、結果表示）
+  if ($("#search_option_all").prop('checked')) {
+    // 全社
+    detail_text = uriageList.getDetailList("#uriage_list");
+    blob = new Blob([bom,detail_text], {type: "text/csv;charset=utf-8"});
+  } else if ($("#search_option_division").prop('checked')) {
+    // 試験課別
+    summary_text = uriageList.getDivisionSummaryList("#uriage_list");
+    detail_text = uriageList.getDetailList("#uriage_list_detail");
+    blob = new Blob([bom, summary_text, empty_line, detail_text], {type: "text/csv;charset=utf-8"});
+  } else if ($("#search_option_client").prop('checked')) {
+    // 顧客別
+    summary_text = uriageList.getClientSummaryList("#uriage_list");
+    detail_text = uriageList.getDetailList("#uriage_list_detail");
+    blob = new Blob([bom, summary_text, empty_line, detail_text], {type: "text/csv;charset=utf-8"});
+  }
+  saveAs(blob,filename + ".csv");
+}
+
+// 試験課別
+uriageList.getDivisionSummaryList = function(grid_id) {
+  var colnames = "試験課,売上金額";
+  var today = scheduleCommon.getToday("{0}/{1}/{2}");
+  var grid = $(grid_id);
+  var lines = [];
+  lines.push(colnames);
+  // グリッドのデータを取得する
+  var rows = grid.getRowData(); // 全件取得する
+  $.each(rows,function(index,row) {
+    var text = scheduleCommon.setQuotation(row.division) + "," + scheduleCommon.setQuotation(row.uriage_sum);
+    lines.push(text);
+  });
+  return lines.join("\r\n");
+}
+
+// 顧客別
+uriageList.getClientSummaryList = function(grid_id) {
+  var colnames = "顧客名,売上金額";
+  var today = scheduleCommon.getToday("{0}/{1}/{2}");
+  var grid = $(grid_id);
+  var lines = [];
+  lines.push(colnames);
+  // グリッドのデータを取得する
+  var rows = grid.getRowData(); // 全件取得する
+  $.each(rows,function(index,row) {
+    var text = scheduleCommon.setQuotation(row.client) + "," + scheduleCommon.setQuotation(row.uriage_sum);
+    lines.push(text);
+  });
+  return lines.join("\r\n");
+}
+
+// 詳細リスト
+uriageList.getDetailList = function(grid_id) {
+  var colnames = "案件No.,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,売上税抜,消費税,売上計,請求日,入金日,入金予定日,営業担当者";
+  var today = scheduleCommon.getToday("{0}/{1}/{2}");
+  var grid = $(grid_id);
+  var lines = [];
+  lines.push(colnames);
+  // グリッドのデータを取得する
+  var rows = grid.getRowData(); // 全件取得する
+  $.each(rows,function(index,row) {
+    var text = scheduleCommon.setQuotation(row.entry_no) + "," +
+      scheduleCommon.setQuotation(row.test_large_class_name) + "," +
+      scheduleCommon.setQuotation(row.test_middle_class_name) + "," +
+      scheduleCommon.setQuotation(row.client_name) + "," +
+      scheduleCommon.setQuotation(row.agent_name) + "," +
+      scheduleCommon.setQuotation(row.entry_title) + "," +
+      scheduleCommon.setQuotation(row.uriage_sum) + "," +
+      scheduleCommon.setQuotation(row.uriage_tax) + "," +
+      scheduleCommon.setQuotation(row.uriage_total) + "," +
+      scheduleCommon.setQuotation(row.seikyu_date) + "," +
+      scheduleCommon.setQuotation(row.nyukin_date) + "," +
+      scheduleCommon.setQuotation(row.nyukin_yotei_date) + "," +
+      scheduleCommon.setQuotation(row.sales_person_name);
+    lines.push(text);
+  });
+  return lines.join("\r\n");
 }

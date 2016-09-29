@@ -50,7 +50,7 @@ uriage_sum.sql_zensha_list = "SELECT "
     + "billing_info.entry_no,"
     + "to_char(billing_info.pay_planning_date, 'YYYY/MM/DD') as seikyu_date,"
     + "to_char(billing_info.pay_complete_date, 'YYYY/MM/DD') as nyukin_date,"
-    + "'yyyy-mm-dd' as nyukin_yotei_date,"
+    + "to_char(billing_info.nyukin_yotei_date, 'YYYY/MM/DD') as nyukin_yotei_date,"
     + "sum(pay_amount) as uriage_sum,"
     + "sum(pay_amount_tax) as uriage_tax,"
     + "sum(pay_amount_total) as uriage_total,"
@@ -153,7 +153,7 @@ uriage_sum.sql_division_list = "SELECT "
     + "billing_info.entry_no,"
     + "to_char(billing_info.pay_planning_date, 'YYYY/MM/DD') as seikyu_date,"
     + "to_char(billing_info.pay_complete_date, 'YYYY/MM/DD') as nyukin_date,"
-    + "'yyyy-mm-dd' as nyukin_yotei_date,"
+    + "to_char(billing_info.nyukin_yotei_date, 'YYYY/MM/DD') as nyukin_yotei_date,"
     + "sum(pay_amount) as uriage_sum,"
     + "sum(pay_amount_tax) as uriage_tax,"
     + "sum(pay_amount_total) as uriage_total,"
@@ -174,7 +174,7 @@ uriage_sum.sql_division_list = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " where (subq1.billing_count = subq2.seikyu_count) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.test_large_class_cd = $3) and billing_info.delete_check = 0"
-    + " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1,"
+    + " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1,"
     + " agent_list.name_1,user_list.name";
 
 //  顧客別案件リスト（件数取得）
@@ -193,7 +193,7 @@ uriage_sum.sql_client_list = "SELECT "
     + "billing_info.entry_no,"
     + "to_char(billing_info.pay_planning_date, 'YYYY/MM/DD') as seikyu_date,"
     + "to_char(billing_info.pay_complete_date, 'YYYY/MM/DD') as nyukin_date,"
-    + "'yyyy-mm-dd' as nyukin_yotei_date,"
+    + "to_char(billing_info.nyukin_yotei_date, 'YYYY/MM/DD') as nyukin_yotei_date,"
     + "sum(pay_amount) as uriage_sum,"
     + "sum(pay_amount_tax) as uriage_tax,"
     + "sum(pay_amount_total) as uriage_total,"
@@ -214,7 +214,7 @@ uriage_sum.sql_client_list = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " where (subq1.billing_count = subq2.seikyu_count) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.client_cd = $3) and billing_info.delete_check = 0"
-    + " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1,"
+    + " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1,"
     + " agent_list.name_1,user_list.name";
 
 
@@ -289,7 +289,7 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
       sql_summary += " AND " + keyword;
     }
     sql_count += " group by billing_info.entry_no";
-    sql_summary += " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
+    sql_summary += " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
     sql_summary += " ORDER BY entry_info."  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
     // 試験課別
