@@ -51,10 +51,11 @@ uriageList.checkAuth = function() {
 };
 // 検索集計結果を表示するグリッドの生成処理（全社）
 uriageList.createGrid_all = function() {
+  var keyword = $("#uriage_search_keyword").val();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
-  var req_url = "/uriage_summary?op=all&start_date=" + sd + "&end_date=" + ed;
+  var req_url = "/uriage_summary?op=all&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
 	jQuery("#uriage_list").jqGrid({
 		url: req_url,
 		altRows: true,
@@ -90,12 +91,12 @@ uriageList.createGrid_all = function() {
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
-  uriageList.getUriageTotal(sd,ed);
+  uriageList.getUriageTotal(sd,ed,keyword);
 };
 
 // 売上集計総合計の取得
-uriageList.getUriageTotal = function(start_date, end_date) {
-    $.get('/uriage_total?start_date=' + start_date + '&end_date=' + end_date,function(response) {
+uriageList.getUriageTotal = function(start_date, end_date,keyword) {
+    $.get('/uriage_total?start_date=' + start_date + '&end_date=' + end_date + '&keyword=' + keyword,function(response) {
         if (response.uriage_total) {
           $("#uriage_total").text('合計：' + uriageList.numFormatterC(response.uriage_total) + '円');
         }
@@ -149,10 +150,11 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 
 // 検索集計結果を表示するグリッドの生成処理（試験課別）
 uriageList.createGrid_division = function() {
+  var keyword = $("#uriage_search_keyword").val();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
-  var req_url = "/uriage_summary?op=division&start_date=" + sd + "&end_date=" + ed;
+  var req_url = "/uriage_summary?op=division&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
 	jQuery("#uriage_list").jqGrid({
 		url: req_url,
 		altRows: true,
@@ -178,15 +180,16 @@ uriageList.createGrid_division = function() {
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
-  uriageList.getUriageTotal(sd,ed);
+  uriageList.getUriageTotal(sd,ed,keyword);
 };
 
 // 検索集計結果を表示するグリッドの生成処理（顧客別）
 uriageList.createGrid_client = function() {
+  var keyword = $("#uriage_search_keyword").val();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
-  var req_url = "/uriage_summary?op=client&start_date=" + sd + "&end_date=" + ed;
+  var req_url = "/uriage_summary?op=client&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
 	jQuery("#uriage_list").jqGrid({
 		url: req_url,
 		altRows: true,
@@ -212,7 +215,7 @@ uriageList.createGrid_client = function() {
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
 	scheduleCommon.changeFontSize();
-  uriageList.getUriageTotal(sd,ed);
+  uriageList.getUriageTotal(sd,ed,keyword);
 };
 
 uriageList.onSelectUriageSummary = function(rowid) {
