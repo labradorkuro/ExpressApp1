@@ -49,6 +49,7 @@ clientList.init = function(toolbar) {
 			var tb = clientList.createToolbar(target, "client", i);
 			clientList.createSightInfoBtn(tb, i);
 			clientList.createListPrintBtn(tb, i);
+			clientList.createListCsvBtn(tb, i);
 			if (i == 11) {
 				// 検索用ツールバーを生成する
 				clientList.createSearchToolbar(target);
@@ -85,6 +86,7 @@ clientList.init = function(toolbar) {
 			// 支払いサイト情報表示ボタンイベント
 			$("#sight_" + i).bind('click' , {}, clientList.openSightInfoDialog);
 			$("#list_print_" + i).bind('click' , {}, clientList.clientListPrint);
+			$("#list_csv_" + i).bind('click' , {}, clientList.clientListCsv);
 
 		}
 	}
@@ -145,7 +147,11 @@ clientList.createSightInfoBtn = function(toolbar,no) {
 clientList.createListPrintBtn = function(toolbar,no) {
 	var print_btn = $("<a class='tool_button_a' id='list_print_" + no  + "'>印刷</a>");
 	$(toolbar).append(print_btn);
-
+}
+// CSVボタンの作成
+clientList.createListCsvBtn = function(toolbar,no) {
+	var csv_btn = $("<a class='tool_button_a' id='list_csv_" + no  + "'>CSV出力</a>");
+	$(toolbar).append(csv_btn);
 }
 // リスト画面のグリッド用テーブル要素を生成する
 clientList.createListGridElements = function(target, kind, no) {
@@ -1038,11 +1044,27 @@ clientList.check_client_cd = function(ui,event) {
 		}
 	});
 }
-// 案件リスト印刷
+// リスト印刷
 clientList.clientListPrint = function(ui) {
 	var name = ui.currentTarget.id;
 	var sp = name.split('_');
   window.open('/client_list_print?no=' + sp[sp.length - 1],'_blank','');
+}
+
+// CSV出力
+clientList.clientListCsv = function(ui) {
+	var name = ui.currentTarget.id;
+	var sp = name.split('_');
+	var today = scheduleCommon.getToday("{0}_{1}_{2}");
+  var filename = "顧客リスト_" + today;
+  var detail_text = "";
+  var summary_text = "";
+  var empty_line = "\r\n\r\n";
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = null;
+	var text = clientList.getListText( sp[sp.length - 1]);
+	blob = new Blob([bom,text], {type: "text/csv;charset=utf-8"});
+	saveAs(blob,filename + ".csv");
 }
 
 // キーワード検索
@@ -1057,5 +1079,31 @@ clientList.searchClientClear = function() {
 	$("#client_list_11").GridUnload();
 	$("#client_search_keyword").val("");
 	clientList.createClientListGrid(11, "");
+
+}
+
+clientList.getListText = function(no) {
+	var colnames = "得意先コード,得意先名１,得意先名２,カナ,郵便番号,住所１,住所２,電話番号,FAX番号,メールアドレス,メモ,作成日";
+	var lines = [];
+  lines.push(colnames);
+  var grid = $("#client_list_" + no);
+  // グリッドのデータを取得する
+  var rows = grid.getRowData(); // 全件取得する
+  $.each(rows,function(index,row) {
+    var text = scheduleCommon.setQuotation(row.client_cd) + "," +
+    scheduleCommon.setQuotation(row.name_1) + "," +
+    scheduleCommon.setQuotation(row.name_2) + "," +
+    scheduleCommon.setQuotation(row.kana) + "," +
+    scheduleCommon.setQuotation(row.zipcode) + "," +
+    scheduleCommon.setQuotation(row.address_1) + "," +
+    scheduleCommon.setQuotation(row.address_2) + "," +
+    scheduleCommon.setQuotation(row.tel_no) + "," +
+    scheduleCommon.setQuotation(row.fax_no) + "," +
+    scheduleCommon.setQuotation(row.email) + "," +
+    scheduleCommon.setQuotation(row.memo) + "," +
+    scheduleCommon.setQuotation(row.created)
+		lines.push(text);
+  });
+	return lines.join("\r\n");
 
 }

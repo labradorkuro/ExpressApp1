@@ -484,7 +484,6 @@ uriageList.getClientSummaryList = function(grid_id) {
 // 詳細リスト
 uriageList.getDetailList = function(grid_id) {
   var colnames = "案件No.,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,売上税抜,消費税,売上計,請求日,入金日,入金予定日,営業担当者";
-  var today = scheduleCommon.getToday("{0}/{1}/{2}");
   var grid = $(grid_id);
   var lines = [];
   lines.push(colnames);
