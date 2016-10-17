@@ -7,7 +7,7 @@ var tools = require('../tools/tool');
 // 得意先データのPOST
 exports.client_post = function (req, res) {
 	var client = client_check(req.body);
-	if (client.client_cd === "") {
+	if ((client.client_cd === null) || (client.client_cd === "")) {
 		res.send(client);
 	} else {
 		var sql = "SELECT client_cd FROM drc_sch.client_list WHERE client_cd = $1";

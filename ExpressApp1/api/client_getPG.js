@@ -1,11 +1,123 @@
 ﻿// 得意先の取得
 exports.client_get = function (req, res) {
-	if ((req.params.client_cd != undefined) && (req.params.client_cd != '')) {
+	if (req.query.searchField != undefined) {
+		// 虫メガネの検索ダイアログからの検索実行
+		client_get_list_searchField(req, res);
+	}
+	else if (req.query.keyword != undefined) {
+		// フリーキーワード検索
+		client_get_searchKeyword(req, res);
+	}
+	else if ((req.query.client_cd != undefined) && (req.query.client_cd != '')) {
 		client_get_detail(req, res);
 	} else {
 		client_get_list(req, res);
 	}
 };
+
+// 顧客マスタのキーワード検索
+var client_get_searchKeyword = function (req, res) {
+	var keyword = getClientSearchKeywordParam(req.query.keyword);
+	var pg_params = getPagingParams(req);
+	// レコード件数取得用SQL生成
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1';
+	if (keyword != '') {
+		sql_count += ' AND ' +  keyword;
+	}
+	// 案件リスト取得用SQL生成
+	var sql = client_get_list_sql(11);
+	if (keyword != '') {
+		sql += ' AND ' +  keyword;
+	}
+	sql += ' ORDER BY '
+		+ pg_params.sidx + ' ' + pg_params.sord
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	console.log(sql);
+	return client_get_list_for_grid(res, sql_count, sql, [req.query.delete_check], pg_params);
+};
+// キーワードの検索文生成
+var getClientSearchKeywordParam = function(keyword) {
+	var kw = "";
+	if ((keyword != "undefined") && (keyword != "")) {
+		kw = "(client_list.name_1 LIKE '%" + keyword + "%' OR client_list.name_2 LIKE '%" + keyword + "%' OR client_list.address_1 LIKE '%" + keyword + "%' OR client_list.address_2 LIKE '%" + keyword + "%' OR " +
+					"client_list.kana LIKE '%" + keyword + "%')";
+	}
+	return kw;
+};
+
+// 顧客マスタの検索（虫めがねアイコンの検索）
+var client_get_list_searchField = function (req, res) {
+	// 虫眼鏡の検索条件
+	var searchField = req.query.searchField;
+	var searchString = req.query.searchString;
+	var searchOper = req.query.searchOper;
+	var searchParams = client_parse_search_params(searchField,searchOper,searchString);
+	var pg_params = getPagingParams(req);
+	// レコード件数取得用SQL生成
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1';
+	if (searchParams != '') {
+		sql_count += ' AND ' +  searchParams;
+	}
+	// 案件リスト取得用SQL生成
+	var sql = client_get_list_sql(11);
+	if (searchParams != '') {
+		sql += ' AND ' +  searchParams;
+	}
+	sql += ' ORDER BY '
+		+ pg_params.sidx + ' ' + pg_params.sord
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	return client_get_list_for_grid(res, sql_count, sql, [req.query.delete_check], pg_params);
+};
+// 検索条件（虫眼鏡アイコンの検索）の解析
+var client_parse_search_params = function(searchField,searchOper,searchString) {
+	if (searchField === "") {
+		return "";
+	}
+	// 検索対象列名の置換
+	if (searchField === "client_cd") {
+		searchField = "client_cd";
+	}
+	// 演算子指定の解析
+	if (searchOper === "eq") {
+		searchOper = " = '" + searchString + "'";
+	} else if (searchOper === "ne") {
+		searchOper = " <> '" + searchString + "'";
+	} else if (searchOper === "lt") {
+		searchOper = " < '" + searchString + "'";
+//		searchOper = " < " + searchString;
+	} else if (searchOper === "le") {
+		searchOper = " <= '" + searchString + "'";
+//		searchOper = " <= " + searchString;
+	} else if (searchOper === "gt") {
+		searchOper = " > '" + searchString + "'";
+//		searchOper = " > " + searchString;
+	} else if (searchOper === "ge") {
+		searchOper = " >= '" + searchString + "'";
+//		searchOper = " >= " + searchString;
+	} else if (searchOper === "bw") {
+		searchOper = " LIKE '" + searchString + "%'";
+	} else if (searchOper === "bn") {
+		searchOper = " NOT LIKE '" + searchString + "%'";
+	} else if (searchOper === "ew") {
+		searchOper = " LIKE '%" + searchString + "'";
+	} else if (searchOper === "en") {
+		searchOper = " NOT LIKE '%" + searchString + "'";
+	} else if (searchOper === "in") {
+		searchOper = " LIKE '%" + searchString + "%'";
+	} else if (searchOper === "ni") {
+		searchOper = " NOT LIKE '%" + searchString + "%'";
+	} else if (searchOper === "cn") {
+			searchOper = " LIKE '%" + searchString + "%'";
+	} else if (searchOper === "nc") {
+			searchOper = " NOT LIKE '%" + searchString + "%'";
+	} else if (searchOper === "nu") {
+			searchOper = " IS NULL ";
+	} else if (searchOper === "nn") {
+			searchOper = " IS NOT NULL ";
+	}
+	return searchField +  searchOper;
+}
+
 exports.client_division_get = function (req, res) {
 	if ((req.params.division_cd != undefined) && (req.params.division_cd != '')) {
 		client_division_get_detail(req, res);
@@ -26,7 +138,7 @@ exports.client_person_get = function (req, res) {
 };
 var getPagingParams = function (req) {
 	var pg_param = {};
-	pg_param.sidx = "uid";
+	pg_param.sidx = "client_cd";
 	pg_param.sord = "asc";
 	pg_param.limit = 10;
 	pg_param.offset = 0;
@@ -38,15 +150,9 @@ var getPagingParams = function (req) {
 	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
 	return pg_param;
 };
-// 得意先リストの取得
-var client_get_list = function (req, res) {
-	var index_no = Number(req.query.no);
-//	var index_str = ['','0-9','A-Z','ｱ-ｵ','ｶ-ｺ','ｻ-ｿ','ﾀ-ﾄ','ﾅ-ﾉ','ﾊ-ﾎ','ﾏ-ﾓ','ﾔ-ﾖ','ﾗ-ﾛ','ﾜ-ﾝ'];
-	var index_str = ['','アイウエオヴ','カキクケコガギグゲゴ','サシスセソザジズゼゾ','タチツテトダヂヅデド','ナニヌネノ','ハヒフヘホバビブベボ','マミムメモ','ヤユヨ','ラリルレロ','ワヲン'];
-	var pg_params = getPagingParams(req);
-//	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd LIKE \'' + index_str[index_no] + '%\'';
-//	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd ~* \'^[' + index_str[index_no] + ']\'';
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND kana ~* \'^[' + index_str[index_no] + ']\'';
+
+var client_get_list_sql = function(index_no) {
+	var index_str = ['','アイウエオヴ','カキクケコガギグゲゴ','サシスセソザジズゼゾ','タチツテトダヂヅデド','ナニヌネノ','ハヒフヘホバビブベボ','マミムメモ','ヤユヨ','ラリルレロ','ワヲン',''];
 	var sql = 'SELECT '
 		+ 'client_cd,'
 		+ 'name_1,'
@@ -63,12 +169,29 @@ var client_get_list = function (req, res) {
 		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'created_id,'
 		+ "to_char(updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
-		+ 'updated_id'
+		+ 'updated_id';
 //		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd LIKE \'' + index_str[index_no] + '%\' ORDER BY '
 //		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd ~* \'^[' + index_str[index_no] + ']\' ORDER BY '
-		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND kana ~* \'^[' + index_str[index_no] + ']\' ORDER BY '
-		+ pg_params.sidx + ' ' + pg_params.sord
-		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	if (index_no < 11) {
+		sql += ' FROM drc_sch.client_list WHERE delete_check = $1 AND kana ~* \'^[' + index_str[index_no] + ']\' ';
+	} else {
+		sql += ' FROM drc_sch.client_list WHERE delete_check = $1 ';
+	}
+	return sql;
+};
+
+// 得意先リストの取得
+var client_get_list = function (req, res) {
+	var index_str = ['','アイウエオヴ','カキクケコガギグゲゴ','サシスセソザジズゼゾ','タチツテトダヂヅデド','ナニヌネノ','ハヒフヘホバビブベボ','マミムメモ','ヤユヨ','ラリルレロ','ワヲン',''];
+	var pg_params =  getPagingParams(req);
+	var index_no = Number(req.query.no);
+	var sql_count = "";
+	if (index_no < 10) {
+		sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND kana ~* \'^[' + index_str[index_no] + ']\'';
+	} else {
+		sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1';
+	}
+	var sql = client_get_list_sql(index_no) + ' ORDER BY ' + pg_params.sidx + ' ' + pg_params.sord + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return client_get_list_for_grid(res, sql_count, sql, [req.query.delete_check], pg_params);
 };
 
@@ -186,7 +309,6 @@ var client_get_list_for_grid = function (res, sql_count, sql, params, pg_params)
 };
 // 得意先データの取得
 var client_get_detail = function (req, res) {
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1';
 	var sql = 'SELECT '
 		+ 'client_cd,'
 		+ 'name_1,'
@@ -208,16 +330,17 @@ var client_get_detail = function (req, res) {
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
 		// データを取得するためのクエリーを実行する
-		connection.query(sql, [req.params.uid], function (err, results) {
+		console.log(sql + " " + req.query.client_cd);
+		connection.query(sql, [req.query.client_cd], function (err, results) {
 			if (err) {
 				console.log(err);
 			} else {
-				var user = [];
-				for (var i in results.rows) {
-					user = results.rows[i];
+				var client = null;
+				if (results.rows.length > 0) {
+					client = results.rows[0];
 				}
 				connection.end();
-				res.send(user);
+				res.send(client);
 			}
 		});
 	});

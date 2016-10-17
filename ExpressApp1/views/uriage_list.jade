@@ -10,6 +10,7 @@ html(lang="ja")
 		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
 		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
 		script(src="javascripts/jquery.cookie.js")
+		script(src="javascripts/filesaver.min.js")
 		script(src="javascripts/ScheduleCommon.js")
 		script(src="javascripts/UriageList.js")
 		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
@@ -22,27 +23,36 @@ html(lang="ja")
 			span.titlebar= title
 			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。"
 		div(style="margin-left:200px")
-			fieldset(style="border:none")
-				label
-					input#search_option_all(type="radio" name="search_option" checked=true)
-					| 全社&nbsp;
-				label
-					input#search_option_division(type="radio" name="search_option")
-					| 試験課別&nbsp;
-				label
-					input#search_option_client(type="radio" name="search_option")
-					| 顧客別&nbsp;&nbsp;&nbsp;&nbsp;
-				label 検索期間：&nbsp;
-				input.datepicker#start_date(type="text" name="start_date",placeholder="開始日付")
-				label &nbsp;～&nbsp;
-				input.datepicker#end_date(type="text" name="end_date",placeholder="終了日付")
+			div.toolbar
+				fieldset(style="border:none")
+					label
+						input#search_option_all(type="radio" name="search_option" checked=true value="1")
+						| 全社&nbsp;
+					label
+						input#search_option_division(type="radio" name="search_option" value="2")
+						| 試験課別&nbsp;
+					label
+						input#search_option_client(type="radio" name="search_option" value="3")
+						| 顧客別&nbsp;&nbsp;&nbsp;&nbsp;
+			div.toolbar
+				fieldset.entry_search_set(style="border:none")
+					input.entry_search_keyword#uriage_search_keyword(type="text" placeholder="キーワード")
+					label(style="margin-left:5px;") 検索期間：&nbsp;
+					input.datepicker#start_date(type="text" name="start_date",placeholder="開始日付")
+					label &nbsp;～&nbsp;
+					input.datepicker#end_date(type="text" name="end_date",placeholder="終了日付")
 				a.form_button#search_button(style="float:none") 検索
+				a.form_button#uriage_list_print(style="float:none")  印刷
+				a.form_button#uriage_list_csv(style="float:none")  CSVファイル
 		div.result
 			table#uriage_list
 			div.grid_pager#uriage_pager
 		p
-		div.result
-			table#uriage_list_detail
-			div.grid_pager#uriage_detail_pager
+			div.uriage_total
+				label#uriage_total
+		p
+			div.result
+				table#uriage_list_detail
+				div.grid_pager#uriage_detail_pager
 		div#entry_dialog
 			include entry_form

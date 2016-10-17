@@ -41,13 +41,19 @@ clientList.createMessageDialog = function () {
 
 // リスト画面の生成（初期化）
 clientList.init = function(toolbar) {
-	for(var i = 1;i <= 10;i++) {
+	for(var i = 1;i <= 11;i++) {
 		var target = "#tabs-" + i;
 		$(target).empty();
 		// Tab毎に必要な要素を追加する
 		if (toolbar) {
 			var tb = clientList.createToolbar(target, "client", i);
 			clientList.createSightInfoBtn(tb, i);
+			clientList.createListPrintBtn(tb, i);
+			clientList.createListCsvBtn(tb, i);
+			if (i == 11) {
+				// 検索用ツールバーを生成する
+				clientList.createSearchToolbar(target);
+			}
 		}
 		clientList.createListGridElements(target, "client", i);
 		if (toolbar)
@@ -79,8 +85,19 @@ clientList.init = function(toolbar) {
 			$("#client_person_delete_check_disp_" + i).bind('change', clientList.changeClientPersonOption);
 			// 支払いサイト情報表示ボタンイベント
 			$("#sight_" + i).bind('click' , {}, clientList.openSightInfoDialog);
+			$("#list_print_" + i).bind('click' , {}, clientList.clientListPrint);
+			$("#list_csv_" + i).bind('click' , {}, clientList.clientListCsv);
+
 		}
 	}
+	// 入力したclient_cdが既存か確認する
+	$("#client_cd").bind('blur' , {}, clientList.check_client_cd);
+	// 支払サイト編集画面を開くボタン
+	// 支払いサイト情報表示ボタンイベント
+	$("#sight_info_btn").bind('click' , {}, clientList.openSightInfoDialog);
+	// キーワード検索
+	$("#search_client").bind('click',{},clientList.searchClient);
+	$("#search_client_clear").bind('click',{},clientList.searchClientClear);
 };
 
 clientList.initSub = function(i,toolbar) {
@@ -105,10 +122,36 @@ clientList.createToolbar = function(target, kind, no) {
 	$(target).append(toolbar);
 	return toolbar;
 };
+// キーワード検索用ツールバー
+clientList.createSearchToolbar = function(target) {
+	var toolbar = $("<div class='toolbar'></table>");
+	var fieldset = $("<fieldset class='entry_search_set'/>");
+	var keyword = $("<input class='entry_search_keyword' type='text' id='client_search_keyword' placeholder='キーワード'/>")
+	var search_btn = $("<a class='tool_button_a' id='search_client'>検索</a>");
+	var search_clear_btn = $("<a class='tool_button_a' id='search_client_clear'>クリア</a>");
+	$(fieldset).append(keyword);
+	$(toolbar).append(fieldset);
+	$(toolbar).append(search_btn);
+	$(toolbar).append(search_clear_btn);
+
+	$(target).append(toolbar);
+	return toolbar;
+};
+// 支払サイト情報ボタンの作成
 clientList.createSightInfoBtn = function(toolbar,no) {
 	var sight_btn = $("<a class='tool_button_a' id='sight_" + no  + "'>支払いサイト情報</a>");
 	$(toolbar).append(sight_btn);
 
+}
+// 印刷ボタンの作成
+clientList.createListPrintBtn = function(toolbar,no) {
+	var print_btn = $("<a class='tool_button_a' id='list_print_" + no  + "'>印刷</a>");
+	$(toolbar).append(print_btn);
+}
+// CSVボタンの作成
+clientList.createListCsvBtn = function(toolbar,no) {
+	var csv_btn = $("<a class='tool_button_a' id='list_csv_" + no  + "'>CSV出力</a>");
+	$(toolbar).append(csv_btn);
 }
 // リスト画面のグリッド用テーブル要素を生成する
 clientList.createListGridElements = function(target, kind, no) {
@@ -130,14 +173,14 @@ clientList.createClientListTabs = function () {
 		activate: function (event, ui) {
 			var no = ui.newTab.index() + 1;
 			clientList.currentClientListTabNo = ui.newTab.index();
-			clientList.createClientListGrid(no);
+			clientList.createClientListGrid(no,"");
 			clientList.createClientDivisionListGrid(no, '0');
 			clientList.createClientPersonListGrid(no, '0', '0');
 		}
 	});
 };
 // 得意先リストの生成
-clientList.createClientListGrid = function (no) {
+clientList.createClientListGrid = function (no, keyword) {
 	var fname = "得意先";
 	var url = '/client_get';
 	if (clientList.func === 0) {
@@ -148,14 +191,19 @@ clientList.createClientListGrid = function (no) {
 		url = '/itakusaki_get';
 	}
 	var delchk = ($("#client_delete_check_disp_" + no).prop("checked")) ? 1:0;
+	url += '?no=' + no + '&delete_check=' + delchk;
+	if (keyword != "") {
+		// キーワード検索
+		url += '&keyword=' + keyword;
+	}
 	// 得意先リストのグリッド
 	jQuery("#client_list_" + no).jqGrid({
-		url: url + '?no=' + no + '&delete_check=' + delchk,
+		url: url,
 		altRows: true,
 		datatype: "json",
 		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者'],
 		colModel: [
-			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center" },
+			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center"},
 			{ name: 'name_1', index: 'name_1', width: 200, align: "left" },
 			{ name: 'name_2', index: 'name_2', width: 100, align: "left" },
 			{ name: 'kana', index: 'kana', width: 100 , align: "left" },
@@ -174,21 +222,32 @@ clientList.createClientListGrid = function (no) {
 		height: "230px",
 		shrinkToFit:false,
 		rowNum: 10,
-		rowList: [10],
+		rowList: [10,20,30,40,50],
 		pager: '#client_list_pager_' + no,
 		sortname: 'kana',
 		viewrecords: true,
 		sortorder: "asc",
 		caption: fname + "リスト",
-		onSelectRow: clientList.onSelectClientList
+		onSelectRow: clientList.onSelectClientList,
+		loadComplete:clientList.loadCompleteList
 	});
-	jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false });
+	if (no < 11) {
+		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:false });
+	} else {
+		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:true },{},{},{},{overlay:false});
+	}
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForTop(no,0);
 	clientList.buttonEnabledForMiddle(no,0);
 	clientList.buttonEnabledForBottom(no,0);
 };
+// loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
+clientList.loadCompleteList = function(data) {
+  var h = data.records * 24;
+	var tab_no = $("#tabs-client").tabs("option","active") + 1;
+  $("#client_list_" + tab_no).setGridHeight(h);
+}
 // 得意先選択イベント
 clientList.onSelectClientList = function (rowid) {
 	var no;
@@ -254,7 +313,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		caption: "部署リスト",
 		onSelectRow: clientList.onSelectClientDivisionList
 	});
-	jQuery("#client_division_list_" + no).jqGrid('navGrid', '#client_division_list_pager_' + no, { edit: false, add: false, del: false });
+	jQuery("#client_division_list_" + no).jqGrid('navGrid', '#client_division_list_pager_' + no, { edit: false, add: false, del: false,search:false });
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForMiddle(no,1);
@@ -315,7 +374,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		caption: "担当者リスト",
 		onSelectRow: clientList.onSelectClientPersonList
 	});
-	jQuery("#client_person_list_" + no).jqGrid('navGrid', '#client_person_list_pager_' + no, { edit: false, add: false, del: false });
+	jQuery("#client_person_list_" + no).jqGrid('navGrid', '#client_person_list_pager_' + no, { edit: false, add: false, del: false,search:false });
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForBottom(no,1);
@@ -367,9 +426,11 @@ clientList.openClientDialog = function (event) {
 		clientList.setClientForm(clientList.currentClient);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		$("#client_cd").attr("disabled",true);
 	} else {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+		$("#client_cd").attr("disabled",false);
 	}
 
 	$("#client_dialog").dialog("open");
@@ -604,6 +665,7 @@ clientList.clientPersonInputCheck = function () {
 
 // 得意先情報の保存
 clientList.saveClient = function () {
+	$("#client_cd").attr("disabled",false);
 	var url = '/client_post';
 	if (clientList.func === 0) {
 		url = '/client_post';
@@ -698,7 +760,7 @@ clientList.changeClientPersonOption = function (event) {
 // 得意先リストグリッドの再ロード
 clientList.reloadGrid = function () {
 	$("#client_list_" + (clientList.currentClientListTabNo + 1)).GridUnload();
-	clientList.createClientListGrid(clientList.currentClientListTabNo + 1);
+	clientList.createClientListGrid(clientList.currentClientListTabNo + 1,"");
 };
 // 部署リストグリッドの再ロード
 clientList.reloadDivisionGrid = function (client_cd) {
@@ -900,12 +962,14 @@ clientList.clearSightInfo = function() {
 	var sight_info = {};
 	sight_info.shimebi = 0;
 	sight_info.sight_id = 0;
+	sight_info.kyujitsu_setting = 0;
 	return sight_info;
 };
 clientList.setSightInfoForm = function(sight_info) {
 	$("#sight_client_cd").val(sight_info.client_cd);
 	$("#shimebi").val(sight_info.shimebi);
 	$("#sight_id").val(sight_info.sight_id);
+	$("#kyujitsu_setting").val(sight_info.kyujitsu_setting);
 }
 // 支払日マスタからリストを取得する
 clientList.getSightMasterList = function() {
@@ -923,13 +987,13 @@ clientList.onGetSightMasterList = function(list) {
 	$("#sight_id").append($("<option value='0'></option>"));
 	$.each(list,function() {
     // 選択リストに追加する
-		$("#sight_id").append($("<option value='" + this.id + "'>" + this.disp_str +  "</option>"));
+		$("#sight_id").append($("<option value='" + this.sight_id + "'>" + this.disp_str +  "</option>"));
 	});
 
 };
 // 支払日サイト情報を取得する
 clientList.getSightInfo = function(client_cd) {
-	var url = "/sight_info?client_cd=" + client_cd;
+	var url = "/sight_info?client_cd='" + client_cd + "'";
 	// フォームをクリアする
 	var sight_info = clientList.clearSightInfo();
 	sight_info.client_cd = client_cd;
@@ -967,5 +1031,79 @@ clientList.onloadSaveSightInfo = function(event) {
 
 // 支払いサイト情報の削除（削除フラグセット）
 clientList.delSightInfo = function() {
+
+}
+
+clientList.check_client_cd = function(ui,event) {
+	$.ajax({type:'get',url:'/client_get?client_cd=' + $("#client_cd").val() }).then(function(client){
+		if (client.client_cd == $("#client_cd").val()) {
+			clientList.setClientForm(client);
+			$("#message").text("入力したコードは既に登録されています。そのまま登録すると現在のデータに上書きされます。");
+			$("#message_dialog").dialog("option", { title: "警告" });
+			$("#message_dialog").dialog("open");
+		}
+	});
+}
+// リスト印刷
+clientList.clientListPrint = function(ui) {
+	var name = ui.currentTarget.id;
+	var sp = name.split('_');
+  window.open('/client_list_print?no=' + sp[sp.length - 1],'_blank','');
+}
+
+// CSV出力
+clientList.clientListCsv = function(ui) {
+	var name = ui.currentTarget.id;
+	var sp = name.split('_');
+	var today = scheduleCommon.getToday("{0}_{1}_{2}");
+  var filename = "顧客リスト_" + today;
+  var detail_text = "";
+  var summary_text = "";
+  var empty_line = "\r\n\r\n";
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = null;
+	var text = clientList.getListText( sp[sp.length - 1]);
+	blob = new Blob([bom,text], {type: "text/csv;charset=utf-8"});
+	saveAs(blob,filename + ".csv");
+}
+
+// キーワード検索
+clientList.searchClient = function() {
+	$("#client_list_11").GridUnload();
+	var keyword = $("#client_search_keyword").val();
+	clientList.createClientListGrid(11, keyword);
+
+}
+// キーワード検索クリア
+clientList.searchClientClear = function() {
+	$("#client_list_11").GridUnload();
+	$("#client_search_keyword").val("");
+	clientList.createClientListGrid(11, "");
+
+}
+
+clientList.getListText = function(no) {
+	var colnames = "得意先コード,得意先名１,得意先名２,カナ,郵便番号,住所１,住所２,電話番号,FAX番号,メールアドレス,メモ,作成日";
+	var lines = [];
+  lines.push(colnames);
+  var grid = $("#client_list_" + no);
+  // グリッドのデータを取得する
+  var rows = grid.getRowData(); // 全件取得する
+  $.each(rows,function(index,row) {
+    var text = scheduleCommon.setQuotation(row.client_cd) + "," +
+    scheduleCommon.setQuotation(row.name_1) + "," +
+    scheduleCommon.setQuotation(row.name_2) + "," +
+    scheduleCommon.setQuotation(row.kana) + "," +
+    scheduleCommon.setQuotation(row.zipcode) + "," +
+    scheduleCommon.setQuotation(row.address_1) + "," +
+    scheduleCommon.setQuotation(row.address_2) + "," +
+    scheduleCommon.setQuotation(row.tel_no) + "," +
+    scheduleCommon.setQuotation(row.fax_no) + "," +
+    scheduleCommon.setQuotation(row.email) + "," +
+    scheduleCommon.setQuotation(row.memo) + "," +
+    scheduleCommon.setQuotation(row.created)
+		lines.push(text);
+  });
+	return lines.join("\r\n");
 
 }

@@ -16,19 +16,6 @@ var done = function (res) {
 
 // テーブルの生成
 exports.create = function (req, res) {
-	// 2016.01.27 Ver1.0.3からSequelizeを使うようにした。
-	// modelsの中のModel定義を読み込んでテーブルを生成する。（存在しない場合）
-	//var sequelize = require('../libs/dbconn')(config);
-	//var models = require('../models')(sequelize);
-	var options = { "schema": "drc_sch" };
-	for (var key in models) {
-		var model = models[key];
-		if (model != undefined) {
-			if (model instanceof sequelize.Model) {
-				model.sync(options);
-			}
-		}
-	}
 
 	var sql = [
 		// 案件情報
@@ -102,7 +89,8 @@ exports.create = function (req, res) {
 			+ "created TIMESTAMP  default CURRENT_TIMESTAMP,"	// 作成日
 			+ "created_id VARCHAR(32),"							// 作成者ID
 			+ "updated TIMESTAMP  default CURRENT_TIMESTAMP,"	// 更新日
-			+ "updated_id VARCHAR(32))",						// 更新者ID
+			+ "updated_id VARCHAR(32),",						// 更新者ID
+			+ "nyukin_yotei_date DATE)",		// 入金予定日 2016.07.13 追加
 //			+ ", PRIMARY KEY(entry_no,billing_no));",
 //		"CREATE INDEX drc_sch.billing_info_index ON drc_sch.billing_info(entry_no,billing_no);",
 		// 見積情報

@@ -1,0 +1,28 @@
+form#holidayMasterForm(method="post" action="javascript:return false;")
+  table
+    tr
+      td.form_title 名称
+      td
+        input#holiday_id(type="hidden" name="holiday_id")
+        input#holiday_name(type="text" name="holiday_name" required=true)
+      td
+      td
+    tr
+      td.form_title 開始日
+      td
+        input.datepicker#start_date(name="start_date")
+      td.form_title 終了日
+      td  
+        input.datepicker#end_date(name="end_date")
+    tr
+      td.form_title メモ
+      td
+        input#holiday_memo(type="text" name="holiday_memo")
+      td
+      td
+    tr
+      td.form_title(colspan=2) 削除フラグ
+      td
+        input#delete_check(type="checkbox" name="delete_check" value="1")
+        label 削除
+      td

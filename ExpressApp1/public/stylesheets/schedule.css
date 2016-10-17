@@ -1486,7 +1486,12 @@ div.right_grid {
     padding-left:10px;
     width:900px;
 }
-
+/* 売上集計 */
+div.uriage_total {
+    font-size: 20pt;
+    padding-left: 100px;
+    text-align: center;
+}
 /* 動作設定*/
 form#configForm {
     font-size:1.2em;
@@ -1542,4 +1547,21 @@ div.client_grid {
 @font-face {
   font-family: 'MS PGothic';
   src: local(MSPGothic);
+}
+fieldset.entry_search_set {
+    float:left;
+    border:solid 1px;
+    margin-left:4px;
+}
+
+.entry_search_start_date {
+  margin-top: 6px;
+  margin-left: 20px;
+}
+.entry_search_end_date {
+  margin-top: 6px;
+}
+
+.entry_search_keyword {
+  margin-top: 6px;
 }

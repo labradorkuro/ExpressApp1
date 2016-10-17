@@ -91,7 +91,7 @@ form#entryForm(method="post",action="javascript:return false;")
 				input#test_middle_class_cd(type="hidden" name="test_middle_class_cd")
 				input#test_middle_class_name(type="text" name="test_middle_class_name" placeholder="分類選択" size="16")
 			td
-				textarea#test_middle_class_list(cols="16" rows="2")
+				textarea#test_middle_class_list(cols="16" rows="2" readonly="true")
 		tr
 			td.form_title_m 
 				span.remark ＊試験タイトル
@@ -136,26 +136,26 @@ form#entryForm(method="post",action="javascript:return false;")
 		tr
 			td.form_title_m 金額(税抜)
 			td(colspan=4)
-				input.num_type#entry_amount_price_notax(type="text" name="entry_amount_price_notax" size="10" pattern="[0-9]{1,8}" readonly="true")
+				input.num_type#entry_amount_price_notax(type="text" name="entry_amount_price_notax" size="10" pattern="[0-9]{1,8}" readonly="true" title="")
 		tr
 			td.form_title_m 消費税
 			td
-				input.num_type#entry_amount_tax(type="text" name="entry_amount_tax" size="10" pattern="[0-9]{1,8}" readonly="true")
+				input.num_type#entry_amount_tax(type="text" name="entry_amount_tax" size="10" pattern="[0-9]{1,8}" readonly="true" title="")
 			td.form_title_m 消費税率
 			td
-				input.num_type#entry_consumption_tax(type="text" name="entry_consumption_tax" size="10" pattern="[0-9]{1,3}" readonly="true")
+				input.num_type#entry_consumption_tax(type="text" name="entry_consumption_tax" size="10" pattern="[0-9]{1,3}" readonly="true" title="")
 			td %
 			td.form_title_ss 
 		tr
 			td.form_title_m 合計(税込)
 			td
-				input.num_type#entry_amount_price(type="text" name="entry_amount_price" size="10" pattern="[0-9]{1,8}" readonly="true")
+				input.num_type#entry_amount_price(type="text" name="entry_amount_price" size="10" pattern="[0-9]{1,8}" readonly="true" title="")
 			td.form_title_m 請求合計
 			td
-				input.num_type#entry_amount_billing(type="text" name="entry_amount_billing" size="10" pattern="[0-9]{1,8}" readonly="true")
+				input.num_type#entry_amount_billing(type="text" name="entry_amount_billing" size="10" pattern="[0-9]{1,8}" readonly="true" title="")
 			td.form_title_m 入金合計
 			td
-				input.num_type#entry_amount_deposit(type="text" name="entry_amount_deposit" size="10" pattern="[0-9]{1,8}" readonly="true")
+				input.num_type#entry_amount_deposit(type="text" name="entry_amount_deposit" size="10" pattern="[0-9]{1,8}" readonly="true" title="")
 		tr
 			td.form_title_m(clospan="4") 会計期No
 			td

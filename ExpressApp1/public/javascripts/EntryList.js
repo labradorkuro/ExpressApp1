@@ -45,17 +45,29 @@ $(function ()　{
 	// 案件編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_entry").bind('click' , {}, entryList.openEntryDialog);
 	$("#edit_entry").css("display","none");
+  // 案件リスト印刷ボタン
+	$("#entry_list_print").bind('click' , {}, entryList.entryListPrint);
+  // 案件検索ボタン
+  $("#entry_search").bind('click' , {}, entryList.entrySearch);
+  $("#entry_search_clear").bind('click' , {}, entryList.entrySearchClear);
 	// 見積追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_quote").bind('click' , {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 
 	// クライアント選択ダイアログを表示するイベント処理を登録する
-	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
+  $("#client_name").bind('click' , {}, entryList.openClientListDialog);
+  $("#client_name").bind('change' , {}, entryList.checkClientName);
+  $("#client_division_name").bind('change' , {}, entryList.checkClientDivisionName);
+  $("#client_person_name").bind('change' , {}, entryList.checkClientPersonName);
 	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);
-	$("#billing_company_name_1").bind('click' , {}, entryList.openClientListDialog);	// 見積書画面
-	$("#agent_name").bind('click' , {}, entryList.openClientListDialog);
-	$("#outsourcing_name").bind('click' , {}, entryList.openItakusakiListDialog);	// 委託先
+	$("#billing_company_name_1").bind('click' , {}, entryList.openClientListDialog);	 // 見積書画面
+  $("#agent_name").bind('click' , {}, entryList.openClientListDialog);               // 代理店名
+  $("#agent_name").bind('change' , {}, entryList.checkAgentName);                       // 代理店名
+  $("#agent_division_name").bind('change' , {}, entryList.checkAgentDivisionName);      // 代理店部署名
+  $("#agent_person_name").bind('change' , {}, entryList.checkAgentPersonName);          // 代理店担当者名
+  $("#outsourcing_name").bind('click' , {}, entryList.openItakusakiListDialog);	// 委託先
+  $("#outsourcing_name").bind('change' , {}, entryList.checkOutsourcingName);	// 委託先
 
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$("#test_middle_class_name").bind('click',{}, test_itemList.openTestItemSelectDialog);
@@ -252,7 +264,7 @@ entryList.createClientListDialog = function () {
 	});
 };
 
-entryList.createGrid = function () {
+entryList.getSearchOption = function () {
 	var delchk = ($("#entry_delete_check_disp").prop("checked")) ? 1:0;
 	var sts01 = ($("#entry_status_01").prop("checked")) ? '01':'0';
 	var sts02 = ($("#entry_status_02").prop("checked")) ? '02':'0';
@@ -261,7 +273,7 @@ entryList.createGrid = function () {
 	var sts05 = ($("#entry_status_05").prop("checked")) ? '05':'0';
   // 試験大分類の絞り込み用チェックボックスの状態を取得
   var large_items = entryList.getLargeItem_check();
-  var req_url = '/entry_get/?delete_check=' + delchk + '&entry_status_01=' + sts01
+  var option = '?delete_check=' + delchk + '&entry_status_01=' + sts01
                                                     + '&entry_status_02=' + sts02
                                                     + '&entry_status_03=' + sts03
                                                     + '&entry_status_04=' + sts04
@@ -269,8 +281,20 @@ entryList.createGrid = function () {
   // 試験大分類の絞り込み
   for(var i = 0;i < large_items.length;i++) {
     var item = large_items[i];
-    req_url += "&" + item.item_cd + "=" + item.value;
+    option += "&" + item.item_cd + "=" + item.value;
   }
+  return option;
+};
+
+entryList.createGrid = function () {
+  var option = entryList.getSearchOption();
+  var req_url = '/entry_get' + option;
+	// 案件リストのグリッド
+  entryList.createGridSub(req_url);
+};
+
+// 案件リストグリッド生成
+entryList.createGridSub = function (req_url) {
 	// 案件リストのグリッド
 	jQuery("#entry_list").jqGrid({
 		url: req_url,
@@ -285,7 +309,7 @@ entryList.createGrid = function () {
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter,searchoptions:{sopt:["eq","ne"]}},
 			{ name: 'pay_result_1', hidden:true},
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter,searchoptions:{sopt:["eq","ne"]}},
-			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter},
+			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'report_submit_date', index: '', hidden:true },
 			{ name: 'entry_no', index: 'entry_no', width: 100, align: "center" ,sortable:true},
 			{ name: 'test_large_class_cd', index: 'test_large_class_name', hidden:true },
@@ -308,7 +332,7 @@ entryList.createGrid = function () {
 			{ name: 'client_person_compellation', index: 'client_person_compellation', hidden:true},
       { name: 'agent_name_1', index: 'agent_name_1', width: 160, align: "center" ,sortable:true},
 			{ name: 'entry_title', index: 'entry_title', width: 200, align: "center" },
-			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" },
+			{ name: 'inquiry_date', index: 'inquiry_date', width: 80, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'entry_status', index: 'entry_status', width: 100 ,align: "center" ,formatter: entryList.statusFormatter,searchoptions:{sopt:["eq","ne"]}},
 			{ name: 'sales_person_id', index: 'sales_person_id', width: 100, align: "center", formatter: scheduleCommon.personFormatter,search:false },
 //			{ name: 'quoto_no', index: 'quoto_no', width: 80, align: "center" },
@@ -317,9 +341,9 @@ entryList.createGrid = function () {
 			{ name: 'order_type', index: 'order_type', width: 100, align: "center" ,formatter:entryList.orderTypeFormatter, hidden:true},
 			{ name: 'test_person_id', index: 'test_person_id', width: 100, align: "center", formatter: scheduleCommon.personFormatter, hidden:true },
 			{ name: 'consumption_tax', index: '', hidden:true },
-			{ name: 'created', index: 'created', width: 130, align: "center" },
+			{ name: 'created', index: 'created', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'created_id', index: 'created_id' , align: "center", formatter: scheduleCommon.personFormatter },
-			{ name: 'updated', index: 'updated', width: 130, align: "center" },
+			{ name: 'updated', index: 'updated', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: scheduleCommon.personFormatter  },
 		],
 		height:240,
@@ -474,7 +498,7 @@ entryList.openEntryDialog = function (event) {
 	// フォームをクリアする
 	var entry = entryList.clearEntry();
 	entryList.setEntryForm(entry);
-	$("#test_middle_class_list").text("");
+	$("#test_middle_class_list").val("");
 	if ($(event.target).attr('id') == 'edit_entry') {
 		// 編集ボタンから呼ばれた時は選択中の案件のデータを取得して表示する
 		var no = entryList.getSelectEntry();
@@ -608,7 +632,7 @@ entryList.setQuoteInfo = function (quote_list, consumption_tax) {
 				total_price += Number(rows[i].price);
 			}
 			// 中分類リスト
-			$("#test_middle_class_list").text(list);
+			$("#test_middle_class_list").val(list);
 			// 消費税込の合計金額
 			tax = total_price * (rows[0].consumption_tax / 100);
 			$("#entry_amount_price_notax").val(scheduleCommon.numFormatter(total_price,11));	// 金額(税抜)
@@ -1027,3 +1051,94 @@ entryList.getLargeItem_check = function() {
   }
   return items;
 };
+
+// 案件リスト印刷
+entryList.entryListPrint = function() {
+  window.open('/entry_list_print','_blank','');
+}
+// クライアント名をクリアしたらCDをクリアする
+entryList.checkClientName = function(event) {
+  if ($("#client_name").val() == "") {
+    $("#entry_client_cd").val("");
+    $("#client_division_cd").val("");
+    $("#client_person_id").val("");
+  }
+}
+entryList.checkClientDivisionName = function(event) {
+  if ($("#client_division_name").val() == "") {
+    $("#client_division_cd").val("");
+    $("#client_person_id").val("");
+  }
+}
+entryList.checkClientPersonName = function(event) {
+  if ($("#client_person_name").val() == "") {
+    $("#client_person_id").val("");
+  }
+}
+
+// 代理店名をクリアしたらCDをクリアする
+entryList.checkAgentName = function(event) {
+  if ($("#agent_name").val() == "") {
+    $("#agent_cd").val("");
+    $("#agent_division_cd").val("");
+    $("#agent_person_id").val("");
+  }
+}
+entryList.checkAgentDivisionName = function(event) {
+  if ($("#agent_division_name").val() == "") {
+    $("#agent_division_cd").val("");
+    $("#agent_person_id").val("");
+  }
+}
+entryList.checkAgentPersonName = function(event) {
+  if ($("#agent_person_name").val() == "") {
+    $("#agent_person_id").val("");
+  }
+}
+entryList.checkOutsourcingName = function(event) {
+  if ($("#outsourcing_name").val() == "") {
+    $("#outsourcing_cd").val("");
+  }
+}
+// 案件のキーワード検索
+entryList.entrySearch = function() {
+  $("#entry_list").GridUnload();
+  var option = entryList.getSearchOption();
+  // キーワード
+  var keyword = $("#entry_search_keyword").val();
+  // 期間設定
+  var search_start_date = $("#search_start_date").val();
+  var search_end_date = $("#search_end_date").val();
+
+  var req_url = '/entry_get' + option +
+    '&keyword=' + keyword +
+    '&search_start_date=' + search_start_date +
+    '&search_end_date=' + search_end_date;
+
+	// 案件リストのグリッド
+  entryList.createGridSub(req_url);
+
+}
+// 案件のキーワード検索クリア
+entryList.entrySearchClear = function() {
+  $("#entry_search_keyword").val("");
+  // 期間設定
+  $("#search_start_date").val("");
+  $("#search_end_date").val("");
+  $("#entry_list").GridUnload();
+  var option = entryList.getSearchOption();
+  // キーワード
+  var keyword = $("#entry_search_keyword").val();
+  // 期間設定
+  var search_start_date = $("#search_start_date").val();
+  var search_end_date = $("#search_end_date").val();
+
+  var req_url = '/entry_get' + option +
+    '&keyword=' + keyword +
+    '&search_start_date=' + search_start_date +
+    '&search_end_date=' + search_end_date;
+
+	// 案件リストのグリッド
+  entryList.createGridSub(req_url);
+
+}

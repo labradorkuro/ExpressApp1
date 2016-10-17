@@ -32,6 +32,7 @@ exports.billing_post = function (req, res) {
 
 var billing_check = function (billing) {
 	// 日付項目チェック
+	billing.nyukin_yotei_date = tools.dateCheck(billing.nyukin_yotei_date);
 	billing.pay_planning_date = tools.dateCheck(billing.pay_planning_date);
 	billing.pay_complete_date = tools.dateCheck(billing.pay_complete_date);
 	// 数値変換
@@ -81,15 +82,16 @@ var insertBilling = function (connection, billing, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.billing_info(' 
+	var sql = 'INSERT INTO drc_sch.billing_info('
 			+ "entry_no,"				// 案件番号
 			+ "billing_number,"			// 請求番号（経理用）
 			+ "pay_planning_date,"		// 請求日
+			+ "nyukin_yotei_date,"		// 入金予定日
 			+ "pay_complete_date,"		// 入金日
-			+ "pay_amount,"				// 税抜請求金額 
-			+ "pay_amount_tax,"			// 消費税 
-			+ "pay_amount_total,"		// 請求金額合計 
-			+ "pay_complete,"			// 入金額 
+			+ "pay_amount,"				// 税抜請求金額
+			+ "pay_amount_tax,"			// 消費税
+			+ "pay_amount_total,"		// 請求金額合計
+			+ "pay_complete,"			// 入金額
 			+ "pay_result,"				// 請求区分
 			+ "client_cd,"				// クライアントCD
 			+ "client_name,"			// クライアント名
@@ -102,21 +104,22 @@ var insertBilling = function (connection, billing, req, res) {
 			+ 'delete_check,'			// 削除フラグ
 			+ 'created,'				// 作成日
 			+ 'created_id,'				// 作成者ID
-			+ 'updated,'				// 更新日 
+			+ 'updated,'				// 更新日
 			+ 'updated_id'				// 更新者ID
-			+ ') values (' 
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)'
+			+ ') values ('
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
 			billing.billing_number,			// 請求番号
 			billing.pay_planning_date,		// 請求日
+			billing.nyukin_yotei_date,		// 入金予定日
 			billing.pay_complete_date,		// 入金日
-			billing.pay_amount,				// 請求金額 
-			billing.pay_amount_tax,			// 消費税 
-			billing.pay_amount_total,		// 請求金額合計 
-			billing.pay_complete,			// 入金額 
+			billing.pay_amount,				// 請求金額
+			billing.pay_amount_tax,			// 消費税
+			billing.pay_amount_total,		// 請求金額合計
+			billing.pay_complete,			// 入金額
 			billing.pay_result,				// 請求区分
 			billing.billing_client_cd,				// クライアントCD
 			billing.billing_client_name,			// クライアント名
@@ -145,38 +148,40 @@ var insertBilling = function (connection, billing, req, res) {
 var updateBilling = function (connection, billing, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.billing_info SET ' 
+	var sql = 'UPDATE drc_sch.billing_info SET '
 			+ "entry_no = $1,"				// 案件番号
 			+ "billing_number = $2,"		// 請求番号
 			+ "pay_planning_date = $3,"		// 請求日
-			+ "pay_complete_date = $4,"		// 入金日
-			+ "pay_amount = $5,"			// 税抜請求金額 
-			+ "pay_amount_tax = $6,"		// 消費税 
-			+ "pay_amount_total = $7,"		// 請求金額合計 
-			+ "pay_complete = $8,"			// 入金額 
-			+ "pay_result = $9,"			// 請求区分
-			+ "client_cd = $10,"			// クライアントCD
-			+ "client_name = $11,"			// クライアント名
-			+ "client_division_cd = $12,"	// クライアント部署CD
-			+ "client_division_name = $13,"	// クライアント部署名
-			+ "client_person_id = $14,"		// クライアント担当者ID
-			+ "client_person_name = $15,"	// クライアント担当者名
-			+ "client_info = $16,"			// 請求先情報（住所、電話、Fax)
-			+ "memo = $17,"					// 備考
-			+ 'delete_check = $18,'			// 削除フラグ
-			+ 'updated = $19,'				// 更新日 
-			+ 'updated_id = $20'			// 更新者ID
-			+ " WHERE entry_no = $21 AND billing_no = $22";
+			+ "nyukin_yotei_date = $4,"		// 入金予定日
+			+ "pay_complete_date = $5,"		// 入金日
+			+ "pay_amount = $6,"			// 税抜請求金額
+			+ "pay_amount_tax = $7,"		// 消費税
+			+ "pay_amount_total = $8,"		// 請求金額合計
+			+ "pay_complete = $9,"			// 入金額
+			+ "pay_result = $10,"			// 請求区分
+			+ "client_cd = $11,"			// クライアントCD
+			+ "client_name = $12,"			// クライアント名
+			+ "client_division_cd = $13,"	// クライアント部署CD
+			+ "client_division_name = $14,"	// クライアント部署名
+			+ "client_person_id = $15,"		// クライアント担当者ID
+			+ "client_person_name = $16,"	// クライアント担当者名
+			+ "client_info = $17,"			// 請求先情報（住所、電話、Fax)
+			+ "memo = $18,"					// 備考
+			+ 'delete_check = $19,'			// 削除フラグ
+			+ 'updated = $20,'				// 更新日
+			+ 'updated_id = $21'			// 更新者ID
+			+ " WHERE entry_no = $22 AND billing_no = $23";
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
 			billing.billing_number,			// 請求番号
 			billing.pay_planning_date,		// 請求日
+			billing.nyukin_yotei_date,		// 入金予定日
 			billing.pay_complete_date,		// 入金日
-			billing.pay_amount,				// 税抜請求金額 
-			billing.pay_amount_tax,			// 消費税 
-			billing.pay_amount_total,		// 請求金額合計 
-			billing.pay_complete,			// 入金額 
+			billing.pay_amount,				// 税抜請求金額
+			billing.pay_amount_tax,			// 消費税
+			billing.pay_amount_total,		// 請求金額合計
+			billing.pay_complete,			// 入金額
 			billing.pay_result,				// 請求区分
 			billing.billing_client_cd,				// クライアントCD
 			billing.billing_client_name,			// クライアント名
@@ -191,7 +196,7 @@ var updateBilling = function (connection, billing, req, res) {
 			updated_id,						// 更新者ID
 			billing.billing_entry_no,
 			billing.billing_no
-		], function (err, results) { 
+		], function (err, results) {
 			connection.end();
 			if (err) {
 				console.log(err);

@@ -14,8 +14,40 @@ billingList.eventBind = function() {
 	// 消費税の変更
 	$("#pay_amount_tax").bind("change",billingList.calc_amount);
 	$("#calc_tax_button").bind("click",billingList.calc_tax);
+	// 入金予定日計算ボタン
+	$("#nyukin_yotei_button").bind("click",billingList.calc_nyukin_yotei_date)
 };
 
+// 入金予定日の計算
+billingList.calc_nyukin_yotei_date = function() {
+	// 請求先の支払いサイト情報を取得する
+	var sight_info = {client_cd:0,shimebi:"",sight_id:0,kyujitsu_setting:0,memo:""};
+	nyukinYotei.getSightInfo(billingList.currentBilling.client_cd).then(function(data){
+			sight_info = data;
+			// 請求日と締日を参照して、支払年月を決定する
+			var seikyu_date = $("#pay_planning_date").val();
+			var shiharaibi = nyukinYotei.getShiharaibi(seikyu_date, sight_info);
+			// 入金予定日が営業日か判定し、休日の場合は前後に移動する
+			// 土日チェック
+			var date = nyukinYotei.checkHoliday_ss(shiharaibi,sight_info.kyujitsu_setting);
+			// 休日マスタ検索
+			nyukinYotei.checkHoliday_db(date).then(function(holiday){
+				if (holiday.length) {
+//					var date = new Date();
+					if (sight_info.kyujitsu_setting == 0) {
+						date = new Date(holiday[0].start_date);
+						date.setDate(date.getDate() - 1);
+					} else {
+						date = new Date(holiday[0].end_date);
+						date.setDate(date.getDate() + 1);
+					}
+				}
+				// 入金予定日を決定し、表示する
+				$("#nyukin_yotei_date").val(scheduleCommon.getDateString(date,'{0}/{1}/{2}'));
+
+			});
+	});
+}
 // 消費税の計算実行(ボタン押下）
 billingList.calc_tax = function() {
 	if (billingList.inputCheck()) {
@@ -100,15 +132,16 @@ billingList.createBillingListGrid = function () {
 		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','請求番号serial','請求番号','請求日', '税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','請求先情報','備考','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','請求先情報','備考','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
 			{ name: 'billing_number', index: 'billing_number', width: 80, align: "center" },
 			{ name: 'pay_planning_date', index: 'pay_planning_date', width: 80, align: "center" },
-			{ name: 'pay_amount', index: 'pay_amount', width: 80, align: "right" },
+			{ name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 100, align: "center" },
+			{ name: 'pay_amount', index: 'pay_amount', width: 120, align: "right" },
 			{ name: 'pay_amount_tax', index: 'pay_amount_tax', width: 80, align: "right" },
-			{ name: 'pay_amount_total', index: 'pay_amount_total', width: 80, align: "right" },
+			{ name: 'pay_amount_total', index: 'pay_amount_total', width: 120, align: "right" },
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "right" },
 			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
@@ -167,101 +200,193 @@ billingList.openBillingListDialog = function (event) {
 
 	$("#billing_list_dialog").dialog("open");
 };
+
 // 請求情報編集用ダイアログの表示
 billingList.openBillingFormDialog = function (event) {
 	// フォームをクリアする
 	billingList.clearPayResult();	// 請求区分のチェックをクリアする
 	var billing = billingList.clearBilling();
 	billingList.setBillingForm(billing);
-	var address1 = "";
-	var address2 = "";
-	var tel = "";
-	var fax = "";
-	if ((billingList.currentEntry.currentEntry.client_address_1 != null) && (billingList.currentEntry.currentEntry.client_address_1 != "")) {
-		address1 = billingList.currentEntry.currentEntry.client_address_1;
-	}
-	if ((billingList.currentEntry.currentEntry.client_division_address_1 != null) && (billingList.currentEntry.currentEntry.client_division_address_1 != "")) {
-		address1 = billingList.currentEntry.currentEntry.client_division_address_1;
-	}
-	if ((billingList.currentEntry.currentEntry.client_address_2 != null) && (billingList.currentEntry.currentEntry.client_address_2 != "")) {
-		address2 = billingList.currentEntry.currentEntry.client_address_2;
-	}
-	if ((billingList.currentEntry.currentEntry.client_division_address_2 != null) && (billingList.currentEntry.currentEntry.client_division_address_2 != "")) {
-		address2 = billingList.currentEntry.currentEntry.client_division_address_2;
-	}
-	if ((billingList.currentEntry.currentEntry.client_tel_no != null) && (billingList.currentEntry.currentEntry.client_tel_no != "")) {
-		tel = billingList.currentEntry.currentEntry.client_tel_no;
-	}
-	if ((billingList.currentEntry.currentEntry.client_division_tel_no != null) && (billingList.currentEntry.currentEntry.client_division_tel_no != "")) {
-		tel = billingList.currentEntry.currentEntry.client_division_tel_no;
-	}
-	if ((billingList.currentEntry.currentEntry.client_fax_no != null) && (billingList.currentEntry.currentEntry.client_fax_no != "")) {
-		fax = billingList.currentEntry.currentEntry.client_fax_no;
-	}
-	if ((billingList.currentEntry.currentEntry.client_division_fax_no != null) && (billingList.currentEntry.currentEntry.client_division_fax_no != "")) {
-		fax = billingList.currentEntry.currentEntry.client_division_fax_no;
-	}
-	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
-					+ " \ntel : " + tel + " \nfax : " + fax
 	if ($(event.target).attr('id') == 'edit_billing') {
 		// 編集ボタンから開いた場合
-		billingList.status = "edit";
-		//billingList.currentBilling.client_info = client_info;
-		billingList.setBillingForm(billingList.currentBilling);
-		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
-		// 権限チェック
-		if (entryList.auth_entry_edit == 2) {
-			$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
-		} else {
-			$(".ui-dialog-buttonpane button:contains('更新')").button("diable");
-		}
+		billingList.openEditDialog();
 	} else {
 		// 追加ボタンから開いた場合
-		billingList.status = "add";
-		var billing = {
-			billing_no:'',
-			billing_number:'',
-			pay_planning_date:'',
-			pay_complete_date:'',
-			pay_amount:0,
-			pay_amount_tax:0,
-			pay_amount_total:0,
-			pay_complete:0,
-			pay_result:0,
-			memo:'',
-			// 選択中の案件情報から得意先情報をコピーする（デフォルト設定として）
-			client_cd:billingList.currentEntry.currentEntry.client_cd,
-			client_name:billingList.currentEntry.currentEntry.client_name_1,
-			client_division_cd:billingList.currentEntry.currentEntry.client_division_cd,
-			client_division_name:billingList.currentEntry.currentEntry.client_division_name,
-			client_person_id:billingList.currentEntry.currentEntry.client_person_id,
-			client_person_name:billingList.currentEntry.currentEntry.client_person_name,
-			client_info: client_info
-		}
-		billingList.setBillingForm(billing);
-		// 権限チェック
-		if (entryList.auth_entry_add == 2) {
-			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
-		} else {
-			$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
-		}
-		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+		// 請求先情報に表示する内容を取得する
+		var client_info = billingList.getEntryClientInfo(billingList.currentEntry.currentEntry);
+		billingList.openAddDialog(client_info);
 	}
 	// 請求金額合計を取得する
 	billingList.requestBillingTotal(billingList.currentEntry.currentEntry.entry_no);
 };
+
+// 編集用にダイアログを表示する
+billingList.openEditDialog = function() {
+	billingList.status = "edit";
+	//billingList.currentBilling.client_info = client_info;
+	billingList.setBillingForm(billingList.currentBilling);
+	$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
+	// 権限チェック
+	if (entryList.auth_entry_edit == 2) {
+		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+	} else {
+		$(".ui-dialog-buttonpane button:contains('更新')").button("diable");
+	}
+};
+
+// 追加用にダイアログを表示する
+billingList.openAddDialog = function(client_info) {
+	billingList.status = "add";
+	var billing = billingList.clearBilling();
+	// 選択中の案件情報から得意先情報をコピーする（デフォルト設定として）
+	billing = billingList.setDefaultClientData(billing);
+	billing.client_info = client_info
+	billingList.setBillingForm(billing);
+	// 権限チェック
+	if (entryList.auth_entry_add == 2) {
+		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+	} else {
+		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
+	}
+	$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+
+}
+// 選択中の案件情報から得意先情報をコピーする（デフォルト設定として）
+billingList.setDefaultClientData = function(billing) {
+	billing.client_cd = billingList.currentEntry.currentEntry.client_cd;
+	billing.client_name = billingList.currentEntry.currentEntry.client_name_1;
+	billing.client_division_cd = billingList.currentEntry.currentEntry.client_division_cd;
+	billing.client_division_name = billingList.currentEntry.currentEntry.client_division_name;
+	billing.client_person_id = billingList.currentEntry.currentEntry.client_person_id;
+	billing.client_person_name = billingList.currentEntry.currentEntry.client_person_name;
+	return billing;
+}
+// 案件情報から請求先情報を取得
+billingList.getEntryClientInfo = function(client) {
+	var address1 = billingList.getAddress1_for_entry(client);
+	var address2 = billingList.getAddress2_for_entry(client);
+	var tel = billingList.getTel_for_entry(client);
+	var fax = billingList.getFax_for_entry(client);
+	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
+					+ " \ntel : " + tel + " \nfax : " + fax
+	return client_info;
+}
+// 顧客マスタから請求先情報を取得
+billingList.getClientInfo = function(client,division) {
+	var address1 = billingList.getAddress1_for_client(client,division);
+	var address2 = billingList.getAddress2_for_client(client,division);
+	var tel = billingList.getTel_for_client(client,division);
+	var fax = billingList.getFax_for_client(client,division);
+	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
+					+ " \ntel : " + tel + " \nfax : " + fax
+	return client_info;
+}
+// 住所１取得（案件情報から取得）
+billingList.getAddress1_for_entry = function(client) {
+	var address1 = "";
+	if ((client.client_address_1 != null) && (client.client_address_1 != "")) {
+		address1 = client.client_address_1;
+	}
+	if ((client.client_division_address_1 != null) && (client.client_division_address_1 != "")) {
+		address1 = client.client_division_address_1;
+	}
+	return address1;
+}
+
+// 住所１取得（顧客マスタから取得）
+billingList.getAddress1_for_client = function(client,division) {
+	var address1 = "";
+	if ((client.address_1 != null) && (client.address_1 != "")) {
+		address1 = client.address_1;
+	}
+	if ((division.address_1 != null) && (division.address_1 != "")) {
+		address1 = division.address_1;
+	}
+	return address1;
+}
+
+// 住所2取得(案件情報から取得)
+billingList.getAddress2_for_entry = function(client) {
+	var address2 = "";
+	if ((client.client_address_2 != null) && (client.client_address_2 != "")) {
+		address2 = client.client_address_2;
+	}
+	if ((client.client_division_address_2 != null) && (client.client_division_address_2 != "")) {
+		address2 = client.client_division_address_2;
+	}
+	return address2;
+}
+// 住所2取得(顧客マスタから取得)
+billingList.getAddress2_for_client = function(client,division) {
+	var address2 = "";
+	if ((client.address_2 != null) && (client.address_2 != "")) {
+		address2 = client.address_2;
+	}
+	if ((division.address_2 != null) && (division.address_2 != "")) {
+		address2 = division.address_2;
+	}
+	return address2;
+}
+
+// 電話番号取得(案件情報から取得)
+billingList.getTel_for_entry = function(client) {
+	var tel = "";
+	if ((client.client_tel_no != null) && (client.client_tel_no != "")) {
+		tel = client.client_tel_no;
+	}
+	if ((client.client_division_tel_no != null) && (client.client_division_tel_no != "")) {
+		tel = client.client_division_tel_no;
+	}
+	return tel;
+}
+// 電話番号取得(顧客マスタから取得)
+billingList.getTel_for_client = function(client,division) {
+	var tel = "";
+	if ((client.tel_no != null) && (client.tel_no != "")) {
+		tel = client.tel_no;
+	}
+	if ((division.tel_no != null) && (division.tel_no != "")) {
+		tel = division.tel_no;
+	}
+	return tel;
+}
+
+// FAX番号取得(案件情報から取得)
+billingList.getFax_for_entry = function(client) {
+	var fax = "";
+	if ((client.client_fax_no != null) && (client.client_fax_no != "")) {
+		fax = client.client_fax_no;
+	}
+	if ((client.client_division_fax_no != null) && (client.client_division_fax_no != "")) {
+		fax = client.client_division_fax_no;
+	}
+	return fax;
+}
+// FAX番号取得(顧客マスタから取得)
+billingList.getFax_for_client = function(client,division) {
+	var fax = "";
+	if ((client.fax_no != null) && (client.fax_no != "")) {
+		fax = client.fax_no;
+	}
+	if ((division.fax_no != null) && (division.fax_no != "")) {
+		fax = division.fax_no;
+	}
+	return fax;
+}
+
 // 請求情報のクリア
 billingList.clearBilling = function() {
 	var billing = {
 			billing_no:'',
 			billing_number:'',
 			pay_planning_date:'',
+			nyukin_yotei_date:'',
 			pay_complete_date:'',
 			pay_amount:0,
 			pay_amount_tax:0,
 			pay_amount_total:0,
 			pay_complete:0,
-			pay_result:0,
+			pay_result:"請求待ち",
 			memo:'',
 			client_cd:'',
 			client_name:'',
@@ -286,6 +411,7 @@ billingList.setBillingForm = function(billing) {
 	$("#billing_number").val(billing.billing_number);
 
 	$("#pay_planning_date").val(billing.pay_planning_date);
+	$("#nyukin_yotei_date").val(billing.nyukin_yotei_date);
 	$("#pay_complete_date").val(billing.pay_complete_date);
 	$("#pay_amount").val(billing.pay_amount);
 	$("#pay_amount_tax").val(billing.pay_amount_tax);
@@ -293,15 +419,17 @@ billingList.setBillingForm = function(billing) {
 	$("#pay_complete").val(billing.pay_complete);
 //	$("#pay_result").val(billing.pay_result);
 
-
+	$("#seikyu_date").text("請求日");
 	if (billing.pay_result == "請求可") {
 		$("#pay_result_1").prop("checked",true);
+		$("#seikyu_date").text("請求予定日");
 	} else if (billing.pay_result == "請求済") {
 		$("#pay_result_2").prop("checked",true);
 	} else if (billing.pay_result == "入金確認済") {
 		$("#pay_result_3").prop("checked",true);
 	} else if (billing.pay_result == "請求待ち") {
 		$("#pay_result_0").prop("checked",true);
+		$("#seikyu_date").text("請求予定日");
 	}
 
 	$("#billing_client_cd").val(billing.client_cd);
@@ -327,6 +455,9 @@ billingList.selectClient = function () {
 	$("#billing_client_division_name").val(clientList.currentClientDivision.name);
 	$("#billing_client_person_id").val(clientList.currentClientPerson.person_id);
 	$("#billing_client_person_name").val(clientList.currentClientPerson.name);
+	// 請求先情報ダイアログで請求先を変更した場合に「請求先情報に表示する内容も再取得して再表示する
+	var client_info = billingList.getClientInfo(clientList.currentClient,clientList.currentClientDivision);
+	$("#billing_client_info").val(client_info);
 	return true;
 };
 //	請求情報データの保存
