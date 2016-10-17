@@ -1,4 +1,4 @@
-var express = require('express');
+﻿var express = require('express');
 var router = express.Router();
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -17,6 +17,7 @@ var Sequelize = require('sequelize');
 var app = express();
 
 pg = require('pg');
+pg.defaults.poolSize = 100;
 sequelize = require('./libs/dbconn')(config);
 models = require('./models')(sequelize);
 
