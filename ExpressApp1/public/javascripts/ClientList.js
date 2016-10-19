@@ -201,7 +201,7 @@ clientList.createClientListGrid = function (no, keyword) {
 		url: url,
 		altRows: true,
 		datatype: "json",
-		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者'],
+		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者','削除フラグ'],
 		colModel: [
 			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center"},
 			{ name: 'name_1', index: 'name_1', width: 200, align: "left" },
@@ -218,6 +218,7 @@ clientList.createClientListGrid = function (no, keyword) {
 			{ name: 'created_id', index: 'created_id' , formatter: scheduleCommon.personFormatter },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
 			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter  },
+			{ name: 'delete_check',index: 'delete_check', hidden:true}
 		],
 		height: "230px",
 		shrinkToFit:false,
@@ -281,7 +282,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		url: url + '?client_cd=' + client_cd + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['クライアントCD','部署コード','部署名', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','請求締日','支払日','休日対応','メモ','作成日','作成者','更新日','更新者'],
+		colNames: ['クライアントCD','部署コード','部署名', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','請求締日','支払日','休日対応','メモ','作成日','作成者','更新日','更新者','削除フラグ'],
 		colModel: [
 			{ name: 'client_cd', index: 'client_cd', hidden: true },
 			{ name: 'division_cd', index: 'division_cd', width:80, align: 'left' ,hidden:true},
@@ -301,6 +302,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 			{ name: 'created_id', index: 'created_id' , formatter: scheduleCommon.personFormatter },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
 			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter  },
+			{ name: 'delete_check',index: 'delete_check', hidden:true}
 		],
 		height: "115px",
 		shrinkToFit:false,
@@ -347,7 +349,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		url: url + '?client_cd=' + client_cd + '&division_cd=' + division_cd + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['','','担当者コード','担当者名', 'カナ','敬称','役職名','メールアドレス','メモ','作成日','作成者','更新日','更新者'],
+		colNames: ['','','担当者コード','担当者名', 'カナ','敬称','役職名','メールアドレス','メモ','作成日','作成者','更新日','更新者','削除フラグ'],
 		colModel: [
 			{ name: 'client_cd', index: 'client_cd', hidden: true },
 			{ name: 'division_cd', index: 'division_cd', hidden: true },
@@ -362,6 +364,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 			{ name: 'created_id', index: 'created_id' , formatter: scheduleCommon.personFormatter },
 			{ name: 'updated', index: 'updated', width: 130, align: "center" },
 			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter  },
+			{ name: 'delete_check',index: 'delete_check', hidden:true}
 		],
 		height: "115px",
 		shrinkToFit:false,
@@ -422,7 +425,7 @@ clientList.openClientDialog = function (event) {
 	var client = clientList.clearClient();
 	clientList.setClientForm(client);
 	if ($(event.target).attr('id').indexOf('edit_client') != -1) {
-		// 編集ボタンから呼ばれた時は選択中の案件のデータを取得して表示する
+		// 編集ボタンから呼ばれた時は選択中のデータを取得して表示する
 		clientList.setClientForm(clientList.currentClient);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
@@ -841,7 +844,12 @@ clientList.setClientForm = function (client) {
 	$("#tel_no").val(client.tel_no);
 	$("#fax_no").val(client.fax_no);
 	$("#memo").val(client.memo);
-	$("#delete_check").val(client.delete_check);
+	if (client.delete_check == 1) {
+		$("#delete_check").prop("checked", true);				// 削除フラグ
+	} else {
+		$("#delete_check").prop("checked", false);				// 削除フラグ
+	}
+
 };
 // 部署情報をフォームにセットする
 clientList.setClientDivisionForm = function (division) {
@@ -861,7 +869,11 @@ clientList.setClientDivisionForm = function (division) {
 	$("#billing_limit").val(division.billing_limit);
 	$("#payment_date").val(division.payment_date);
 	$("#holiday_support").val(division.holiday_support);
-	$("#division_delete_check").val(division.delete_check);
+	if (division.delete_check == 1) {
+		$("#division_delete_check").prop("checked", true);				// 削除フラグ
+	} else {
+		$("#division_delete_check").prop("checked", false);				// 削除フラグ
+	}
 };
 // 担当者情報をフォームにセットする
 clientList.setClientPersonForm = function (person) {
@@ -877,7 +889,11 @@ clientList.setClientPersonForm = function (person) {
 	$("#title").val(person.title);
 	$("#person_email").val(person.email);
 	$("#person_memo").val(person.memo);
-	$("#person_delete_check").val(person.delete_check);
+	if (person.delete_check == 1) {
+		$("#person_delete_check").prop("checked", true);				// 削除フラグ
+	} else {
+		$("#person_delete_check").prop("checked", false);				// 削除フラグ
+	}
 };
 // 一番上のツールバーのボタン制御
 clientList.buttonEnabledForTop = function(tab_no, kind) {

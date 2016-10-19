@@ -90,6 +90,16 @@ var client_check = function (client) {
 	} else {
 		client.delete_check = 0;
 	}
+	if (client.division_delete_check) {
+		client.division_delete_check = Number(client.division_delete_check);
+	} else {
+		client.division_delete_check = 0;
+	}
+	if (client.person_delete_check) {
+		client.person_delete_check = Number(client.person_delete_check);
+	} else {
+		client.person_delete_check = 0;
+	}
 	return client;
 };
 
