@@ -1238,6 +1238,10 @@ a.schedule_band:active {
     text-align:right;
     width:60px;
 }
+.form_title_center {
+    text-align:center;
+    width:200px;
+}
 
 
 a.general_button {
@@ -1564,4 +1568,8 @@ fieldset.entry_search_set {
 
 .entry_search_keyword {
   margin-top: 6px;
+}
+.notifiy_mail_settings_table {
+    border-collapse:collapse;
+    border: solid 1px;
 }

@@ -1,0 +1,64 @@
+block head
+	link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+	script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+	script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+	script(src="javascripts/Notifiy_settings.js")
+	link(rel="stylesheet" ,href="stylesheets/schedule.css")
+
+block content
+		div.titlebar
+			span.titlebar 
+				a(href="portal") Home
+			img.titlebar_logo(src="images/drc_logo.jpg")
+			span.titlebar= title
+			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。" 
+		div#tabs
+			ul
+				li
+					a(href="#tabs-0") メール通知設定
+			div#tabs-0
+				div.toolbar
+					a.tool_button_a#post_notifiy_settings 更新
+				form#notifiy_settings_Form(method="post",action="javascript:return false;")
+					input#notifiy_id(type="hidden" name="notifiy_id")
+					table.notifiy_mail_settings_table
+						tr
+							th(style="border:solid 1px;").form_title_center イベント名
+							th(style="border:solid 1px;").form_title_center 通知先
+							th(style="border:solid 1px;").form_title_center メール件名
+							th(style="border:solid 1px;").form_title_center メール本文
+						tr
+							td(style="border:solid 1px;")
+								input#event_name_1(type="text" name="event_name_1" title="event_name_1" readonly=true value="請求情報が「請求化」になった時" size="30")
+							td(style="border:solid 1px;")
+								input#send_address_1(type="text" name="send_address_1" maxlength="1024" placeholder="送信先アドレス" size="30")
+							td(style="border:solid 1px;")
+								input#mail_title_1(type="text" name="mail_title_1" maxlength="128" placeholder="メール件名" title="mail_title_1" size="30")
+							td(style="border:solid 1px;")
+								textarea#mail_body_1(name="mail_body_1" col="30" row="3")
+						tr
+							td(style="border:solid 1px;")
+								input#event_name_2(type="text" name="event_name_2" title="event_name_2" readonly=true value="案件が「依頼」になった時" size="30")
+							td(style="border:solid 1px;")
+								input#send_address_2(type="text" name="send_address_2" maxlength="1024" placeholder="送信先アドレス" size="30")
+							td(style="border:solid 1px;")
+								input#mail_title_2(type="text" name="mail_title_2" maxlength="128" placeholder="メール件名" title="mail_title_2" size="30")
+							td(style="border:solid 1px;")
+								textarea#mail_body_2(name="mail_body_2" col="30" row="3")
+					hr
+					table
+						tr
+							td.form_title smtpサーバ
+							td
+								input#smtp_server(type="text" name="smtp_server" title="smtp_server" placeholder="送信サーバアドレス")
+							td.form_title ポート番号
+							td
+								input#smtp_port(type="text" name="smtp_port" title="smtp_port" placeholder="ポート番号")
+						tr
+							td.form_title ユーザID
+							td
+								input#userid(type="text" name="userid" title="userid" placeholder="送信元ユーザ")
+							td.form_title パスワード
+							td
+								input#password(type="password" name="password" title="password" placeholder="パスワード")
+								

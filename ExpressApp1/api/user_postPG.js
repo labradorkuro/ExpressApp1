@@ -46,7 +46,7 @@ var insertUser = function (connection, user, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.user_list(' 
+	var sql = 'INSERT INTO drc_sch.user_list('
 			+ 'uid,'		// ユーザID
 			+ 'password,'
 			+ 'name,'		// 名前
@@ -57,13 +57,14 @@ var insertUser = function (connection, user, req, res) {
 			+ 'telno,'		// 内線
 			+ 'title,'		// 役職名
 			+ 'auth_no,'		// 権限設定
+			+ 'email,'		// メールアドレス
 			+ 'delete_check,'	// 削除フラグ
 			+ 'created,'	// 作成日
 			+ 'created_id,' // 作成者ID
-			+ 'updated,'	// 
+			+ 'updated,'	//
 			+ 'updated_id' // 更新者ID
-			+ ') values (' 
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)'
+			+ ') values ('
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,&16)'
 			;
 	//pg.connect(connectionString, function (err, connection) {
 		// SQL実行
@@ -79,6 +80,7 @@ var insertUser = function (connection, user, req, res) {
 			user.telno,
 			user.title,
 			user.auth_no,
+			user.email,
 			user.delete_check,
 			created,			// 作成日
 			created_id,			// 作成者ID
@@ -98,20 +100,21 @@ var insertUser = function (connection, user, req, res) {
 var updateUser = function (connection, user, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.user_list SET ' 
+	var sql = 'UPDATE drc_sch.user_list SET '
 			+ 'uid = $1,'			// ユーザID
 			+ 'name = $2,'			// 名前
-			+ 'u_no = $3,'			// 
+			+ 'u_no = $3,'			//
 			+ 'start_date = $4,'	// 入社日
 			+ 'base_cd = $5,'		// 拠点CD
 			+ 'division = $6,'		// 事業部CD
 			+ 'telno = $7,'			// 内線
 			+ 'title = $8,'			// 役職名
 			+ 'auth_no = $9,'		// 権限設定
-			+ 'delete_check = $10,'	// 削除フラグ
-			+ 'updated_id = $11,'	// 更新者ID
-			+ 'updated = $12'
-			+ " WHERE uid = $13";
+			+ 'email = $10,'		// メールアドレス
+			+ 'delete_check = $11,'	// 削除フラグ
+			+ 'updated_id = $12,'	// 更新者ID
+			+ 'updated = $13'
+			+ " WHERE uid = $14";
 	//pg.connect(connectionString, function (err, connection) {
 		// SQL実行
 		var query = connection.query(sql, [
@@ -125,11 +128,12 @@ var updateUser = function (connection, user, req, res) {
 			user.telno,
 			user.title,
 			user.auth_no,
+			user.email,
 			user.delete_check,
 			updated_id,			// 更新者ID
 			updated,
 			user.uid
-		], function (err, results) { 
+		], function (err, results) {
 			connection.end();
 			if (err) {
 				console.log(err);
@@ -169,10 +173,10 @@ exports.password_post = function (req, res) {
 var updateUserPassword = function (connection, user, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.user_list SET ' 
+	var sql = 'UPDATE drc_sch.user_list SET '
 			+ 'password = $1,' // ユーザID
 			+ 'updated_id = $2,' // 更新者ID
-			+ 'updated = $3' 
+			+ 'updated = $3'
 			+ " WHERE uid = $4";
 	// SQL実行
 	var query = connection.query(sql, [

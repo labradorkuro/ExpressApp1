@@ -74,7 +74,7 @@ userList.createGrid = function () {
 		url: '/user_get/?delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['社員ID','名前','社員番号', '役職名', '拠点','事業部','内線番号','入社日'
+		colNames: ['社員ID','名前','社員番号', '役職名', '拠点','事業部','内線番号','メールアドレス','入社日'
 				　,'作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'uid', index: 'uid', width: 120, align: "center" },
@@ -84,6 +84,7 @@ userList.createGrid = function () {
 			{ name: 'base_cd', index: 'base_cd', width: 80, align: "center" ,formatter:scheduleCommon.base_cdFormatter},
 			{ name: 'division_name', index: 'division_name', width: 200, align: "center" },
 			{ name: 'telno', index: 'telno', width: 80, align: "center" },
+			{ name: 'email', index: 'email', width: 200, align: "center" },
 			{ name: 'start_date', index: 'start_date', width: 80, align: "center" },
 			{ name: 'created', index: 'created', width: 150, align: "center"},
 			{ name: 'created_id', index: 'created_id'  ,width: 80,formatter: scheduleCommon.personFormatter, align: "center"},
@@ -109,7 +110,7 @@ userList.onSelectUser = function(event) {
 };
 // 編集用ダイアログの表示
 userList.openUserDialog = function (event) {
-	
+
 	var user = userList.clearUser();
 	userList.setUserForm(user);
 	if ($(event.target).attr('id') == 'edit_user') {
@@ -136,7 +137,7 @@ userList.requestUserData = function (uid) {
 };
 //	社員情報データの保存
 userList.saveUser = function () {
-	var result = false; 
+	var result = false;
 	// checkboxのチェック状態確認と値設定
 	userList.checkCheckbox();
 	if (userList.inputCheck()) {
@@ -203,6 +204,7 @@ userList.setUserForm = function (user) {
 	$("#telno").val(user.telno); // 内線
 	$("#title").val(user.title); // 役職名
 	$("#auth_no").val(user.auth_no); // 権限設定
+	$("#email").val(user.email); // メールアドレス
 	// 削除フラグ
 	if (user.delete_check == 1) {
 		$("#delete_check").attr("checked", true);
@@ -226,6 +228,7 @@ userList.clearUser = function () {
 	user.telno = ''; // 内線
 	user.title = ''; // 役職名
 	user.auth_no = 'p05';	// 権限設定
+	user.email = '';			// メールアドレス
 	user.delete_check = '';	// 削除フラグ
 	user.created = "";		// 作成日
 	user.created_id = "";   // 作成者ID
@@ -283,7 +286,7 @@ userList.inputCheck = function () {
 		return false;
 	} else {
 		return true;
-	
+
 	}
 
 };
