@@ -218,7 +218,7 @@ var getEntrySearchKeywordParam = function(keyword) {
 	var kw = "";
 	if ((keyword != "undefined") && (keyword != "")) {
 		kw = "(test_large_class.item_name LIKE '%" + keyword + "%' OR test_middle_class.item_name LIKE '%" + keyword + "%' OR entry_title LIKE '%" + keyword + "%' OR client_list.name_1 LIKE '%" + keyword + "%' OR " +
-					"client_list.name_2 LIKE '%" + keyword + "%' OR agent_list.name_1 LIKE '%" + keyword + "%')";
+					"client_list.name_2 LIKE '%" + keyword + "%' OR agent_list.name_1 LIKE '%" + keyword + "%' OR entry_info.entry_no LIKE '%" + keyword + "%')";
 	}
 	return kw;
 };
