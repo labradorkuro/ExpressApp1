@@ -493,12 +493,12 @@ billingList.getFormData = function () {
 	return form;
 };
 
-// 社員データ保存後のコールバック
+// データ保存後のコールバック
 billingList.onloadBillingSave = function (e) {
 	if (this.status == 200) {
-		var user = this.response;
-		if (user.error_msg) {
-			alert(user.error_msg);
+		var billing = this.response;
+		if (billing.error_msg) {
+			alert(billing.error_msg);
 		} else {
 			$("#billing_info_list").GridUnload();
 			billingList.createBillingListGrid();

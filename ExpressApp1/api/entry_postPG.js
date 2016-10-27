@@ -3,6 +3,10 @@
 //
 //var mysql = require('mysql');
 var tools = require('../tools/tool');
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+var notify = models['notify_settings'];
+
 var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ 'entry_no,'						// 案件No
 		+ 'quote_no,'						// 見積番号
@@ -232,6 +236,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 	query.on('end', function (result, err) {
 		connection.end();
 		res.send(entry);
+		checkEntryStatus(entry);	// 案件ステータスが「依頼」になったら通知メール
 	});
 	query.on('error', function (error) {
 		console.log(sqlInsertEntry + ' ' + error);
@@ -397,6 +402,7 @@ var updateEntryInfo = function(entry, req, res) {
 		query.on('end', function (result, err) {
 			connection.end();
 			res.send(entry);
+			checkEntryStatus(entry);	// 案件ステータスが「依頼」になったら通知メール
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
@@ -931,4 +937,34 @@ var updateQuoteSpecific = function (connection,quote, specific, req, res, no) {
 	query.on('error', function (error) {
 		console.log(sql + ' ' + error);
 	});
+};
+// 「依頼」の時にメール通知する
+var checkEntryStatus = function(entry) {
+	if (entry.entry_status == "03") {
+		var attr = {where:{notify_id:1}};
+	  notify.schema('drc_sch').find(attr).then(function(setting){
+	      var transpoter = nodemailer.createTransport(smtpTransport({
+	        host : setting.smtp_server,
+	        port : setting.smtp_port,
+	        auth : {
+	          user : setting.userid,
+	          pass : setting.password
+	        }
+	      }));
+	      var mailOptions = {
+	        from : setting.userid,
+	        to : setting.send_address_2,
+	        subject : setting.mail_title_2 + " 案件No[" + entry.entry_no + "]",
+	        text : setting.mail_body_2 + "案件No[" + entry.entry_no + "]"
+	      };
+	      transpoter.sendMail(mailOptions, function( error, info) {
+	        if (error) {
+	          return console.log(error);
+	        }
+	        console.log("Message Sent: " + info.response);
+	      })
+	  }).catch(function(error){
+	    console.log(error);
+	  });
+	}
 };

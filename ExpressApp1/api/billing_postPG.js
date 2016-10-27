@@ -3,6 +3,9 @@
 //
 //var mysql = require('mysql');
 var tools = require('../tools/tool');
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+var notify = models['notify_settings'];
 
 // 請求データのPOST
 exports.billing_post = function (req, res) {
@@ -24,6 +27,8 @@ exports.billing_post = function (req, res) {
 						// 請求データの更新
 						updateBilling(connection, billing, req, res);
 					}
+					// 請求区分が「請求可」の場合はメール通知する
+					checkPayResult(billing);
 				}
 			});
 		});
@@ -205,4 +210,35 @@ var updateBilling = function (connection, billing, req, res) {
 				res.send(billing);
 			}
 		});
+};
+
+// 「請求可」の時にメール通知する
+var checkPayResult = function(billing) {
+	if (billing.pay_result == 1) {
+		var attr = {where:{notify_id:1}};
+	  notify.schema('drc_sch').find(attr).then(function(setting){
+	      var transpoter = nodemailer.createTransport(smtpTransport({
+	        host : setting.smtp_server,
+	        port : setting.smtp_port,
+	        auth : {
+	          user : setting.userid,
+	          pass : setting.password
+	        }
+	      }));
+	      var mailOptions = {
+	        from : setting.userid,
+	        to : setting.send_address_1,
+	        subject : setting.mail_title_1 + " 案件No[" + billing.billing_entry_no + "]",
+	        text : setting.mail_body_1 + "案件No[" + billing.billing_entry_no + "]"
+	      };
+	      transpoter.sendMail(mailOptions, function( error, info) {
+	        if (error) {
+	          return console.log(error);
+	        }
+	        console.log("Message Sent: " + info.response);
+	      })
+	  }).catch(function(error){
+	    console.log(error);
+	  });
+	}
 };

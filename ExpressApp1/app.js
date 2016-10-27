@@ -46,7 +46,7 @@ var uriage_list = require('./routes/uriage_list')
 var pay_planning = require('./routes/pay_plan_list')
 var sight_master = require('./routes/sight_master_list')
 var holiday_master = require('./routes/holiday_master_list')  // 休日マスタ画面
-var notifiy_settings = require('./routes/notifiy_settings') // メール通知設定
+var notify_settings = require('./routes/notify_settings') // メール通知設定
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -80,8 +80,8 @@ var sight_info_get = require('./api/sight_getPG');
 var sight_info_post = require('./api/sight_postPG');
 var holiday_get = require('./api/holiday_getPG');       // 休日マスタ
 var holiday_post = require('./api/holiday_postPG');
-var notifiy_settings_get = require('./api/notifiy_settings_getPG'); // 通知メール設定
-var notifiy_settings_post = require('./api/notifiy_settings_postPG'); // 通知メール設定
+var notify_settings_get = require('./api/notify_settings_getPG'); // 通知メール設定
+var notify_settings_post = require('./api/notify_settings_postPG'); // 通知メール設定
 //mysql = require('mysql');
 
 
@@ -244,9 +244,9 @@ app.get('/holiday_search',holiday_get.holiday_search);   // api
 app.post('/holiday_post',upload.array(),holiday_post.holiday_post); //api
 
 // メール通知設定
-app.get('/notifiy_settings',notifiy_settings.list);
-app.get('/notifiy_settings_get/:id',notifiy_settings_get.notifiy_settings_get); //api
-app.post('/notifiy_settings_post',upload.array(),notifiy_settings_post.notifiy_settings_post); //api
+app.get('/notify_settings',notify_settings.list);
+app.get('/notify_settings_get/:id',notify_settings_get.notify_settings_get); //api
+app.post('/notify_settings_post',upload.array(),notify_settings_post.notify_settings_post); //api
 
 
 /** mysql -> pg 2014.11.13
@@ -304,13 +304,13 @@ process.on('uncaughtException',function(err) {
 var sight_date = models['sight_date'];
 var sight_info = models['sight_info'];
 var holiday = models['holiday'];
-var notifiy = models['notifiy_settings'];
+var notify = models['notify_settings'];
 
 var options = { "schema": "drc_sch" };
 sight_info.sync(options);
 sight_date.sync(options);
 holiday.sync(options);
-notifiy.sync(options);
+notify.sync(options);
 
 sight_info.associate(models);
 /*

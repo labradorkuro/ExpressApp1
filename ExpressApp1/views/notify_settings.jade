@@ -2,7 +2,7 @@ block head
 	link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
 	script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
 	script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
-	script(src="javascripts/Notifiy_settings.js")
+	script(src="javascripts/Notify_settings.js")
 	link(rel="stylesheet" ,href="stylesheets/schedule.css")
 
 block content
@@ -18,10 +18,10 @@ block content
 					a(href="#tabs-0") メール通知設定
 			div#tabs-0
 				div.toolbar
-					a.tool_button_a#post_notifiy_settings 更新
-				form#notifiy_settings_Form(method="post",action="javascript:return false;")
-					input#notifiy_id(type="hidden" name="notifiy_id")
-					table.notifiy_mail_settings_table
+					a.tool_button_a#post_notify_settings 更新
+				form#notify_settings_Form(method="post",action="javascript:return false;")
+					input#notify_id(type="hidden" name="notify_id")
+					table.notify_mail_settings_table
 						tr
 							th(style="border:solid 1px;").form_title_center イベント名
 							th(style="border:solid 1px;").form_title_center 通知先

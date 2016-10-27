@@ -23,7 +23,9 @@
     "sequelize-cli": "^1.7.1",
     "serve-favicon": "*",
     "config": "^1.19.0",
-    "stylus": "*"
+    "stylus": "*",
+    "nodemailer":"*",
+    "nodemailer-smtp-transport":"*"
   },
   "scripts": {
       "start": "node app.js"

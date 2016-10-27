@@ -5,8 +5,8 @@
 //
 var Sequelize = require('sequelize');
 
-var Notifiy_settings = sequelize.define("notifiy_settings", {
-	notifiy_id: { type: Sequelize.INTEGER, autoIncrement: true , primaryKey: true },
+var Notify_settings = sequelize.define("notify_settings", {
+	notify_id: { type: Sequelize.INTEGER, autoIncrement: true , primaryKey: true },
   event_name_1:Sequelize.STRING(128),
   send_address_1:Sequelize.STRING(1024),
   mail_title_1:Sequelize.STRING(128),
@@ -29,5 +29,5 @@ var Notifiy_settings = sequelize.define("notifiy_settings", {
 	timestamps: false
 });
 module.exports = function (sequelize, DataTypes) {
-	return Notifiy_settings;
+	return Notify_settings;
 };
