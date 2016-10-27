@@ -168,9 +168,12 @@ app.post('/schedule_post', upload.array(), schedule_post.schedule_post);
 app.post('/user_post', upload.array(), user_post.user_post);
 app.post('/password_post', upload.array(), user_post.password_post);
 app.post('/division_post', upload.array(), division_post.division_post);
+
 app.get('/entry_get/:no?', entry_get.entry_get);
 app.get('/entry_get/cal/:start/:end/:test_type', entry_get.entry_get_list_cal);
 app.get('/entry_get/gantt/:start/:end/:test_type', entry_get.entry_get_list_gantt);
+app.get('/mikaishu_list', entry_get.mikaishu_list);
+
 app.get('/quote_get/:entry_no?', entry_get.quote_get);
 app.get('/report_gantt/:entry_no?', entry_get.report_gantt);
 app.get('/quote_specific_get_grid/:entry_no/:quote_no', entry_get.quote_specific_get_grid);

@@ -50,6 +50,8 @@ $(function ()　{
   // 案件検索ボタン
   $("#entry_search").bind('click' , {}, entryList.entrySearch);
   $("#entry_search_clear").bind('click' , {}, entryList.entrySearchClear);
+  // 未回収リストボタン
+	$("#entry_list_mikaishu").bind('click' , {}, entryList.mikaishu_list);
 	// 見積追加ボタンイベント（登録・編集用画面の表示）
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
@@ -1115,6 +1117,16 @@ entryList.entrySearch = function() {
     '&search_start_date=' + search_start_date +
     '&search_end_date=' + search_end_date;
 
+	// 案件リストのグリッド
+  entryList.createGridSub(req_url);
+
+}
+// 未回収リスト検索
+entryList.mikaishu_list = function() {
+  $("#entry_list").GridUnload();
+  var option = entryList.getSearchOption();
+  var req_url = '/mikaishu_list' + option;
+  
 	// 案件リストのグリッド
   entryList.createGridSub(req_url);
 

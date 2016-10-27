@@ -18,6 +18,34 @@ exports.entry_get = function (req, res) {
 		entry_get_list(req, res);
 	}
 };
+
+// 未回収売掛金リスト
+exports.mikaishu_list = function(req,res) {
+	var today = tools.getToday("{0}/{1}/{2}");
+	// 試験大分類の絞り込み用
+	var large_item_params = parse_large_item_params(req);
+	var pg_params = getPagingParams(req);
+	// レコード件数取得用SQL生成
+	var sql_count = entry_get_list_sql_count();
+
+	if (large_item_params != '') {
+		sql_count += ' ' +  large_item_params;
+	}
+
+	sql_count += ' entry_info.delete_check = $1' + ' AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\'';
+
+	// 案件リスト取得用SQL生成
+	var sql = entry_get_list_sql();
+	if (large_item_params != '') {
+		sql += ' ' + large_item_params;
+	}
+	sql	+= ' entry_info.delete_check = $1 AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\' ORDER BY '
+		+ pg_params.sidx + ' ' + pg_params.sord
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	console.log(sql);
+	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+};
+
 var getPagingParams = function (req) {
 	var pg_param = {};
 	pg_param.sidx = "entry_no";
@@ -367,7 +395,7 @@ var entry_get_list_sql = function() {
 		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
 		// 請求情報のサブクエリ 請求区分を表示するため
-		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
+		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result, nyukin_yotei_date FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no, nyukin_yotei_date) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_result_1 FROM drc_sch.billing_info WHERE (pay_result = 1 AND billing_info.delete_check = 0) GROUP BY entry_no) as subq3 ON(subq3.entry_no = entry_info.entry_no)'
 		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND';
 		return sql;
@@ -384,7 +412,7 @@ var entry_get_list_sql_count = function() {
 		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
 		// 請求情報のサブクエリ 請求区分を表示するため
-		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
+		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result, nyukin_yotei_date FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no, nyukin_yotei_date) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_result_1 FROM drc_sch.billing_info WHERE (pay_result = 1 AND billing_info.delete_check = 0) GROUP BY entry_no) as subq3 ON(subq3.entry_no = entry_info.entry_no)'
 		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND';
 		return sql;
