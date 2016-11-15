@@ -21,10 +21,11 @@ $(function () {
 	clientList.createClientListTabs();
 	// 得意先,部署、担当者グリッドの生成
 	for (var i = 1; i <= 1; i++) {
-		clientList.createClientListGrid(i);
+		clientList.createClientListGrid(i,"");
 		clientList.createClientDivisionListGrid(i, "0");
 		clientList.createClientPersonListGrid(i, "0", "0");
 	}
+
 	// 編集用ダイアログの設定
 	clientList.createClientDialog('client','得意先情報',clientList.saveClient);
 	clientList.createClientDialog('client_division','部署情報',clientList.saveClientDivision);

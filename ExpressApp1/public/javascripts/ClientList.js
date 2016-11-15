@@ -230,13 +230,15 @@ clientList.createClientListGrid = function (no, keyword) {
 		sortorder: "asc",
 		caption: fname + "リスト",
 		onSelectRow: clientList.onSelectClientList,
-		loadComplete:clientList.loadCompleteList
+		loadComplete:clientList.loadCompleteList,
+		pagerpos:'left'
 	});
 	if (no < 11) {
 		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:false });
 	} else {
 		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:true },{},{},{},{overlay:false});
 	}
+	$('#client_list_pager_' + no + '_right').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForTop(no,0);
@@ -309,6 +311,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		rowNum: 5,
 		rowList: [5],
 		pager: '#client_division_list_pager_' + no,
+		pagerpos: 'left',
 		sortname: 'kana',
 		viewrecords: true,
 		sortorder: "asc",
@@ -316,6 +319,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		onSelectRow: clientList.onSelectClientDivisionList
 	});
 	jQuery("#client_division_list_" + no).jqGrid('navGrid', '#client_division_list_pager_' + no, { edit: false, add: false, del: false,search:false });
+	$('#client_division_list_pager_' + no + '_right').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForMiddle(no,1);
@@ -371,6 +375,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		rowNum: 5,
 		rowList: [5],
 		pager: '#client_person_list_pager_' + no,
+		pagerpos: 'left',
 		sortname: 'kana',
 		viewrecords: true,
 		sortorder: "asc",
@@ -378,6 +383,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		onSelectRow: clientList.onSelectClientPersonList
 	});
 	jQuery("#client_person_list_" + no).jqGrid('navGrid', '#client_person_list_pager_' + no, { edit: false, add: false, del: false,search:false });
+	$('#client_person_list_pager_' + no + '_right').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForBottom(no,1);

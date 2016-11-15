@@ -186,7 +186,7 @@ var client_get_list = function (req, res) {
 	var pg_params =  getPagingParams(req);
 	var index_no = Number(req.query.no);
 	var sql_count = "";
-	if (index_no < 10) {
+	if (index_no < 11) {
 		sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1 AND kana ~* \'^[' + index_str[index_no] + ']\'';
 	} else {
 		sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.client_list WHERE delete_check = $1';
