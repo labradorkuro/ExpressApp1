@@ -85,6 +85,7 @@ uriageList.createGrid_all = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#uriage_pager',
+    pagerpos:'left',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
@@ -92,6 +93,7 @@ uriageList.createGrid_all = function() {
     loadComplete:uriageList.loadCompleteUgiageSummary
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
+  $('#uriage_pager_right').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
   uriageList.getUriageTotal(sd,ed,keyword);
 };

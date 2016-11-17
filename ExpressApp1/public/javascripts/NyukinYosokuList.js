@@ -80,6 +80,7 @@ yosokuList.createGrid_all = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#yosoku_pager',
+    pagerpos: 'left',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
@@ -87,6 +88,7 @@ yosokuList.createGrid_all = function() {
     loadComplete:yosokuList.loadCompleteUgiageSummary
 	});
 	jQuery("#yosoku_list").jqGrid('navGrid', '#yosoku_pager', { edit: false, add: false, del: false ,search:false});
+  $('#yosoku_pager_right').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
   yosokuList.getUriageTotal(sd,ed);
 };

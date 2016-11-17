@@ -118,6 +118,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		rowNum: 5,
 		rowList: [5],
 		pager: '#quote_list_pager',
+		pagerpos: 'left',
 		sortname: 'quote_no',
 		viewrecords: true,
 		sortorder: "asc",
@@ -125,6 +126,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		caption: "見積情報"
 	});
 	jQuery("#quote_list").jqGrid('navGrid', '#quote_list_pager', { edit: false, add: false, del: false ,search:false});
+	$('#quote_list_pager_right').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 };
 // グリッド表示用（見積書提出フラグ）
@@ -189,6 +191,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 		rowNum: 6,
 		rowList: [6],
 		pager: '#quote_specific_list_pager',
+		pagerpos: 'left',
 		sortname: 'quote_detail_no',
 		multiSort:false,
 		viewrecords: true,
@@ -196,6 +199,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 		caption: "試験（見積）情報"
 	});
 	jQuery("#quote_specific_list").jqGrid('navGrid', '#quote_specific_list_pager', { edit: false, add: false, del: false, search:false });
+	$('#quote_specific_list_pager_right').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 };
 

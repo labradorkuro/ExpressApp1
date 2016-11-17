@@ -354,6 +354,7 @@ entryList.createGridSub = function (req_url) {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#entry_pager',
+    pagerpos: 'left',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "desc",
@@ -362,6 +363,7 @@ entryList.createGridSub = function (req_url) {
     loadComplete:entryList.loadCompleteEntryList
 	});
 	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false});
+  $('#entry_pager_right').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 };
 // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
@@ -1126,7 +1128,7 @@ entryList.mikaishu_list = function() {
   $("#entry_list").GridUnload();
   var option = entryList.getSearchOption();
   var req_url = '/mikaishu_list' + option;
-  
+
 	// 案件リストのグリッド
   entryList.createGridSub(req_url);
 
