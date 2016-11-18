@@ -109,6 +109,26 @@ sightMaster.shiharai_monthFormatter = function (cellval, options, rowObject) {
 	return result;
 };
 
+sightMaster.getMonthNo = function(str) {
+  var month = 0;
+  if (str == '当月') {
+    month = 0;
+  } else if (str == '翌月') {
+    month = 1;
+  } else if (str == '翌々月') {
+    month = 2;
+  } else if (str == '3ヵ月後') {
+    month = 3;
+  } else if (str == '4ヵ月後') {
+    month = 4;
+  } else if (str == '5ヵ月後') {
+    month = 5;
+  } else if (str == '6ヵ月後') {
+    month = 6;
+  }
+  return month;
+}
+
 sightMaster.onSelectRow = function(rowid) {
   var sight = sightMaster.clear();
   var row = $("#sight_list").getRowData(rowid);
@@ -116,7 +136,7 @@ sightMaster.onSelectRow = function(rowid) {
   sight.sight_id = row.sight_id;
   sight.disp_str = row.disp_str;
   sight.shiharaibi = row.shiharaibi;
-  sight.shiharai_month = row.shiharai_month;
+  sight.shiharai_month = sightMaster.getMonthNo(row.shiharai_month);
   sight.memo = row.memo;
   sightMaster.setForm(sight);
 }

@@ -46,8 +46,9 @@ sightDate.find = function(id,res) {
 sightDate.list_grid = function(req, res) {
   var result = { page: 1, total: 1, records: 0, rows: [] };
   var pg_params = tools.getPagingParams(req);
+  var attr_count = {attributes:[sequelize.fn('count',sequelize.col('sight_id'))],where:{delete_check:req.query.delete_check}};
   var attr = {attributes:['sight_id','disp_str','shiharaibi','shiharai_month','memo','delete_check','create_id','update_id'],where:{delete_check:req.query.delete_check}};
-  sight_date.schema('drc_sch').count(attr).then(function(count) {
+  sight_date.schema('drc_sch').count(attr_count).then(function(count) {
     // 取得した件数からページ数を計算する
     if (count) {
       result.total = Math.ceil(count / pg_params.limit);
