@@ -231,14 +231,17 @@ clientList.createClientListGrid = function (no, keyword) {
 		caption: fname + "リスト",
 		onSelectRow: clientList.onSelectClientList,
 		loadComplete:clientList.loadCompleteList,
-		pagerpos:'left'
+		pagerpos:'left',
+		recordpos: 'center'
 	});
 	if (no < 11) {
 		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:false });
 	} else {
 		jQuery("#client_list_" + no).jqGrid('navGrid', '#client_list_pager_' + no, { edit: false, add: false, del: false,search:true },{},{},{},{overlay:false});
 	}
-	$('#client_list_pager_' + no + '_right').css('vertical-align','top');
+	$('#client_list_pager_' + no +'_left table.ui-pg-table').css('float','left');
+  $('#client_list_pager_' + no +'_left').css('width','30%');
+	$('#client_list_pager_' + no + '_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForTop(no,0);
@@ -312,6 +315,7 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		rowList: [5],
 		pager: '#client_division_list_pager_' + no,
 		pagerpos: 'left',
+		recordpos: 'center',
 		sortname: 'kana',
 		viewrecords: true,
 		sortorder: "asc",
@@ -319,7 +323,9 @@ clientList.createClientDivisionListGrid = function (no, client_cd) {
 		onSelectRow: clientList.onSelectClientDivisionList
 	});
 	jQuery("#client_division_list_" + no).jqGrid('navGrid', '#client_division_list_pager_' + no, { edit: false, add: false, del: false,search:false });
-	$('#client_division_list_pager_' + no + '_right').css('vertical-align','top');
+	$('#client_division_list_pager_' + no +'_left table.ui-pg-table').css('float','left');
+  $('#client_division_list_pager_' + no +'_left').css('width','30%');
+	$('#client_division_list_pager_' + no + '_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForMiddle(no,1);
@@ -376,6 +382,7 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		rowList: [5],
 		pager: '#client_person_list_pager_' + no,
 		pagerpos: 'left',
+		recordpos: 'center',
 		sortname: 'kana',
 		viewrecords: true,
 		sortorder: "asc",
@@ -383,7 +390,9 @@ clientList.createClientPersonListGrid = function (no, client_cd, division_cd) {
 		onSelectRow: clientList.onSelectClientPersonList
 	});
 	jQuery("#client_person_list_" + no).jqGrid('navGrid', '#client_person_list_pager_' + no, { edit: false, add: false, del: false,search:false });
-	$('#client_person_list_pager_' + no + '_right').css('vertical-align','top');
+	$('#client_person_list_pager_' + no +'_left table.ui-pg-table').css('float','left');
+  $('#client_person_list_pager_' + no +'_left').css('width','30%');
+	$('#client_person_list_pager_' + no + '_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 	// ツールバーボタンの制御
 	clientList.buttonEnabledForBottom(no,1);

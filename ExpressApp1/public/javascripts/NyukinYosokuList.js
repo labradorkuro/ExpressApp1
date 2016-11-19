@@ -81,6 +81,7 @@ yosokuList.createGrid_all = function() {
 		rowList: [10,20,30,40,50],
 		pager: '#yosoku_pager',
     pagerpos: 'left',
+    recordpos: 'center',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
@@ -88,7 +89,9 @@ yosokuList.createGrid_all = function() {
     loadComplete:yosokuList.loadCompleteUgiageSummary
 	});
 	jQuery("#yosoku_list").jqGrid('navGrid', '#yosoku_pager', { edit: false, add: false, del: false ,search:false});
-  $('#yosoku_pager_right').css('vertical-align','top');
+  $('#yosoku_pager_left table.ui-pg-table').css('float','left');
+  $('#yosoku_pager_left').css('width','30%');
+  $('#yosoku_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
   yosokuList.getUriageTotal(sd,ed);
 };
@@ -136,6 +139,8 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#yosoku_detail_pager',
+    pagerpos: 'left',
+    recordpos: 'center',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
@@ -144,6 +149,9 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
     loadComplete:yosokuList.loadCompleteUgiageList
 	});
 	jQuery("#yosoku_list_detail").jqGrid('navGrid', '#yosoku_detail_pager', { edit: false, add: false, del: false ,search:false});
+  $('#yosoku_detail_pager_left table.ui-pg-table').css('float','left');
+  $('#yosoku_detail_pager_left').css('width','30%');
+  $('#yosoku_detail_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 };
 
@@ -169,6 +177,8 @@ yosokuList.createGrid_division = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#yosoku_pager',
+    pagerpos: 'left',
+    recordpos: 'center',
 		sortname: 'division_cd',
 		viewrecords: true,
 		sortorder: "asc",
@@ -177,6 +187,9 @@ yosokuList.createGrid_division = function() {
     loadComplete:yosokuList.loadCompleteUgiageSummary
 	});
 	jQuery("#yosoku_list").jqGrid('navGrid', '#yosoku_pager', { edit: false, add: false, del: false ,search:false});
+  $('#yosoku_pager_left table.ui-pg-table').css('float','left');
+  $('#yosoku_pager_left').css('width','50%');
+  $('#yosoku_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
   yosokuList.getUriageTotal(sd,ed);
 };
@@ -203,6 +216,8 @@ yosokuList.createGrid_client = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#yosoku_pager',
+    pagerpos: 'left',
+    recordpos: 'center',
 		sortname: 'entry_info.client_cd',
 		viewrecords: true,
 		sortorder: "asc",
@@ -211,6 +226,9 @@ yosokuList.createGrid_client = function() {
     loadComplete:yosokuList.loadCompleteUgiageSummary
 	});
 	jQuery("#yosoku_list").jqGrid('navGrid', '#yosoku_pager', { edit: false, add: false, del: false ,search:false});
+  $('#yosoku_pager_left table.ui-pg-table').css('float','left');
+  $('#yosoku_pager_left').css('width','50%');
+  $('#yosoku_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
   yosokuList.getUriageTotal(sd,ed);
 };

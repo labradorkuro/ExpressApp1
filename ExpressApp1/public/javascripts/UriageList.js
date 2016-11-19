@@ -86,6 +86,7 @@ uriageList.createGrid_all = function() {
 		rowList: [10,20,30,40,50],
 		pager: '#uriage_pager',
     pagerpos:'left',
+    recordpos:'center',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
@@ -93,7 +94,9 @@ uriageList.createGrid_all = function() {
     loadComplete:uriageList.loadCompleteUgiageSummary
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
-  $('#uriage_pager_right').css('vertical-align','top');
+  $('#uriage_pager_left table.ui-pg-table').css('float','left');
+  $('#uriage_pager_left').css('width','30%');
+  $('#uriage_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
   uriageList.getUriageTotal(sd,ed,keyword);
 };
@@ -142,7 +145,9 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
-		pager: '#uriage_detail_pager',
+	  pager: '#uriage_detail_pager',
+    pagerpos: 'left',
+    recordpos:'center',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "asc",
@@ -151,6 +156,9 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
     loadComplete:uriageList.loadCompleteUgiageList
 	});
 	jQuery("#uriage_list_detail").jqGrid('navGrid', '#uriage_detail_pager', { edit: false, add: false, del: false ,search:false});
+  $('#uriage_detail_pager_left table.ui-pg-table').css('float','left');
+  $('#uriage_detail_pager_left').css('width','30%');
+  $('#uriage_detail_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 };
 
@@ -177,6 +185,8 @@ uriageList.createGrid_division = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#uriage_pager',
+    pagerpos: 'left',
+    recordpos: 'center',
 		sortname: 'division_cd',
 		viewrecords: true,
 		sortorder: "asc",
@@ -185,6 +195,9 @@ uriageList.createGrid_division = function() {
     loadComplete:uriageList.loadCompleteUgiageSummary
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
+  $('#uriage_pager_left table.ui-pg-table').css('float','left');
+  $('#uriage_pager_left').css('width','50%');
+  $('#uriage_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
   uriageList.getUriageTotal(sd,ed,keyword);
 };
@@ -212,6 +225,8 @@ uriageList.createGrid_client = function() {
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
 		pager: '#uriage_pager',
+    pagerpos: 'left',
+    recordpos: 'center',
 		sortname: 'entry_info.client_cd',
 		viewrecords: true,
 		sortorder: "asc",
@@ -220,6 +235,9 @@ uriageList.createGrid_client = function() {
     loadComplete:uriageList.loadCompleteUgiageSummary
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
+  $('#uriage_pager_left table.ui-pg-table').css('float','left');
+  $('#uriage_pager_left').css('width','50%');
+  $('#uriage_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
   uriageList.getUriageTotal(sd,ed,keyword);
 };

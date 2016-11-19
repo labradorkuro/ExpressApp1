@@ -355,6 +355,7 @@ entryList.createGridSub = function (req_url) {
 		rowList: [10,20,30,40,50],
 		pager: '#entry_pager',
     pagerpos: 'left',
+    recordpos: 'center',
 		sortname: 'entry_no',
 		viewrecords: true,
 		sortorder: "desc",
@@ -363,7 +364,9 @@ entryList.createGridSub = function (req_url) {
     loadComplete:entryList.loadCompleteEntryList
 	});
 	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false});
-  $('#entry_pager_right').css('vertical-align','top');
+  $('#entry_pager_left table.ui-pg-table').css('float','left');
+  $('#entry_pager_left').css('width','30%');
+  $('#entry_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 };
 // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
