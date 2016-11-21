@@ -3,6 +3,7 @@ $(function () {
   // 更新ボタンイベント
 	$("#post_notify_settings").bind('click' , {}, notify.post_notify_settings);
   notify.getSettings();
+	notify.createMessageDialog();
 });
 
 var notify = notify || {}
@@ -19,6 +20,9 @@ notify.post_notify_settings = function() {
 };
 
 notify.onloadSave = function() {
+	$("#message").text('更新されました');
+	$("#message_dialog").dialog("option", { title: "通知メール設定" });
+	$("#message_dialog").dialog("open");
 
 }
 // 動作設定の読込み
@@ -48,3 +52,19 @@ notify.setSettings = function(setting) {
   $("#userid").val(setting.userid);
   $("#password").val(setting.password);
 }
+// メッセージ表示用ダイアログの生成
+notify.createMessageDialog = function () {
+	$('#message_dialog').dialog({
+		autoOpen: false,
+		width: 400,
+		height: 180,
+		title: 'メッセージ',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
