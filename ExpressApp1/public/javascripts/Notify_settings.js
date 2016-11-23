@@ -30,10 +30,7 @@ notify.getSettings = function() {
 	var q = $.get('/notify_settings_get/1', {});
 	$.when(q)
   .done(function (response) {
-		for(var i = 0;i < response.length;i++) {
-			var setting = response[i];
-			notify.setSettings(setting);
-		}
+		notify.setSettings(response);
 	});
 };
 

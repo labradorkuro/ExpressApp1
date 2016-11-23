@@ -943,7 +943,8 @@ var checkEntryStatus = function(entry) {
 	if (entry.entry_status == "03") {
 		var attr = {where:{notify_id:1}};
 	  notify.schema('drc_sch').find(attr).then(function(setting){
-	      var transpoter = nodemailer.createTransport(smtpTransport({
+			if ((setting != null) && (setting.smpt_server != '') && (setting.smtp_port != '') && (setting.usrid != '') && (setting.password != '') && (setting.send_address_2 != '')) {
+				var transpoter = nodemailer.createTransport(smtpTransport({
 	        host : setting.smtp_server,
 	        port : setting.smtp_port,
 	        auth : {
@@ -963,6 +964,7 @@ var checkEntryStatus = function(entry) {
 	        }
 	        console.log("Message Sent: " + info.response);
 	      })
+			}
 	  }).catch(function(error){
 	    console.log(error);
 	  });

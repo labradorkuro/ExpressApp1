@@ -17,7 +17,7 @@ var notifySettings = notifySettings || {}
 notifySettings.find = function(req,res) {
   var id = req.params.id;
   var attr = {where:{notify_id:id}};
-  notify.schema('drc_sch').findAll(attr).then(function(setting){
+  notify.schema('drc_sch').find(attr).then(function(setting){
     res.send(setting);
   }).catch(function(error){
     console.log(error);
