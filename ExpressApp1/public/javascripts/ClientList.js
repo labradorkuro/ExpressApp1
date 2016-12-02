@@ -203,21 +203,21 @@ clientList.createClientListGrid = function (no, keyword) {
 		datatype: "json",
 		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者','削除フラグ'],
 		colModel: [
-			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center"},
-			{ name: 'name_1', index: 'name_1', width: 200, align: "left" },
-			{ name: 'name_2', index: 'name_2', width: 100, align: "left" },
-			{ name: 'kana', index: 'kana', width: 100 , align: "left" },
-			{ name: 'zipcode', index: 'zipcode', width: 80 , align: "center" },
-			{ name: 'address_1', index: 'address_1', width: 200 , align: "left" },
-			{ name: 'address_2', index: 'address_2', width: 200, align: "left" },
-			{ name: 'tel_no', index: 'tel_no', width: 80 , align: "center" },
-			{ name: 'fax_no', index: '', width: 80 , align: "center"  },
-			{ name: 'email', index: 'email', width: 80 , align: "center"  },
-			{ name: 'memo', index: '', width: 100 , align: "center"  },
-			{ name: 'created', index: 'created', width: 130, align: "center" },
-			{ name: 'created_id', index: 'created_id' , formatter: scheduleCommon.personFormatter },
-			{ name: 'updated', index: 'updated', width: 130, align: "center" },
-			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter  },
+			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center",searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']},hidden:true},
+			{ name: 'name_1', index: 'name_1', width: 200, align: "left" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'name_2', index: 'name_2', width: 100, align: "left" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'kana', index: 'kana', width: 100 , align: "left" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'zipcode', index: 'zipcode', width: 80 , align: "center" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'address_1', index: 'address_1', width: 200 , align: "left" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'address_2', index: 'address_2', width: 200, align: "left" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'tel_no', index: 'tel_no', width: 80 , align: "center" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'fax_no', index: '', width: 80 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'email', index: 'email', width: 80 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'memo', index: '', width: 100 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'created', index: 'created', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
+			{ name: 'created_id', index: 'created_id' , formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'updated', index: 'updated', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
+			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
 			{ name: 'delete_check',index: 'delete_check', hidden:true}
 		],
 		height: "230px",
@@ -836,7 +836,7 @@ clientList.clearPerson = function () {
 	person.person_id = scheduleCommon.string_random();
 	person.name = "";
 	person.kana = "";
-	person.compellation = "";
+	person.compellation = "様";
 	person.title = "";
 	person.email = "";
 	person.memo = "";

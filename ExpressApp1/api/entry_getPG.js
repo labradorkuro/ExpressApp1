@@ -148,6 +148,8 @@ var entry_parse_search_params = function(searchField,searchOper,searchString) {
 		searchField = "entry_info.entry_no";
 	} else if (searchField === "client_name_1") {
 		searchField = "client_list.name_1";
+	} else if (searchField === "agent_name_1") {
+		searchField = "agent_list.name_1";
 	} else if (searchField === "entry_status") {
 		if (searchString === "引合") {
 			searchString = '01';
