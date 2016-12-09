@@ -373,6 +373,10 @@ test_itemList.openTestItemSelectDialog = function (event) {
 test_itemList.selectMiddleClass = function() {
 	$("#test_middle_class_cd").val(test_itemList.currentTestItemMiddle.item_cd);
 	$("#test_middle_class_name").val(test_itemList.currentTestItemMiddle.item_name);
+	if ($("#entry_title").val() == "") {
+		// 試験タイトルが未入力の時はコピーする
+		$("#entry_title").val(test_itemList.currentTestItemMiddle.item_name);
+	}
 	return true;
 };
 
