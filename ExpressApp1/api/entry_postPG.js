@@ -475,6 +475,8 @@ var entry_check = function (entry) {
 exports.quote_post = function (req, res) {
 	var quote = quote_check(req.body);
 	pg.connect(connectionString,function (err, connection) {
+		// 案件ステータスを更新する
+		updateEntryStatus(connection,quote);
 		if (quote.estimate_quote_no === '') {
 			// 見積データのDB追加
 			// 見積番号を取得してデータを追加する
@@ -669,7 +671,6 @@ var updateQuote = function (connection,quote, req, res) {
 
 		// 明細行処理
 		getSpecificInfo(connection,quote,req,res, 1);
-
 		res.send(quote);
 	});
 	query.on('error', function (error) {
@@ -969,4 +970,17 @@ var checkEntryStatus = function(entry) {
 	    console.log(error);
 	  });
 	}
+};
+
+// entry_noの案件情報の案件ステータスを依頼に変更する
+var updateEntryStatus = function(connection,quote) {
+	var entry_status = "";
+	if (quote.order_status == 2) {
+		entry_status = "03";
+		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 WHERE entry_no = $2';
+		query = connection.query(sql, [entry_status, quote.entry_no]);	// 案件ステータス:03　依頼
+		query.on('end', function (result, err) {
+		});
+	}
+
 };
