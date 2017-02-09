@@ -57,14 +57,14 @@ var insertUser = function (connection, user, req, res) {
 			+ 'telno,'		// 内線
 			+ 'title,'		// 役職名
 			+ 'auth_no,'		// 権限設定
-			+ 'email,'		// メールアドレス
 			+ 'delete_check,'	// 削除フラグ
 			+ 'created,'	// 作成日
 			+ 'created_id,' // 作成者ID
 			+ 'updated,'	//
-			+ 'updated_id' // 更新者ID
+			+ 'updated_id,' // 更新者ID*/
+			+ 'email'		// メールアドレス*/
 			+ ') values ('
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,&16)'
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)'
 			;
 	//pg.connect(connectionString, function (err, connection) {
 		// SQL実行
@@ -80,12 +80,12 @@ var insertUser = function (connection, user, req, res) {
 			user.telno,
 			user.title,
 			user.auth_no,
-			user.email,
 			user.delete_check,
 			created,			// 作成日
 			created_id,			// 作成者ID
 			updated,
-			updated_id			// 更新者ID
+			updated_id,			// 更新者ID*/
+			user.email
 		], function (err, result) {
 			connection.end();
 			if (err) {
