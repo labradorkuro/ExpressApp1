@@ -25,7 +25,8 @@
     "config": "^1.19.0",
     "stylus": "*",
     "nodemailer":"*",
-    "nodemailer-smtp-transport":"*"
+    "nodemailer-smtp-transport":"*",
+    "fullcalendar":"*"
   },
   "scripts": {
       "start": "node app.js"

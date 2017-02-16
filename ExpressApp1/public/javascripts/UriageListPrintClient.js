@@ -4,7 +4,7 @@
 //
 $(function ()　{
     'use strict';
-    uriageListPrintDivision.makeListTable();
+    //uriageListPrintDivision.makeListTable();
 });
 
 var uriageListPrintDivision = uriageListPrintDivision || {};

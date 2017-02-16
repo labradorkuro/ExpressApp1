@@ -1573,3 +1573,7 @@ fieldset.entry_search_set {
     border-collapse:collapse;
     border: solid 1px;
 }
+div.drc_calendar {
+  width:80%;
+  height:80%;
+}

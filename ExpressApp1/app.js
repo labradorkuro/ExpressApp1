@@ -47,6 +47,7 @@ var pay_planning = require('./routes/pay_plan_list')
 var sight_master = require('./routes/sight_master_list')
 var holiday_master = require('./routes/holiday_master_list')  // 休日マスタ画面
 var notify_settings = require('./routes/notify_settings') // メール通知設定
+var drc_calendar = require('./routes/drc_calendar') // 売り上げ、予測カレンダー
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -92,7 +93,7 @@ var http = require('http');
 var path = require('path');
 
 // Version
-drc_version = ' Ver.1.0.3.4';
+drc_version = ' Ver.1.0.3.5';
 
 // all environments
 app.set('port', process.env.PORT || 80);
@@ -228,6 +229,7 @@ app.get('/uriage_list_print_client', uriage_list.list_print_client);
 app.get('/pay_planning', pay_planning.list);
 // 売上集計関係
 app.get('/uriage_summary',uriage_summary.summary);
+app.get('/uriage_summary_print',uriage_summary.summary_print);
 app.get('/uriage_detail',uriage_summary.list);
 app.get('/uriage_total',uriage_summary.total);
 // 入金予測関係
@@ -251,6 +253,8 @@ app.get('/notify_settings',notify_settings.list);
 app.get('/notify_settings_get/:id',notify_settings_get.notify_settings_get); //api
 app.post('/notify_settings_post',upload.array(),notify_settings_post.notify_settings_post); //api
 
+// 売り上げ、予測カレンダー
+app.get('/drc_calendar',drc_calendar.list);
 
 /** mysql -> pg 2014.11.13
 pool = mysql.createPool({

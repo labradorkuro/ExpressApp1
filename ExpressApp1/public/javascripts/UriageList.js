@@ -426,18 +426,89 @@ uriageList.setEntryForm = function (entry) {
 	$("#entryForm #updated_id").val(entry.updated_id);						// 更新者ID
 };
 
+uriageList.uriageListPrintSub = function(sd, ed, keyword, cw,target) {
+  var req_url = "/uriage_summary_print?op=all&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  $.get(req_url,function(response) {
+      var tbl = cw.document.getElementById(target);
+      var total = 0;
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+        var tr = $("<tr>" +
+        "<td class='data_value border_up_left'>" + (row.entry_no != null ? row.entry_no : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.test_large_class_name != null ? row.test_large_class_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.test_middle_class_name != null ? row.test_middle_class_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.client_name != null ? row.client_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.agent_name != null ? row.agent_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.entry_title != null ? row.entry_title :"") + "</td>" +
+        "<td class='data_value_num border_up_left'>" + (row.uriage_sum != null ? scheduleCommon.numFormatter(row.uriage_sum,11) : "") + "</td>" +
+        "<td class='data_value_num border_up_left'>" + (row.uriage_tax != null ? scheduleCommon.numFormatter(row.uriage_tax,11) : "") + "</td>" +
+        "<td class='data_value_num border_up_left'>" + (row.uriage_total != null ? scheduleCommon.numFormatter(row.uriage_total,11) : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.seikyu_date != null ? row.seikyu_date : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.nyukin_date != null ? row.nyukin_date : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.nyukin_yotei_date != null ? row.nyukin_yotei_date : "") + "</td>" +
+        "<td class='data_value border_up_left_right'>" + (row.sales_person_name != null ? row.sales_person_name : "") + "</td>" +
+        "</tr>");
+        total += Number(row.uriage_total);
+        $(tbl).append(tr);
+      }
+      var total_label = cw.document.getElementById("total");
+      $(total_label).text(scheduleCommon.numFormatter(total,11) + "円");
+
+  });
+
+}
 // リスト印刷
 uriageList.uriageListPrint = function() {
-  // グリッドの生成（検索集計、結果表示）
+  var keyword = $("#uriage_search_keyword").val();
+  var sd = $("#start_date").val();
+  var ed = $("#end_date").val();
   if ($("#search_option_all").prop('checked')) {
     // 全社
-    window.open('/uriage_list_print_all','_blank','');
+    // 売上集計
+    var cw = window.open('/uriage_list_print_all','_blank','');
+    $(cw).load(function(){
+      uriageList.uriageListPrintSub(sd, ed, keyword, cw,"uriage_list_table");
+    });
   } else if ($("#search_option_division").prop('checked')) {
     // 試験課別
-    window.open('/uriage_list_print_division','_blank','');
+    var req_url = "/uriage_summary_print?op=division&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+    $.get(req_url,function(response) {
+      var cw = window.open('/uriage_list_print_division','_blank','');
+      $(cw).load(function(){
+        var tbl = cw.document.getElementById("uriage_list_table");
+        for(var i = 0;i < response.records;i++) {
+          var row = response.rows[i].cell;
+          var tr = $("<tr>" +
+          "<td class='data_value border_up_left'>" + (row.division != null ? row.division : "") + "</td>" +
+          "<td class='data_value_num border_up_left_right'>" + (row.uriage_sum != null ? scheduleCommon.numFormatter(row.uriage_sum,11) : "") + "</td>" +
+          "</tr>"
+          );
+          $(tbl).append(tr);
+        }
+        uriageList.uriageListPrintSub(sd, ed, keyword, cw,"uriage_list_detail_table");
+
+      })
+  	});
   } else if ($("#search_option_client").prop('checked')) {
     // 顧客別
-    window.open('/uriage_list_print_client','_blank','');
+    var req_url = "/uriage_summary_print?op=client&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+    $.get(req_url,function(response) {
+      var cw = window.open('/uriage_list_print_client','_blank','');
+      $(cw).load(function(){
+        var tbl = cw.document.getElementById("uriage_list_table");
+        for(var i = 0;i < response.records;i++) {
+          var row = response.rows[i].cell;
+          var tr = $("<tr>" +
+          "<td class='data_value border_up_left'>" + (row.client != null ? row.client : "") + "</td>" +
+          "<td class='data_value_num border_up_left_right'>" + (row.uriage_sum != null ? scheduleCommon.numFormatter(row.uriage_sum,11) : "") + "</td>" +
+          "</tr>"
+          );
+          $(tbl).append(tr);
+        }
+        uriageList.uriageListPrintSub(sd, ed, keyword, cw,"uriage_list_detail_table");
+
+      })
+  	});
   }
 }
 
@@ -453,77 +524,113 @@ uriageList.uriageListCsv = function() {
   // グリッドの生成（検索集計、結果表示）
   if ($("#search_option_all").prop('checked')) {
     // 全社
-    detail_text = uriageList.getDetailList("#uriage_list");
-    blob = new Blob([bom,detail_text], {type: "text/csv;charset=utf-8"});
+    uriageList.getDetailList("");
   } else if ($("#search_option_division").prop('checked')) {
     // 試験課別
-    summary_text = uriageList.getDivisionSummaryList("#uriage_list");
-    detail_text = uriageList.getDetailList("#uriage_list_detail");
-    blob = new Blob([bom, summary_text, empty_line, detail_text], {type: "text/csv;charset=utf-8"});
+    uriageList.getDivisionSummaryList();
   } else if ($("#search_option_client").prop('checked')) {
     // 顧客別
-    summary_text = uriageList.getClientSummaryList("#uriage_list");
-    detail_text = uriageList.getDetailList("#uriage_list_detail");
-    blob = new Blob([bom, summary_text, empty_line, detail_text], {type: "text/csv;charset=utf-8"});
+    uriageList.getClientSummaryList();
   }
-  saveAs(blob,filename + ".csv");
 }
 
 // 試験課別
-uriageList.getDivisionSummaryList = function(grid_id) {
+uriageList.getDivisionSummaryList = function() {
   var colnames = "試験課,売上金額";
-  var today = scheduleCommon.getToday("{0}/{1}/{2}");
-  var grid = $(grid_id);
+  var keyword = $("#uriage_search_keyword").val();
+  var sd = $("#start_date").val();
+  var ed = $("#end_date").val();
   var lines = [];
   lines.push(colnames);
-  // グリッドのデータを取得する
-  var rows = grid.getRowData(); // 全件取得する
-  $.each(rows,function(index,row) {
-    var text = scheduleCommon.setQuotation(row.division) + "," + scheduleCommon.setQuotation(row.uriage_sum);
-    lines.push(text);
-  });
-  return lines.join("\r\n");
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = null;
+  // 売上集計
+  var req_url = "/uriage_summary_print?op=division&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  $.get(req_url,function(response) {
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+        var text = scheduleCommon.setQuotation(row.division != null ? row.division : "") + "," +
+          scheduleCommon.setQuotation(row.uriage_sum != null ? row.uriage_sum : "");
+        lines.push(text);
+      }
+      var detail_text = lines.join("\r\n");
+      uriageList.getDetailList(detail_text);
+    });
+  return "";
 }
 
 // 顧客別
-uriageList.getClientSummaryList = function(grid_id) {
+uriageList.getClientSummaryList = function() {
   var colnames = "顧客名,売上金額";
-  var today = scheduleCommon.getToday("{0}/{1}/{2}");
-  var grid = $(grid_id);
+  var keyword = $("#uriage_search_keyword").val();
+  var sd = $("#start_date").val();
+  var ed = $("#end_date").val();
   var lines = [];
   lines.push(colnames);
-  // グリッドのデータを取得する
-  var rows = grid.getRowData(); // 全件取得する
-  $.each(rows,function(index,row) {
-    var text = scheduleCommon.setQuotation(row.client) + "," + scheduleCommon.setQuotation(row.uriage_sum);
-    lines.push(text);
-  });
-  return lines.join("\r\n");
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = null;
+  // 売上集計
+  var req_url = "/uriage_summary_print?op=client&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  $.get(req_url,function(response) {
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+        var text = scheduleCommon.setQuotation(row.client != null ? row.client : "") + "," +
+          scheduleCommon.setQuotation(row.uriage_sum != null ? row.uriage_sum : "");
+        lines.push(text);
+      }
+      var detail_text = lines.join("\r\n");
+      uriageList.getDetailList(detail_text);
+    });
+  return "";
 }
 
 // 詳細リスト
-uriageList.getDetailList = function(grid_id) {
-  var colnames = "案件No.,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,売上税抜,消費税,売上計,請求日,入金日,入金予定日,営業担当者";
-  var grid = $(grid_id);
+uriageList.getDetailList = function(summary_text) {
+  var keyword = $("#uriage_search_keyword").val();
+  var sd = $("#start_date").val();
+  var ed = $("#end_date").val();
+  var today = scheduleCommon.getToday("{0}_{1}_{2}");
+  var filename = "売上集計_" + today;
+  var empty_line = "\r\n\r\n";
   var lines = [];
+  var colnames = "案件No.,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,売上税抜,消費税,売上計,請求日,入金日,入金予定日,営業担当者";
   lines.push(colnames);
-  // グリッドのデータを取得する
-  var rows = grid.getRowData(); // 全件取得する
-  $.each(rows,function(index,row) {
-    var text = scheduleCommon.setQuotation(row.entry_no) + "," +
-      scheduleCommon.setQuotation(row.test_large_class_name) + "," +
-      scheduleCommon.setQuotation(row.test_middle_class_name) + "," +
-      scheduleCommon.setQuotation(row.client_name) + "," +
-      scheduleCommon.setQuotation(row.agent_name) + "," +
-      scheduleCommon.setQuotation(row.entry_title) + "," +
-      scheduleCommon.setQuotation(row.uriage_sum) + "," +
-      scheduleCommon.setQuotation(row.uriage_tax) + "," +
-      scheduleCommon.setQuotation(row.uriage_total) + "," +
-      scheduleCommon.setQuotation(row.seikyu_date) + "," +
-      scheduleCommon.setQuotation(row.nyukin_date) + "," +
-      scheduleCommon.setQuotation(row.nyukin_yotei_date) + "," +
-      scheduleCommon.setQuotation(row.sales_person_name);
-    lines.push(text);
-  });
-  return lines.join("\r\n");
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = null;
+  // 売上集計
+  var req_url = "/uriage_summary_print?op=all&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  $.get(req_url,function(response) {
+      var total = 0;
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+        var text = scheduleCommon.setQuotation(row.entry_no != null ? row.entry_no : "") + "," +
+          scheduleCommon.setQuotation(row.test_large_class_name != null ? row.test_large_class_name : "") + "," +
+          scheduleCommon.setQuotation(row.test_middle_class_name != null ? row.test_middle_class_name : "") + "," +
+          scheduleCommon.setQuotation(row.client_name != null ? row.client_name : "") + "," +
+          scheduleCommon.setQuotation(row.agent_name != null ? row.agent_name : "") + "," +
+          scheduleCommon.setQuotation(row.entry_title != null ? row.entry_title :"") + "," +
+          scheduleCommon.setQuotation(row.uriage_sum != null ? row.uriage_sum : "") + "," +
+          scheduleCommon.setQuotation(row.uriage_tax != null ? row.uriage_tax : "") + "," +
+          scheduleCommon.setQuotation(row.uriage_total != null ? row.uriage_total : "") + "," +
+          scheduleCommon.setQuotation(row.seikyu_date != null ? row.seikyu_date : "") + "," +
+          scheduleCommon.setQuotation(row.nyukin_date != null ? row.nyukin_date : "") + "," +
+          scheduleCommon.setQuotation(row.nyukin_yotei_date != null ? row.nyukin_yotei_date : "") + "," +
+          scheduleCommon.setQuotation(row.sales_person_name != null ? row.sales_person_name : "");
+        lines.push(text);
+        total += Number(row.uriage_total);
+      }
+      lines.push("\r\n");
+      lines.push(",,,,,,,合計," + scheduleCommon.setQuotation(total));
+      var detail_text = lines.join("\r\n");
+      if (summary_text == "") {
+        // 全社リストの場合
+        blob = new Blob([bom,detail_text], {type: "text/csv;charset=utf-8"});
+      } else {
+        // 試験課別、顧客別の場合
+        blob = new Blob([bom, summary_text, empty_line, detail_text], {type: "text/csv;charset=utf-8"});
+      }
+      saveAs(blob,filename + ".csv");
+
+    });
+  return "";
 }
