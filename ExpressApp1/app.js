@@ -47,7 +47,7 @@ var pay_planning = require('./routes/pay_plan_list')
 var sight_master = require('./routes/sight_master_list')
 var holiday_master = require('./routes/holiday_master_list')  // 休日マスタ画面
 var notify_settings = require('./routes/notify_settings') // メール通知設定
-var drc_calendar = require('./routes/drc_calendar') // 売り上げ、予測カレンダー
+//var drc_calendar = require('./routes/drc_calendar') // 売り上げ、予測カレンダー
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -254,7 +254,7 @@ app.get('/notify_settings_get/:id',notify_settings_get.notify_settings_get); //a
 app.post('/notify_settings_post',upload.array(),notify_settings_post.notify_settings_post); //api
 
 // 売り上げ、予測カレンダー
-app.get('/drc_calendar',drc_calendar.list);
+//app.get('/drc_calendar',drc_calendar.list);
 
 /** mysql -> pg 2014.11.13
 pool = mysql.createPool({
