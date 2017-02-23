@@ -107,7 +107,6 @@ $(function ()　{
 // 案件入力、リスト表示に関する処理
 //
 var entryList = entryList || {};
-
 entryList.currentEntry = {};			// 案件リストで選択中の案件情報
 entryList.currentEntryNo = 0;			// 案件リストで選択中の案件の番号
 entryList.currentClientListTabNo = 0;	// 得意先リストで選択中のタブ番号
@@ -775,9 +774,50 @@ entryList.getFormData = function () {
 entryList.onloadEntrySave = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
-		entryList.reloadGrid();
+    var id = $("#entry_list").getGridParam('selrow');
+    if (id != null) {
+      // 更新時
+      entryList.updateGridEntryData(id,entry);
+    } else {
+      // 追加時
+      entryList.reloadGrid();
+    }
 	}
 };
+
+// 更新した内容でグリッド表示を更新する
+entryList.updateGridEntryData = function(id,entry) {
+	if (id != null) {
+		var row = $("#entry_list").getRowData(id);
+		row.report_limit_date = entry.report_limit_date;
+		row.report_submit_date = entry.report_submit_date;
+		row.test_large_class_cd = entry.test_large_class_cd;
+		row.test_large_class_name = entry.test_large_class_name;
+		row.test_middle_class_name = entry.test_middle_class_name;
+		row.client_cd = entry.client_cd;
+		row.client_name_1 = entry.client_name;
+		row.client_division_cd = entry.client_division_cd;
+		row.client_division_name = entry.client_division_name;
+		row.client_person_id = entry.client_person_id;
+		row.client_person_name = entry.client_person_name;
+		row.client_person_compellation = entry.client_person_compellation;
+    row.agent_name_1 = entry.agent_name;
+		row.entry_title = entry.entry_title;
+		row.inquiry_date = entry.inquiry_date;
+		row.entry_status = entry.entry_status;
+		row.sales_person_id = entry.sales_person_id;
+		row.order_accepted_date = entry.order_accepted_date;
+		row.order_accept_check = entry.order_accept_check;
+		row.order_type = entry.order_type;
+		row.test_person_id = entry.test_person_id;
+		row.consumption_tax = entry.consumption_tax;
+		row.updated = entry.updated;
+		row.updated_id = entry.updated_id;
+    row.created_id = entryList.currentEntry.created_id;
+    $("#entry_list").setRowData(id,row);
+	}
+};
+
 // 案件データ取得リクエストのコールバック
 entryList.onloadEntryReq = function (e) {
 	if (this.status == 200) {
