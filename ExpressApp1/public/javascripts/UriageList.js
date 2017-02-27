@@ -270,7 +270,7 @@ uriageList.loadCompleteUgiageList = function(event) {
 
 };
 uriageList.numFormatterC = function(num) {
-	return scheduleCommon.numFormatter( Math.round(num), 10);
+	return scheduleCommon.numFormatter( Math.round(num), 11);
 };
 // 案件参照用ダイアログの生成
 uriageList.createEntryDialog = function () {
@@ -452,7 +452,7 @@ uriageList.uriageListPrintSub = function(sd, ed, keyword, cw,target) {
         $(tbl).append(tr);
       }
       var total_label = cw.document.getElementById("total");
-      $(total_label).text(scheduleCommon.numFormatter(total,12) + "円");
+      $(total_label).text(scheduleCommon.numFormatter(total,11) + "円");
 
   });
 
