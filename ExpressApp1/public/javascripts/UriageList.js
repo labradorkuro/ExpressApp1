@@ -452,7 +452,7 @@ uriageList.uriageListPrintSub = function(sd, ed, keyword, cw,target) {
         $(tbl).append(tr);
       }
       var total_label = cw.document.getElementById("total");
-      $(total_label).text(scheduleCommon.numFormatter(total,11) + "円");
+      $(total_label).text(scheduleCommon.numFormatter(total,12) + "円");
 
   });
 
