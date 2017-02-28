@@ -32,17 +32,13 @@ uriage_sum.sql_last_seikyu_date = 'SELECT '
     + ' FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 AND pay_result >= 2 GROUP BY entry_no';
 //  全社売上集計（件数取得）
 uriage_sum.sql_zensha_list_count = "SELECT "
-    + "billing_info.entry_no,"
-    + "count(pay_amount_total) as cnt"
+    //+ "billing_info.entry_no,"
+    + "count(subq2.seikyu_count) as cnt"
     + " from drc_sch.billing_info"
+    + " left join drc_sch.entry_info on(entry_info.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlBillingInfoCount_all + ") as subq1 on(subq1.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
-    + " left join drc_sch.entry_info on(entry_info.entry_no = billing_info.entry_no)"
-    + " left join drc_sch.test_large_class on(test_large_class.item_cd = entry_info.test_large_class_cd)"
-    + " left join drc_sch.test_middle_class on(test_middle_class.large_item_cd = entry_info.test_large_class_cd and test_middle_class.item_cd = entry_info.test_middle_class_cd)"
-    + " left join drc_sch.client_list on(client_list.client_cd = entry_info.client_cd)"
-    + " left join drc_sch.client_list as agent_list on(agent_list.client_cd = entry_info.agent_cd)"
     + " where (subq1.billing_count = subq2.seikyu_count) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
     //+ " group by billing_info.entry_no";
 //  全社売上集計リスト
@@ -293,7 +289,7 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
     }
-    sql_count += " group by billing_info.entry_no";
+    //sql_count += " group by billing_info.entry_no";
     sql_summary += " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
     sql_summary += " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
@@ -386,8 +382,8 @@ uriage_sum.getUriageList = function(req, res, pg_params) {
     params.push(req.query.client_cd);
   }
   if (req.query.op == 'all') {
-    sql_count = uriage_sum.sql_all_count;
-    sql_summary = uriage_sum.sql_all + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+    sql_count = uriage_sum.sql_zensha_list_count;
+    sql_summary = uriage_sum.sql_zensha_list + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
     sql_count = uriage_sum.sql_division_list_count;
     sql_summary = uriage_sum.sql_division_list + " ORDER BY entry_info.test_large_class_cd, "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
@@ -417,7 +413,14 @@ uriage_sum.exeQuery = function(req, res, pg_params,sql_count,sql,params) {
       } else {
         // 取得した件数からページ数を計算する
         if (results.rows.length) {
-          result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
+          var cnt = 0;
+          for(var i = 0;i< results.rows.length;i++) {
+            console.log(results.rows[i].cnt);
+            cnt += Number(results.rows[i].cnt);
+          }
+          console.log(cnt);
+          result.total = Math.ceil(cnt / pg_params.limit);
+          console.log(result.total);
         }
         result.page = pg_params.page;
         // データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
