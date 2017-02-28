@@ -152,7 +152,7 @@ var getPagingParams = function (req) {
 };
 
 var client_get_list_sql = function(index_no) {
-	var index_str = ['','アイウエオヴ','カキクケコガギグゲゴ','サシスセソザジズゼゾ','タチツテトダヂヅデド','ナニヌネノ','ハヒフヘホバビブベボ','マミムメモ','ヤユヨ','ラリルレロ','ワヲン',''];
+	var index_str = ['','アイウエオヴ','カキクケコガギグゲゴ','サシスセソザジズゼゾ','タチツテトダヂヅデド','ナニヌネノ','ハヒフヘホバビブベボパピプペポ','マミムメモ','ヤユヨ','ラリルレロ','ワヲン',''];
 	var sql = 'SELECT '
 		+ 'client_cd,'
 		+ 'name_1,'
@@ -182,7 +182,7 @@ var client_get_list_sql = function(index_no) {
 
 // 得意先リストの取得
 var client_get_list = function (req, res) {
-	var index_str = ['','アイウエオヴ','カキクケコガギグゲゴ','サシスセソザジズゼゾ','タチツテトダヂヅデド','ナニヌネノ','ハヒフヘホバビブベボ','マミムメモ','ヤユヨ','ラリルレロ','ワヲン',''];
+	var index_str = ['','アイウエオヴ','カキクケコガギグゲゴ','サシスセソザジズゼゾ','タチツテトダヂヅデド','ナニヌネノ','ハヒフヘホバビブベボパピプペポ','マミムメモ','ヤユヨ','ラリルレロ','ワヲン',''];
 	var pg_params =  getPagingParams(req);
 	var index_no = Number(req.query.no);
 	var sql_count = "";
