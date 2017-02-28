@@ -221,7 +221,7 @@ uriage_sum.sql_client_list = "SELECT "
 // 集計検索処理エントリーポイント
 exports.summary = function(req, res) {
   // グリッドのページング用パラメータの取得
-  var pg_params = tools.getPagingParams(req);
+  var pg_params = tools.getPagingParamsForUriageSum(req);
   // 検索集計処理
   uriage_sum.getUriageSummary(req, res, pg_params);
 }
@@ -232,7 +232,7 @@ exports.summary_print = function(req, res) {
 }
 exports.list = function(req, res) {
   // グリッドのページング用パラメータの取得
-  var pg_params = tools.getPagingParams(req);
+  var pg_params = tools.getPagingParamsForUriageSum(req);
   // 案件リスト検索処理
   uriage_sum.getUriageList(req, res, pg_params);
 }
@@ -295,7 +295,7 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
     }
     sql_count += " group by billing_info.entry_no";
     sql_summary += " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
-    sql_summary += " ORDER BY entry_info."  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+    sql_summary += " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
     // 試験課別
     sql_count = uriage_sum.sql_division_summary_count;
@@ -390,10 +390,10 @@ uriage_sum.getUriageList = function(req, res, pg_params) {
     sql_summary = uriage_sum.sql_all + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
     sql_count = uriage_sum.sql_division_list_count;
-    sql_summary = uriage_sum.sql_division_list + " ORDER BY entry_info.test_large_class_cd, entry_info."  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+    sql_summary = uriage_sum.sql_division_list + " ORDER BY entry_info.test_large_class_cd, "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'client') {
     sql_count = uriage_sum.sql_client_list_count;
-    sql_summary = uriage_sum.sql_client_list + " ORDER BY entry_info.client_cd,entry_info. "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+    sql_summary = uriage_sum.sql_client_list + " ORDER BY entry_info.client_cd, "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   }
   // SQL実行
   uriage_sum.exeQuery(req,res,pg_params,sql_count,sql_summary,params);

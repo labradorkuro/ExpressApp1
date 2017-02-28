@@ -59,6 +59,21 @@
   	if (req.query.sord) pg_param.sord = req.query.sord;
   	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
   	return pg_param;
+  },
+	getPagingParamsForUriageSum : function (req) {
+  	var pg_param = {};
+  	pg_param.sidx = "id";
+  	pg_param.sord = "asc";
+  	pg_param.limit = 10;
+  	pg_param.offset = 0;
+  	pg_param.page = 1;
+  	if (req.query.rows) pg_param.limit = req.query.rows;
+  	if (req.query.page) pg_param.page = req.query.page;
+  	if (req.query.sidx) pg_param.sidx = req.query.sidx;
+  	if (req.query.sord) pg_param.sord = req.query.sord;
+  	pg_param.offset = (pg_param.page - 1) * pg_param.limit;
+		if (pg_param.sidx === "entry_no") pg_param.sidx = "entry_info." + pg_param.sidx;
+  	return pg_param;
   }
 
 };
