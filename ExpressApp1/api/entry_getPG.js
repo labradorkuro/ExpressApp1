@@ -6,16 +6,32 @@ var tools = require('../tools/tool');
 exports.entry_get = function (req, res) {
 	if (req.query.searchField != undefined) {
 		// 虫メガネの検索ダイアログからの検索実行
-		entry_get_list_searchField(req, res);
+		entry_get_list_searchField(req, res,"grid");
 	}
 	else if (req.query.keyword != undefined) {
 		// フリーキーワード検索
-		entry_get_searchKeyword(req, res);
+		entry_get_searchKeyword(req, res,"grid");
 	}
 	else if ((req.params.no != undefined) && (req.params.no != '')) {
 		entry_get_detail(req, res);
 	} else {
-		entry_get_list(req, res);
+		entry_get_list(req, res,"grid");
+	}
+};
+
+// 印刷、CSV出力用
+exports.entry_print = function (req, res) {
+	if (req.query.searchField != undefined) {
+		// 虫メガネの検索ダイアログからの検索実行
+		entry_get_list_searchField(req, res,"print");
+	}
+	else if (req.query.keyword != undefined) {
+		// フリーキーワード検索
+		entry_get_searchKeyword(req, res,"print");
+	}
+	else {
+		console.log("print");
+		entry_get_list(req, res,"print");
 	}
 };
 
@@ -211,7 +227,7 @@ var entry_parse_search_params = function(searchField,searchOper,searchString) {
 }
 
 // 案件リストの検索（虫めがねアイコンの検索）
-var entry_get_list_searchField = function (req, res) {
+var entry_get_list_searchField = function (req, res, func) {
 	// 虫眼鏡の検索条件
 	var searchField = req.query.searchField;
 	var searchString = req.query.searchString;
@@ -237,10 +253,18 @@ var entry_get_list_searchField = function (req, res) {
 	if (large_item_params != '') {
 		sql += ' ' +  large_item_params + ' AND';
 	}
-	sql += ' entry_info.delete_check = $1  ORDER BY '
-		+ pg_params.sidx + ' ' + pg_params.sord
-		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	if (func === "grid") {
+		// grid表示
+		sql += ' entry_info.delete_check = $1  ORDER BY '
+			+ pg_params.sidx + ' ' + pg_params.sord
+			+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+			return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	} else if (func === "print") {
+		// 印刷、CSV出力
+		sql += ' entry_info.delete_check = $1  ORDER BY '
+			+ pg_params.sidx + ' ' + pg_params.sord;
+		return entry_get_list_for_print(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	}
 };
 
 // キーワードの検索文生成
@@ -270,7 +294,7 @@ var getEntrySearchEndDateParam = function(ed) {
 }
 
 // キーワード検索
-var entry_get_searchKeyword = function(req, res) {
+var entry_get_searchKeyword = function(req, res, func) {
 	// 試験大分類の絞り込み用
 	var large_item_params = parse_large_item_params(req);
 	var pg_params = getPagingParams(req);
@@ -310,15 +334,23 @@ var entry_get_searchKeyword = function(req, res) {
 	if (ed != '') {
 		sql += ' ' +  ed + " AND ";
 	}
-	sql	+= ' entry_info.delete_check = $1  ORDER BY '
-		+ pg_params.sidx + ' ' + pg_params.sord
-		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	if (func === "grid") {
+		// grid表示
+		sql += ' entry_info.delete_check = $1  ORDER BY '
+			+ pg_params.sidx + ' ' + pg_params.sord
+			+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+			return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	} else if (func === "print") {
+		// 印刷、CSV出力
+		sql += ' entry_info.delete_check = $1  ORDER BY '
+			+ pg_params.sidx + ' ' + pg_params.sord;
+		return entry_get_list_for_print(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	}
 
 };
 
 // 案件リストの取得
-var entry_get_list = function (req, res) {
+var entry_get_list = function (req, res, func) {
 	// 試験大分類の絞り込み用
 	var large_item_params = parse_large_item_params(req);
 	var pg_params = getPagingParams(req);
@@ -333,10 +365,18 @@ var entry_get_list = function (req, res) {
 	if (large_item_params != '') {
 		sql += ' ' + large_item_params + ' AND ';
 	}
-	sql	+= ' entry_info.delete_check = $1  ORDER BY '
-		+ pg_params.sidx + ' ' + pg_params.sord
-		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	if (func === "grid") {
+		// grid表示
+		sql += ' entry_info.delete_check = $1  ORDER BY '
+			+ pg_params.sidx + ' ' + pg_params.sord
+			+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+			return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	} else if (func === "print") {
+		// 印刷、CSV出力
+		sql += ' entry_info.delete_check = $1  ORDER BY '
+			+ pg_params.sidx + ' ' + pg_params.sord;
+		return entry_get_list_for_print(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+	}
 };
 
 // 案件リスト取得用SQL生成
@@ -617,6 +657,38 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 		});
 	});
 };
+
+var entry_get_list_for_print = function (res, sql_count, sql, params, pg_params) {
+	var result = { page: 1, total: 20, records: 0, rows: [] };
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+			connection.end();
+			res.send(result);
+		} else {
+				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
+				connection.query(sql, params, function (err, results) {
+					if (err) {
+						console.log(err);
+						connection.end();
+						res.send(result);
+					} else {
+						result.records = results.rows.length;
+						for (var i in results.rows) {
+							var row = { id: '', cell: [] };
+							var entry = [];
+							row.id = (i + 1);
+							row.cell = results.rows[i];
+							result.rows.push(row);
+						}
+						connection.end();
+						res.send(result);
+					}
+				});
+			}
+		});
+}
 
 // ガントチャート用案件データリスト取得
 var entry_get_list_for_gantt = function (res, sql, params) {

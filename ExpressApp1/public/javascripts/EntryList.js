@@ -47,6 +47,8 @@ $(function ()　{
 	$("#edit_entry").css("display","none");
   // 案件リスト印刷ボタン
 	$("#entry_list_print").bind('click' , {}, entryList.entryListPrint);
+  // 案件リストCSV出力ボタン
+	$("#entry_list_csv").bind('click' , {}, entryList.entryListCsv);
   // 案件検索ボタン
   $("#entry_search").bind('click' , {}, entryList.entrySearch);
   $("#entry_search_clear").bind('click' , {}, entryList.entrySearchClear);
@@ -455,6 +457,15 @@ entryList.payCompleteFormatter = function (cellval, options, rowObject) {
 	if ((cellval != null) && (cellval != "")) {
 		// 入金確認済みになっていないか、または入金確認済でも入金額が請求額より少ない請求情報の件数を取得できた
 		result = "<label style='color:red;font-weight:bold;'>有(" + cellval + ")</>";
+	}
+	return result;
+};
+// 未入金のフォーマッター
+entryList.payCompleteFormatterForCsv = function (cellval, options, rowObject) {
+	var result = "";
+	if ((cellval != null) && (cellval != "")) {
+		// 入金確認済みになっていないか、または入金確認済でも入金額が請求額より少ない請求情報の件数を取得できた
+		result = "有(" + cellval + ")";
 	}
 	return result;
 };
@@ -1101,8 +1112,104 @@ entryList.getLargeItem_check = function() {
 
 // 案件リスト印刷
 entryList.entryListPrint = function() {
-  window.open('/entry_list_print','_blank','');
+  var cw = window.open('/entry_list_print','_blank','');
+  $(cw).load(function(){
+    entryList.entryListPrintSub(cw,"entry_list_table");
+  });
 }
+entryList.entryListPrintSub = function(cw, target) {
+  var option = entryList.getSearchOption();
+  var req_url = '/entry_print' + option;
+  // キーワード
+  var keyword = $("#entry_search_keyword").val();
+  // 期間設定
+  var search_start_date = $("#search_start_date").val();
+  var search_end_date = $("#search_end_date").val();
+  if (keyword != "" || search_start_date != "" || search_end_date != "") {
+    req_url += '&keyword=' + keyword +
+    '&search_start_date=' + search_start_date +
+    '&search_end_date=' + search_end_date;
+  }
+  req_url += "&sidx=" + $("#entry_list").getGridParam("sortname") + "&sord=" + $("#entry_list").getGridParam("sortorder");
+  $.get(req_url,function(response) {
+      var tbl = cw.document.getElementById(target);
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+        var tr = $("<tr>" +
+        "<td class='data_value border_up_left'>" + (row.pay_result != null ? entryList.payResultFormatter(row.pay_result,null,row) : "未登録") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.pay_complete != null ? entryList.payCompleteFormatter(row.pay_complete,null,row) : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.report_limit_date != null ? row.report_limit_date : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.entry_no != null ? row.entry_no : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.test_large_class_name != null ? row.test_large_class_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.test_middle_class_name != null ? row.test_middle_class_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.client_name_1 != null ? row.client_name_1 : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.agent_name_1 != null ? row.agent_name_1 : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.entry_title != null ? row.entry_title : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.entry_status != null ? entryList.statusFormatter(row.entry_status,null,row) : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.inquiry_date != null ? row.inquiry_date : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.sales_person_id != null ? scheduleCommon.personFormatter(row.sales_person_id) : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.order_accept_check != null ? entryList.orderAcceptFormatter(row.order_accept_check,null,row) : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.created != null ? row.created : "") + "</td>" +
+        "<td class='data_value border_up_left_right'>" + (row.created_id != null ? scheduleCommon.personFormatter(row.created_id) : "") + "</td>" +
+        "</tr>");
+        $(tbl).append(tr);
+      }
+
+  });
+
+}
+// 案件リストCSV出力
+entryList.entryListCsv = function() {
+  var today = scheduleCommon.getToday("{0}_{1}_{2}");
+  var option = entryList.getSearchOption();
+  var req_url = '/entry_print' + option;
+  // キーワード
+  var keyword = $("#entry_search_keyword").val();
+  // 期間設定
+  var search_start_date = $("#search_start_date").val();
+  var search_end_date = $("#search_end_date").val();
+  if (keyword != "" || search_start_date != "" || search_end_date != "") {
+    req_url += '&keyword=' + keyword +
+    '&search_start_date=' + search_start_date +
+    '&search_end_date=' + search_end_date;
+  }
+  req_url += "&sidx=" + $("#entry_list").getGridParam("sortname") + "&sord=" + $("#entry_list").getGridParam("sortorder");
+  var filename = "案件リスト_" + today;
+  var empty_line = "\r\n\r\n";
+  var lines = [];
+  var colnames = "請求区分,未入金,報告書期限,案件No.,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,問合せ日,案件ステータス,営業担当者,仮受注チェック,作成日,作成者";
+  lines.push(colnames);
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = null;
+  $.get(req_url,function(response) {
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+        var text = scheduleCommon.setQuotation(row.pay_result != null ? entryList.payResultFormatter(row.pay_result,null,row) : "未登録") + "," +
+          scheduleCommon.setQuotation(row.pay_complete != null ? entryList.payCompleteFormatterForCsv(row.pay_complete,null,row) : "") + "," +
+          scheduleCommon.setQuotation(row.report_limit_date != null ? row.report_limit_date : "") + "," +
+          scheduleCommon.setQuotation(row.entry_no != null ? row.entry_no : "") + "," +
+          scheduleCommon.setQuotation(row.test_large_class_name != null ? row.test_large_class_name : "") + "," +
+          scheduleCommon.setQuotation(row.test_middle_class_name != null ? row.test_middle_class_name : "") + "," +
+          scheduleCommon.setQuotation(row.client_name_1 != null ? row.client_name_1 : "") + "," +
+          scheduleCommon.setQuotation(row.agent_name_1 != null ? row.agent_name_1 : "") + "," +
+          scheduleCommon.setQuotation(row.entry_title != null ? row.entry_title : "") + "," +
+          scheduleCommon.setQuotation(row.entry_status != null ? entryList.statusFormatter(row.entry_status,null,row) : "") + "," +
+          scheduleCommon.setQuotation(row.inquiry_date != null ? row.inquiry_date : "") + "," +
+          scheduleCommon.setQuotation(row.sales_person_id != null ? scheduleCommon.personFormatter(row.sales_person_id) : "") + "," +
+          scheduleCommon.setQuotation(row.order_accept_check != null ? entryList.orderAcceptFormatter(row.order_accept_check,null,row) : "") + "," +
+          scheduleCommon.setQuotation(row.created != null ? row.created : "") + "," +
+          scheduleCommon.setQuotation(row.created_id != null ? scheduleCommon.personFormatter(row.created_id) : "");
+        lines.push(text);
+      }
+      lines.push("\r\n");
+      var detail_text = lines.join("\r\n");
+      blob = new Blob([bom,detail_text], {type: "text/csv;charset=utf-8"});
+      saveAs(blob,filename + ".csv");
+
+    });
+
+}
+
 // クライアント名をクリアしたらCDをクリアする
 entryList.checkClientName = function(event) {
   if ($("#client_name").val() == "") {

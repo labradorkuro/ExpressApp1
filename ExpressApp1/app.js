@@ -171,6 +171,7 @@ app.post('/password_post', upload.array(), user_post.password_post);
 app.post('/division_post', upload.array(), division_post.division_post);
 
 app.get('/entry_get/:no?', entry_get.entry_get);
+app.get('/entry_print', entry_get.entry_print);
 app.get('/entry_get/cal/:start/:end/:test_type', entry_get.entry_get_list_cal);
 app.get('/entry_get/gantt/:start/:end/:test_type', entry_get.entry_get_list_gantt);
 app.get('/mikaishu_list', entry_get.mikaishu_list);

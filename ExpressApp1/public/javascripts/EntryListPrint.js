@@ -13,6 +13,7 @@ entryListPrint.makeListTable = function() {
   var today = scheduleCommon.getToday("{0}/{1}/{2}");
   $("#print_date").append($("<label>" + today + "</label>"));
   // 親ウィンドウの#entry_listを取得する
+  /*
   var grid = window.opener.$("#entry_list");
   // グリッドのデータを取得する
   var rows = grid.getRowData(); // 全件取得する
@@ -38,5 +39,5 @@ entryListPrint.makeListTable = function() {
     $("#entry_list_table").append(tr);
 
   });
-
+*/
 }
