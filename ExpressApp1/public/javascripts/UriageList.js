@@ -260,7 +260,9 @@ uriageList.onSelectUriageSummary = function(rowid) {
 
 };
 uriageList.loadCompleteUgiageSummary = function(event) {
-
+  // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
+    var rowNum = Number($("#uriage_list").getGridParam('rowNum'));
+    $("#uriage_list").setGridHeight(rowNum * 24);
 };
 uriageList.onSelectUriageList = function(rowid) {
   var row = $("#uriage_list_detail").getRowData(rowid);
