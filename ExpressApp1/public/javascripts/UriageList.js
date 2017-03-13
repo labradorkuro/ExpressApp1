@@ -153,7 +153,7 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 		sortorder: "asc",
 		caption: "案件リスト",
 		onSelectRow:uriageList.onSelectUriageList,
-    loadComplete:uriageList.loadCompleteUgiageList
+    loadComplete:uriageList.loadCompleteUgiageDetailList
 	});
 	jQuery("#uriage_list_detail").jqGrid('navGrid', '#uriage_detail_pager', { edit: false, add: false, del: false ,search:false});
   $('#uriage_detail_pager_left table.ui-pg-table').css('float','left');
@@ -263,6 +263,11 @@ uriageList.loadCompleteUgiageSummary = function(event) {
   // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
     var rowNum = Number($("#uriage_list").getGridParam('rowNum'));
     $("#uriage_list").setGridHeight(rowNum * 24);
+};
+uriageList.loadCompleteUgiageDetailList = function(event) {
+  // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
+    var rowNum = Number($("#uriage_detail_list").getGridParam('rowNum'));
+    $("#uriage_detail_list").setGridHeight(rowNum * 24);
 };
 uriageList.onSelectUriageList = function(rowid) {
   var row = $("#uriage_list_detail").getRowData(rowid);
