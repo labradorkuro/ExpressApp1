@@ -220,7 +220,7 @@ clientList.createClientListGrid = function (no, keyword) {
 			{ name: 'updated_id', index: 'updated_id', formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
 			{ name: 'delete_check',index: 'delete_check', hidden:true}
 		],
-		height: "230px",
+		height: "260px",
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
