@@ -79,7 +79,7 @@ uriageList.createGrid_all = function() {
       { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
       { name: 'sales_person_name', index: 'sales_person_name', width: 160, align: "center" },
 		],
-		height:290,
+		height:320,
 		//width:960,
 		shrinkToFit:false,
 		rowNum: 10,
@@ -141,7 +141,7 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
       { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
       { name: 'sales_person_name', index: 'sales_person_name', width: 160, align: "center" },
 		],
-		height:290,
+		height:320,
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
@@ -179,7 +179,7 @@ uriageList.createGrid_division = function() {
       { name: 'division', index: 'division', width: 300, align: "center" ,sortable:true},
 			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC }
 		],
-		height:290,
+		height:320,
 		width:960,
 		shrinkToFit:false,
 		rowNum: 10,
@@ -219,7 +219,7 @@ uriageList.createGrid_client = function() {
       { name: 'client', index: 'cilent', width: 300, align: "center" ,sortable:true},
 			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC }
 		],
-		height:290,
+		height:320,
 		width:960,
 		shrinkToFit:false,
 		rowNum: 10,
@@ -262,12 +262,12 @@ uriageList.onSelectUriageSummary = function(rowid) {
 uriageList.loadCompleteUgiageSummary = function(event) {
   // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
     var rowNum = Number($("#uriage_list").getGridParam('rowNum'));
-    $("#uriage_list").setGridHeight(rowNum * 30);
+    $("#uriage_list").setGridHeight(rowNum * 32);
 };
 uriageList.loadCompleteUgiageDetailList = function(event) {
   // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
     var rowNum = Number($("#uriage_list_detail").getGridParam('rowNum'));
-    $("#uriage_list_detail").setGridHeight(rowNum * 30);
+    $("#uriage_list_detail").setGridHeight(rowNum * 32);
 };
 uriageList.onSelectUriageList = function(rowid) {
   var row = $("#uriage_list_detail").getRowData(rowid);
