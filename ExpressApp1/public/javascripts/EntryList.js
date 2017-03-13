@@ -373,7 +373,7 @@ entryList.createGridSub = function (req_url) {
 // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
 entryList.loadCompleteEntryList = function(data) {
   var rowNum = Number($("#entry_list").getGridParam('rowNum'));
-  $("#entry_list").setGridHeight(rowNum * 24);
+  $("#entry_list").setGridHeight(rowNum * 26);
 }
 entryList.createClientList = function(func) {
 	// 得意先リスト画面生成
