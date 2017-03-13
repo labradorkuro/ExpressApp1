@@ -250,7 +250,7 @@ clientList.createClientListGrid = function (no, keyword) {
 };
 // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
 clientList.loadCompleteList = function(data) {
-  var h = data.records * 24;
+  var h = data.records * 32;
 	var tab_no = $("#tabs-client").tabs("option","active") + 1;
   $("#client_list_" + tab_no).setGridHeight(h);
 }
