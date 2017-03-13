@@ -266,8 +266,8 @@ uriageList.loadCompleteUgiageSummary = function(event) {
 };
 uriageList.loadCompleteUgiageDetailList = function(event) {
   // loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
-    var rowNum = Number($("#uriage_detail_list").getGridParam('rowNum'));
-    $("#uriage_detail_list").setGridHeight(rowNum * 24);
+    var rowNum = Number($("#uriage_list_detail").getGridParam('rowNum'));
+    $("#uriage_list_detail").setGridHeight(rowNum * 24);
 };
 uriageList.onSelectUriageList = function(rowid) {
   var row = $("#uriage_list_detail").getRowData(rowid);
