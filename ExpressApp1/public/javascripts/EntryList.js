@@ -349,7 +349,7 @@ entryList.createGridSub = function (req_url) {
 			{ name: 'updated', index: 'updated', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
 		],
-		height:240,
+		height:260,
 		//width:960,
 		shrinkToFit:false,
 		rowNum: 10,
