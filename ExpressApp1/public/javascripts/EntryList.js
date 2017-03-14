@@ -1145,8 +1145,8 @@ entryList.entryListPrintSub = function(cw, target) {
         "<td class='data_value border_up_left'>" + (row.client_name_1 != null ? row.client_name_1 : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.agent_name_1 != null ? row.agent_name_1 : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.entry_title != null ? row.entry_title : "") + "</td>" +
-        "<td class='data_value border_up_left'>" + (row.entry_status != null ? entryList.statusFormatter(row.entry_status,null,row) : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.inquiry_date != null ? row.inquiry_date : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.entry_status != null ? entryList.statusFormatter(row.entry_status,null,row) : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.sales_person_id != null ? scheduleCommon.personFormatter(row.sales_person_id) : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.order_accept_check != null ? entryList.orderAcceptFormatter(row.order_accept_check,null,row) : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.created != null ? row.created : "") + "</td>" +
@@ -1193,8 +1193,8 @@ entryList.entryListCsv = function() {
           scheduleCommon.setQuotation(row.client_name_1 != null ? row.client_name_1 : "") + "," +
           scheduleCommon.setQuotation(row.agent_name_1 != null ? row.agent_name_1 : "") + "," +
           scheduleCommon.setQuotation(row.entry_title != null ? row.entry_title : "") + "," +
-          scheduleCommon.setQuotation(row.entry_status != null ? entryList.statusFormatter(row.entry_status,null,row) : "") + "," +
           scheduleCommon.setQuotation(row.inquiry_date != null ? row.inquiry_date : "") + "," +
+          scheduleCommon.setQuotation(row.entry_status != null ? entryList.statusFormatter(row.entry_status,null,row) : "") + "," +
           scheduleCommon.setQuotation(row.sales_person_id != null ? scheduleCommon.personFormatter(row.sales_person_id) : "") + "," +
           scheduleCommon.setQuotation(row.order_accept_check != null ? entryList.orderAcceptFormatter(row.order_accept_check,null,row) : "") + "," +
           scheduleCommon.setQuotation(row.created != null ? row.created : "") + "," +
