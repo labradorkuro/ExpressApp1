@@ -469,6 +469,22 @@ entryList.payCompleteFormatterForCsv = function (cellval, options, rowObject) {
 	}
 	return result;
 };
+// 受注ステータスのフォーマッター
+entryList.order_statusFormatterForCsv = function (cellval, options, rowObject) {
+	var result = "";
+	if (cellval != null) {
+
+    if (cellval === 1) {
+	     // 商談中
+		   result = "商談中";
+    }　else if  (cellval === 2) {
+      // 商談中
+      result = "受注確定";
+    }
+
+	}
+	return result;
+};
 
 // 報告遅延のフォーマッター
 entryList.reportLimitFormatter = function (cellval, options, rowObject) {
@@ -1177,7 +1193,7 @@ entryList.entryListCsv = function() {
   var filename = "案件リスト_" + today;
   var empty_line = "\r\n\r\n";
   var lines = [];
-  var colnames = "請求区分,未入金,報告書期限,案件No.,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,問合せ日,案件ステータス,営業担当者,仮受注チェック,作成日,作成者";
+  var colnames = "請求区分,未入金,報告書期限,案件No.,見積番号,見積合計金額（税別）,受注ステータス,受注日,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,問合せ日,案件ステータス,営業担当者,仮受注チェック,作成日,作成者";
   lines.push(colnames);
   var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
   var blob = null;
@@ -1188,6 +1204,10 @@ entryList.entryListCsv = function() {
           scheduleCommon.setQuotation(row.pay_complete != null ? entryList.payCompleteFormatterForCsv(row.pay_complete,null,row) : "") + "," +
           scheduleCommon.setQuotation(row.report_limit_date != null ? row.report_limit_date : "") + "," +
           scheduleCommon.setQuotation(row.entry_no != null ? row.entry_no : "") + "," +
+          scheduleCommon.setQuotation(row.quote_no != null ? row.quote_no : "") + "," +
+          scheduleCommon.setQuotation(row.total_price != null ? row.total_price : "") + "," +
+          scheduleCommon.setQuotation(row.order_status != null ? entryList.order_statusFormatterForCsv(row.order_status) : "") + "," +
+          scheduleCommon.setQuotation(row.order_accepted_date != null ? row.order_accepted_date : "") + "," +
           scheduleCommon.setQuotation(row.test_large_class_name != null ? row.test_large_class_name : "") + "," +
           scheduleCommon.setQuotation(row.test_middle_class_name != null ? row.test_middle_class_name : "") + "," +
           scheduleCommon.setQuotation(row.client_name_1 != null ? row.client_name_1 : "") + "," +

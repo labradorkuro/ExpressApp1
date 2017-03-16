@@ -112,6 +112,11 @@ var parse_large_item_params = function(req) {
 		searchString = "'L06'";
 		params += searchField + "=" + searchString;
 	}
+	if (req.query.L07 == '1') {
+		if (params != "") params += " OR ";
+		searchString = "'L07'";
+		params += searchField + "=" + searchString;
+	}
 	if (params != '') {
 		params = '(' + params + ')'
 	}
@@ -392,7 +397,9 @@ var entry_get_list_sql = function() {
 		+ 'subq3.pay_result_1,'
 		+ 'entry_status,'
 		+ 'sales_person_id,'
-		+ 'quote_no,'
+		+ 'quote_info.quote_no,'
+		+ 'quote_info.order_status,'
+		+ 'total_price,'
 //		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date,"
 		+ "entry_info.client_cd,"
 		+ "client_list.name_1 AS client_name_1,"
@@ -422,7 +429,7 @@ var entry_get_list_sql = function() {
 		+ 'entry_info.test_middle_class_cd,'
 		+ 'test_middle_class.item_name AS test_middle_class_name,'
 		+ 'test_person_id,'
-		+ 'consumption_tax,'
+		+ 'entry_info.consumption_tax,'
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'entry_info.created_id,'
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
@@ -439,6 +446,9 @@ var entry_get_list_sql = function() {
 		// 請求情報のサブクエリ 請求区分を表示するため
 		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_result_1 FROM drc_sch.billing_info WHERE (pay_result = 1 AND billing_info.delete_check = 0) GROUP BY entry_no) as subq3 ON(subq3.entry_no = entry_info.entry_no)'
+		+ ' LEFT JOIN drc_sch.quote_info ON(entry_info.entry_no = quote_info.entry_no AND quote_info.order_status = 2)'
+		// 合計金額を求めるサブクエリー
+		+ ' LEFT JOIN (SELECT entry_no,quote_no,sum(price) AS total_price FROM drc_sch.quote_specific_info WHERE quote_specific_info.specific_delete_check = 0 GROUP BY entry_no,quote_no) AS subq4 ON (quote_info.entry_no = subq4.entry_no AND quote_info.quote_no = subq4.quote_no )'
 		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND';
 		return sql;
 }
@@ -680,6 +690,7 @@ var entry_get_list_for_print = function (res, sql_count, sql, params, pg_params)
 							var entry = [];
 							row.id = (i + 1);
 							row.cell = results.rows[i];
+							console.log("quote_no[" + i + "]:" + row.cell.quote_no);
 							result.rows.push(row);
 						}
 						connection.end();
