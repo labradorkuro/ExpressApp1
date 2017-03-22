@@ -392,14 +392,24 @@ var entry_get_list_sql = function() {
 		+ "to_char(inquiry_date, 'YYYY/MM/DD') AS inquiry_date,"
 		+ "to_char(report_limit_date, 'YYYY/MM/DD') AS report_limit_date,"
 		+ "to_char(report_submit_date, 'YYYY/MM/DD') AS report_submit_date,"
+		+ 'to_char(prompt_report_limit_date_1,\'YYYY/MM/DD\') AS prompt_report_limit_date_1,'		// 速報提出期限１
+		+ 'to_char(prompt_report_submit_date_1,\'YYYY/MM/DD\') AS prompt_report_submit_date_1,'		// 速報提出日１
+		+ 'to_char(prompt_report_limit_date_2,\'YYYY/MM/DD\') AS prompt_report_limit_date_2,'		// 速報提出期限２
+		+ 'to_char(prompt_report_submit_date_2,\'YYYY/MM/DD\') AS prompt_report_submit_date_2,'		// 速報提出日２
 		+ 'subq.pay_complete,'
 		+ 'subq2.pay_result,'
 		+ 'subq3.pay_result_1,'
 		+ 'entry_status,'
 		+ 'sales_person_id,'
 		+ 'quote_info.quote_no,'
+		+ "to_char(quote_date, 'YYYY/MM/DD') AS quote_date,"
 		+ 'quote_info.order_status,'
-		+ 'total_price,'
+		+ 'total_price,'																// 合計金額（税抜）
+		+ 'quote_info.consumption_tax,'
+		+ 'quote_info.monitors_num,'										// 被験者数
+		+ 'quote_info.quote_submit_check,'							// PDF発行
+		+ 'amount_total,'																// 請求合計
+		+ 'complete_total,'															// 入金合計
 //		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date,"
 		+ "entry_info.client_cd,"
 		+ "client_list.name_1 AS client_name_1,"
@@ -421,6 +431,16 @@ var entry_get_list_sql = function() {
 		+ "agent_division_cd,"														// 代理店部署CD
 		+ "agent_person_id,"															// 代理店担当者ID
 		+ 'agent_list.name_1 AS agent_name_1,'									// 代理店名称1
+		+ 'agent_list.name_1 AS agent_name_1,'									// 代理店名称1
+		+ 'agent_list.name_2 AS agent_name_2,'									// 代理店名称2
+		+ "agent_division_list.address_1 AS agent_address_1,"					// 代理店部署住所１
+		+ "agent_division_list.address_2 AS agent_address_2,"					// 代理店部署住所２
+		+ "agent_division_list.name AS agent_division_name,"					// 代理店部署名
+		+ "agent_division_list.memo AS agent_division_memo,"					// 代理店部署メモ
+		+ "agent_person_list.name AS agent_person_name,"						// 代理店担当者名
+		+ "agent_person_list.memo AS agent_person_memo,"						// 代理店担当者メモ
+		+ "agent_person_list.compellation AS agent_person_compellation,"
+
 		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date,"
 		+ 'order_accept_check,'
 		+ 'order_type,'
@@ -428,8 +448,10 @@ var entry_get_list_sql = function() {
 		+ 'test_large_class.item_name AS test_large_class_name,'
 		+ 'entry_info.test_middle_class_cd,'
 		+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'acounting_period_no,'
+		+ 'out_list.name_1 AS outsourcing_name,'
 		+ 'test_person_id,'
-		+ 'entry_info.consumption_tax,'
+		+ 'entry_memo,'
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'entry_info.created_id,'
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
@@ -438,13 +460,16 @@ var entry_get_list_sql = function() {
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)'
-		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)'
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)'
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)'
+		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)'
+		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON(entry_info.agent_cd = agent_division_list.client_cd AND entry_info.agent_division_cd = agent_division_list.division_cd)'
+		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON(entry_info.agent_cd = agent_person_list.client_cd AND entry_info.agent_division_cd = agent_person_list.division_cd AND entry_info.agent_person_id = agent_person_list.person_id)'
+		+ ' LEFT JOIN drc_sch.itakusaki_list AS out_list ON(entry_info.outsourcing_cd = out_list.client_cd)'
 		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
 		// 請求情報のサブクエリ 請求区分を表示するため
-		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
+		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result ,SUM(pay_amount_total) AS amount_total,SUM(pay_complete) AS complete_total FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_result_1 FROM drc_sch.billing_info WHERE (pay_result = 1 AND billing_info.delete_check = 0) GROUP BY entry_no) as subq3 ON(subq3.entry_no = entry_info.entry_no)'
 		+ ' LEFT JOIN drc_sch.quote_info ON(entry_info.entry_no = quote_info.entry_no AND quote_info.order_status = 2)'
 		// 合計金額を求めるサブクエリー
@@ -521,9 +546,9 @@ var mikaishu_list_sql = function() {
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
 		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)'
-		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)'
 		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)'
 		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)'
+		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)'
 		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
 		// 請求情報のサブクエリ 請求区分を表示するため
@@ -690,7 +715,6 @@ var entry_get_list_for_print = function (res, sql_count, sql, params, pg_params)
 							var entry = [];
 							row.id = (i + 1);
 							row.cell = results.rows[i];
-							console.log("quote_no[" + i + "]:" + row.cell.quote_no);
 							result.rows.push(row);
 						}
 						connection.end();
