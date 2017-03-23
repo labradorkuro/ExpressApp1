@@ -132,7 +132,7 @@ billingList.createBillingListGrid = function () {
 		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','請求先情報','備考','作成日','作成者','更新日','更新者'],
+		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','請求先情報','備考','作成日','作成者','更新日','更新者','削除フラグ'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
@@ -161,6 +161,7 @@ billingList.createBillingListGrid = function () {
 			{ name: 'created_id', index: 'created_id', width: 120 }, // 作成者ID
 			{ name: 'updated', index: 'updated', width: 120 }, // 更新日
 			{ name: 'updated_id', index: 'updated_id', width: 120 },			// 更新者ID
+			{ name: 'delete_check', index: '', hidden:true },
 		],
 		height: "230px",
 		//width:"800",
@@ -440,7 +441,7 @@ billingList.setBillingForm = function(billing) {
 	$("#billing_client_person_name").val(billing.client_person_name);
 	$("#billing_client_info").val(billing.client_info);
 	$("#billing_memo").val(billing.memo);
-	$("#billing_delete_check").prop("checked",billing.delete_check);
+	$("#billing_delete_check").prop("checked",Number(billing.delete_check));
 };
 billingList.getBillingDeleteCheckDispCheck = function () {
 	var dc = $("#billing_delete_check_disp").prop("checked");
