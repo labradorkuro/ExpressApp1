@@ -471,7 +471,7 @@ var entry_get_list_sql = function() {
 		// 請求情報のサブクエリ 請求区分を表示するため
 		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result ,SUM(pay_amount_total) AS amount_total,SUM(pay_complete) AS complete_total FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
 		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_result_1 FROM drc_sch.billing_info WHERE (pay_result = 1 AND billing_info.delete_check = 0) GROUP BY entry_no) as subq3 ON(subq3.entry_no = entry_info.entry_no)'
-		+ ' LEFT JOIN drc_sch.quote_info ON(entry_info.entry_no = quote_info.entry_no AND quote_info.order_status = 2)'
+		+ ' LEFT JOIN drc_sch.quote_info ON(entry_info.entry_no = quote_info.entry_no AND quote_info.order_status = 2 AND quote_info.quote_delete_check = 0)'
 		// 合計金額を求めるサブクエリー
 		+ ' LEFT JOIN (SELECT entry_no,quote_no,sum(price) AS total_price FROM drc_sch.quote_specific_info WHERE quote_specific_info.specific_delete_check = 0 GROUP BY entry_no,quote_no) AS subq4 ON (quote_info.entry_no = subq4.entry_no AND quote_info.quote_no = subq4.quote_no )'
 		+ ' WHERE (entry_status = $2 OR entry_status = $3 OR entry_status = $4 OR entry_status = $5 OR entry_status = $6) AND';
@@ -683,6 +683,7 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 							row.id = (i + 1);
 							row.cell = results.rows[i];
 							result.rows.push(row);
+							console.log(row);
 						}
 						connection.end();
 						res.send(result);
