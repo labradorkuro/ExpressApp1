@@ -58,7 +58,7 @@ exports.mikaishu_list = function(req,res) {
 	sql	+= ' entry_info.delete_check = $1 AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\' ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	console.log(sql);
+	//console.log(sql);
 	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
 };
 
@@ -683,7 +683,7 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 							row.id = (i + 1);
 							row.cell = results.rows[i];
 							result.rows.push(row);
-							console.log(row);
+							//console.log(row);
 						}
 						connection.end();
 						res.send(result);
@@ -863,6 +863,41 @@ var entry_get_detail = function (req, res) {
 		});
 	});
 };
+
+// 受注確定の見積があるか確認する
+exports.order_status_check = function(req, res) {
+	var sql = "select quote_no from drc_sch.quote_info where entry_no = $1 AND order_status = 2 AND quote_delete_check = 0";
+	// SQL実行
+	var result = { page: 1, total: 20, records: 0, rows: [] };
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+			connection.end();
+			res.send(result);
+		} else {
+				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
+				connection.query(sql, [req.query.entry_no], function (err, results) {
+					if (err) {
+						console.log(err);
+						connection.end();
+						res.send(result);
+					} else {
+						result.records = results.rows.length;
+						for (var i in results.rows) {
+							var row = { id: '', cell: [] };
+							var entry = [];
+							row.id = (i + 1);
+							row.cell = results.rows[i];
+							result.rows.push(row);
+						}
+						connection.end();
+						res.send(result);
+					}
+				});
+			}
+		});
+}
 
 // 見積情報データの取得
 exports.quote_get = function (req, res) {

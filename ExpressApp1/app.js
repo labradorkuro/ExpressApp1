@@ -175,6 +175,7 @@ app.get('/entry_print', entry_get.entry_print);
 app.get('/entry_get/cal/:start/:end/:test_type', entry_get.entry_get_list_cal);
 app.get('/entry_get/gantt/:start/:end/:test_type', entry_get.entry_get_list_gantt);
 app.get('/mikaishu_list', entry_get.mikaishu_list);
+app.get('/order_status_check', entry_get.order_status_check);
 
 app.get('/quote_get/:entry_no?', entry_get.quote_get);
 app.get('/report_gantt/:entry_no?', entry_get.report_gantt);
@@ -341,6 +342,6 @@ Object.keys(models).forEach(function(modelName) {
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-  var msg = '基幹システム(Build:2016.11.23)';
+  var msg = '基幹システム(Build:2017.03.24)';
   console.log(msg);
 });

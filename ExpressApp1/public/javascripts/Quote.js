@@ -278,39 +278,39 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('PDF出力後に登録')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('登録')").button("disable");
 	}
-	// 受注確定になっている見積があるかチェックする
-	var order_index = quoteInfo.checkOrderStatus();
-	if (order_index >= 0) {
-		if ((order_index == "") || (order_index == quoteInfo.currentQuoteRowId)) {
-			$("#order_status_2").css("display","inline");
-		} else if (order_index != ""){
-			// 受注確定になっている見積がある場合で、選択中のものでない場合、受注確定のラジオボタンを無効化する
-			$("#order_status_2").css("display","none");
-		}
-	}
-	$("#quoteForm_dialog").dialog("open");
+	// 受注確定になっている見積があるかチェックして「受注確定」の表示・非表示を設定してから入力画面を開く
+	quote = $("#quote_list").getRowData(quoteInfo.currentQuoteRowId);
+	quoteInfo.checkOrderStatus(quote);
 };
 
 // 見積の中で受注確定になっているものがあるかチェックする
-quoteInfo.checkOrderStatus = function() {
-	// データIDを取得する
-	var IDs = $("#quote_list").getDataIDs();
-	var result = "";
-	// 取得したIDで行データを取得する
-	for(var i in IDs){
-		var rowid = IDs[i];
-		var quote = $("#quote_list").getRowData(rowid);
-		if (quote.order_status) {
-			if (quote.order_status === "受注確定") {
-				result = rowid;
-				break;
+quoteInfo.checkOrderStatus = function(quote) {
+	$.ajax({
+		url: '/order_status_check?entry_no=' + quote.entry_no,
+		cache: false,
+		dataType: 'json',
+		success: function (response) {
+			if (response.records == 0) {
+				$("#order_status_2").css("display","inline");
+				$("#quoteForm_dialog").dialog("open");
+				return;
 			}
-		} else {
-			break;
+			for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+				if (row.quote_no == quote.quote_no) {
+					// 現在選択中の見積の時は「受注確定」を表示する
+					$("#order_status_2").css("display","inline");
+					$("#quoteForm_dialog").dialog("open");
+					return;
+				}
+			}
+			// 受注確定になっている見積がある場合で、選択中のものでない場合、受注確定のラジオボタンを無効化する
+			$("#order_status_2").css("display","none");
+			$("#quoteForm_dialog").dialog("open");
 		}
-	}
-	return result;
+	});
 };
+
 // 見積明細の検索とテーブル設定
 quoteInfo.searchSpecificInfo = function(entry_no,quote_no,large_item_cd) {
 	$.ajax({
