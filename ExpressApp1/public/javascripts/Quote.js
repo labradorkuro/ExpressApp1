@@ -116,7 +116,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		height: "115px",
 		shrinkToFit:false,
 		rowNum: 5,
-		rowList: [5],
+		rowList: [5,10,20,30],
 		pager: '#quote_list_pager',
 		pagerpos: 'left',
 		recordpos: 'center',
@@ -124,6 +124,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 		viewrecords: true,
 		sortorder: "asc",
 		onSelectRow:quoteInfo.onSelectQuote,
+		loadComplete:quoteInfo.loadCompleteQuoteList,
 		caption: "見積情報"
 	});
 	jQuery("#quote_list").jqGrid('navGrid', '#quote_list_pager', { edit: false, add: false, del: false ,search:false});
@@ -132,6 +133,14 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 	$('#quote_list_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
 };
+
+// loadCompleイベント処理（表示行数に合わせてグリッドの高さを変える）
+quoteInfo.loadCompleteQuoteList = function(data) {
+  var rowNum = Number($("#quote_list").getGridParam('rowNum'));
+  $("#quote_list").setGridHeight(rowNum * 33);
+}
+
+
 // グリッド表示用（見積書提出フラグ）
 quoteInfo.submitCheckFormatter = function(no) {
 	if (no == 1) {
