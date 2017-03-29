@@ -1024,7 +1024,7 @@ clientList.onGetSightMasterList = function(list) {
 };
 // 支払日サイト情報を取得する
 clientList.getSightInfo = function(client_cd) {
-	var url = "/sight_info?client_cd='" + client_cd + "'";
+	var url = "/sight_info?client_cd=" + client_cd + "";
 	// フォームをクリアする
 	var sight_info = clientList.clearSightInfo();
 	sight_info.client_cd = client_cd;
