@@ -42,11 +42,11 @@ nyukin_yosoku.sql_zensha_total = "SELECT "
 
 
 // 試験課別入金予測集計(件数取得)
-nyukin_yosoku.sql_division_summary_count = "select count(*) as cnt from drc_sch.billing_info"
+nyukin_yosoku.sql_division_summary_count = "select count(entry_info.test_large_class_cd) as cnt from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
   + " left join drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)"
   + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0"
-  + " group by entry_info.test_large_class_cd";
+  + " group by entry_info.test_large_class_cd,test_large_class.item_name";
 
 // 試験課別入金予測集計
 nyukin_yosoku.sql_division_summary = "select entry_info.test_large_class_cd as division_cd,test_large_class.item_name as division,sum(pay_amount_total) as nyukin_yosoku_sum"
@@ -238,7 +238,14 @@ nyukin_yosoku.exeQuery = function(req, res, pg_params,sql_count,sql,params) {
       } else {
         // 取得した件数からページ数を計算する
         if (results.rows.length) {
-          result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
+//          var cnt = 0;
+//          for(var i = 0;i< results.rows.length;i++) {
+//            console.log(results.rows[i].cnt);
+//            cnt += Number(results.rows[i].cnt);
+//          }
+//          console.log(cnt);
+          result.total = Math.ceil(results.rows.length / pg_params.limit);
+          console.log(result.total);
         }
         result.page = pg_params.page;
         // データを取得するためのクエリーを実行する（LIMIT OFFSETあり）

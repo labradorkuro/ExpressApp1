@@ -251,17 +251,20 @@ yosokuList.onSelectUriageSummary = function(rowid) {
 
 };
 yosokuList.loadCompleteUgiageSummary = function(event) {
-
+  var rowNum = Number($("#yosoku_list").getGridParam('rowNum'));
+  $("#yosoku_list").setGridHeight(rowNum * 32);
 };
 yosokuList.onSelectUriageList = function(rowid) {
   var row = $("#yosoku_list_detail").getRowData(rowid);
   yosokuList.openEntryDialog(row);
 };
 yosokuList.loadCompleteUgiageList = function(event) {
+  var rowNum = Number($("#yosoku_list_detail").getGridParam('rowNum'));
+  $("#yosoku_list_detail").setGridHeight(rowNum * 32);
 
 };
 yosokuList.numFormatterC = function(num) {
-	return scheduleCommon.numFormatter( Math.round(num), 10);
+	return scheduleCommon.numFormatter( Math.round(num), 11);
 };
 // 案件参照用ダイアログの生成
 yosokuList.createEntryDialog = function () {

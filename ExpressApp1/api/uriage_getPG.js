@@ -33,7 +33,8 @@ uriage_sum.sql_last_seikyu_date = 'SELECT '
 //  全社売上集計（件数取得）
 uriage_sum.sql_zensha_list_count = "SELECT "
     //+ "billing_info.entry_no,"
-    + "count(subq2.seikyu_count) as cnt"
+    + "count(entry_info.entry_no) as cnt,"
+    + "entry_info.*"
     + " from drc_sch.billing_info"
     + " left join drc_sch.entry_info on(entry_info.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlBillingInfoCount_all + ") as subq1 on(subq1.entry_no = billing_info.entry_no)"
@@ -289,7 +290,7 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
     }
-    //sql_count += " group by billing_info.entry_no";
+    sql_count += " group by entry_info.entry_no";
     sql_summary += " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
     sql_summary += " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
@@ -413,13 +414,7 @@ uriage_sum.exeQuery = function(req, res, pg_params,sql_count,sql,params) {
       } else {
         // 取得した件数からページ数を計算する
         if (results.rows.length) {
-          var cnt = 0;
-          for(var i = 0;i< results.rows.length;i++) {
-            console.log(results.rows[i].cnt);
-            cnt += Number(results.rows[i].cnt);
-          }
-          console.log(cnt);
-          result.total = Math.ceil(cnt / pg_params.limit);
+          result.total = Math.ceil(results.rows.length / pg_params.limit);
           console.log(result.total);
         }
         result.page = pg_params.page;
