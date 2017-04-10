@@ -140,13 +140,15 @@ nyukin_yosoku.sql_client_list = "SELECT "
 // 集計検索処理エントリーポイント
 exports.summary = function(req, res) {
   // グリッドのページング用パラメータの取得
-  var pg_params = tools.getPagingParams(req);
+  var pg_params = tools.getPagingParamsForUriageSum(req);
+//  var pg_params = tools.getPagingParams(req);
   // 検索集計処理
   nyukin_yosoku.getYosokuSummary(req, res, pg_params);
 }
 exports.list = function(req, res) {
   // グリッドのページング用パラメータの取得
-  var pg_params = tools.getPagingParams(req);
+  var pg_params = tools.getPagingParamsForUriageSum(req);
+//  var pg_params = tools.getPagingParams(req);
   // 案件リスト検索処理
   nyukin_yosoku.getYosokuList(req, res, pg_params);
 }
@@ -181,7 +183,7 @@ nyukin_yosoku.getYosokuSummary = function(req, res, pg_params) {
   if (req.query.op == 'all') {
     // 全社
     sql_count = nyukin_yosoku.sql_zensha_list_count;
-    sql_summary = nyukin_yosoku.sql_zensha_list + " ORDER BY entry_info."  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+    sql_summary = nyukin_yosoku.sql_zensha_list + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
     // 試験課別
     sql_count = nyukin_yosoku.sql_division_summary_count;
