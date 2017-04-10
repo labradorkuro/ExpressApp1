@@ -339,7 +339,7 @@ uriage_sum.getUriageSummaryPrint = function(req, res) {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
     }
-    sql_count += " group by billing_info.entry_no";
+    sql_count += " group by billing_info.entry_no, entry_info.entry_no";
     sql_summary += " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
     sql_summary += " ORDER BY entry_info.entry_no";
   } else if (req.query.op == 'division') {
