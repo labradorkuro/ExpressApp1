@@ -228,14 +228,18 @@ app.get('/uriage_list', uriage_list.list);
 app.get('/uriage_list_print_all', uriage_list.list_print_all);
 app.get('/uriage_list_print_division', uriage_list.list_print_division);
 app.get('/uriage_list_print_client', uriage_list.list_print_client);
-app.get('/pay_planning', pay_planning.list);
 // 売上集計関係
 app.get('/uriage_summary',uriage_summary.summary);
 app.get('/uriage_summary_print',uriage_summary.summary_print);
 app.get('/uriage_detail',uriage_summary.list);
 app.get('/uriage_total',uriage_summary.total);
 // 入金予測関係
+app.get('/pay_planning', pay_planning.list);
+app.get('/pay_planning_print_all', pay_planning.list_print_all);
+app.get('/pay_planning_print_division', pay_planning.list_print_division);
+app.get('/pay_planning_print_client', pay_planning.list_print_client);
 app.get('/nyukin_yosoku_summary',nyukin_yosoku.summary);
+app.get('/nyukin_yosoku_summary_print',nyukin_yosoku.summary_print);
 app.get('/nyukin_yosoku_detail',nyukin_yosoku.list);
 app.get('/nyukin_yosoku_total',nyukin_yosoku.total);
 // 支払サイト関係

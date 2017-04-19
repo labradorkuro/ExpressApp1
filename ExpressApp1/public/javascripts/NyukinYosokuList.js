@@ -11,6 +11,7 @@ $(function ()　{
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
   // 検索ボタンのクリックイベント登録
   $("#search_button").bind('click',yosokuList.onSearchButton);
+  $("#nyukin_list_print").bind('click',yosokuList.nyukinListPrint);
 });
 
 // 処理用オブジェクト
@@ -145,7 +146,7 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "案件リスト",
-		onSelectRow:yosokuList.onSelectUriageList,
+		onSelectRow:yosokuList.onSelectnyukinList,
     loadComplete:yosokuList.loadCompleteUgiageList
 	});
 	jQuery("#yosoku_list_detail").jqGrid('navGrid', '#yosoku_detail_pager', { edit: false, add: false, del: false ,search:false});
@@ -254,7 +255,7 @@ yosokuList.loadCompleteUgiageSummary = function(event) {
   var rowNum = Number($("#yosoku_list").getGridParam('rowNum'));
   $("#yosoku_list").setGridHeight(rowNum * 32);
 };
-yosokuList.onSelectUriageList = function(rowid) {
+yosokuList.onSelectnyukinList = function(rowid) {
   var row = $("#yosoku_list_detail").getRowData(rowid);
   yosokuList.openEntryDialog(row);
 };
@@ -419,3 +420,100 @@ yosokuList.setEntryForm = function (entry) {
 	$("#entryForm #updated").val(entry.updated);							// 更新日
 	$("#entryForm #updated_id").val(entry.updated_id);						// 更新者ID
 };
+
+yosokuList.getSortParams = function() {
+  var sn = $("#yosoku_list").getGridParam("sortname");
+  if (sn == undefined) sn = "entry_no";
+  var sd = $("#yosoku_list").getGridParam("sortorder");
+  if (sd == undefined) sd = "asc";
+
+  return "&sidx=" + sn + "&sord=" + sd;
+}
+yosokuList.nyukinListPrintSub = function(sd, ed, cw,target) {
+  var req_url = "/nyukin_yosoku_summary_print?op=all&start_date=" + sd + "&end_date=" + ed;
+  req_url += yosokuList.getSortParams();
+  $.get(req_url,function(response) {
+      var tbl = cw.document.getElementById(target);
+      var total = 0;
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+        var tr = $("<tr>" +
+        "<td class='data_value border_up_left'>" + (row.entry_no != null ? row.entry_no : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.test_large_class_name != null ? row.test_large_class_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.test_middle_class_name != null ? row.test_middle_class_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.client_name != null ? row.client_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.agent_name != null ? row.agent_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.entry_title != null ? row.entry_title :"") + "</td>" +
+        "<td class='data_value_num border_up_left'>" + (row.yosoku_sum != null ? scheduleCommon.numFormatter(row.yosoku_sum,11) : "") + "</td>" +
+        "<td class='data_value_num border_up_left'>" + (row.yosoku_tax != null ? scheduleCommon.numFormatter(row.yosoku_tax,11) : "") + "</td>" +
+        "<td class='data_value_num border_up_left'>" + (row.yosoku_total != null ? scheduleCommon.numFormatter(row.yosoku_total,11) : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.seikyu_date != null ? row.seikyu_date : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.nyukin_date != null ? row.nyukin_date : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.nyukin_yotei_date != null ? row.nyukin_yotei_date : "") + "</td>" +
+        "<td class='data_value border_up_left_right'>" + (row.sales_person_name != null ? row.sales_person_name : "") + "</td>" +
+        "</tr>");
+        total += Number(row.yosoku_total);
+        $(tbl).append(tr);
+      }
+      var total_label = cw.document.getElementById("total");
+      $(total_label).text(scheduleCommon.numFormatter(total,11) + "円");
+
+  });
+
+}
+
+// リスト印刷
+yosokuList.nyukinListPrint = function() {
+  var sd = $("#start_date").val();
+  var ed = $("#end_date").val();
+  if ($("#search_option_all").prop('checked')) {
+    // 全社
+    // 売上集計
+    var cw = window.open('/pay_planning_print_all','_blank','');
+    $(cw).load(function(){
+      yosokuList.nyukinListPrintSub(sd, ed, cw,"nyukin_list_table");
+    });
+  } else if ($("#search_option_division").prop('checked')) {
+    // 試験課別
+    var req_url = "/nyukin_yosoku_summary_print?op=division&start_date=" + sd + "&end_date=" + ed;
+    req_url += yosokuList.getSortParams();
+    $.get(req_url,function(response) {
+      var cw = window.open('/pay_planning_print_division','_blank','');
+      $(cw).load(function(){
+        var tbl = cw.document.getElementById("nyukin_list_table");
+        for(var i = 0;i < response.records;i++) {
+          var row = response.rows[i].cell;
+          var tr = $("<tr>" +
+          "<td class='data_value border_up_left'>" + (row.division != null ? row.division : "") + "</td>" +
+          "<td class='data_value_num border_up_left_right'>" + (row.yosoku_sum != null ? scheduleCommon.numFormatter(row.yosoku_sum,11) : "") + "</td>" +
+          "</tr>"
+          );
+          $(tbl).append(tr);
+        }
+        yosokuList.nyukinListPrintSub(sd, ed, cw,"nyukin_list_detail_table");
+
+      })
+  	});
+  } else if ($("#search_option_client").prop('checked')) {
+    // 顧客別
+    var req_url = "/nyukin_yosoku_summary_print?op=client&start_date=" + sd + "&end_date=" + ed;
+    req_url += yosokuList.getSortParams();
+    $.get(req_url,function(response) {
+      var cw = window.open('/pay_planning_print_client','_blank','');
+      $(cw).load(function(){
+        var tbl = cw.document.getElementById("nyukin_list_table");
+        for(var i = 0;i < response.records;i++) {
+          var row = response.rows[i].cell;
+          var tr = $("<tr>" +
+          "<td class='data_value border_up_left'>" + (row.client != null ? row.client : "") + "</td>" +
+          "<td class='data_value_num border_up_left_right'>" + (row.yosoku_sum != null ? scheduleCommon.numFormatter(row.yosoku_sum,11) : "") + "</td>" +
+          "</tr>"
+          );
+          $(tbl).append(tr);
+        }
+        yosokuList.nyukinListPrintSub(sd, ed, cw,"nyukin_list_detail_table");
+
+      })
+  	});
+  }
+}

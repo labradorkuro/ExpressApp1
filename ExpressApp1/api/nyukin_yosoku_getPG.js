@@ -145,6 +145,16 @@ exports.summary = function(req, res) {
   // 検索集計処理
   nyukin_yosoku.getYosokuSummary(req, res, pg_params);
 }
+
+// 印刷用エントリーポイント
+exports.summary_print = function(req, res) {
+  // グリッドのページング用パラメータの取得
+  var pg_params = tools.getPagingParamsForUriageSum(req);
+//  var pg_params = tools.getPagingParams(req);
+  // 検索集計処理
+  nyukin_yosoku.getYosokuSummary_print(req, res, pg_params);
+}
+
 exports.list = function(req, res) {
   // グリッドのページング用パラメータの取得
   var pg_params = tools.getPagingParamsForUriageSum(req);
@@ -152,6 +162,7 @@ exports.list = function(req, res) {
   // 案件リスト検索処理
   nyukin_yosoku.getYosokuList(req, res, pg_params);
 }
+
 
 // 売上集計総合計の取得
 exports.total = function(req, res) {
@@ -195,6 +206,28 @@ nyukin_yosoku.getYosokuSummary = function(req, res, pg_params) {
   }
   // SQL実行
   nyukin_yosoku.exeQuery(req,res,pg_params,sql_count,sql_summary,params);
+}
+
+// 印刷用検索処理
+nyukin_yosoku.getYosokuSummary_print = function(req, res, pg_params) {
+  var sql_summary = "";
+  var sql_count = "";
+  var params = [req.query.start_date,req.query.end_date];
+  if (req.query.op == 'all') {
+    // 全社
+    sql_count = nyukin_yosoku.sql_zensha_list_count;
+    sql_summary = nyukin_yosoku.sql_zensha_list + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord;
+  } else if (req.query.op == 'division') {
+    // 試験課別
+    sql_count = nyukin_yosoku.sql_division_summary_count;
+    sql_summary = nyukin_yosoku.sql_division_summary + " ORDER BY entry_info.test_large_class_cd, "  + pg_params.sidx + ' ' + pg_params.sord;
+  } else if (req.query.op == 'client') {
+    // 顧客別
+    sql_count = nyukin_yosoku.sql_client_summary_count;
+    sql_summary = nyukin_yosoku.sql_client_summary + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord;
+  }
+  // SQL実行
+  nyukin_yosoku.exeQueryPrint(req,res,pg_params,sql_count,sql_summary,params);
 }
 
 // 案件リスト取得
@@ -273,4 +306,52 @@ nyukin_yosoku.exeQuery = function(req, res, pg_params,sql_count,sql,params) {
     });
   });
 
+}
+
+// 印刷用
+nyukin_yosoku.exeQueryPrint = function(req, res, pg_params, sql_count,sql,params) {
+  console.log(sql_count);
+  console.log(sql);
+    var result = { page: 1, total: 1, records: 0, rows: [] };
+    // SQL実行
+    pg.connect(connectionString, function (err, connection) {
+      if (err) {
+        console.log(err);
+        connection.end();
+        res.send(result);
+      }
+      // 最初に件数を取得する
+      connection.query(sql_count, params, function (err, results) {
+        if (err) {
+          console.log(err);
+          connection.end();
+          res.send(result);
+        } else {
+          // 取得した件数からページ数を計算する
+          if (results.rows.length) {
+            result.total = results.rows[0].cnt;
+          }
+          result.page = 1;
+          // データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
+          connection.query(sql, params, function (err, results) {
+            if (err) {
+              console.log(err);
+              connection.end();
+              res.send(result);
+            } else {
+              result.records = results.rows.length;
+              result.page = 1;
+              for (var i in results.rows) {
+                var row = { id: '', cell: [] };
+                row.id = (i + 1);
+                row.cell = results.rows[i];
+                result.rows.push(row);
+              }
+              connection.end();
+              res.send(result);
+            }
+          });
+        }
+      });
+    });
 }
