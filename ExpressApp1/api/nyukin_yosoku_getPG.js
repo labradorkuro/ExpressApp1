@@ -56,11 +56,11 @@ nyukin_yosoku.sql_division_summary = "select entry_info.test_large_class_cd as d
   + " group by entry_info.test_large_class_cd,test_large_class.item_name";
 
 // 顧客別入金予測集計
-nyukin_yosoku.sql_client_summary_count = "select count(*) from drc_sch.billing_info"
-  + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
-  + " left join drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd) "
-  + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0";
-  + " group by entry_info.client_cd,client_list.name_1";
+nyukin_yosoku.sql_client_summary_count = "select entry_info.client_cd,client_list.name_1 as client,sum(pay_amount_total) as nyukin_yosoku_sum from drc_sch.billing_info"
+    + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
+    + " left join drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd) "
+    + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0"
+    + " group by entry_info.client_cd,client_list.name_1";
 nyukin_yosoku.sql_client_summary = "select entry_info.client_cd,client_list.name_1 as client,sum(pay_amount_total) as nyukin_yosoku_sum from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
   + " left join drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd) "
@@ -70,12 +70,13 @@ nyukin_yosoku.sql_client_summary = "select entry_info.client_cd,client_list.name
 //  試験課別案件リスト（件数取得）
 nyukin_yosoku.sql_division_list_count = "SELECT "
     + "billing_info.entry_no,"
-    + "count(pay_amount_total) as cnt"
+    + "count(pay_amount_total) as cnt,"
+    + "entry_info.*"
     + " from drc_sch.billing_info"
     + " left join drc_sch.entry_info on(entry_info.entry_no = billing_info.entry_no)"
     + " left join drc_sch.test_large_class on(test_large_class.item_cd = entry_info.test_large_class_cd)"
     + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0 and (entry_info.test_large_class_cd = $3) and billing_info.delete_check = 0"
-    + " group by billing_info.entry_no,entry_info.test_large_class_cd";
+    + " group by billing_info.entry_no,entry_info.entry_no,entry_info.test_large_class_cd";
 //  試験課別案件リスト
 nyukin_yosoku.sql_division_list = "SELECT "
     + "billing_info.entry_no,"
@@ -105,11 +106,12 @@ nyukin_yosoku.sql_division_list = "SELECT "
 //  顧客別案件リスト（件数取得）
 nyukin_yosoku.sql_client_list_count = "SELECT "
     + "billing_info.entry_no,"
-    + "count(pay_amount_total) as cnt"
+    + "count(pay_amount_total) as cnt,"
+    + "entry_info.*"
     + " from drc_sch.billing_info"
     + " left join drc_sch.entry_info on(entry_info.entry_no = billing_info.entry_no)"
     + " left join drc_sch.client_list on(client_list.client_cd = entry_info.client_cd)"
-    + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0 and (entry_info.client_cd = $3) and billing_info.delete_check = 0 group by billing_info.entry_no";
+    + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0 and (entry_info.client_cd = $3) and billing_info.delete_check = 0 group by billing_info.entry_no,entry_info.entry_no";
 //  顧客別案件リスト
 nyukin_yosoku.sql_client_list = "SELECT "
     + "billing_info.entry_no,"
@@ -246,10 +248,10 @@ nyukin_yosoku.getYosokuList = function(req, res, pg_params) {
     sql_summary = nyukin_yosoku.sql_all + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'division') {
     sql_count = nyukin_yosoku.sql_division_list_count;
-    sql_summary = nyukin_yosoku.sql_division_list + " ORDER BY entry_info.test_large_class_cd, entry_info."  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+    sql_summary = nyukin_yosoku.sql_division_list + " ORDER BY entry_info.test_large_class_cd, "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   } else if (req.query.op == 'client') {
     sql_count = nyukin_yosoku.sql_client_list_count;
-    sql_summary = nyukin_yosoku.sql_client_list + " ORDER BY entry_info.client_cd,entry_info. "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+    sql_summary = nyukin_yosoku.sql_client_list + " ORDER BY entry_info.client_cd, "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   }
   // SQL実行
   nyukin_yosoku.exeQuery(req,res,pg_params,sql_count,sql_summary,params);
@@ -273,12 +275,6 @@ nyukin_yosoku.exeQuery = function(req, res, pg_params,sql_count,sql,params) {
       } else {
         // 取得した件数からページ数を計算する
         if (results.rows.length) {
-//          var cnt = 0;
-//          for(var i = 0;i< results.rows.length;i++) {
-//            console.log(results.rows[i].cnt);
-//            cnt += Number(results.rows[i].cnt);
-//          }
-//          console.log(cnt);
           result.total = Math.ceil(results.rows.length / pg_params.limit);
           console.log(result.total);
         }
