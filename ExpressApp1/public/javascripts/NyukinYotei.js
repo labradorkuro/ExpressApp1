@@ -25,15 +25,25 @@ nyukinYotei.getShiharaibi = function(seikyu_date, sight_info) {
   ch.setDate(Number(sight_info.shimebi));
   // 支払日を設定
   var shiharaibi = scheduleCommon.dateStringToDate(seikyu_date);
-  shiharaibi.setDate(Number(sight_info.sight_date.shiharaibi));
-
+  shiharaibi.setDate(1);  // 暫定で1日にしておく
+  month = shiharaibi.getMonth();
   // 締日チェック
   if (sd > ch) {
     // 締日を過ぎている場合
+    month++;
     shiharaibi.setMonth(shiharaibi.getMonth() + 1);
   }
   // 支払いサイトに設定されている支払い月（翌月：１、翌々月：２）を加算する
-  shiharaibi.setMonth(shiharaibi.getMonth() + sight_info.sight_date.shiharai_month);
+  month += sight_info.sight_date.shiharai_month;
+  shiharaibi.setMonth(month);
+  if (sight_info.sight_date.shiharaibi == 31) {
+    // 月末支払の場合、翌月にしてから1日引いて月末日を得る
+    month++;
+    shiharaibi.setMonth(month);
+    shiharaibi.setDate(shiharaibi.getDate() - 1);
+  } else {
+    shiharaibi.setDate(Number(sight_info.sight_date.shiharaibi));
+  }
   return shiharaibi;
 };
 
