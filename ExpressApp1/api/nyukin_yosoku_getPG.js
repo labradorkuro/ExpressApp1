@@ -239,10 +239,12 @@ nyukin_yosoku.getYosokuList = function(req, res, pg_params) {
   var params = [req.query.start_date,req.query.end_date];
   if (req.query.division_cd) {
     params.push(req.query.division_cd);
+  } else {
+    params.push("");
   }
-  if (req.query.client_cd) {
-    params.push(req.query.client_cd);
-  }
+//  if (req.query.client_cd) {
+//    params.push(req.query.client_cd);
+//  }
   if (req.query.op == 'all') {
     sql_count = nyukin_yosoku.sql_all_count;
     sql_summary = nyukin_yosoku.sql_all + " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;

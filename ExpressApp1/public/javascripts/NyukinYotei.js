@@ -18,6 +18,10 @@ nyukinYotei.getYear = function(seikyu_date, sight_info) {
 // 請求日と締日を参照して、支払日を決定する
 nyukinYotei.getShiharaibi = function(seikyu_date, sight_info) {
   var month = 0;
+  if (sight_info.client_cd == 0) {
+    // 支払いサイト情報がない場合
+    return scheduleCommon.dateStringToDate(seikyu_date);
+  }
   // 請求日
   var sd = scheduleCommon.dateStringToDate(seikyu_date);
   // 締日を設定
