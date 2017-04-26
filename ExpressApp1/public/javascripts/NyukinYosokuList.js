@@ -7,6 +7,9 @@ $(function ()　{
   yosokuList.init();
   // 権限チェック
   yosokuList.checkAuth();
+  $.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
+	// 社員マスタからリストを取得する
+	scheduleCommon.getUserInfo("");
 	// 日付選択用設定
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
   // 検索ボタンのクリックイベント登録
@@ -87,6 +90,7 @@ yosokuList.createGrid_all = function() {
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "入金予測集計(全社)",
+    onSelectRow:yosokuList.onSelectNyukinList,
     loadComplete:yosokuList.loadCompleteUgiageSummary
 	});
 	jQuery("#yosoku_list").jqGrid('navGrid', '#yosoku_pager', { edit: false, add: false, del: false ,search:false});
@@ -146,7 +150,7 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "案件リスト",
-		onSelectRow:yosokuList.onSelectnyukinList,
+		onSelectRow:yosokuList.onSelectNyukinListDetail,
     loadComplete:yosokuList.loadCompleteUgiageList
 	});
 	jQuery("#yosoku_list_detail").jqGrid('navGrid', '#yosoku_detail_pager', { edit: false, add: false, del: false ,search:false});
@@ -255,7 +259,11 @@ yosokuList.loadCompleteUgiageSummary = function(event) {
   var rowNum = Number($("#yosoku_list").getGridParam('rowNum'));
   $("#yosoku_list").setGridHeight(rowNum * 32);
 };
-yosokuList.onSelectnyukinList = function(rowid) {
+yosokuList.onSelectNyukinList = function(rowid) {
+  var row = $("#yosoku_list").getRowData(rowid);
+  yosokuList.openEntryDialog(row);
+};
+yosokuList.onSelectNyukinListDetail = function(rowid) {
   var row = $("#yosoku_list_detail").getRowData(rowid);
   yosokuList.openEntryDialog(row);
 };
@@ -336,6 +344,9 @@ yosokuList.setQuoteInfo = function (quote_list, consumption_tax) {
 			$("#entryForm #test_middle_class_list").text(list);
 			tax = total_price * (consumption_tax / 100);
 			$("#entryForm #entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));
+      $("#entryForm #entry_amount_price_notax").val(scheduleCommon.numFormatter(total_price,11));	// 金額(税抜)
+			$("#entryForm #entry_amount_tax").val(scheduleCommon.numFormatter(tax,11));					// 消費税
+			$("#entryForm #entry_consumption_tax").val(rows[0].consumption_tax);							// 消費税率
 		}
 	}
 };
@@ -348,7 +359,7 @@ yosokuList.setEntryForm = function (entry) {
 	$("#entryForm #sales_person_id").val(entry.sales_person_id);	// 案件ステータス
 //	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
 	$("#entryForm #agent_cd").val(entry.agent_cd);					// 代理店コード
-	$("#entryForm #agent_name").val(entry.agent_name);				// 代理店名
+	$("#entryForm #agent_name").val(entry.agent_name_1);				// 代理店名
 	$("#entryForm #agent_division_cd").val(entry.agent_division_cd);		// 所属部署CD
 	$("#entryForm #agent_division_name").val(entry.agent_division_name);	// 所属部署名
 	$("#entryForm #agent_division_memo").val(entry.agent_division_memo);	// 所属部署メモ

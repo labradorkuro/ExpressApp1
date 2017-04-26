@@ -7,6 +7,9 @@ $(function ()　{
   uriageList.init();
   // 権限チェック
   uriageList.checkAuth();
+	$.datepicker.setDefaults($.datepicker.regional[ "ja" ]); // 日本語化
+	// 社員マスタからリストを取得する
+	scheduleCommon.getUserInfo("");
 	// 日付選択用設定
 	$(".datepicker").datepicker({ dateFormat: "yy/mm/dd" });
   // 検索ボタンのクリックイベント登録
@@ -91,6 +94,7 @@ uriageList.createGrid_all = function() {
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "売上集計(全社)",
+    onSelectRow:uriageList.onSelectUriageList,
     loadComplete:uriageList.loadCompleteUgiageSummary
 	});
 	jQuery("#uriage_list").jqGrid('navGrid', '#uriage_pager', { edit: false, add: false, del: false ,search:false});
@@ -152,7 +156,7 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "案件リスト",
-		onSelectRow:uriageList.onSelectUriageList,
+		onSelectRow:uriageList.onSelectUriageListDetail,
     loadComplete:uriageList.loadCompleteUgiageDetailList
 	});
 	jQuery("#uriage_list_detail").jqGrid('navGrid', '#uriage_detail_pager', { edit: false, add: false, del: false ,search:false});
@@ -270,6 +274,10 @@ uriageList.loadCompleteUgiageDetailList = function(event) {
     $("#uriage_list_detail").setGridHeight(rowNum * 32);
 };
 uriageList.onSelectUriageList = function(rowid) {
+  var row = $("#uriage_list").getRowData(rowid);
+  uriageList.openEntryDialog(row);
+};
+uriageList.onSelectUriageListDetail = function(rowid) {
   var row = $("#uriage_list_detail").getRowData(rowid);
   uriageList.openEntryDialog(row);
 };
@@ -348,6 +356,9 @@ uriageList.setQuoteInfo = function (quote_list, consumption_tax) {
 			$("#entryForm #test_middle_class_list").text(list);
 			tax = total_price * (consumption_tax / 100);
 			$("#entryForm #entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));
+      $("#entryForm #entry_amount_price_notax").val(scheduleCommon.numFormatter(total_price,11));	// 金額(税抜)
+			$("#entryForm #entry_amount_tax").val(scheduleCommon.numFormatter(tax,11));					// 消費税
+			$("#entryForm #entry_consumption_tax").val(rows[0].consumption_tax);							// 消費税率
 		}
 	}
 };
@@ -360,7 +371,7 @@ uriageList.setEntryForm = function (entry) {
 	$("#entryForm #sales_person_id").val(entry.sales_person_id);	// 案件ステータス
 //	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
 	$("#entryForm #agent_cd").val(entry.agent_cd);					// 代理店コード
-	$("#entryForm #agent_name").val(entry.agent_name);				// 代理店名
+	$("#entryForm #agent_name").val(entry.agent_name_1);				// 代理店名
 	$("#entryForm #agent_division_cd").val(entry.agent_division_cd);		// 所属部署CD
 	$("#entryForm #agent_division_name").val(entry.agent_division_name);	// 所属部署名
 	$("#entryForm #agent_division_memo").val(entry.agent_division_memo);	// 所属部署メモ
