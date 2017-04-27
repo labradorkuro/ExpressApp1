@@ -20,6 +20,9 @@ uriage_sum.sqlBillingInfoCount_all = 'SELECT '
     + 'entry_no,'
     + 'count(*) AS billing_count'
     + ' FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no';
+
+uriage_sum.sqlQuoteTotal = 'SELECT quote_info.entry_no,quote_info.quote_no,quote_info.consumption_tax,SUM(price) AS total_price FROM drc_sch.quote_specific_info left join drc_sch.quote_info on(quote_specific_info.entry_no = quote_info.entry_no)'
+      + ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_info.order_status = 2) group by quote_info.entry_no,drc_sch.quote_info.quote_no,quote_info.consumption_tax order by entry_no'
 // 案件に対する請求情報の件数を取得する(請求済のもの)
 uriage_sum.sqlBillingInfoCount_seikyu = 'SELECT '
     + 'entry_no,'
@@ -41,8 +44,8 @@ uriage_sum.sql_zensha_list_count = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-    + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
-    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
+    + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
     //+ " group by billing_info.entry_no";
 //  全社売上集計リスト
 uriage_sum.sql_zensha_list = "SELECT "
@@ -70,8 +73,8 @@ uriage_sum.sql_zensha_list = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-    + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
-    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total)  and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
+    + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price)  and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
     //+ " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
 // 全社売上集計（総合計）
 uriage_sum.sql_zensha_total = "SELECT "
