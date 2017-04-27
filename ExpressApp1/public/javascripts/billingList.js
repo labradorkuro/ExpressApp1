@@ -22,9 +22,14 @@ billingList.eventBind = function() {
 billingList.calc_nyukin_yotei_date = function() {
 	// 請求先の支払いサイト情報を取得する
 	var sight_info = {client_cd:0,shimebi:"",sight_id:0,kyujitsu_setting:0,memo:""};
-	nyukinYotei.getSightInfo(billingList.currentEntry.client_cd).then(function(data){
+	nyukinYotei.getSightInfo(billingList.currentEntry.currentEntry.client_cd).then(function(data){
 			if (data != "") {
 				sight_info = data;
+			} else {
+				$("#message").text("顧客の支払いサイト情報がありません。");
+				$("#message_dialog").dialog("option", { title: "支払いサイト情報" });
+				$("#message_dialog").dialog("open");
+				return;
 			}
 			// 請求日と締日を参照して、支払年月を決定する
 			var seikyu_date = $("#pay_planning_date").val();
