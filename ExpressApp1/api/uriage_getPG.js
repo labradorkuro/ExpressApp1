@@ -21,7 +21,7 @@ uriage_sum.sqlBillingInfoCount_all = 'SELECT '
     + 'count(*) AS billing_count'
     + ' FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no';
 
-uriage_sum.sqlQuoteTotal = 'SELECT quote_info.entry_no,quote_info.quote_no,quote_info.consumption_tax,SUM(price) AS total_price FROM drc_sch.quote_specific_info left join drc_sch.quote_info on(quote_specific_info.entry_no = quote_info.entry_no)'
+uriage_sum.sqlQuoteTotal = 'SELECT quote_info.entry_no,quote_info.quote_no,quote_info.consumption_tax,SUM(price) * (1.0 + (quote_info.consumption_tax / 100.0) ) AS total_price FROM drc_sch.quote_specific_info left join drc_sch.quote_info on(quote_specific_info.entry_no = quote_info.entry_no)'
       + ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_info.order_status = 2) group by quote_info.entry_no,drc_sch.quote_info.quote_no,quote_info.consumption_tax order by entry_no'
 // 案件に対する請求情報の件数を取得する(請求済のもの)
 uriage_sum.sqlBillingInfoCount_seikyu = 'SELECT '
@@ -84,13 +84,13 @@ uriage_sum.sql_zensha_total = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-    + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+    + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
     + " left join drc_sch.entry_info on(entry_info.entry_no = billing_info.entry_no)"
     + " left join drc_sch.test_large_class on(test_large_class.item_cd = entry_info.test_large_class_cd)"
     + " left join drc_sch.test_middle_class on(test_middle_class.large_item_cd = entry_info.test_large_class_cd and test_middle_class.item_cd = entry_info.test_middle_class_cd)"
     + " left join drc_sch.client_list on(client_list.client_cd = entry_info.client_cd)"
     + " left join drc_sch.client_list as agent_list on(agent_list.client_cd = entry_info.agent_cd)"
-    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
+    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
 
 
 // 試験課別売上集計(件数取得)
@@ -101,11 +101,11 @@ uriage_sum.sql_division_summary_count = "select count(*) as cnt from drc_sch.bil
   + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
   + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
   + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-  + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+  + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
   + " left join drc_sch.test_middle_class on(test_middle_class.large_item_cd = entry_info.test_large_class_cd and test_middle_class.item_cd = entry_info.test_middle_class_cd)"
   + " left join drc_sch.client_list on(client_list.client_cd = entry_info.client_cd)"
   + " left join drc_sch.client_list as agent_list on(agent_list.client_cd = entry_info.agent_cd)"
-  + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
+  + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
   //+ " group by entry_info.test_large_class_cd";
 
 // 試験課別売上集計
@@ -116,11 +116,11 @@ uriage_sum.sql_division_summary = "select entry_info.test_large_class_cd as divi
   + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
   + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
   + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-  + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+  + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
   + " left join drc_sch.test_middle_class on(test_middle_class.large_item_cd = entry_info.test_large_class_cd and test_middle_class.item_cd = entry_info.test_middle_class_cd)"
   + " left join drc_sch.client_list on(client_list.client_cd = entry_info.client_cd)"
   + " left join drc_sch.client_list as agent_list on(agent_list.client_cd = entry_info.agent_cd)"
-  + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
+  + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
   //+ " group by entry_info.test_large_class_cd,test_large_class.item_name";
 
 // 顧客別売上集計
@@ -131,11 +131,11 @@ uriage_sum.sql_client_summary_count = "select count(*) from drc_sch.billing_info
   + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
   + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
   + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-  + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+  + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
   + " left join drc_sch.test_large_class on(test_large_class.item_cd = entry_info.test_large_class_cd)"
   + " left join drc_sch.test_middle_class on(test_middle_class.large_item_cd = entry_info.test_large_class_cd and test_middle_class.item_cd = entry_info.test_middle_class_cd)"
   + " left join drc_sch.client_list as agent_list on(agent_list.client_cd = entry_info.agent_cd)"
-  + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
+  + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
   //+ " group by entry_info.client_cd,client_list.name_1";
 uriage_sum.sql_client_summary = "select entry_info.client_cd,client_list.name_1 as client,sum(pay_amount_total) as uriage_sum from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
@@ -144,11 +144,11 @@ uriage_sum.sql_client_summary = "select entry_info.client_cd,client_list.name_1 
   + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
   + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
   + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-  + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+  + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
   + " left join drc_sch.test_large_class on(test_large_class.item_cd = entry_info.test_large_class_cd)"
   + " left join drc_sch.test_middle_class on(test_middle_class.large_item_cd = entry_info.test_large_class_cd and test_middle_class.item_cd = entry_info.test_middle_class_cd)"
   + " left join drc_sch.client_list as agent_list on(agent_list.client_cd = entry_info.agent_cd)"
-  + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
+  + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
   //+ " group by entry_info.client_cd,client_list.name_1";
 
 //  試験課別案件リスト（件数取得）
@@ -162,8 +162,8 @@ uriage_sum.sql_division_list_count = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-    + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
-    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.test_large_class_cd = $3) and billing_info.delete_check = 0 group by billing_info.entry_no";
+    + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.test_large_class_cd = $3) and billing_info.delete_check = 0 group by billing_info.entry_no";
 //  試験課別案件リスト
 uriage_sum.sql_division_list = "SELECT "
     + "billing_info.entry_no,"
@@ -190,8 +190,8 @@ uriage_sum.sql_division_list = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-    + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
-    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.test_large_class_cd = $3) and billing_info.delete_check = 0"
+    + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.test_large_class_cd = $3) and billing_info.delete_check = 0"
     + " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1,"
     + " agent_list.name_1,user_list.name";
 
@@ -206,8 +206,8 @@ uriage_sum.sql_client_list_count = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-    + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
-    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.client_cd = $3) and billing_info.delete_check = 0 group by billing_info.entry_no";
+    + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.client_cd = $3) and billing_info.delete_check = 0 group by billing_info.entry_no";
 //  顧客別案件リスト
 uriage_sum.sql_client_list = "SELECT "
     + "billing_info.entry_no,"
@@ -234,8 +234,8 @@ uriage_sum.sql_client_list = "SELECT "
     + " left join (" + uriage_sum.sqlBillingInfoCount_seikyu + ") as subq2 on(subq2.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sql_last_seikyu_date + ") as subq3 on(subq3.entry_no = billing_info.entry_no)"
     + " left join (" + uriage_sum.sqlTotalAmount + ") as subq4 on(subq4.entry_no = billing_info.entry_no)"
-    + " left join (" + uriage_sum.sqlTotalComplete + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
-    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.complete_total) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.client_cd = $3) and billing_info.delete_check = 0"
+    + " left join (" + uriage_sum.sqlQuoteTotal + ") as subq5 on(subq5.entry_no = billing_info.entry_no)"
+    + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and (entry_info.client_cd = $3) and billing_info.delete_check = 0"
     + " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1,"
     + " agent_list.name_1,user_list.name";
 
