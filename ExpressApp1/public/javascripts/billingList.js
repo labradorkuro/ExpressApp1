@@ -206,11 +206,15 @@ billingList.createBillingListGrid = function () {
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "請求情報",
-		onSelectRow: billingList.onSelectBillingList
+		onSelectRow: billingList.onSelectBillingList,
+		loadComplete:billingList.loadComplete
 	});
 	jQuery("#billing_info_list").jqGrid('navGrid', '#billing_info_list_pager', { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize();
 };
+billingList.loadComplete = function(data) {
+		$("#edit_billing").css("display","none");
+}
 // 請求先選択イベント
 billingList.onSelectBillingList = function (rowid) {
 	billingList.currentBilling = $("#billing_info_list").getRowData(rowid);
