@@ -266,7 +266,8 @@ quoteInfo.openQuoteFormDialog = function (event) {
 			$("#billing_person").val(entry.agent_person_name + " " + entry.agent_person_compellation);
 		}
 	}
-
+	$("#order_date").val(entry.order_accepted_date);
+	$("#period_date").val(entry.report_limit_date);
 	$("#drc_division_name").text("  試験課 " + entry.test_large_class_name);
 	$("#drc_test_person").text("  担当者 " + scheduleCommon.personFormatter( entry.sales_person_id));
 	$("#quote_title").val(entry.entry_title);
@@ -1318,7 +1319,8 @@ quoteInfo.changeOrderDate = function(event) {
 			max = term;
 		}
 	}
-	scheduleCommon.calcPeriod(od, max - 1, function(period){
+	if (max > 1) max -= 1;
+	scheduleCommon.calcPeriod(od, max, function(period){
 		// 納期を表示する
 		$("#period_date").val(scheduleCommon.getDateString( period,'{0}/{1}/{2}'));
 	});

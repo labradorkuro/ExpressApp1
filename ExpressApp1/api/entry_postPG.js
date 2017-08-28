@@ -977,8 +977,8 @@ var updateEntryStatus = function(connection,quote) {
 	var entry_status = "";
 	if (quote.order_status == 2) {
 		entry_status = "03";
-		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 WHERE entry_no = $2';
-		query = connection.query(sql, [entry_status, quote.entry_no]);	// 案件ステータス:03　依頼
+		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 ,report_limit_date = $3 ,order_accepted_date = $4 WHERE entry_no = $2';
+		query = connection.query(sql, [entry_status, quote.entry_no,quote.period_date,quote.order_date]);	// 案件ステータス:03　依頼
 		query.on('end', function (result, err) {
 		});
 	}

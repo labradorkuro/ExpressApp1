@@ -7,14 +7,14 @@ form#test_itemForm(method="post",action="javascript:return false;")
 			td(width="25%").form_title 試験項目CD
 			td(width="25%")
 				input#large_item_cd(type="hidden")
-				input#item_cd(type="text" name="item_cd" maxlength="4" required="required" pattern="^[0-9A-Za-z]+$" placeholder="項目CD(半角英数字、必須)")
+				input#item_cd(type="text" name="item_cd" maxlength="4" required="required" pattern="^[0-9A-Za-z]+$" placeholder="項目CD(半角英数字、必須)" title="")
 			td(width="25%").form_title 項目名
 			td(width="25%") 
 				input#item_name(type="text" name="item_name" maxlength="64" required="required" placeholder="項目名(必須)")
 		tr#period_info
 			td.form_title 通常納期
 			td
-				input#period_term(type="text" name="period_term" maxlength="4" required="required" pattern="^[0-9]+$" placeholder="通常納期(半角英数字、必須)")
+				input#period_term(type="text" name="period_term" maxlength="4" required="required" pattern="^[0-9]+$" placeholder="通常納期(半角数字、必須)" title="")
 			td.form_title 納期の単位
 			td 
 				select#period_unit(name="period_unit")
