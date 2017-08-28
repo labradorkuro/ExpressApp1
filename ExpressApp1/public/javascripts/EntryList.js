@@ -58,7 +58,8 @@ $(function ()　{
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_quote").bind('click' , {entryList:entryList}, quoteInfo.openQuoteFormDialog);
-
+  // 受注日の入力
+  $("#order_date").bind('change', quoteInfo.changeOrderDate);
 	// クライアント選択ダイアログを表示するイベント処理を登録する
   $("#client_name").bind('click' , {}, entryList.openClientListDialog);
   $("#client_name").bind('change' , {}, entryList.checkClientName);

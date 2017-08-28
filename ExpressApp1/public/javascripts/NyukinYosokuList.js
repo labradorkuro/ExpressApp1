@@ -100,14 +100,14 @@ yosokuList.createGrid_all = function() {
 	scheduleCommon.changeFontSize();
   yosokuList.getUriageTotal(sd,ed);
 };
+$.get('/nyukin_yosoku_total?start_date=' + start_date + '&end_date=' + end_date,function(response) {
+  if (response.nyukin_yosoku_total) {
+    $("#yosoku_total").text('合計：' + yosokuList.numFormatterC(response.nyukin_yosoku_total) + '円');
+  }
+});
 
 // 売上集計総合計の取得
 yosokuList.getUriageTotal = function(start_date, end_date) {
-    $.get('/nyukin_yosoku_total?start_date=' + start_date + '&end_date=' + end_date,function(response) {
-        if (response.nyukin_yosoku_total) {
-          $("#yosoku_total").text('合計：' + yosokuList.numFormatterC(response.nyukin_yosoku_total) + '円');
-        }
-    });
 }
 // 案件リストの表示用グリッド生成
 yosokuList.createGrid_list = function(list_kind,division_cd) {

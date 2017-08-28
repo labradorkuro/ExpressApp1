@@ -83,6 +83,7 @@ var test_item_middle_get_list = function (req, res) {
 		+ 'item_cd,'
 		+ 'item_name,'
 		+ 'memo,'
+		+ 'period_term,period_unit,'// 2017.07.14
 		+ 'test_middle_class.delete_check,'
 		+ "to_char(test_middle_class.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'test_middle_class.created_id,'
@@ -163,6 +164,7 @@ var test_item_middle_get_detail = function (req, res) {
 		+ 'item_cd,'
 		+ 'item_name,'
 		+ 'memo,'
+		+ 'period_term,period_unit,'	// 2017.07.14
 		+ 'delete_check,'
 		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'created_id,'

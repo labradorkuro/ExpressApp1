@@ -22,6 +22,11 @@ exports.holiday_search = function(req, res) {
   holiday_master.holiday_search(req, res);
 }
 
+// 指定された期間に含まれる休日データを検索する
+exports.holiday_search_term = function(req, res) {
+  holiday_master.holiday_search_term(req, res);
+}
+
 var holiday_master = holiday_master || {}
 
 
@@ -47,6 +52,16 @@ holiday_master.list_all = function(req, res) {
 // 指定された日を含む休日データを検索する
 holiday_master.holiday_search = function(req, res) {
   var attr = {where:{start_date:{$lt:req.query.target_date},end_date:{$gt:req.query.target_date},delete_check:0}};
+  holiday.schema('drc_sch').findAll(attr).then(function(hi){
+    res.send(hi);
+  }).catch(function(error){
+    console.log(error);
+    res.send("");
+  });
+}
+// 指定された期間に含まれる休日データを検索する
+holiday_master.holiday_search_term = function(req, res) {
+  var attr = {where:{start_date:{$gte:req.query.start_date},end_date:{$lte:req.query.end_date},delete_check:0}};
   holiday.schema('drc_sch').findAll(attr).then(function(hi){
     res.send(hi);
   }).catch(function(error){

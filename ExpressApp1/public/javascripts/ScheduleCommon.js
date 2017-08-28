@@ -43,8 +43,8 @@ scheduleCommon.getUserInfo = function (ref) {
 	xhr.responseType = 'json';
 	if (ref == "_ref") {
 		xhr.onload = scheduleCommon.onloadUserReqRef;
-	} else {
 		xhr.onload = scheduleCommon.onloadUserReq;
+	} else {
 	}
 	xhr.send();
 };
@@ -130,9 +130,9 @@ scheduleCommon.personFormatter = function (cellval, options, rowObject) {
 	for (var i in scheduleCommon.user_list) {
 		if (cellval === scheduleCommon.user_list[i].uid) {
 			name = scheduleCommon.user_list[i].name;
+		}
 			break;
 		}
-	}
 	return name;
 };
 scheduleCommon.pay_resultFormatter = function(cellval, options, rowObject) {
@@ -223,6 +223,7 @@ scheduleCommon.getDay = function(year,month,date) {
 	var d = new Date(year,month - 1, date ,0,0,0,0);
 	return d.getDay();
 };
+
 // 特定の日に日数を加算した日を取得する
 scheduleCommon.addDayCount = function(year,month,date,count) {
 	var d = new Date(year,month - 1 ,date ,0,0,0,0);
@@ -261,6 +262,43 @@ scheduleCommon.getDateCount = function (start, end) {
 	return d;
 };
 
+// 201707_issue
+// 指定された日数を加算した納期を取得する
+// base_date:起算日
+// period_term:日数
+// period_unit:日数の単位 0:営業日、1:週
+scheduleCommon.calcPeriod = function(base_date,period_term,cb) {
+	// 加算した納期を取得する
+	// 期間中に土日休日があるかチェックしてその分ずらす
+	var period_date = scheduleCommon.checkWeekend(base_date,period_term);
+
+	// 休日リストに登録されている休日が含まれるかチェックする
+	$.get('/holiday_search_term?start_date=' + base_date + "&end_date=" + period_date,function(response) {
+		response.forEach(function(holiday,index){
+			var cnt = scheduleCommon.getDateCount(scheduleCommon.dateStringToDate(holiday.start_date),scheduleCommon.dateStringToDate( holiday.end_date));
+			period_date = scheduleCommon.addDate(period_date, cnt);
+		});
+		// callback
+		cb(period_date);
+	});
+　
+}
+// 週単位から日単位に変換
+scheduleCommon.weekToDays = function(date_count) {
+	return (5 * date_count);
+}
+// 与えられた期間中の曜日を調べて土日の場合はその分後ろへずらす
+scheduleCommon.checkWeekend = function(start_date, count) {
+	for(var i = 1;i <= count;i++) {
+		var td = scheduleCommon.addDate(start_date, i);
+		var day = td.getDay();
+		if ((day == 0) || (day == 6)) {
+			// 日曜日または土曜日
+			count++;
+		}
+	}
+	return scheduleCommon.addDate(start_date, count);
+}
 
 // 前月
 scheduleCommon.prevMonth = function (start_date, disp_span) {
@@ -315,6 +353,16 @@ scheduleCommon.item_typeFormatter = function (cellval, options, rowObject) {
 		name = "大分類";
 	} else if (cellval == 2) {
 		name = "中分類";
+	}
+	return name;
+};
+// 納期の単位
+scheduleCommon.period_unitFormatter = function (cellval, options, rowObject) {
+	var name = "";
+	if (cellval === 0) {
+		name = "営業日";
+	} else if (cellval == 1) {
+		name = "週";
 	}
 	return name;
 };

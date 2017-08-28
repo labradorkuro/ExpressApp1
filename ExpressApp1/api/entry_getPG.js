@@ -936,6 +936,8 @@ exports.quote_specific_get_list = function (req, res) {
 				+ 'quote_detail_no,'
 				+ 'quote_specific_info.test_middle_class_cd,'
 				+ 'test_middle_class_name,'
+				+ 'test_middle_class.period_term,'	// 2017.08
+				+ 'test_middle_class.period_unit,'	// 2017.08
 				//+ 'test_middle_class.item_name AS test_middle_class_name,'
 				+ 'unit,'
 				+ 'unit_price,'
@@ -948,11 +950,11 @@ exports.quote_specific_get_list = function (req, res) {
 				+ 'to_char(quote_specific_info.updated,\'YYYY/MM/DD HH24:MI:SS\') AS updated,'
 				+ 'quote_specific_info.updated_id'
 				+ ' FROM drc_sch.quote_specific_info'
-				//+ ' LEFT JOIN drc_sch.test_middle_class ON (quote_specific_info.test_middle_class_cd = test_middle_class.item_cd AND test_middle_class.large_item_cd = $3)'
+				+ ' LEFT JOIN drc_sch.test_middle_class ON (quote_specific_info.test_middle_class_cd = test_middle_class.item_cd AND test_middle_class.large_item_cd = $3)'
 				+ ' WHERE specific_delete_check = 0 AND (entry_no = $1 AND quote_no = $2) ORDER BY quote_detail_no'
 			// SQL実行
-			//var params = [req.params.entry_no, req.params.quote_no, req.query.large_item_cd];
-			var params = [req.params.entry_no, req.params.quote_no];
+			var params = [req.params.entry_no, req.params.quote_no, req.query.large_item_cd];
+			//var params = [req.params.entry_no, req.params.quote_no];
 			var result = { page: 1, total: 20, records: 0, rows: [] };
 			var rows = [];
 			// SQL実行

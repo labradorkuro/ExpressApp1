@@ -46,7 +46,7 @@ test_itemList.buttonEnabledForMiddle = function(kind) {
 test_itemList.createFormDialog = function () {
 	$('#test_item_dialog').dialog({
 		autoOpen: false,
-		width: 800,
+		width: 700,
 		height: 360,
 		title: '試験分類登録',
 		closeOnEscape: false,
@@ -118,10 +118,12 @@ test_itemList.createTestMiddleGrid = function (large_item_cd) {
 		url: '/test_item_get/' + 'middle' + '?large_item_cd=' + large_item_cd + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['項目CD','名称','備考','作成日','作成者','更新日','更新者'],
+		colNames: ['項目CD','名称','通常納期','納期の単位','備考','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'item_cd', index: 'item_cd', width: 80, align: "center" },
 			{ name: 'item_name', index: 'item_name', width: 200, align: "center" },
+			{ name: 'period_term', index: 'period_term', width: 80, align: "right" },
+			{ name: 'period_unit', index: 'period_unit', width: 100, align: "center" ,formatter:scheduleCommon.period_unitFormatter},
 			{ name: 'memo', index: 'memo', width: 200, align: "center" },
 			{ name: 'created', index: 'created', width: 130, align: "center" },
 			{ name: 'created_id', index: 'created_id', align: "center", formatter: scheduleCommon.personFormatter },
@@ -179,12 +181,14 @@ test_itemList.openFormDialog = function (event) {
 		$("#item_cd").prop("readonly",false);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+		$("#period_info").css('display','none');
 	} else if (event.target.id == "add_test_item_middle") {
 		// 中分類の追加
 		title = "試験中分類";
 		if (large_item) {
 			// 大分類CD
 			$("#large_item_cd").val(large_item.item_cd);
+			$("#period_info").css('display','');
 		}
 		$("#item_cd").prop("readonly",false);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
@@ -197,6 +201,7 @@ test_itemList.openFormDialog = function (event) {
 		$("#item_cd").prop("readonly",true);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		$("#period_info").css('display','none');
 	} else if (event.target.id == "edit_test_item_middle") {
 		// 中分類の編集
 		title = "試験中分類";
@@ -209,6 +214,7 @@ test_itemList.openFormDialog = function (event) {
 		$("#item_cd").prop("readonly",true);
 		$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("enable");
+		$("#period_info").css('display','');
 	}
 	$("#test_item_dialog").dialog("option",{title:title});
 	$("#test_item_dialog").dialog("open");
@@ -286,10 +292,16 @@ test_itemList.onloadSaveMiddle = function (e) {
 
 // フォームにセットする
 test_itemList.setTest_itemForm = function (test_item) {
+	var unit = 0;
 	$("#large_item_cd").val(test_item.large_item_cd);	// 大分類項目CD
 	$("#item_cd").val(test_item.item_cd);		// 項目CD
 	$("#item_name").val(test_item.item_name);	// 項目名称
 	$("#item_type").val(test_item.item_type);	// 分類区分
+	$("#period_term").val(test_item.period_term);	// 通常納期
+	if (test_item.period_unit === "週") {
+		unit = 1;
+	}
+	$("#period_unit").val(unit);	// 通常納期単位
 	$("#memo").val(test_item.memo);				// 備考
 	// 削除フラグ
 	if (test_item.delete_check == 1) {
@@ -304,6 +316,8 @@ test_itemList.clearTest_item = function () {
 	test_item.item_CD = '';		// 項目CD
 	test_item.item_name = '';	// 項目名称
 	test_item.item_type = 2;	// 分類区分
+	test_item.period_unit = 0;	// 通常納期
+	test_item.period_unit = 0;	// 納期単位
 	test_item.memo = '';		// 備考
 	test_item.delete_check = '';	// 削除フラグ
 	test_item.created = "";		// 作成日
@@ -401,9 +415,17 @@ test_itemList.inputCheck = function () {
 					err = "項目名が未入力です";
 					break;
 				}
+				else if (ctl.id == "period_term") {
+					err = "通常納期が未入力です";
+					break;
+				}
 			} else if (!ctl.validity.valid) {
 				if (ctl.id == "item_cd") {
 					err = "項目CDの入力値を確認して下さい";
+					break;
+				}
+				else if (ctl.id == "period_term") {
+					err = "通常納期の入力値を確認して下さい";
 					break;
 				}
 			}

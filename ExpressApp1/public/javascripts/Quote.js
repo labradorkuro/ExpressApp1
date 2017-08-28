@@ -334,6 +334,9 @@ quoteInfo.addSpecificInfoToTable = function(specific_list) {
 			}
 			$("#test_middle_class_cd_" + no).val(rows[i].test_middle_class_cd);
 			$("#test_middle_class_name_" + no).val(rows[i].test_middle_class_name);
+			// 通常納期を計算するための情報を追加
+			$("#period_term_" + no).val(rows[i].period_term);	// 2017.08
+			$("#period_unit_" + no).val(rows[i].period_unit);	// 2017.08
 			$("#unit_" + no).val(rows[i].unit);
 			$("#unit_price_" + no).val(quoteInfo.numFormatter(Number(rows[i].unit_price)));
 			$("#quantity_" + no).val(rows[i].quantity);
@@ -419,6 +422,8 @@ quoteInfo.clearQuote = function () {
 	quote.quote_form_memo = "";
 	quote.quote_delete_check = "0";
 	quote.consumption_tax = quoteInfo.currentConsumption_tax;	// 消費税率のデフォルトセット
+	quote.period_date = "";
+	quote.order_date = "";
 	return quote;
 };
 
@@ -447,6 +452,8 @@ quoteInfo.setQuoteFormData = function (quote) {
 		$("#estimate_delete_check").prop("checked", true);
 	}
 	$("#estimateForm #consumption_tax").val(quote.consumption_tax);	// 消費税率
+	$("#period_date").val(quote.period_date);	// 通常納期
+	$("#order_date").val(quote.order_date);		// 受注日
 };
 // 見積データの保存
 quoteInfo.saveQuote = function (kind) {
@@ -667,9 +674,13 @@ quoteInfo.addRowCreate = function(no) {
 	var name_1 = $("<input type='hidden' id='quote_detail_no_" + no + "' name='quote_detail_no_" + no + "' value='" + no + "' +/>");
 	var name_2 = $("<input type='hidden' id='" + id + "' name='" + id + "'/>");
 	var name_3 = $("<input type='text' class='test_middle_class' id='test_middle_class_name_" + no + "' name='test_middle_class_name_" + no + "' size='20' placeholder='試験中分類'required='true'/>");
+	var period_term = $("<input type='hidden' id='period_term_" + no + "' name='period_term_" + no + "'/>");
+	var period_unit = $("<input type='hidden' id='period_unit_" + no + "' name='period_unit_" + no + "'/>");
 	$(td).append(name_1);
 	$(td).append(name_2);
 	$(td).append(name_3);
+	$(td).append(period_term);
+	$(td).append(period_unit);
 	$(row).append(td);
 
 	id = "quantity_" + no;
@@ -767,6 +778,8 @@ quoteInfo.getMeisaiNo = function(id) {
 quoteInfo.selectMiddleClass = function(no) {
 	$("#test_middle_class_cd_" + no).val(test_itemList.currentTestItemMiddle.item_cd);
 	$("#test_middle_class_name_" + no).val(test_itemList.currentTestItemMiddle.item_name);
+	$("#period_term_" + no).val(test_itemList.currentTestItemMiddle.period_term);
+	$("#period_unit_" + no).val(test_itemList.currentTestItemMiddle.period_unit);
 	return true;
 };
 
@@ -1271,4 +1284,42 @@ quoteInfo.selectMemoList = function(event) {
 	$("#quote_form_memo").val(memo);
 	$("#quote_form_memo_select").val("");
 
+};
+
+// 受注日の入力イベント
+quoteInfo.changeOrderDate = function(event) {
+	var od = scheduleCommon.dateStringToDate($("#order_date").val());
+	// 現在の行数を取得する（見出し行を含む）
+	var rows = $("#meisai_table tbody").children().length;
+	var total = 0;
+	var max = 0;
+	for(var i = 1;i <= rows - 1;i++) {
+		var term = 0;
+		var unit = 0;
+		var p = $("#period_term_" + i).val();
+		var u = $("#period_unit_" + i).val();
+		if (p != "") {
+			// 数値チェックしてから変換して合計する
+			if (scheduleCommon.isNumber( p )) {
+				term = Number(p);
+			}
+		}
+		if (u != "") {
+			if (scheduleCommon.isNumber( u )) {
+				unit = Number(u);
+			}
+		}
+		if (unit == 1) {
+			// 週の場合は日数に変換する（1週5日）
+			term = 5 * term;
+		}
+		if (max < term) {
+			// 期間が長い方を記録する
+			max = term;
+		}
+	}
+	scheduleCommon.calcPeriod(od, max - 1, function(period){
+		// 納期を表示する
+		$("#period_date").val(scheduleCommon.getDateString( period,'{0}/{1}/{2}'));
+	});
 };

@@ -7,6 +7,7 @@ var tools = require('../tools/tool');
 // データのPOST
 exports.test_item_post = function (req, res) {
 	var test_item = test_item_check(req.body);
+	console.log(test_item);
 	if (test_item.item_cd === "") {
 		res.send(test_item);
 	} else {
@@ -68,16 +69,16 @@ var insertTest_item_large = function (connection, test_item, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.test_large_class(' 
-			+ 'item_cd,'		// 項目CD 
+	var sql = 'INSERT INTO drc_sch.test_large_class('
+			+ 'item_cd,'		// 項目CD
 			+ 'item_name,'		// 項目名称
 			+ 'memo,'			// 備考
 			+ 'delete_check,'	// 削除フラグ
 			+ 'created,'		// 作成日
 			+ 'created_id,'		// 作成者ID
-			+ 'updated,'		// 更新日 
+			+ 'updated,'		// 更新日
 			+ 'updated_id'		// 更新者ID
-			+ ') values (' 
+			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8)'
 			;
 		// SQL実行
@@ -105,7 +106,7 @@ var insertTest_item_large = function (connection, test_item, req, res) {
 var updateTest_item_large = function (connection, test_item, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.test_large_class SET ' 
+	var sql = 'UPDATE drc_sch.test_large_class SET '
 			+ 'item_name = $1,'		// 項目名称
 			+ 'memo = $2,'			// 備考
 			+ 'delete_check = $3,'	// 削除フラグ
@@ -120,7 +121,7 @@ var updateTest_item_large = function (connection, test_item, req, res) {
 			updated_id,			// 更新者ID
 			updated,
 			test_item.item_cd
-		], function (err, results) { 
+		], function (err, results) {
 			connection.end();
 			if (err) {
 				console.log(err);
@@ -137,18 +138,19 @@ var insertTest_item_middle = function (connection, test_item, req, res) {
 	var created_id = req.session.uid;
 	var updated = null;
 	var updated_id = "";
-	var sql = 'INSERT INTO drc_sch.test_middle_class(' 
+	var sql = 'INSERT INTO drc_sch.test_middle_class('
 			+ 'large_item_cd,'	// 大分類CD
-			+ 'item_cd,'		// 項目CD 
+			+ 'item_cd,'		// 項目CD
 			+ 'item_name,'		// 項目名称
 			+ 'memo,'			// 備考
+			+ 'period_term, period_unit,'	// 2017.07.14 通常納期、単位
 			+ 'delete_check,'	// 削除フラグ
 			+ 'created,'		// 作成日
 			+ 'created_id,'		// 作成者ID
-			+ 'updated,'		// 更新日 
+			+ 'updated,'		// 更新日
 			+ 'updated_id'		// 更新者ID
-			+ ') values (' 
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9)'
+			+ ') values ('
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
@@ -156,6 +158,7 @@ var insertTest_item_middle = function (connection, test_item, req, res) {
 			test_item.item_cd,
 			test_item.item_name,
 			test_item.memo,
+			test_item.period_term, test_item.period_unit,	// 2017.07.14
 			test_item.delete_check,
 			created,			// 作成日
 			created_id,			// 作成者ID
@@ -176,9 +179,10 @@ var insertTest_item_middle = function (connection, test_item, req, res) {
 var updateTest_item_middle = function (connection, test_item, req, res) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
-	var sql = 'UPDATE drc_sch.test_middle_class SET ' 
+	var sql = 'UPDATE drc_sch.test_middle_class SET '
 			+ 'item_name = $1,'		// 項目名称
 			+ 'memo = $2,'			// 備考
+			+ 'period_term = $8, period_unit = $9,'	// 2017.07.14
 			+ 'delete_check = $3,'	// 削除フラグ
 			+ 'updated_id = $4,'	// 更新者ID
 			+ 'updated = $5'
@@ -191,8 +195,9 @@ var updateTest_item_middle = function (connection, test_item, req, res) {
 			updated_id,			// 更新者ID
 			updated,
 			test_item.item_cd,
-			test_item.large_item_cd
-		], function (err, results) { 
+			test_item.large_item_cd,
+			test_item.period_term, test_item.period_unit
+		], function (err, results) {
 			connection.end();
 			if (err) {
 				console.log(err);

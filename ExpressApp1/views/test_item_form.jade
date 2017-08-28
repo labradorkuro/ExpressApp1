@@ -4,17 +4,26 @@
 form#test_itemForm(method="post",action="javascript:return false;")
 	table
 		tr
-			td.form_title 試験項目CD
-			td 
+			td(width="25%").form_title 試験項目CD
+			td(width="25%")
 				input#large_item_cd(type="hidden")
 				input#item_cd(type="text" name="item_cd" maxlength="4" required="required" pattern="^[0-9A-Za-z]+$" placeholder="項目CD(半角英数字、必須)")
-			td.form_title 項目名
-			td 
+			td(width="25%").form_title 項目名
+			td(width="25%") 
 				input#item_name(type="text" name="item_name" maxlength="64" required="required" placeholder="項目名(必須)")
+		tr#period_info
+			td.form_title 通常納期
+			td
+				input#period_term(type="text" name="period_term" maxlength="4" required="required" pattern="^[0-9]+$" placeholder="通常納期(半角英数字、必須)")
+			td.form_title 納期の単位
+			td 
+				select#period_unit(name="period_unit")
+					option(value="0") 営業日
+					option(value="1") 週
 		tr
 			td.form_title 備考
 			td(colspan="3") 
-				textarea#memo(name="memo" placeholder="メモ" maxlength="64" cols="30" rows="4")
+				textarea#memo(name="memo" placeholder="メモ" maxlength="64" cols="40" rows="4")
 	hr
 	table
 		tr

@@ -90,7 +90,7 @@ form#estimateForm(method="post",action="javascript:return false;")
 		table.quoto_info_table
 			tr
 				td.form_title 見積書PDF発行状況
-				td
+				td(colspan="3")
 					label
 						input#quote_submit_check_no(type="radio" name="quote_submit_check" value="1" checked="true")
 						| 未発行（情報登録のみ）
@@ -99,7 +99,7 @@ form#estimateForm(method="post",action="javascript:return false;")
 						| 発行済
 			tr
 				td.form_title 受注ステータス
-				td
+				td(colspan="3")
 					label#order_status_1
 						input#order_status_no(type="radio" name="order_status" value="1" checked="true")
 						| 商談中
@@ -107,8 +107,16 @@ form#estimateForm(method="post",action="javascript:return false;")
 						input#order_status_yes(type="radio" name="order_status" value="2")
 						| 受注確定
 			tr
-				td.form_title 被験者数
+				td.form_title 受注日
 				td
+					input.datepicker#order_date(type="text" name="order_date" )
+				td.form_title 通常納期
+				td
+					input#period_date(type="text" name="period_date" readonly="true")
+
+			tr
+				td.form_title 被験者数
+				td(colspan="3")
 					input.num_type#estimate_monitors_num(type="number" name="estimate_monitors_num" min="0" max="1000" size="5" pattern="[0-9]{1,3}" required="true")
 		table
 			tr
