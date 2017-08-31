@@ -590,6 +590,8 @@ var insertQuote = function (connection, quote, req, res) {
 //		connection.end();
 		// 明細行処理
 		getSpecificInfo(connection,quote,req,res, 1);
+		// 請求情報の作成
+		createBillingInfo(quote);
 		res.send(quote);
 	});
 	query.on('error', function (error) {
@@ -671,6 +673,8 @@ var updateQuote = function (connection,quote, req, res) {
 
 		// 明細行処理
 		getSpecificInfo(connection,quote,req,res, 1);
+		// 請求情報の作成
+		createBillingInfo(quote);
 		res.send(quote);
 	});
 	query.on('error', function (error) {
@@ -983,4 +987,320 @@ var updateEntryStatus = function(connection,quote) {
 		});
 	}
 
+};
+// 請求情報の作成
+var createBillingInfo = function(quote,created_id) {
+	console.log(quote);
+	// 案件情報の取得
+	getEntryInfo(quote,created_id);
+};
+// 請求情報の作成
+var callbackGetEntryInfo = function(entry, quote, created_id) {
+	var billing = clearBilling();
+	// 請求先情報の取得
+	var client_info = getEntryClientInfo(entry);
+	billing = setDefaultClientData(billing, entry);
+	// 請求情報登録
+	billing.entry_no = entry.entry_no;
+	billing.client_info = client_info;
+	// 請求予定日は報告書提出期限にする
+	billing.pay_planning_date = entry.report_limit_date;
+	// 請求金額のセット
+	billing.pay_amount = Number(quote.quote_total_price.trim().replace(',','')) - Number(quote.consumption.trim().replace(',',''));
+	billing.pay_amount_total = Number(quote.quote_total_price.trim().replace(',',''));
+	billing.pay_amount_tax = Number(quote.consumption.trim().replace(',',''));
+	billing = billing_check(billing);
+	console.log(billing);
+	pg.connect(connectionString, function (err, connection) {
+		insertBilling(connection, billing,created_id);
+	});
+}
+var billing_check = function (billing) {
+	// 日付項目チェック
+	billing.nyukin_yotei_date = tools.dateCheck(billing.nyukin_yotei_date);
+	billing.pay_planning_date = tools.dateCheck(billing.pay_planning_date);
+	billing.pay_complete_date = tools.dateCheck(billing.pay_complete_date);
+	// 税抜請求額
+	if (billing.pay_amount) {
+		billing.pay_amount = Number(billing.pay_amount);
+	} else {
+		billing.pay_amount = 0;
+	}
+	// 消費税
+	if (billing.pay_amount_tax) {
+		billing.pay_amount_tax = Number(billing.pay_amount_tax);
+	} else {
+		billing.pay_amount_tax = 0;
+	}
+	// 請求額合計
+	if (billing.pay_amount_total) {
+		billing.pay_amount_total = Number(billing.pay_amount_total);
+	} else {
+		billing.pay_amount_total = 0;
+	}
+	return billing;
+};
+
+var insertBilling = function (connection, billing, created_id) {
+	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
+	var updated = null;
+	var updated_id = "";
+	var sql = 'INSERT INTO drc_sch.billing_info('
+			+ "entry_no,"				// 案件番号
+			+ "billing_number,"			// 請求番号（経理用）
+			+ "pay_planning_date,"		// 請求日
+			+ "nyukin_yotei_date,"		// 入金予定日
+			+ "pay_complete_date,"		// 入金日
+			+ "pay_amount,"				// 税抜請求金額
+			+ "pay_amount_tax,"			// 消費税
+			+ "pay_amount_total,"		// 請求金額合計
+			+ "pay_complete,"			// 入金額
+			+ "pay_result,"				// 請求区分
+			+ "client_cd,"				// クライアントCD
+			+ "client_name,"			// クライアント名
+			+ "client_division_cd,"		// クライアント部署CD
+			+ "client_division_name,"	// クライアント部署名
+			+ "client_person_id,"		// クライアント担当者ID
+			+ "client_person_name,"		// クライアント担当者名
+			+ "client_info,"			// 請求先情報（住所、電話、Fax）
+			+ "memo,"					// 備考
+			+ 'delete_check,'			// 削除フラグ
+			+ 'created,'				// 作成日
+			+ 'created_id,'				// 作成者ID
+			+ 'updated,'				// 更新日
+			+ 'updated_id'				// 更新者ID
+			+ ') values ('
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)'
+			;
+		// SQL実行
+		var query = connection.query(sql, [
+			billing.entry_no,		// 案件番号
+			billing.billing_number,			// 請求番号
+			billing.pay_planning_date,		// 請求日
+			billing.nyukin_yotei_date,		// 入金予定日
+			billing.pay_complete_date,		// 入金日
+			billing.pay_amount,				// 請求金額
+			billing.pay_amount_tax,			// 消費税
+			billing.pay_amount_total,		// 請求金額合計
+			billing.pay_complete,			// 入金額
+			billing.pay_result,				// 請求区分
+			billing.client_cd,				// クライアントCD
+			billing.client_name,			// クライアント名
+			billing.client_division_cd,		// クライアント部署CD
+			billing.client_division_name,	// クライアント部署名
+			billing.client_person_id,		// クライアント担当者ID
+			billing.client_person_name,		// クライアント担当者名
+			billing.client_info,			// 請求先情報（住所、電話、Fax）
+			billing.memo,					// 備考
+			billing.delete_check,			// 削除フラグ
+			created,						// 作成日
+			created_id,						// 作成者ID
+			updated,						// 更新日
+			updated_id						// 更新者ID
+		], function (err, result) {
+			connection.end();
+			if (err) {
+				console.log(err);
+			} else {
+			}
+		})
+
+};
+
+var setDefaultClientData = function(billing, entry) {
+	billing.client_cd = entry.client_cd;
+	billing.client_name = entry.client_name_1;
+	billing.client_division_cd = entry.client_division_cd;
+	billing.client_division_name = entry.client_division_name;
+	billing.client_person_id = entry.client_person_id;
+	billing.client_person_name = entry.client_person_name;
+	return billing;
+};
+// 案件情報から請求先情報を取得
+var getEntryClientInfo = function(entry) {
+	var address1 = getAddress1_for_entry(entry);
+	var address2 = getAddress2_for_entry(entry);
+	var tel = getTel_for_entry(entry);
+	var fax = getFax_for_entry(entry);
+	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
+					+ " \ntel : " + tel + " \nfax : " + fax
+	return client_info;
+}
+// 住所１取得（案件情報から取得）
+var getAddress1_for_entry = function(entry) {
+	var address1 = "";
+	if ((entry.client_address_1 != null) && (entry.client_address_1 != "")) {
+		address1 = entry.client_address_1;
+	}
+	if ((entry.client_division_address_1 != null) && (entry.client_division_address_1 != "")) {
+		address1 = entry.client_division_address_1;
+	}
+	return address1;
+}
+// 住所2取得(案件情報から取得)
+var getAddress2_for_entry = function(entry) {
+	var address2 = "";
+	if ((entry.client_address_2 != null) && (entry.client_address_2 != "")) {
+		address2 = entry.client_address_2;
+	}
+	if ((entry.client_division_address_2 != null) && (entry.client_division_address_2 != "")) {
+		address2 = entry.client_division_address_2;
+	}
+	return address2;
+}
+// 電話番号取得(案件情報から取得)
+var getTel_for_entry = function(entry) {
+	var tel = "";
+	if ((entry.client_tel_no != null) && (entry.client_tel_no != "")) {
+		tel = entry.client_tel_no;
+	}
+	if ((entry.client_division_tel_no != null) && (entry.client_division_tel_no != "")) {
+		tel = entry.client_division_tel_no;
+	}
+	return tel;
+}
+// FAX番号取得(案件情報から取得)
+var getFax_for_entry = function(entry) {
+	var fax = "";
+	if ((entry.client_fax_no != null) && (entry.client_fax_no != "")) {
+		fax = entry.client_fax_no;
+	}
+	if ((entry.client_division_fax_no != null) && (entry.client_division_fax_no != "")) {
+		fax = entry.client_division_fax_no;
+	}
+	return fax;
+}
+
+// 案件データ（案件No）取得
+var getEntryInfo = function (quote,created_id) {
+	var sql = 'SELECT '
+		+ 'entry_no,'															// 案件Ｎｏ
+		+ 'quote_no,'															// 見積番号
+		+ "to_char(inquiry_date, 'YYYY/MM/DD') AS inquiry_date,"				// 問合せ日
+		+ 'entry_status,'														// 案件ステータス
+		+ 'sales_person_id,'													// 営業担当者ID
+//		+ "to_char(quote_issue_date,'YYYY/MM/DD') AS quote_issue_date,"
+		+ 'agent_cd,'															// 代理店CD
+		+ "agent_division_cd,"													// 代理店部署CD
+		+ "agent_person_id,"													// 代理店担当者ID
+		+ 'agent_list.name_1 AS agent_name_1,'									// 代理店名称1
+		+ 'agent_list.name_2 AS agent_name_2,'									// 代理店名称2
+		+ "agent_division_list.address_1 AS agent_address_1,"					// 代理店部署住所１
+		+ "agent_division_list.address_2 AS agent_address_2,"					// 代理店部署住所２
+		+ "agent_division_list.name AS agent_division_name,"					// 代理店部署名
+		+ "agent_division_list.memo AS agent_division_memo,"					// 代理店部署メモ
+		+ "agent_person_list.name AS agent_person_name,"						// 代理店担当者名
+		+ "agent_person_list.memo AS agent_person_memo,"						// 代理店担当者メモ
+		+ "agent_person_list.compellation AS agent_person_compellation,"
+		+ "entry_info.client_cd,"												// 得意先CD
+		+ "entry_info.client_division_cd,"										// 得意先部署CD
+		+ "entry_info.client_person_id,"										// 得意先担当者ID
+		+ "client_list.name_1 AS client_name_1,"								// 得意先名１
+		+ "client_list.name_2 AS client_name_2,"								// 得意先名２
+		+ "client_list.tel_no AS client_tel_no,"
+		+ "client_list.fax_no AS client_fax_no,"
+		+ "client_list.address_1 AS client_address_1,"					// 得意先住所１
+		+ "client_list.address_2 AS client_address_2,"					// 得意先住所２
+		+ "client_division_list.name AS client_division_name,"					// 得意先部署名
+		+ "client_division_list.memo AS client_division_memo,"					// 得意先部署メモ
+		+ "client_division_list.address_1 AS client_division_address_1,"
+		+ "client_division_list.address_2 AS client_division_address_2,"
+		+ "client_division_list.tel_no AS client_division_tel_no,"
+		+ "client_division_list.fax_no AS client_division_fax_no,"
+		+ "client_person_list.name AS client_person_name,"						// 得意先担当者名
+		+ "client_person_list.memo AS client_person_memo,"						// 得意先担当者メモ
+		+ "client_person_list.compellation AS client_person_compellation,"
+		+ 'entry_info.test_large_class_cd,'										// 試験大分類CD
+		+ 'test_large_class.item_name AS test_large_class_name,'				// 試験大分類名
+		+ 'entry_info.test_middle_class_cd,'									// 試験中分類CD
+		+ 'test_middle_class.item_name AS test_middle_class_name,'				// 試験中分類名
+		+ 'entry_title,'														// 試験タイトル
+		+ 'order_type,'															// 受託区分
+		+ 'outsourcing_cd,'														// 受託先CD
+		+ 'out_list.name_1 AS outsourcing_name,'								// 受託先CD
+		+ "to_char(order_accepted_date,'YYYY/MM/DD') AS order_accepted_date,"	// 受注日
+		+ 'order_accept_check,'													// 仮受注チェック
+		+ 'acounting_period_no,'												// 会計期No
+		+ 'test_person_id,'														// 試験担当者ID
+		+ 'entry_amount_price,'													// 案件合計金額
+		+ 'entry_amount_billing,'												// 案件請求合計金額
+		+ 'entry_amount_deposit,'												// 案件入金合計金額
+		+ 'to_char(report_limit_date,\'YYYY/MM/DD\') AS report_limit_date,'							// 報告書提出期限
+		+ 'to_char(report_submit_date,\'YYYY/MM/DD\') AS report_submit_date,'						// 報告書提出日
+		+ 'to_char(prompt_report_limit_date_1,\'YYYY/MM/DD\') AS prompt_report_limit_date_1,'		// 速報提出期限１
+		+ 'to_char(prompt_report_submit_date_1,\'YYYY/MM/DD\') AS prompt_report_submit_date_1,'		// 速報提出日１
+		+ 'to_char(prompt_report_limit_date_2,\'YYYY/MM/DD\') AS prompt_report_limit_date_2,'		// 速報提出期限２
+		+ 'to_char(prompt_report_submit_date_2,\'YYYY/MM/DD\') AS prompt_report_submit_date_2,'		// 速報提出日２
+		+ 'consumption_tax,'															//
+		+ 'entry_memo,'																	// メモ
+		+ "entry_info.delete_check,"													// 削除フラグ
+		+ "entry_info.delete_reason,"													// 削除理由
+		+ "to_char(entry_info.input_check_date,'YYYY/MM/DD') AS input_check_date,"		// 入力日
+		+ "entry_info.input_check,"														// 入力完了チェック
+		+ "entry_info.input_operator_id,"												// 入力者ID
+		+ "to_char(entry_info.confirm_check_date,'YYYY/MM/DD') AS confirm_check_date,"	// 確認日
+		+ "entry_info.confirm_check,"													// 確認完了チェック
+		+ "entry_info.confirm_operator_id,"												// 確認者ID
+		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"		// 作成日
+		+ 'entry_info.created_id,'												// 作成者ID
+		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"		// 更新日
+		+ 'entry_info.updated_id'												// 更新者ID
+		+ ' FROM drc_sch.entry_info'
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
+		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
+		+ ' LEFT JOIN drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd)'
+		+ ' LEFT JOIN drc_sch.client_list AS agent_list ON(entry_info.agent_cd = agent_list.client_cd)'
+		+ ' LEFT JOIN drc_sch.itakusaki_list AS out_list ON(entry_info.outsourcing_cd = out_list.client_cd)'
+		+ ' LEFT JOIN drc_sch.client_division_list ON(entry_info.client_cd = client_division_list.client_cd AND entry_info.client_division_cd = client_division_list.division_cd)'
+		+ ' LEFT JOIN drc_sch.client_person_list ON(entry_info.client_cd = client_person_list.client_cd AND entry_info.client_division_cd = client_person_list.division_cd AND entry_info.client_person_id = client_person_list.person_id)'
+		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON(entry_info.agent_cd = agent_division_list.client_cd AND entry_info.agent_division_cd = agent_division_list.division_cd)'
+		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON(entry_info.agent_cd = agent_person_list.client_cd AND entry_info.agent_division_cd = agent_person_list.division_cd AND entry_info.agent_person_id = agent_person_list.person_id)'
+		+ ' WHERE entry_no = $1 ';
+	var entry = {};
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		}
+		var query = connection.query(sql, [quote.entry_no]);
+		var rows = [];
+		query.on('row', function (row) {
+			rows.push(row);
+		});
+		query.on('end', function(result,err) {
+			for (var i in rows) {
+				entry = rows[i];
+			}
+			connection.end();
+			callbackGetEntryInfo(entry, quote, created_id);
+		});
+		query.on('error', function (error) {
+			console.log(error);
+		});
+	});
+};
+// 請求情報のクリア
+var clearBilling = function() {
+	var billing = {
+			billing_no:'',
+			billing_number:'',
+			pay_planning_date:'',
+			nyukin_yotei_date:'',
+			pay_complete_date:'',
+			pay_amount:0,
+			pay_amount_tax:0,
+			pay_amount_total:0,
+			pay_complete:0,
+			pay_result:0,
+			memo:'',
+			client_cd:'',
+			client_name:'',
+			client_division_cd:'',
+			client_division_name:'',
+			client_person_id:'',
+			client_person_name:'',
+			client_info: '',
+			delete_check:0
+	};
+	return billing;
 };
