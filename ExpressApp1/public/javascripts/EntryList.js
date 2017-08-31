@@ -1069,8 +1069,22 @@ entryList.onSelectEntry = function (rowid) {
 		quoteInfo.createQuoteSpecificGrid(row.entry_no,0);
 		entryList.currentEntryNo = row.entry_no;
 		entryList.currentEntry = row;
-		// 請求情報表示ボタンを表示する
-		$("#entry_billing").css("display","inline");
+    $.ajax({
+  		url: '/order_status_check?entry_no=' + row.entry_no,
+  		cache: false,
+  		dataType: 'json',
+  		success: function (response) {
+  			if (response.records == 0) {
+          // 請求情報表示ボタンを表示する
+      		$("#entry_billing").css("display","none");
+  			} else {
+          // 請求情報表示ボタンを表示する
+      		$("#entry_billing").css("display","inline");
+
+        }
+  		}
+  	});
+
 		// 権限チェック
 		if (entryList.auth_entry_edit >= 1) {
 			$("#edit_entry").css("display","inline");

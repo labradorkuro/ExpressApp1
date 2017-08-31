@@ -366,7 +366,9 @@ scheduleCommon.period_unitFormatter = function (cellval, options, rowObject) {
 	}
 	return name;
 };
-
+scheduleCommon.numFormatterC = function(num) {
+	return scheduleCommon.numFormatter(num,10);
+}
 // 数値のカンマ区切り
 scheduleCommon.numFormatter = function(num,keta) {
 	var sp = "";

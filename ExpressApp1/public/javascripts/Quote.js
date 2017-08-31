@@ -279,8 +279,6 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('PDF出力後に登録')").button("disable");
 		$(".ui-dialog-buttonpane button:contains('登録')").button("disable");
 	}
-	// 受注確定になっている見積があるかチェックして「受注確定」の表示・非表示を設定してから入力画面を開く
-	quote = $("#quote_list").getRowData(quoteInfo.currentQuoteRowId);
 	quoteInfo.checkOrderStatus(quote);
 };
 
@@ -516,6 +514,14 @@ quoteInfo.quoteInputCheck = function (kind) {
 			}
 		}
 	}
+	// 受注確定時に受注日が入っているかチェックする
+	if ($('#order_status_yes').prop("checked")) {
+		if ($('#order_date').val() == "") {
+			err = "受注日を入力してください";
+			result = false;
+		}
+	}
+
 	if (!result) {
 		$("#message").text(err);
 		$("#message_dialog").dialog("option", { title: "入力エラー" });

@@ -990,9 +990,21 @@ var updateEntryStatus = function(connection,quote) {
 };
 // 請求情報の作成
 var createBillingInfo = function(quote,created_id) {
-	console.log(quote);
-	// 案件情報の取得
-	getEntryInfo(quote,created_id);
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.billing_info WHERE entry_no = $1 AND delete_check = 0';
+	pg.connect(connectionString, function (err, connection) {
+		connection.query(sql_count, [quote.entry_no], function (err, results) {
+			if (err) {
+				console.log(err);
+			} else {
+				// 取得した件数
+				if (results.rows[0].cnt == 0) {
+					// 案件情報の取得
+					getEntryInfo(quote,created_id);
+				}
+			}
+			connection.end();
+		});
+	});
 };
 // 請求情報の作成
 var callbackGetEntryInfo = function(entry, quote, created_id) {
@@ -1006,11 +1018,10 @@ var callbackGetEntryInfo = function(entry, quote, created_id) {
 	// 請求予定日は報告書提出期限にする
 	billing.pay_planning_date = entry.report_limit_date;
 	// 請求金額のセット
-	billing.pay_amount = Number(quote.quote_total_price.trim().replace(',','')) - Number(quote.consumption.trim().replace(',',''));
-	billing.pay_amount_total = Number(quote.quote_total_price.trim().replace(',',''));
-	billing.pay_amount_tax = Number(quote.consumption.trim().replace(',',''));
+	billing.pay_amount = Number(quote.quote_total_price.trim().replace(/,/g,'')) - Number(quote.consumption.trim().replace(/,/g,''));
+	billing.pay_amount_total = Number(quote.quote_total_price.trim().replace(/,/g,''));
+	billing.pay_amount_tax = Number(quote.consumption.trim().replace(/,/g,''));
 	billing = billing_check(billing);
-	console.log(billing);
 	pg.connect(connectionString, function (err, connection) {
 		insertBilling(connection, billing,created_id);
 	});

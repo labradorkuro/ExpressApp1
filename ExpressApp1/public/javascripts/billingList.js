@@ -172,9 +172,9 @@ billingList.createBillingListGrid = function () {
 			{ name: 'billing_number', index: 'billing_number', width: 80, align: "center" },
 			{ name: 'pay_planning_date', index: 'pay_planning_date', width: 80, align: "center" },
 			{ name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 100, align: "center" },
-			{ name: 'pay_amount', index: 'pay_amount', width: 120, align: "right" },
-			{ name: 'pay_amount_tax', index: 'pay_amount_tax', width: 80, align: "right" },
-			{ name: 'pay_amount_total', index: 'pay_amount_total', width: 120, align: "right" },
+			{ name: 'pay_amount', index: 'pay_amount', width: 120, align: "right" ,formatter:scheduleCommon.numFormatterC},
+			{ name: 'pay_amount_tax', index: 'pay_amount_tax', width: 80, align: "right" ,formatter:scheduleCommon.numFormatterC},
+			{ name: 'pay_amount_total', index: 'pay_amount_total', width: 120, align: "right" ,formatter:scheduleCommon.numFormatterC},
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "right" },
 			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
@@ -262,7 +262,11 @@ billingList.openBillingFormDialog = function (event) {
 billingList.openEditDialog = function() {
 	billingList.status = "edit";
 	//billingList.currentBilling.client_info = client_info;
-	billingList.setBillingForm(billingList.currentBilling);
+	var billing = billingList.currentBilling;
+	billing.pay_amount = billing.pay_amount.trim().replace(/,/g,'');
+	billing.pay_amount_tax = billing.pay_amount_tax.trim().replace(/,/g,'');
+	billing.pay_amount_total = billing.pay_amount_total.trim().replace(/,/g,'');
+	billingList.setBillingForm(billing);
 	$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 	// 権限チェック
 	if (entryList.auth_entry_edit == 2) {
