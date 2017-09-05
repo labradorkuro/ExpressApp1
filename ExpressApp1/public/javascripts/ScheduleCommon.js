@@ -43,8 +43,8 @@ scheduleCommon.getUserInfo = function (ref) {
 	xhr.responseType = 'json';
 	if (ref == "_ref") {
 		xhr.onload = scheduleCommon.onloadUserReqRef;
-		xhr.onload = scheduleCommon.onloadUserReq;
 	} else {
+		xhr.onload = scheduleCommon.onloadUserReq;
 	}
 	xhr.send();
 };
