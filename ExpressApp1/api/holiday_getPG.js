@@ -74,16 +74,14 @@ holiday_master.holiday_search_term = function(req, res) {
 holiday_master.list_grid = function(req, res) {
   var result = { page: 1, total: 1, records: 0, rows: [] };
   var pg_params = tools.getPagingParams(req);
-  var attr_count = {attributes:[sequelize.fn('count',sequelize.col('holiday_id'))],where:{delete_check:req.query.delete_check}};
+  var attr_count = {attributes:[[sequelize.fn('count',sequelize.col('holiday_id')),'cnt']],where:{delete_check:req.query.delete_check}};
   var attr = {attributes:['holiday_id',
   [sequelize.fn('to_char', sequelize.col('start_date'), 'YYYY/MM/DD'), 'start_date'],
   [sequelize.fn('to_char', sequelize.col('end_date'),   'YYYY/MM/DD'), 'end_date'],
   'holiday_name','holiday_memo','delete_check','create_id','update_id'],where:{delete_check:req.query.delete_check}};
-  holiday.schema('drc_sch').findAll(attr_count).then(function(count) {
+  holiday.schema('drc_sch').findAll(attr_count).then(function(results) {
     // 取得した件数からページ数を計算する
-    if (count) {
-      result.total = Math.ceil(count / pg_params.limit);
-    }
+    result.total = Math.ceil(results[0].dataValues['cnt'] / pg_params.limit);
     result.page = pg_params.page;
     attr.order = pg_params.sidx + " " + pg_params.sord;
     attr.limit = pg_params.limit;
