@@ -590,8 +590,10 @@ var insertQuote = function (connection, quote, req, res) {
 //		connection.end();
 		// 明細行処理
 		getSpecificInfo(connection,quote,req,res, 1);
-		// 請求情報の作成
-		createBillingInfo(quote);
+		if (quote.order_status == 2) {
+			// 請求情報の作成
+			createBillingInfo(quote,created_id);
+		}
 		res.send(quote);
 	});
 	query.on('error', function (error) {
@@ -673,8 +675,14 @@ var updateQuote = function (connection,quote, req, res) {
 
 		// 明細行処理
 		getSpecificInfo(connection,quote,req,res, 1);
-		// 請求情報の作成
-		createBillingInfo(quote);
+		if (quote.order_status == 2) {
+			// 請求情報の作成
+			createBillingInfo(quote,updated_id);
+		} else {
+			// 請求情報の削除
+			deleteBillingInfo(quote,updated_id);
+			
+		}
 		res.send(quote);
 	});
 	query.on('error', function (error) {
@@ -1117,6 +1125,17 @@ var insertBilling = function (connection, billing, created_id) {
 		})
 
 };
+// 請求情報の削除（フラグON）
+var deleteBillingInfo = function(quote,updated_id) {
+	var sql = 'UPDATE drc_sch.billing_info SET delete_check = 1 , updated_id = $2 WHERE entry_no = $1 and pay_result = 0';
+	pg.connect(connectionString, function (err, connection) {
+		query = connection.query(sql, [quote.entry_no, updated_id]);	// 案件ステータス:03　依頼
+		query.on('end', function (result, err) {
+			console.log(err);
+		});
+	});
+
+}
 
 var setDefaultClientData = function(billing, entry) {
 	billing.client_cd = entry.client_cd;

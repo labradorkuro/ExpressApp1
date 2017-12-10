@@ -1326,8 +1326,10 @@ quoteInfo.changeOrderDate = function(event) {
 		}
 	}
 	if (max > 1) max -= 1;
-	scheduleCommon.calcPeriod(od, max, function(period){
-		// 納期を表示する
-		$("#period_date").val(scheduleCommon.getDateString( period,'{0}/{1}/{2}'));
-	});
+	if (max > 0) {	// 通常納期がマスタに未設定の場合は納期を設定しない
+		scheduleCommon.calcPeriod(od, max, function(period){
+			// 納期を表示する
+			$("#period_date").val(scheduleCommon.getDateString( period,'{0}/{1}/{2}'));
+		});
+		}
 };

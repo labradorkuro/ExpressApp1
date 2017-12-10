@@ -866,7 +866,8 @@ var entry_get_detail = function (req, res) {
 
 // 受注確定の見積があるか確認する
 exports.order_status_check = function(req, res) {
-	var sql = "select quote_no from drc_sch.quote_info where entry_no = $1 AND order_status = 2 AND quote_delete_check = 0";
+//	var sql = "select quote_no from drc_sch.quote_info where entry_no = $1 AND order_status = 2 AND quote_delete_check = 0";
+	var sql = "select quote_no from drc_sch.quote_info where entry_no = $1 AND quote_delete_check = 0";
 	// SQL実行
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
