@@ -24,11 +24,11 @@
     "serve-favicon": "*",
     "config": "^1.19.0",
     "stylus": "*",
-    "nodemailer":"*",
-    "nodemailer-smtp-transport":"*",
-    "fullcalendar":"*"
+    "nodemailer": "*",
+    "nodemailer-smtp-transport": "*",
+    "fullcalendar": "*"
   },
   "scripts": {
-      "start": "node app.js"
+    "start": "node app.js"
   }
 }

@@ -1069,22 +1069,8 @@ entryList.onSelectEntry = function (rowid) {
 		quoteInfo.createQuoteSpecificGrid(row.entry_no,0);
 		entryList.currentEntryNo = row.entry_no;
 		entryList.currentEntry = row;
-    $.ajax({
-  		url: '/order_status_check?entry_no=' + row.entry_no,
-  		cache: false,
-  		dataType: 'json',
-  		success: function (response) {
-  			if (response.records == 0) {
-          // 請求情報表示ボタンを表示する
-      		$("#entry_billing").css("display","none");
-  			} else {
-          // 請求情報表示ボタンを表示する
-      		$("#entry_billing").css("display","inline");
-
-        }
-  		}
-  	});
-
+		// 案件の受注状況チェックして請求情報参照ボタンを表示するか決める
+		entryList.checkOrder();
 		// 権限チェック
 		if (entryList.auth_entry_edit >= 1) {
 			$("#edit_entry").css("display","inline");
@@ -1092,6 +1078,29 @@ entryList.onSelectEntry = function (rowid) {
 		entryList.requestEntryData(row.entry_no);
 	}
 
+};
+
+// 案件の受注状況チェックして請求情報参照ボタンを表示するか決める
+entryList.checkOrder = function() {
+	// 請求情報表示ボタンを表示する
+	$("#entry_billing").css("display","inline");
+/** 2018.01.22 受注の有無にかかわらず参照ボタンを表示するように仕様変更。 
+	$.ajax({
+		url: '/order_status_check?entry_no=' + row.entry_no,
+		cache: false,
+		dataType: 'json',
+		success: function (response) {
+			if (response.records == 0) {
+				// 請求情報表示ボタンを表示する
+				$("#entry_billing").css("display","none");
+			} else {
+				// 請求情報表示ボタンを表示する
+				$("#entry_billing").css("display","inline");
+
+			}
+		}
+	});
+**/
 };
 
 // 削除分の表示チェックイベント（案件）

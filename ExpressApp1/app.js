@@ -347,6 +347,6 @@ Object.keys(models).forEach(function(modelName) {
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-  var msg = '基幹システム(Build:2017.09.01)';
+  var msg = '基幹システム(Build:2018.01.22)';
   console.log(msg);
 });
