@@ -21,12 +21,12 @@ form#entryForm(method="post",action="javascript:return false;")
 				input.datepicker#inquiry_date(type="text" name="inquiry_date" placeholder="日付選択" size="12")
 			td.form_title_s ステータス
 			td 
-				select#entry_status(name="entry_status")
-					option(value="01" selected="true") 引合
-					option(value="02") 見積
-					option(value="03") 依頼
-					option(value="04") 完了
-					option(value="05") 失注
+				input#entry_status_str(type="text" name="entry_status_str" value="" readonly=true)
+				input#entry_status(type="hidden" name="entry_status" value="")
+			td.form_title_s
+				label
+					input#shicchu_check(type="checkbox" name="shicchu_check" value="0")
+					| 失注
 	hr
 	table
 		tr

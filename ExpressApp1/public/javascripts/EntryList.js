@@ -104,6 +104,7 @@ $(function ()　{
 	quoteInfo.eventBind();
 	// 請求情報入力画面のイベント処理登録
 	billingList.eventBind();
+	$("#shicchu_check").bind('click', entryList.checkShicchu);
 });
 
 //
@@ -554,10 +555,11 @@ entryList.openEntryDialog = function (event) {
       $(".ui-dialog-buttonpane button:contains('複写')").button("disable");
 		}
 	} else if ($(event.target).attr('id') == 'add_entry') {
-		// 追加ボタンの処理
+		$("#entry_status").val("01");
+	// 追加ボタンの処理
 		// 権限チェック
 		if (entryList.auth_entry_add == 2) {
-			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
+			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");			
 		} else {
 			$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		}
@@ -897,6 +899,17 @@ entryList.setEntryForm = function (entry) {
 	$("#quote_no").val(entry.quote_no);					// 見積番号
 	$("#inquiry_date").val(entry.inquiry_date);			// 問合せ日
 	$("#entry_status").val(entry.entry_status);			// 案件ステータス
+  var status_str = "";
+  if (entry.entry_status == "01") status_str = "引合";
+  if (entry.entry_status == "02") status_str = "見積";
+  if (entry.entry_status == "03") status_str = "依頼";
+  if (entry.entry_status == "04") status_str = "完了";
+	if (entry.entry_status == "05") {
+		status_str = "失注";
+		$("#shicchu_check").prop('checked',true);
+	}
+	$("#entry_status_str").val(status_str);
+	
 	$("#sales_person_id").val(entry.sales_person_id);	// 案件ステータス
 //	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
 	$("#agent_cd").val(entry.agent_cd);					// 代理店コード
@@ -1381,4 +1394,11 @@ entryList.entrySearchClear = function() {
 	// 案件リストのグリッド
   entryList.createGridSub(req_url);
 
+}
+
+entryList.checkShicchu = function(event) {
+		if ($("#shicchu_check").prop('checked')) {
+			$("#entry_status").val("05");	// 失注
+			$("#entry_status_str").val("失注");
+		}
 }

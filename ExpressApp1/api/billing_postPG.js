@@ -20,6 +20,7 @@ exports.billing_post = function (req, res) {
 				if (err) {
 					console.log(err);
 				} else {
+					updateEntryStatus(connection,billing);
 					if (results.rows.length == 0) {
 						// 請求データのDB追加
 						insertBilling(connection,billing, req, res);
@@ -243,4 +244,18 @@ var checkPayResult = function(billing) {
 	    console.log(error);
 	  });
 	}
+};
+
+// entry_noの案件情報の案件ステータスを依頼に変更する
+var updateEntryStatus = function(connection,billing) {
+	var entry_status = "";
+	if (billing.pay_result == 3) {	// 入金確認済み
+		entry_status = "04";
+		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 WHERE entry_no = $2';
+		query = connection.query(sql, [entry_status, billing.billing_entry_no]);	// 案件ステータス:04　完了
+		query.on('end', function (result, err) {
+			console.log(err);
+		});
+	}
+
 };
