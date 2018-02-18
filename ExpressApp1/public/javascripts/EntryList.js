@@ -1398,7 +1398,12 @@ entryList.entrySearchClear = function() {
 
 entryList.checkShicchu = function(event) {
 		if ($("#shicchu_check").prop('checked')) {
+			$("#status_prev").val($("#entry_status").val());
+			$("#status_str_prev").val($("#entry_status_str").val());
 			$("#entry_status").val("05");	// 失注
 			$("#entry_status_str").val("失注");
+		} else {
+			$("#entry_status").val($("#status_prev").val());
+			$("#entry_status_str").val($("#status_str_prev").val());
 		}
 }
