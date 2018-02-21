@@ -704,6 +704,8 @@ var quote_check = function (quote) {
 	// 日付
 	quote.quote_date = dateCheck(quote.quote_date);
 	quote.expire_date = dateCheck(quote.expire_date);
+	quote.period_date = datecheck(quote.period_date);
+	quote.order_date = datecheck(quote.order_date);
 	return quote;
 };
 
@@ -986,6 +988,7 @@ var checkEntryStatus = function(entry) {
 
 // entry_noの案件情報の案件ステータスを依頼に変更する
 var updateEntryStatus = function(connection,quote) {
+	quote = quote_check(quote);
 	var entry_status = "";
 	if (quote.order_status == 1) {	// 商談中
 		entry_status = "02";
