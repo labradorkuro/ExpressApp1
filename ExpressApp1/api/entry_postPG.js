@@ -473,6 +473,7 @@ var entry_check = function (entry) {
 
 // 見積情報のPOST
 exports.quote_post = function (req, res) {
+	console.log("quote_post");
 	var quote = quote_check(req.body);
 	pg.connect(connectionString,function (err, connection) {
 		// 案件ステータスを更新する
@@ -672,6 +673,7 @@ var updateQuote = function (connection,quote, req, res) {
 	]);
 	query.on('end', function(result,err) {
 //		connection.end();
+		console.log("updateQuote");
 
 		// 明細行処理
 		getSpecificInfo(connection,quote,req,res, 1);
@@ -684,9 +686,6 @@ var updateQuote = function (connection,quote, req, res) {
 			
 		}
 		res.send(quote);
-	});
-	query.on('error', function (error) {
-		console.log(sql + ' ' + error);
 	});
 };
 
@@ -705,8 +704,8 @@ var quote_check = function (quote) {
 	// 日付
 	quote.quote_date = dateCheck(quote.quote_date);
 	quote.expire_date = dateCheck(quote.expire_date);
-	//quote.period_date = datecheck(quote.period_date);
-	//quote.order_date = datecheck(quote.order_date);
+	quote.period_date = dateCheck(quote.period_date);
+	quote.order_date = dateCheck(quote.order_date);
 	return quote;
 };
 
@@ -989,12 +988,14 @@ var checkEntryStatus = function(entry) {
 
 // entry_noの案件情報の案件ステータスを依頼に変更する
 var updateEntryStatus = function(connection,quote) {
+	console.log("updateEntryStatus");
 	var entry_status = "";
 	if (quote.order_status == 1) {	// 商談中
 		entry_status = "02";
 		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 WHERE entry_no = $2';
 		var query = connection.query(sql, [entry_status, quote.entry_no]);	// 案件ステータス:02　見積
 		query.on('end', function (result, err) {
+			console.log(err);
 		});
 	}
 	else if (quote.order_status == 2) {	// 受注確定
@@ -1002,12 +1003,14 @@ var updateEntryStatus = function(connection,quote) {
 		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 ,report_limit_date = $3 ,order_accepted_date = $4 WHERE entry_no = $2';
 		var query = connection.query(sql, [entry_status, quote.entry_no,quote.period_date,quote.order_date]);	// 案件ステータス:03　依頼
 		query.on('end', function (result, err) {
+			console.log(err);
 		});
 	}
 
 };
 // 請求情報の作成
 var createBillingInfo = function(quote,created_id) {
+	console.log("createBilling");
 	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.billing_info WHERE entry_no = $1 AND delete_check = 0';
 	pg.connect(connectionString, function (err, connection) {
 		connection.query(sql_count, [quote.entry_no], function (err, results) {
