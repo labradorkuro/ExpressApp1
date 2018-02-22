@@ -691,6 +691,7 @@ var updateQuote = function (connection,quote, req, res) {
 };
 
 var quote_check = function (quote) {
+	console.log(quote);
 	// 数値
 	quote.estimate_monitors_num = Number(quote.estimate_monitors_num);	// 被験者数
 	quote.quote_submit_check = Number(quote.quote_submit_check);	// 見積書提出済フラグ
@@ -704,8 +705,8 @@ var quote_check = function (quote) {
 	// 日付
 	quote.quote_date = dateCheck(quote.quote_date);
 	quote.expire_date = dateCheck(quote.expire_date);
-	quote.period_date = datecheck(quote.period_date);
-	quote.order_date = datecheck(quote.order_date);
+	//quote.period_date = datecheck(quote.period_date);
+	//quote.order_date = datecheck(quote.order_date);
 	return quote;
 };
 
@@ -988,19 +989,18 @@ var checkEntryStatus = function(entry) {
 
 // entry_noの案件情報の案件ステータスを依頼に変更する
 var updateEntryStatus = function(connection,quote) {
-	quote = quote_check(quote);
 	var entry_status = "";
 	if (quote.order_status == 1) {	// 商談中
 		entry_status = "02";
 		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 WHERE entry_no = $2';
-		query = connection.query(sql, [entry_status, quote.entry_no]);	// 案件ステータス:02　見積
+		var query = connection.query(sql, [entry_status, quote.entry_no]);	// 案件ステータス:02　見積
 		query.on('end', function (result, err) {
 		});
 	}
 	else if (quote.order_status == 2) {	// 受注確定
 		entry_status = "03";
 		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 ,report_limit_date = $3 ,order_accepted_date = $4 WHERE entry_no = $2';
-		query = connection.query(sql, [entry_status, quote.entry_no,quote.period_date,quote.order_date]);	// 案件ステータス:03　依頼
+		var query = connection.query(sql, [entry_status, quote.entry_no,quote.period_date,quote.order_date]);	// 案件ステータス:03　依頼
 		query.on('end', function (result, err) {
 		});
 	}
