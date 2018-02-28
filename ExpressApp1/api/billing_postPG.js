@@ -81,6 +81,11 @@ var billing_check = function (billing) {
 	} else {
 		billing.pay_result = 0;
 	}
+	if (billing.billing_kind) {
+		billing.billing_kind = Number(billing.billing_kind);
+	} else {
+		billing.billing_kind = 0;
+	}
 	return billing;
 };
 var insertBilling = function (connection, billing, req, res) {
@@ -107,13 +112,32 @@ var insertBilling = function (connection, billing, req, res) {
 			+ "client_person_name,"		// クライアント担当者名
 			+ "client_info,"			// 請求先情報（住所、電話、Fax）
 			+ "memo,"					// 備考
+			+ "agent_cd,"				// 代理店CD
+			+ "agent_name,"				// 代理店名
+			+ "agent_division_cd,"		// 代理店部署CD
+			+ "agent_division_name,"	// 代理店部署名
+			+ "agent_person_id,"		// 代理店担当者ID
+			+ "agent_person_name,"		// 代理店担当者名
+			+ "agent_info,"				// 請求先情報（住所、電話、Fax）
+			+ "agent_memo,"				// 備考
+			+ "etc_cd,"					// その他請求先CD
+			+ "etc_name,"				// その他請求先名
+			+ "etc_division_cd,"		// その他請求先部署CD
+			+ "etc_division_name,"		// その他請求先部署名
+			+ "etc_person_id,"			// その他請求先担当者ID
+			+ "etc_person_name,"		// その他請求先担当者名
+			+ "etc_info,"				// 請求先情報（住所、電話、Fax）
+			+ "etc_memo,"				// 備考
+			+ "billing_kind,"			// 請求先種別
 			+ 'delete_check,'			// 削除フラグ
 			+ 'created,'				// 作成日
 			+ 'created_id,'				// 作成者ID
 			+ 'updated,'				// 更新日
 			+ 'updated_id'				// 更新者ID
 			+ ') values ('
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)'
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'
+			+ '$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,'
+			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
@@ -135,6 +159,23 @@ var insertBilling = function (connection, billing, req, res) {
 			billing.billing_client_person_name,		// クライアント担当者名
 			billing.billing_client_info,			// 請求先情報（住所、電話、Fax）
 			billing.billing_memo,					// 備考
+			billing.billing_agent_cd,				// クライアントCD
+			billing.billing_agent_name,				// 代理店名
+			billing.billing_agent_division_cd,		// 代理店部署CD
+			billing.billing_agent_division_name,	// 代理店部署名
+			billing.billing_agent_person_id,		// 代理店担当者ID
+			billing.billing_agent_person_name,		// 代理店担当者名
+			billing.billing_agent_info,				// 請求先情報（住所、電話、Fax）
+			billing.billing_agent_memo,				// 備考
+			billing.billing_etc_cd,					// その他請求先CD
+			billing.billing_etc_name,				// その他請求先名
+			billing.billing_etc_division_cd,		// その他請求先部署CD
+			billing.billing_etc_division_name,		// その他請求先部署名
+			billing.billing_etc_person_id,			// その他請求先担当者ID
+			billing.billing_etc_person_name,		// その他請求先担当者名
+			billing.billing_etc_info,				// 請求先情報（住所、電話、Fax）
+			billing.billing_etc_memo,				// 備考
+			billing.billing_kind,					// 請求先種別
 			billing.billing_delete_check,			// 削除フラグ
 			created,						// 作成日
 			created_id,						// 作成者ID
@@ -173,10 +214,27 @@ var updateBilling = function (connection, billing, req, res) {
 			+ "client_person_name = $16,"	// クライアント担当者名
 			+ "client_info = $17,"			// 請求先情報（住所、電話、Fax)
 			+ "memo = $18,"					// 備考
-			+ 'delete_check = $19,'			// 削除フラグ
-			+ 'updated = $20,'				// 更新日
-			+ 'updated_id = $21'			// 更新者ID
-			+ " WHERE entry_no = $22 AND billing_no = $23";
+			+ "agent_cd = $19,"				// 代理店CD
+			+ "agent_name = $20,"				// 代理店名
+			+ "agent_division_cd = $21,"		// 代理店部署CD
+			+ "agent_division_name = $22,"	// 代理店部署名
+			+ "agent_person_id = $23,"		// 代理店担当者ID
+			+ "agent_person_name = $24,"		// 代理店担当者名
+			+ "agent_info = $25,"				// 請求先情報（住所、電話、Fax）
+			+ "agent_memo = $26,"				// 備考
+			+ "etc_cd = $27,"					// その他請求先CD
+			+ "etc_name = $28,"				// その他請求先名
+			+ "etc_division_cd = $29,"		// その他請求先部署CD
+			+ "etc_division_name = $30,"		// その他請求先部署名
+			+ "etc_person_id = $31,"			// その他請求先担当者ID
+			+ "etc_person_name = $32,"		// その他請求先担当者名
+			+ "etc_info = $33,"				// 請求先情報（住所、電話、Fax）
+			+ "etc_memo = $34,"				// 備考
+			+ "billing_kind = $35,"			// 請求先種別
+			+ 'delete_check = $36,'			// 削除フラグ
+			+ 'updated = $37,'				// 更新日
+			+ 'updated_id = $38'			// 更新者ID
+			+ " WHERE entry_no = $39 AND billing_no = $40";
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
@@ -197,6 +255,23 @@ var updateBilling = function (connection, billing, req, res) {
 			billing.billing_client_person_name,		// クライアント担当者名
 			billing.billing_client_info,			// 請求先情報（住所、電話、Fax）
 			billing.billing_memo,					// 備考
+			billing.billing_agent_cd,				// クライアントCD
+			billing.billing_agent_name,				// 代理店名
+			billing.billing_agent_division_cd,		// 代理店部署CD
+			billing.billing_agent_division_name,	// 代理店部署名
+			billing.billing_agent_person_id,		// 代理店担当者ID
+			billing.billing_agent_person_name,		// 代理店担当者名
+			billing.billing_agent_info,				// 請求先情報（住所、電話、Fax）
+			billing.billing_agent_memo,				// 備考
+			billing.billing_etc_cd,					// その他請求先CD
+			billing.billing_etc_name,				// その他請求先名
+			billing.billing_etc_division_cd,		// その他請求先部署CD
+			billing.billing_etc_division_name,		// その他請求先部署名
+			billing.billing_etc_person_id,			// その他請求先担当者ID
+			billing.billing_etc_person_name,		// その他請求先担当者名
+			billing.billing_etc_info,				// 請求先情報（住所、電話、Fax）
+			billing.billing_etc_memo,				// 備考
+			billing.billing_kind,					// 請求先種別
 			billing.billing_delete_check,			// 削除フラグ
 			updated,						// 更新日
 			updated_id,						// 更新者ID

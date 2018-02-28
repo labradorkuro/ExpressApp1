@@ -1242,7 +1242,12 @@ a.schedule_band:active {
     text-align:center;
     width:200px;
 }
-
+.form_data {
+    text-align:left;
+    margin-left: 4px;
+    width:400px;
+    
+}
 
 a.general_button {
     float:left;

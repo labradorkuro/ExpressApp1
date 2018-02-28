@@ -58,21 +58,25 @@ $(function ()　{
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_quote").bind('click' , {entryList:entryList}, quoteInfo.openQuoteFormDialog);
-  // 受注日の入力
-  $("#order_date").bind('change', quoteInfo.changeOrderDate);
+  	// 受注日の入力
+  	$("#order_date").bind('change', quoteInfo.changeOrderDate);
 	// クライアント選択ダイアログを表示するイベント処理を登録する
-  $("#client_name").bind('click' , {}, entryList.openClientListDialog);
-  $("#client_name").bind('change' , {}, entryList.checkClientName);
-  $("#client_division_name").bind('change' , {}, entryList.checkClientDivisionName);
-  $("#client_person_name").bind('change' , {}, entryList.checkClientPersonName);
-	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);
-	$("#billing_company_name_1").bind('click' , {}, entryList.openClientListDialog);	 // 見積書画面
-  $("#agent_name").bind('click' , {}, entryList.openClientListDialog);               // 代理店名
-  $("#agent_name").bind('change' , {}, entryList.checkAgentName);                       // 代理店名
-  $("#agent_division_name").bind('change' , {}, entryList.checkAgentDivisionName);      // 代理店部署名
-  $("#agent_person_name").bind('change' , {}, entryList.checkAgentPersonName);          // 代理店担当者名
-  $("#outsourcing_name").bind('click' , {}, entryList.openItakusakiListDialog);	// 委託先
-  $("#outsourcing_name").bind('change' , {}, entryList.checkOutsourcingName);	// 委託先
+  	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
+  	$("#client_name").bind('change' , {}, entryList.checkClientName);
+  	$("#client_division_name").bind('change' , {}, entryList.checkClientDivisionName);
+  	$("#client_person_name").bind('change' , {}, entryList.checkClientPersonName);
+	
+	$("#billing_client_name").bind('click' , {}, entryList.openClientListDialog);		// 請求情報入力フォーム内
+	$("#billing_company_name_1").bind('click' , {}, entryList.openClientListDialog);	// 請求情報入力フォーム内
+	$("#billing_agent_name").bind('click' , {}, entryList.openClientListDialog);		// 請求情報入力フォーム内
+	$("#billing_company_name_1").bind('click' , {}, entryList.openClientListDialog);	// 請求情報入力フォーム内
+	
+	$("#agent_name").bind('click' , {}, entryList.openClientListDialog);               // 代理店名
+  	$("#agent_name").bind('change' , {}, entryList.checkAgentName);                       // 代理店名
+ 	$("#agent_division_name").bind('change' , {}, entryList.checkAgentDivisionName);      // 代理店部署名
+  	$("#agent_person_name").bind('change' , {}, entryList.checkAgentPersonName);          // 代理店担当者名
+  	$("#outsourcing_name").bind('click' , {}, entryList.openItakusakiListDialog);	// 委託先
+  	$("#outsourcing_name").bind('change' , {}, entryList.checkOutsourcingName);	// 委託先
 
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$("#test_middle_class_name").bind('click',{}, test_itemList.openTestItemSelectDialog);
@@ -308,7 +312,8 @@ entryList.createGridSub = function (req_url) {
 		colNames: ['請求区分','請求区分_1','未入金','報告書期限','report_submit_date','案件No', 'test_large_class_cd','試験大分類', '試験中分類','client_cd','クライアント名','client_division_cd','クライアント部署'
 				,'client_address_1','client_address_2','client_division_address_1','client_division_address_2'
 				,'client_tel_no','client_fax_no','client_division_tel_no','client_division_fax_no','client_person_id'
-				,'クライアント担当者','client_person_compellation','代理店','試験タイトル','問合せ日', '案件ステータス', '営業担当者'
+				,'クライアント担当者','client_person_compellation','代理店'
+				,'試験タイトル','問合せ日', '案件ステータス', '営業担当者'
 				,'受注日','仮受注チェック','受託区分','試験担当者','消費税率','作成日','作成者','更新日','更新者'],
 		colModel: [
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter,searchoptions:{sopt:["eq","ne"]}},
@@ -589,6 +594,10 @@ entryList.openClientListDialog = function (event) {
 						$(this).dialog('close');
 					}
 				} else if (event.target.id == 'billing_client_name') {
+					if (billingList.selectClient()) {
+						$(this).dialog('close');
+					}
+				} else if (event.target.id == 'billing_agent_name') {
 					if (billingList.selectClient()) {
 						$(this).dialog('close');
 					}

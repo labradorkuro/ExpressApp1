@@ -431,10 +431,7 @@ var entry_get_list_sql = function() {
 		+ "agent_division_cd,"														// 代理店部署CD
 		+ "agent_person_id,"															// 代理店担当者ID
 		+ 'agent_list.name_1 AS agent_name_1,'									// 代理店名称1
-		+ 'agent_list.name_1 AS agent_name_1,'									// 代理店名称1
 		+ 'agent_list.name_2 AS agent_name_2,'									// 代理店名称2
-		+ "agent_division_list.address_1 AS agent_address_1,"					// 代理店部署住所１
-		+ "agent_division_list.address_2 AS agent_address_2,"					// 代理店部署住所２
 		+ "agent_division_list.name AS agent_division_name,"					// 代理店部署名
 		+ "agent_division_list.memo AS agent_division_memo,"					// 代理店部署メモ
 		+ "agent_person_list.name AS agent_person_name,"						// 代理店担当者名
@@ -769,10 +766,16 @@ var entry_get_detail = function (req, res) {
 		+ "agent_person_id,"													// 代理店担当者ID
 		+ 'agent_list.name_1 AS agent_name_1,'									// 代理店名称1
 		+ 'agent_list.name_2 AS agent_name_2,'									// 代理店名称2
-		+ "agent_division_list.address_1 AS agent_address_1,"					// 代理店部署住所１
-		+ "agent_division_list.address_2 AS agent_address_2,"					// 代理店部署住所２
+		+ "agent_list.address_1 AS agent_address_1,"					// 代理店住所１
+		+ "agent_list.address_2 AS agent_address_2,"					// 代理店住所２
+		+ "agent_list.tel_no AS agent_tel_no,"
+		+ "agent_list.fax_no AS agent_fax_no,"
 		+ "agent_division_list.name AS agent_division_name,"					// 代理店部署名
 		+ "agent_division_list.memo AS agent_division_memo,"					// 代理店部署メモ
+		+ "agent_division_list.address_1 AS agent_division_address_1,"
+		+ "agent_division_list.address_2 AS agent_division_address_2,"
+		+ "agent_division_list.tel_no AS agent_division_tel_no,"
+		+ "agent_division_list.fax_no AS agent_division_fax_no,"
 		+ "agent_person_list.name AS agent_person_name,"						// 代理店担当者名
 		+ "agent_person_list.memo AS agent_person_memo,"						// 代理店担当者メモ
 		+ "agent_person_list.compellation AS agent_person_compellation,"

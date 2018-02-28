@@ -15,7 +15,7 @@ billingList.eventBind = function() {
 	$("#pay_amount_tax").bind("change",billingList.calc_amount);
 	$("#calc_tax_button").bind("click",billingList.calc_tax);
 	// 入金予定日計算ボタン
-	$("#nyukin_yotei_button").bind("click",billingList.calc_nyukin_yotei_date)
+	$("#nyukin_yotei_button").bind("click",billingList.calc_nyukin_yotei_date);
 };
 
 // 入金予定日の計算
@@ -131,8 +131,8 @@ billingList.createBillingListDialog = function () {
 billingList.createBillingFormDialog = function () {
 	$('#billing_form_dialog').dialog({
 		autoOpen: false,
-		width: 900,
-		height: 600,
+		width: 960,
+		height: 900,
 		title: '請求情報の編集',
 		closeOnEscape: false,
 		modal: true,
@@ -165,7 +165,12 @@ billingList.createBillingListGrid = function () {
 		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額','消費税','請求金額合計','入金額', '入金日','請求区分','','請求先名','','請求先部署','','','','','','請求先担当者','請求先情報','備考','作成日','作成者','更新日','更新者','削除フラグ'],
+		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額'
+			,'消費税','請求金額合計','入金額', '入金日','請求区分','請求先区分'
+			,'','クライアント名','','クライアント部署','','','','','','クライアント担当者','クライアント情報','備考'
+			,'','代理店名','','代理店部署','','','','','','代理店担当者','代理店情報','代理店備考'
+			,'','その他名','','その他部署','','その他担当者','その他情報','その他備考'
+			,'作成日','作成者','更新日','更新者','削除フラグ'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
@@ -178,6 +183,7 @@ billingList.createBillingListGrid = function () {
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "right" },
 			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
+			{ name: 'billing_kind', index: 'billing_kind', width: 100 , align: "center", formatter:scheduleCommon.billing_kindFormatter},
 			{ name: 'client_cd', index: '', hidden:true },
 			{ name: 'client_name', index: 'client_name', width: 200 , align: "center" },
 			{ name: 'client_division_cd', index: '', hidden:true },
@@ -190,6 +196,26 @@ billingList.createBillingListGrid = function () {
 			{ name: 'client_person_name', index: 'client_person_name', width: 120 , align: "center" },
 			{ name: 'client_info', hidden:true},
 			{ name: 'memo', index: 'memo', width: 100, align: "center" },
+			{ name: 'agent_cd', index: '', hidden:true },
+			{ name: 'agent_name', index: 'agent_name', width: 200 , align: "center" },
+			{ name: 'agent_division_cd', index: '', hidden:true },
+			{ name: 'agent_division_name', index: 'agent_division_name', width: 200 , align: "center" },
+			{ name: 'agent_address_1', index: '', hidden:true },
+			{ name: 'agent_address_2', index: '', hidden:true },
+			{ name: 'agent_tel_no', index: '', hidden:true },
+			{ name: 'agent_fax_no', index: '', hidden:true },
+			{ name: 'agent_person_id', index: '', hidden:true },
+			{ name: 'agent_person_name', index: 'agent_person_name', width: 120 , align: "center" },
+			{ name: 'agent_info', hidden:true},
+			{ name: 'agent_memo', index: 'agent_memo', width: 100, align: "center" },
+			{ name: 'etc_cd', index: '', hidden:true },
+			{ name: 'etc_name', index: 'etc_name', width: 200 , align: "center" },
+			{ name: 'etc_division_cd', index: '', hidden:true },
+			{ name: 'etc_division_name', index: 'etc_division_name', width: 200 , align: "center" },
+			{ name: 'etc_person_id', index: '', hidden:true },
+			{ name: 'etc_person_name', index: 'etc_person_name', width: 120 , align: "center" },
+			{ name: 'etc_info', hidden:true},
+			{ name: 'etc_memo', index: 'etc_memo', width: 100, align: "center" },
 			{ name: 'created', index: 'created', width: 120 }, // 作成日
 			{ name: 'created_id', index: 'created_id', width: 120 }, // 作成者ID
 			{ name: 'updated', index: 'updated', width: 120 }, // 更新日
@@ -251,8 +277,9 @@ billingList.openBillingFormDialog = function (event) {
 	} else {
 		// 追加ボタンから開いた場合
 		// 請求先情報に表示する内容を取得する
-		var client_info = billingList.getEntryClientInfo(billingList.currentEntry.currentEntry);
-		billingList.openAddDialog(client_info);
+		var client_info = billingList.getEntryClientInfo(billingList.currentEntry.currentEntry,0);
+		var agent_info = billingList.getEntryClientInfo(billingList.currentEntry.currentEntry,1);
+		billingList.openAddDialog(client_info,agent_info);
 	}
 	// 請求金額合計を取得する
 	billingList.requestBillingTotal(billingList.currentEntry.currentEntry.entry_no);
@@ -277,12 +304,13 @@ billingList.openEditDialog = function() {
 };
 
 // 追加用にダイアログを表示する
-billingList.openAddDialog = function(client_info) {
+billingList.openAddDialog = function(client_info,agent_info) {
 	billingList.status = "add";
 	var billing = billingList.clearBilling();
 	// 選択中の案件情報から得意先情報をコピーする（デフォルト設定として）
 	billing = billingList.setDefaultClientData(billing);
-	billing.client_info = client_info
+	billing.client_info = client_info;
+	billing.agent_info = agent_info;
 	billingList.setBillingForm(billing);
 	// 権限チェック
 	if (entryList.auth_entry_add == 2) {
@@ -301,14 +329,22 @@ billingList.setDefaultClientData = function(billing) {
 	billing.client_division_name = billingList.currentEntry.currentEntry.client_division_name;
 	billing.client_person_id = billingList.currentEntry.currentEntry.client_person_id;
 	billing.client_person_name = billingList.currentEntry.currentEntry.client_person_name;
+
+	billing.agent_cd = billingList.currentEntry.currentEntry.agent_cd;
+	billing.agent_name = billingList.currentEntry.currentEntry.agent_name_1;
+	billing.agent_division_cd = billingList.currentEntry.currentEntry.agent_division_cd;
+	billing.agent_division_name = billingList.currentEntry.currentEntry.agent_division_name;
+	billing.agent_person_id = billingList.currentEntry.currentEntry.agent_person_id;
+	billing.agent_person_name = billingList.currentEntry.currentEntry.agent_person_name;
 	return billing;
 }
 // 案件情報から請求先情報を取得
-billingList.getEntryClientInfo = function(client) {
-	var address1 = billingList.getAddress1_for_entry(client);
-	var address2 = billingList.getAddress2_for_entry(client);
-	var tel = billingList.getTel_for_entry(client);
-	var fax = billingList.getFax_for_entry(client);
+// kind:0 クライアント情報、kind:1 代理店情報
+billingList.getEntryClientInfo = function(client,kind) {
+	var address1 = billingList.getAddress1_for_entry(client,kind);
+	var address2 = billingList.getAddress2_for_entry(client,kind);
+	var tel = billingList.getTel_for_entry(client,kind);
+	var fax = billingList.getFax_for_entry(client,kind);
 	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
 					+ " \ntel : " + tel + " \nfax : " + fax
 	return client_info;
@@ -324,14 +360,24 @@ billingList.getClientInfo = function(client,division) {
 	return client_info;
 }
 // 住所１取得（案件情報から取得）
-billingList.getAddress1_for_entry = function(client) {
+// kind:0 クライアント情報、kind:1 代理店情報
+billingList.getAddress1_for_entry = function(client,kind) {
 	var address1 = "";
-	if ((client.client_address_1 != null) && (client.client_address_1 != "")) {
-		address1 = client.client_address_1;
-	}
-	if ((client.client_division_address_1 != null) && (client.client_division_address_1 != "")) {
-		address1 = client.client_division_address_1;
-	}
+	if (kind == 0) {
+		if ((client.client_address_1 != null) && (client.client_address_1 != "")) {
+			address1 = client.client_address_1;
+		}
+		if ((client.client_division_address_1 != null) && (client.client_division_address_1 != "")) {
+			address1 = client.client_division_address_1;
+		}	
+	} else if (kind == 1) {
+		if ((client.agent_address_1 != null) && (client.agent_address_1 != "")) {
+			address1 = client.agent_address_1;
+		}
+		if ((client.agent_division_address_1 != null) && (client.agent_division_address_1 != "")) {
+			address1 = client.agent_division_address_1;
+		}
+		}
 	return address1;
 }
 
@@ -348,13 +394,23 @@ billingList.getAddress1_for_client = function(client,division) {
 }
 
 // 住所2取得(案件情報から取得)
-billingList.getAddress2_for_entry = function(client) {
+// kind:0 クライアント情報、kind:1 代理店情報
+billingList.getAddress2_for_entry = function(client,kind) {
 	var address2 = "";
-	if ((client.client_address_2 != null) && (client.client_address_2 != "")) {
-		address2 = client.client_address_2;
-	}
-	if ((client.client_division_address_2 != null) && (client.client_division_address_2 != "")) {
-		address2 = client.client_division_address_2;
+	if (kind == 0) {
+		if ((client.client_address_2 != null) && (client.client_address_2 != "")) {
+			address2 = client.client_address_2;
+		}
+		if ((client.client_division_address_2 != null) && (client.client_division_address_2 != "")) {
+			address2 = client.client_division_address_2;
+		}
+	} else if (kind == 1) {
+		if ((client.agent_address_2 != null) && (client.agent_address_2 != "")) {
+			address2 = client.agent_address_2;
+		}
+		if ((client.agent_division_address_2 != null) && (client.agent_division_address_2 != "")) {
+			address2 = client.agent_division_address_2;
+		}
 	}
 	return address2;
 }
@@ -371,13 +427,23 @@ billingList.getAddress2_for_client = function(client,division) {
 }
 
 // 電話番号取得(案件情報から取得)
-billingList.getTel_for_entry = function(client) {
+// kind:0 クライアント情報、kind:1 代理店情報
+billingList.getTel_for_entry = function(client, kind) {
 	var tel = "";
-	if ((client.client_tel_no != null) && (client.client_tel_no != "")) {
-		tel = client.client_tel_no;
-	}
-	if ((client.client_division_tel_no != null) && (client.client_division_tel_no != "")) {
-		tel = client.client_division_tel_no;
+	if (kind == 0) {
+		if ((client.client_tel_no != null) && (client.client_tel_no != "")) {
+			tel = client.client_tel_no;
+		}
+		if ((client.client_division_tel_no != null) && (client.client_division_tel_no != "")) {
+			tel = client.client_division_tel_no;
+		}
+	} else if (kind == 1) {
+		if ((client.agent_tel_no != null) && (client.agent_tel_no != "")) {
+			tel = client.agent_tel_no;
+		}
+		if ((client.agent_division_tel_no != null) && (client.agent_division_tel_no != "")) {
+			tel = client.agent_division_tel_no;
+		}
 	}
 	return tel;
 }
@@ -394,13 +460,23 @@ billingList.getTel_for_client = function(client,division) {
 }
 
 // FAX番号取得(案件情報から取得)
-billingList.getFax_for_entry = function(client) {
+// kind:0 クライアント情報、kind:1 代理店情報
+billingList.getFax_for_entry = function(client,kind) {
 	var fax = "";
-	if ((client.client_fax_no != null) && (client.client_fax_no != "")) {
-		fax = client.client_fax_no;
-	}
-	if ((client.client_division_fax_no != null) && (client.client_division_fax_no != "")) {
-		fax = client.client_division_fax_no;
+	if (kind == 0) {
+		if ((client.client_fax_no != null) && (client.client_fax_no != "")) {
+			fax = client.client_fax_no;
+		}
+		if ((client.client_division_fax_no != null) && (client.client_division_fax_no != "")) {
+			fax = client.client_division_fax_no;
+		}
+	} else if (kind == 1) {
+		if ((client.agent_fax_no != null) && (client.agent_fax_no != "")) {
+			fax = client.agent_fax_no;
+		}
+		if ((client.agent_division_fax_no != null) && (client.agent_division_fax_no != "")) {
+			fax = client.agent_division_fax_no;
+		}
 	}
 	return fax;
 }
@@ -430,6 +506,7 @@ billingList.clearBilling = function() {
 			pay_complete:0,
 			pay_result:"請求待ち",
 			memo:'',
+			billing_kind:"クライアント",
 			client_cd:'',
 			client_name:'',
 			client_division_cd:'',
@@ -437,6 +514,22 @@ billingList.clearBilling = function() {
 			client_person_id:'',
 			client_person_name:'',
 			client_info: '',
+			agent_cd:'',
+			agent_name:'',
+			agent_division_cd:'',
+			agent_division_name:'',
+			agent_person_id:'',
+			agent_person_name:'',
+			agent_info: '',
+			agent_memo:'',
+			etc_cd:'',
+			etc_name:'',
+			etc_division_cd:'',
+			etc_division_name:'',
+			etc_person_id:'',
+			etc_person_name:'',
+			etc_info: '',
+			etc_memo:'',
 			delete_check:0
 	};
 	return billing;
@@ -473,7 +566,15 @@ billingList.setBillingForm = function(billing) {
 		$("#pay_result_0").prop("checked",true);
 		$("#seikyu_date").text("請求予定日");
 	}
-
+	$("#billing_kind_1").prop("checked",true);
+	if (billing.billing_kind == "クライアント") {
+		$("#billing_kind_1").prop("checked",true);
+	} else if (billing.billing_kind == "代理店") {
+		$("#billing_kind_2").prop("checked",true);
+	} else if (billing.billing_kind == "その他") {
+		$("#billing_kind_3").prop("checked",true);
+	}
+	// クライアント情報
 	$("#billing_client_cd").val(billing.client_cd);
 	$("#billing_client_name").val(billing.client_name);
 	$("#billing_client_division_cd").val(billing.client_division_cd);
@@ -482,6 +583,25 @@ billingList.setBillingForm = function(billing) {
 	$("#billing_client_person_name").val(billing.client_person_name);
 	$("#billing_client_info").val(billing.client_info);
 	$("#billing_memo").val(billing.memo);
+	//　代理店情報
+	$("#billing_agent_cd").val(billing.agent_cd);
+	$("#billing_agent_name").val(billing.agent_name);
+	$("#billing_agent_division_cd").val(billing.agent_division_cd);
+	$("#billing_agent_division_name").val(billing.agent_division_name);
+	$("#billing_agent_person_id").val(billing.agent_person_id);
+	$("#billing_agent_person_name").val(billing.agent_person_name);
+	$("#billing_agent_info").val(billing.agent_info);
+	$("#billing_agent_memo").val(billing.agent_memo);
+	//　その他請求先情報
+	$("#billing_etc_cd").val(billing.etc_cd);
+	$("#billing_etc_name").val(billing.etc_name);
+	$("#billing_etc_division_cd").val(billing.etc_division_cd);
+	$("#billing_etc_division_name").val(billing.etc_division_name);
+	$("#billing_etc_person_id").val(billing.etc_person_id);
+	$("#billing_etc_person_name").val(billing.etc_person_name);
+	$("#billing_etc_info").val(billing.etc_info);
+	$("#billing_etc_memo").val(billing.etc_memo);
+
 	$("#billing_delete_check").prop("checked",Number(billing.delete_check));
 };
 billingList.getBillingDeleteCheckDispCheck = function () {
@@ -490,16 +610,29 @@ billingList.getBillingDeleteCheckDispCheck = function () {
 	return delchk;
 };
 // 得意先選択ダイアログの選択ボタン押下イベント処理
-billingList.selectClient = function () {
-	$("#billing_client_cd").val(clientList.currentClient.client_cd);
-	$("#billing_client_name").val(clientList.currentClient.name_1);
-	$("#billing_client_division_cd").val(clientList.currentClientDivision.division_cd);
-	$("#billing_client_division_name").val(clientList.currentClientDivision.name);
-	$("#billing_client_person_id").val(clientList.currentClientPerson.person_id);
-	$("#billing_client_person_name").val(clientList.currentClientPerson.name);
-	// 請求先情報ダイアログで請求先を変更した場合に「請求先情報に表示する内容も再取得して再表示する
-	var client_info = billingList.getClientInfo(clientList.currentClient,clientList.currentClientDivision);
-	$("#billing_client_info").val(client_info);
+billingList.selectClient = function (kind) {
+	if (kind == 0) {
+		$("#billing_client_cd").val(clientList.currentClient.client_cd);
+		$("#billing_client_name").val(clientList.currentClient.name_1);
+		$("#billing_client_division_cd").val(clientList.currentClientDivision.division_cd);
+		$("#billing_client_division_name").val(clientList.currentClientDivision.name);
+		$("#billing_client_person_id").val(clientList.currentClientPerson.person_id);
+		$("#billing_client_person_name").val(clientList.currentClientPerson.name);
+		// 請求先情報ダイアログで請求先を変更した場合に「請求先情報に表示する内容も再取得して再表示する
+		var client_info = billingList.getClientInfo(clientList.currentClient,clientList.currentClientDivision);
+		$("#billing_client_info").val(client_info);
+	} else {
+		$("#billing_agent_cd").val(clientList.currentClient.client_cd);
+		$("#billing_agent_name").val(clientList.currentClient.name_1);
+		$("#billing_agent_division_cd").val(clientList.currentClientDivision.division_cd);
+		$("#billing_agent_division_name").val(clientList.currentClientDivision.name);
+		$("#billing_agent_person_id").val(clientList.currentClientPerson.person_id);
+		$("#billing_agent_person_name").val(clientList.currentClientPerson.name);
+		// 請求先情報ダイアログで請求先を変更した場合に「請求先情報に表示する内容も再取得して再表示する
+		var agent_info = billingList.getClientInfo(clientList.currentClient,clientList.currentClientDivision);
+		$("#billing_agent_info").val(agent_info);
+			
+	}
 	return true;
 };
 //	請求情報データの保存

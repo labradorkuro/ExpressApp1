@@ -142,6 +142,12 @@ scheduleCommon.pay_resultFormatter = function(cellval, options, rowObject) {
 	if (cellval == 3) return "入金確認済";
 
 };
+scheduleCommon.billing_kindFormatter = function(cellval, options, rowObject) {
+	if (cellval == 0) return "クライアント";
+	if (cellval == 1) return "代理店";
+	if (cellval == 2) return "その他";
+	return "";
+};
 // jqgridのフォントサイズを変える
 scheduleCommon.changeFontSize = function(s){
 	var size = '1.1em';
