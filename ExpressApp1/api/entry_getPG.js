@@ -276,8 +276,8 @@ var entry_get_list_searchField = function (req, res, func) {
 var getEntrySearchKeywordParam = function(keyword) {
 	var kw = "";
 	if ((keyword != "undefined") && (keyword != "")) {
-		kw = "(test_large_class.item_name LIKE '%" + keyword + "%' OR test_middle_class.item_name LIKE '%" + keyword + "%' OR entry_title LIKE '%" + keyword + "%' OR client_list.name_1 LIKE '%" + keyword + "%' OR " +
-					"client_list.name_2 LIKE '%" + keyword + "%' OR agent_list.name_1 LIKE '%" + keyword + "%' OR entry_info.entry_no LIKE '%" + keyword + "%')";
+		kw = "(drc_sch.sf_translate_case(test_large_class.item_name) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(test_middle_class.item_name) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(entry_title) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(client_list.name_1) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR " +
+			"drc_sch.sf_translate_case(client_list.name_2) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(agent_list.name_1) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(entry_info.entry_no) LIKE drc_sch.sf_translate_case('%" + keyword + "%'))";
 	}
 	return kw;
 };
