@@ -473,7 +473,6 @@ var entry_check = function (entry) {
 
 // 見積情報のPOST
 exports.quote_post = function (req, res) {
-	console.log("quote_post");
 	var quote = quote_check(req.body);
 	pg.connect(connectionString,function (err, connection) {
 		// 案件ステータスを更新する
@@ -690,7 +689,6 @@ var updateQuote = function (connection,quote, req, res) {
 };
 
 var quote_check = function (quote) {
-	console.log(quote);
 	// 数値
 	quote.estimate_monitors_num = Number(quote.estimate_monitors_num);	// 被験者数
 	quote.quote_submit_check = Number(quote.quote_submit_check);	// 見積書提出済フラグ
@@ -988,7 +986,6 @@ var checkEntryStatus = function(entry) {
 
 // entry_noの案件情報の案件ステータスを依頼に変更する
 var updateEntryStatus = function(connection,quote) {
-	console.log("updateEntryStatus");
 	var entry_status = "";
 	if (quote.order_status == 1) {	// 商談中
 		entry_status = "02";
@@ -1031,11 +1028,13 @@ var createBillingInfo = function(quote,created_id) {
 var callbackGetEntryInfo = function(entry, quote, created_id) {
 	var billing = clearBilling();
 	// 請求先情報の取得
-	var client_info = getEntryClientInfo(entry);
+	var client_info = getEntryClientInfo(entry,0);
+	var agent_info = getEntryClientInfo(entry,1);
 	billing = setDefaultClientData(billing, entry);
 	// 請求情報登録
 	billing.entry_no = entry.entry_no;
 	billing.client_info = client_info;
+	billing.agent_info = agent_info;
 	// 請求予定日は報告書提出期限にする
 	billing.pay_planning_date = entry.report_limit_date;
 	// 請求金額のセット
@@ -1096,13 +1095,21 @@ var insertBilling = function (connection, billing, created_id) {
 			+ "client_person_name,"		// クライアント担当者名
 			+ "client_info,"			// 請求先情報（住所、電話、Fax）
 			+ "memo,"					// 備考
+			+ "agent_cd,"				// 代理店CD
+			+ "agent_name,"				// 代理店名
+			+ "agent_division_cd,"		// 代理店部署CD
+			+ "agent_division_name,"	// 代理店部署名
+			+ "agent_person_id,"		// 代理店担当者ID
+			+ "agent_person_name,"		// 代理店担当者名
+			+ "agent_info,"				// 請求先情報（住所、電話、Fax）
+			+ "agent_memo,"					// 備考
 			+ 'delete_check,'			// 削除フラグ
 			+ 'created,'				// 作成日
 			+ 'created_id,'				// 作成者ID
 			+ 'updated,'				// 更新日
 			+ 'updated_id'				// 更新者ID
 			+ ') values ('
-			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)'
+			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
@@ -1124,6 +1131,14 @@ var insertBilling = function (connection, billing, created_id) {
 			billing.client_person_name,		// クライアント担当者名
 			billing.client_info,			// 請求先情報（住所、電話、Fax）
 			billing.memo,					// 備考
+			billing.agent_cd,				// 代理店CD
+			billing.agent_name,				// 代理店名
+			billing.agent_division_cd,		// 代理店部署CD
+			billing.agent_division_name,	// 代理店部署名
+			billing.agent_person_id,		// 代理店担当者ID
+			billing.agent_person_name,		// 代理店担当者名
+			billing.agent_info,			// 請求先情報（住所、電話、Fax）
+			billing.agent_memo,					// 備考
 			billing.delete_check,			// 削除フラグ
 			created,						// 作成日
 			created_id,						// 作成者ID
@@ -1157,32 +1172,65 @@ var setDefaultClientData = function(billing, entry) {
 	billing.client_division_name = entry.client_division_name;
 	billing.client_person_id = entry.client_person_id;
 	billing.client_person_name = entry.client_person_name;
+
+	billing.agent_cd = entry.agent_cd;
+	billing.agent_name = entry.agent_name_1;
+	billing.agent_division_cd = entry.agent_division_cd;
+	billing.agent_division_name = entry.agent_division_name;
+	billing.agent_person_id = entry.agent_person_id;
+	billing.agent_person_name = entry.agent_person_name;
 	return billing;
 };
 // 案件情報から請求先情報を取得
-var getEntryClientInfo = function(entry) {
-	var address1 = getAddress1_for_entry(entry);
-	var address2 = getAddress2_for_entry(entry);
-	var tel = getTel_for_entry(entry);
-	var fax = getFax_for_entry(entry);
+// kind:0 クライアント情報、kind:1 代理店情報
+var getEntryClientInfo = function(entry,kind) {
+	var address1 = getAddress1_for_entry(entry,kind);
+	var address2 = getAddress2_for_entry(entry,kind);
+	var tel = getTel_for_entry(entry,kind);
+	var fax = getFax_for_entry(entry,kind);
 	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
 					+ " \ntel : " + tel + " \nfax : " + fax
 	return client_info;
 }
 // 住所１取得（案件情報から取得）
-var getAddress1_for_entry = function(entry) {
+var getAddress1_for_entry = function(entry,kind) {
 	var address1 = "";
-	if ((entry.client_address_1 != null) && (entry.client_address_1 != "")) {
-		address1 = entry.client_address_1;
-	}
-	if ((entry.client_division_address_1 != null) && (entry.client_division_address_1 != "")) {
-		address1 = entry.client_division_address_1;
+	if (kind == 0) {
+		if ((entry.client_address_1 != null) && (entry.client_address_1 != "")) {
+			address1 = entry.client_address_1;
+		}
+		if ((entry.client_division_address_1 != null) && (entry.client_division_address_1 != "")) {
+			address1 = entry.client_division_address_1;
+		}
+	} else {
+		if ((entry.agent_address_1 != null) && (entry.agent_address_1 != "")) {
+			address1 = entry.agent_address_1;
+		}
+		if ((entry.agent_division_address_1 != null) && (entry.agent_division_address_1 != "")) {
+			address1 = entry.agent_division_address_1;
+		}		
 	}
 	return address1;
 }
 // 住所2取得(案件情報から取得)
-var getAddress2_for_entry = function(entry) {
+var getAddress2_for_entry = function(entry,kind) {
 	var address2 = "";
+	if (kind == 0) {
+		if ((entry.client_address_2 != null) && (entry.client_address_2 != "")) {
+			address2 = entry.client_address_2;
+		}
+		if ((entry.client_division_address_2 != null) && (entry.client_division_address_2 != "")) {
+			address2 = entry.client_division_address_2;
+		}	
+	} else {
+		if ((entry.agent_address_2 != null) && (entry.agent_address_2 != "")) {
+			address2 = entry.agent_address_2;
+		}
+		if ((entry.agent_division_address_2 != null) && (entry.agent_division_address_2 != "")) {
+			address2 = entry.agent_division_address_2;
+		}
+	
+	}
 	if ((entry.client_address_2 != null) && (entry.client_address_2 != "")) {
 		address2 = entry.client_address_2;
 	}
@@ -1192,24 +1240,46 @@ var getAddress2_for_entry = function(entry) {
 	return address2;
 }
 // 電話番号取得(案件情報から取得)
-var getTel_for_entry = function(entry) {
+var getTel_for_entry = function(entry,kind) {
 	var tel = "";
-	if ((entry.client_tel_no != null) && (entry.client_tel_no != "")) {
-		tel = entry.client_tel_no;
-	}
-	if ((entry.client_division_tel_no != null) && (entry.client_division_tel_no != "")) {
-		tel = entry.client_division_tel_no;
+	if (kind == 0) {
+		if ((entry.client_tel_no != null) && (entry.client_tel_no != "")) {
+			tel = entry.client_tel_no;
+		}
+		if ((entry.client_division_tel_no != null) && (entry.client_division_tel_no != "")) {
+			tel = entry.client_division_tel_no;
+		}
+	
+	} else {
+		if ((entry.agent_tel_no != null) && (entry.agent_tel_no != "")) {
+			tel = entry.agent_tel_no;
+		}
+		if ((entry.agent_division_tel_no != null) && (entry.agent_division_tel_no != "")) {
+			tel = entry.agent_division_tel_no;
+		}
+	
 	}
 	return tel;
 }
 // FAX番号取得(案件情報から取得)
-var getFax_for_entry = function(entry) {
+var getFax_for_entry = function(entry,kind) {
 	var fax = "";
-	if ((entry.client_fax_no != null) && (entry.client_fax_no != "")) {
-		fax = entry.client_fax_no;
-	}
-	if ((entry.client_division_fax_no != null) && (entry.client_division_fax_no != "")) {
-		fax = entry.client_division_fax_no;
+	if (kind == 0) {
+		if ((entry.client_fax_no != null) && (entry.client_fax_no != "")) {
+			fax = entry.client_fax_no;
+		}
+		if ((entry.client_division_fax_no != null) && (entry.client_division_fax_no != "")) {
+			fax = entry.client_division_fax_no;
+		}
+	
+	} else {
+		if ((entry.agent_fax_no != null) && (entry.agent_fax_no != "")) {
+			fax = entry.agent_fax_no;
+		}
+		if ((entry.agent_division_fax_no != null) && (entry.agent_division_fax_no != "")) {
+			fax = entry.agent_division_fax_no;
+		}
+	
 	}
 	return fax;
 }
