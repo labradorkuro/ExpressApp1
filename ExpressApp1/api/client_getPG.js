@@ -39,8 +39,8 @@ var client_get_searchKeyword = function (req, res) {
 var getClientSearchKeywordParam = function(keyword) {
 	var kw = "";
 	if ((keyword != "undefined") && (keyword != "")) {
-		kw = "(client_list.name_1 LIKE '%" + keyword + "%' OR client_list.name_2 LIKE '%" + keyword + "%' OR client_list.address_1 LIKE '%" + keyword + "%' OR client_list.address_2 LIKE '%" + keyword + "%' OR " +
-					"client_list.kana LIKE '%" + keyword + "%')";
+		kw = "(drc_sch.sf_translate_case(client_list.name_1) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(client_list.name_2) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(client_list.address_1) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(client_list.address_2) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR " +
+					"drc_sch.sf_translate_case(client_list.kana) LIKE drc_sch.sf_translate_case('%" + keyword + "%'))";
 	}
 	return kw;
 };
