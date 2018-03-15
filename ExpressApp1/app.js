@@ -175,6 +175,7 @@ app.get('/entry_print', entry_get.entry_print);
 app.get('/entry_get/cal/:start/:end/:test_type', entry_get.entry_get_list_cal);
 app.get('/entry_get/gantt/:start/:end/:test_type', entry_get.entry_get_list_gantt);
 app.get('/mikaishu_list', entry_get.mikaishu_list);
+app.get('/mikaishu_list_csv', entry_get.mikaishu_list_csv);
 app.get('/order_status_check', entry_get.order_status_check);
 
 app.get('/quote_get/:entry_no?', entry_get.quote_get);

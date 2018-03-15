@@ -62,6 +62,31 @@ exports.mikaishu_list = function(req,res) {
 	return entry_get_list_for_grid(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
 };
 
+exports.mikaishu_list_csv = function(req,res) {
+	var today = tools.getToday("{0}/{1}/{2}");
+	// 試験大分類の絞り込み用
+	var large_item_params = parse_large_item_params(req);
+	var pg_params = getPagingParams(req);
+	// レコード件数取得用SQL生成
+	var sql_count = mikaishu_list_sql_count();
+
+	if (large_item_params != '') {
+		sql_count += ' ' +  large_item_params + ' AND ';
+	}
+
+	sql_count += ' entry_info.delete_check = $1' + ' AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\'';
+
+	// 案件リスト取得用SQL生成
+	var sql = mikaishu_list_sql();
+	if (large_item_params != '') {
+		sql += ' ' + large_item_params + ' AND ';
+	}
+	sql	+= ' entry_info.delete_check = $1 AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\' ORDER BY '
+		+ pg_params.sidx + ' ' + pg_params.sord;
+	//console.log(sql);
+	return entry_get_list_for_print(res, sql_count, sql, [req.query.delete_check,req.query.entry_status_01, req.query.entry_status_02, req.query.entry_status_03, req.query.entry_status_04,req.query.entry_status_05], pg_params);
+};
+
 var getPagingParams = function (req) {
 	var pg_param = {};
 	pg_param.sidx = "entry_no";
