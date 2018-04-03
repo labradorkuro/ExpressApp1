@@ -96,7 +96,7 @@ var path = require('path');
 drc_version = ' Ver.1.0.4';
 
 // all environments
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(bodyParser.json());
@@ -348,6 +348,6 @@ Object.keys(models).forEach(function(modelName) {
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-  var msg = '基幹システム(Build:2018.01.22)';
+  var msg = '基幹システム(Build:2018.04.01)';
   console.log(msg);
 });
