@@ -371,6 +371,7 @@ entryList.createGridSub = function (req_url) {
 		sortorder: "desc",
 		caption: "案件リスト",
 		onSelectRow:entryList.onSelectEntry,
+		ondblClickRow:entryList.openEntryDialog,
     loadComplete:entryList.loadCompleteEntryList
 	});
 	jQuery("#entry_list").jqGrid('navGrid', '#entry_pager', { edit: false, add: false, del: false});
