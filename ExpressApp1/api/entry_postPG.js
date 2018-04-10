@@ -459,10 +459,18 @@ var entry_check = function (entry) {
 	entry.order_type = Number(entry.order_type);
 	entry.entry_consumption_tax = Number(entry.entry_consumption_tax);
 //	entry.contract_type = Number(entry.contract_type);
-	entry.entry_amount_price = Number(entry.entry_amount_price);
-	entry.entry_amount_billing = Number(entry.entry_amount_billing);
-	entry.entry_amount_deposit = Number(entry.entry_amount_deposit);
-	entry.drc_substituted_amount = Number(entry.drc_substituted_amount);
+	if (entry.entry_amount_price != null) {
+		entry.entry_amount_price = Number(entry.entry_amount_price.replace(/,/g, ''));
+	}
+	if (entry.entry_amount_billing != null) {
+		entry.entry_amount_billing = Number(entry.entry_amount_billing.replace(/,/g, ''));
+	}
+	if (entry.entry_amount_deposit != null) {
+		entry.entry_amount_deposit = Number(entry.entry_amount_deposit.replace(/,/g, ''));
+	}
+	if (entry.drc_substituted_amount != null) {
+		entry.drc_substituted_amount = Number(entry.drc_substituted_amount.replace(/,/g, ''));
+	}
 
 	entry.delete_check = Number(entry.delete_check);
 	entry.input_check = Number(entry.input_check);

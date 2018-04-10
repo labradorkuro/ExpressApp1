@@ -20,7 +20,6 @@ exports.billing_post = function (req, res) {
 				if (err) {
 					console.log(err);
 				} else {
-					updateEntryStatus(connection,billing);
 					if (results.rows.length == 0) {
 						// 請求データのDB追加
 						insertBilling(connection,billing, req, res);
@@ -28,6 +27,7 @@ exports.billing_post = function (req, res) {
 						// 請求データの更新
 						updateBilling(connection, billing, req, res);
 					}
+					checkPayResultForUpdateEntryStatus(billing);
 					// 請求区分が「請求可」の場合はメール通知する
 					checkPayResult(billing);
 				}
@@ -322,15 +322,73 @@ var checkPayResult = function(billing) {
 };
 
 // entry_noの案件情報の案件ステータスを依頼に変更する
-var updateEntryStatus = function(connection,billing) {
-	var entry_status = "";
-	if (billing.pay_result == 3) {	// 入金確認済み
-		entry_status = "04";
+var updateEntryStatus = function(billing,entry_status) {
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
 		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 WHERE entry_no = $2';
 		query = connection.query(sql, [entry_status, billing.billing_entry_no]);	// 案件ステータス:04　完了
 		query.on('end', function (result, err) {
 			console.log(err);
+			connection.end();
 		});
-	}
-
+	});
 };
+
+// 請求区分を確認して案件ステータスを更新する
+var checkPayResultForUpdateEntryStatus = function(billing) {
+	var sql_pay_result = "SELECT pay_result FROM drc_sch.billing_info WHERE entry_no = $1 AND delete_check = $2";
+	var sql = 'SELECT '
+		+ 'SUM(pay_amount) AS amount_total_notax,'
+		+ 'SUM(pay_amount_total) AS amount_total,'
+		+ 'SUM(pay_complete) AS complete_total'
+		+ ' FROM drc_sch.billing_info'
+		+ ' WHERE entry_no = $1 AND delete_check = $2'
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		connection.query(sql_pay_result, [billing.billing_entry_no,0], function (err, results) {
+			if (err) {
+				console.log(err);
+			} else {
+				var f = 0
+				for (var i in results.rows) {
+					console.log(results.rows[i]);
+					// 全ての請求情報が入金確認済になっているか確認する
+					if (results.rows[i].pay_result < 3) {
+						f = 1;
+						break;
+					}
+				}
+				if (f == 1) {
+					// 入金確認済になっていない請求情報がある
+					updateEntryStatus(billing,"03");
+					connection.end();
+					return;
+				} else {
+					connection.query(sql, [billing.billing_entry_no,0], function (err, results) {
+						if (err) {
+							console.log(err);
+						} else {
+							var f = 0
+							for (var i in results.rows) {
+								console.log(results.rows[i]);
+								if (results.rows[i].amount_total == results.rows[i].complete_total) {
+									f = 1;
+									break;
+								}
+							}
+							if (f == 1) {
+								// 案件合計額と入金済金額が一致している場合
+								updateEntryStatus(billing,"04");
+							} else {
+								// 案件合計額と入金済金額が一致していない場合
+								updateEntryStatus(billing,"03");
+							}
+							connection.end();
+						}
+					});
+				}
+			}
+		});
+	});
+
+}
