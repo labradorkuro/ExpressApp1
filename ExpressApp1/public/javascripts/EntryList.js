@@ -597,11 +597,11 @@ entryList.openClientListDialog = function (event) {
 						$(this).dialog('close');
 					}
 				} else if (event.target.id == 'billing_client_name') {
-					if (billingList.selectClient()) {
+					if (billingList.selectClient(0)) {
 						$(this).dialog('close');
 					}
 				} else if (event.target.id == 'billing_agent_name') {
-					if (billingList.selectClient()) {
+					if (billingList.selectClient(1)) {
 						$(this).dialog('close');
 					}
 				} else if (event.target.id == 'billing_company_name_1') {
