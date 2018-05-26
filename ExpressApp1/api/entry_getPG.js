@@ -690,6 +690,7 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 				// 取得した件数からページ数を計算する
 				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
+				result.records = results.rows[0].cnt;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
 					if (err) {
@@ -697,7 +698,7 @@ var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) 
 						connection.end();
 						res.send(result);
 					} else {
-						result.records = results.rows.length;
+//						result.records = results.rows.length;
 						result.page = pg_params.page;
 						for (var i in results.rows) {
 							var row = { id: '', cell: [] };
@@ -1090,12 +1091,13 @@ var quote_get_list = function (req, res) {
 				// 取得した件数からページ数を計算する
 				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
+				result.records = results.rows[0].cnt;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
 					if (err) {
 						console.log(err);
 					} else {
-						result.records = results.rows.length;
+//						result.records = results.rows.length;
 						for (var i in results.rows) {
 							var row = { id: '', cell: [] };
 							var quote = [];
@@ -1201,12 +1203,13 @@ var quote_specific_get_list_grid = function (req, res) {
 				// 取得した件数からページ数を計算する
 				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
+				result.records = results.rows[0].cnt;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
 					if (err) {
 						console.log(err);
 					} else {
-						result.records = results.rows.length;
+//						result.records = results.rows.length;
 						for (var i in results.rows) {
 							var row = { id: '', cell: [] };
 							var quote = [];
