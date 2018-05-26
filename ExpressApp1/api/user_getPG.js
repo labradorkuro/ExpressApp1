@@ -60,12 +60,13 @@ var user_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 				// 取得した件数からページ数を計算する
 				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
+				result.records = results.rows[0].cnt;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
 				connection.query(sql, params, function (err, results) {
 					if (err) {
 						console.log(err);
 					} else {
-						result.records = results.rows.length;
+//						result.records = results.rows.length;
 						for (var i in results.rows) {
 							var row = { id: '', cell: [] };
 							var user = [];

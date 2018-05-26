@@ -83,6 +83,7 @@ holiday_master.list_grid = function(req, res) {
     // 取得した件数からページ数を計算する
     result.total = Math.ceil(results[0].dataValues['cnt'] / pg_params.limit);
     result.page = pg_params.page;
+    result.records = results[0].dataValues['cnt'];
     attr.order = pg_params.sidx + " " + pg_params.sord;
     attr.limit = pg_params.limit;
     attr.offset = pg_params.offset;
@@ -93,7 +94,7 @@ holiday_master.list_grid = function(req, res) {
         row.cell = hi[i];
         result.rows.push(row);
       }
-      result.records = hi.length;
+//      result.records = hi.length;
       res.send(result);
     }).catch(function(error){
       console.log(error);
