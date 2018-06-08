@@ -895,8 +895,8 @@ var entry_get_detail = function (req, res) {
 
 // 受注確定の見積があるか確認する
 exports.order_status_check = function(req, res) {
-//	var sql = "select quote_no from drc_sch.quote_info where entry_no = $1 AND order_status = 2 AND quote_delete_check = 0";
-	var sql = "select quote_no from drc_sch.quote_info where entry_no = $1 AND quote_delete_check = 0";
+	var sql = "select quote_no ,order_status from drc_sch.quote_info where entry_no = $1 AND order_status = $2 AND quote_delete_check = 0";
+//	var sql = "select quote_no from drc_sch.quote_info where entry_no = $1 AND quote_delete_check = 0";
 	// SQL実行
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
@@ -907,7 +907,7 @@ exports.order_status_check = function(req, res) {
 			res.send(result);
 		} else {
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）
-				connection.query(sql, [req.query.entry_no], function (err, results) {
+				connection.query(sql, [req.query.entry_no,2], function (err, results) {
 					if (err) {
 						console.log(err);
 						connection.end();

@@ -233,6 +233,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	quoteInfo.currentEntry = entry;
 	quoteInfo.currentConsumption_tax = quoteInfo.drc_info.consumption_tax;
 	var quote = quoteInfo.clearQuote();
+	quote.entry_no = entry.entry_no;
 	if ($(event.target).attr("id") == "edit_quote") {
 		// 見積の編集ボタン押下時は選択中の見積情報を取得する
 		quote = $("#quote_list").getRowData(quoteInfo.currentQuoteRowId);
@@ -289,22 +290,30 @@ quoteInfo.checkOrderStatus = function(quote) {
 		cache: false,
 		dataType: 'json',
 		success: function (response) {
+  			// 受注確定のラジオボタンを無効化する
+			$("#order_status_2").css("display","none");
 			if (response.records == 0) {
+				// 受注確定の見積がない
 				$("#order_status_2").css("display","inline");
 				$("#quoteForm_dialog").dialog("open");
 				return;
 			}
-			for(var i = 0;i < response.records;i++) {
-        var row = response.rows[i].cell;
-				if (row.quote_no == quote.quote_no) {
-					// 現在選択中の見積の時は「受注確定」を表示する
-					$("#order_status_2").css("display","inline");
-					$("#quoteForm_dialog").dialog("open");
-					return;
+			var rows = response.rows;
+			for(var i = 0;i < rows.length;i++) {
+				var row = rows[i].cell;
+				if (row.order_status == 2) {
+					// 受注確定
+					if (row.quote_no == quote.quote_no) {
+						// 現在選択中の見積の時は「受注確定」を表示する
+						$("#order_status_2").css("display","inline");
+						break;
+					} else {
+						// 受注確定になっている見積がある場合で、選択中のものでない場合、受注確定のラジオボタンを無効化する
+						$("#order_status_2").css("display","none");
+						break;
+					}
 				}
 			}
-			// 受注確定になっている見積がある場合で、選択中のものでない場合、受注確定のラジオボタンを無効化する
-			$("#order_status_2").css("display","none");
 			$("#quoteForm_dialog").dialog("open");
 		}
 	});
