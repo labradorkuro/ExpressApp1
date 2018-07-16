@@ -445,6 +445,10 @@ entryList.selectOutsourcing = function () {
 entryList.payResultFormatter = function (cellval, options, rowObject) {
 	var result = "<label style='color:red;font-weight:bold;'>未登録</>";
 	if (cellval != null) {
+		if (cellval == "請求待ち") return cellval;
+		if (cellval == "請求可") return cellval;
+		if (cellval == "請求済") return cellval;
+		if (cellval == "入金済") return cellval;
 		switch(cellval) {
 			case 0:result = "請求待ち";
 			break;
@@ -465,8 +469,12 @@ entryList.payResultFormatter = function (cellval, options, rowObject) {
 entryList.payCompleteFormatter = function (cellval, options, rowObject) {
 	var result = "";
 	if ((cellval != null) && (cellval != "")) {
-		// 入金確認済みになっていないか、または入金確認済でも入金額が請求額より少ない請求情報の件数を取得できた
-		result = "<label style='color:red;font-weight:bold;'>有(" + cellval + ")</>";
+		if (cellval.indexOf("color:red;") < 0) {
+			// 入金確認済みになっていないか、または入金確認済でも入金額が請求額より少ない請求情報の件数を取得できた
+			result = "<label style='color:red;font-weight:bold;'>有(" + cellval + ")</>";
+		} else {
+			result = cellval;
+		}
 	}
 	return result;
 };
@@ -850,7 +858,7 @@ entryList.updateGridEntryData = function(id,entry) {
 		row.client_person_id = entry.client_person_id;
 		row.client_person_name = entry.client_person_name;
 		row.client_person_compellation = entry.client_person_compellation;
-    row.agent_name_1 = entry.agent_name;
+    	row.agent_name_1 = entry.agent_name;
 		row.entry_title = entry.entry_title;
 		row.inquiry_date = entry.inquiry_date;
 		row.entry_status = entry.entry_status;
@@ -862,10 +870,22 @@ entryList.updateGridEntryData = function(id,entry) {
 		row.consumption_tax = entry.consumption_tax;
 		row.updated = entry.updated;
 		row.updated_id = entry.updated_id;
-    row.created_id = entryList.currentEntry.created_id;
+  		row.created_id = entryList.currentEntry.created_id;
     $("#entry_list").setRowData(id,row);
 	}
 };
+
+// 請求区分と未入金情報の表示更新
+entryList.updateGrid_BillingInfo = function(billing) {
+	var id = $("#entry_list").getGridParam('selrow');
+	if (id != null) {
+		var row = $("#entry_list").getRowData(id);
+		row.pay_complete = billing.pay_complete;
+		row.pay_result = billing.pay_result;
+		row.pay_result_1 = billing.pay_result_1;
+		$("#entry_list").setRowData(id,row);
+	}
+}
 
 // 案件データ取得リクエストのコールバック
 entryList.onloadEntryReq = function (e) {

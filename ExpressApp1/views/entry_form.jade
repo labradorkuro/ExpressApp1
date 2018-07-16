@@ -32,12 +32,11 @@ form#entryForm(method="post",action="javascript:return false;")
 	hr
 	table
 		tr
-			td(colspan=6) 代理店
-		tr
-			td.form_title_ss 社名
-			td
+			td.form_title_m 代理店
+			td(colspan=3)
 				input#agent_cd(type="hidden" name="agent_cd")
-				input#agent_name(type="text" name="agent_name" size="16" placeholder="代理店選択")
+				input#agent_name(type="text" name="agent_name" size="48" placeholder="代理店選択")
+		tr
 			td.form_title_ss 部署
 			td
 				input#agent_division_cd(type="hidden" name="agent_division_cd")
@@ -46,8 +45,6 @@ form#entryForm(method="post",action="javascript:return false;")
 			td 
 				input#agent_division_memo(type="text" name="agent_division_memo" readonly="true" size="16")
 		tr
-			td
-			td
 			td.form_title_ss 担当者
 			td 
 				input#agent_person_id(type="hidden" name="agent_person_id")
@@ -58,12 +55,11 @@ form#entryForm(method="post",action="javascript:return false;")
 	hr
 	table
 		tr
-			td(colspan=6) クライアント情報
-		tr
-			td.form_title_ss 社名
-			td
+			td(style="font-size:14px;").form_title_m クライアント情報
+			td(colspan=3)
 				input#entry_client_cd(type="hidden" name="entry_client_cd")
-				input#client_name(type="text" name="client_name" size="16" placeholder="クライアント選択")
+				input#client_name(type="text" name="client_name" size="48" placeholder="クライアント選択")
+		tr
 			td.form_title_ss 部署
 			td
 				input#client_division_cd(type="hidden" name="client_division_cd")
@@ -72,8 +68,6 @@ form#entryForm(method="post",action="javascript:return false;")
 			td 
 				input#client_division_memo(type="text" name="client_division_memo" readonly="true" size="16")
 		tr
-			td
-			td
 			td.form_title_ss 担当者
 			td 
 				input#client_person_id(type="hidden" name="client_person_id")
@@ -87,18 +81,19 @@ form#entryForm(method="post",action="javascript:return false;")
 			td.form_title_m 試験大分類
 			td 
 				input#test_large_class_cd(type="hidden" name="test_large_class_cd")
-				input#test_large_class_name(type="text" name="test_large_class_name" placeholder="分類選択" size="16")
+				input#test_large_class_name(type="text" name="test_large_class_name" placeholder="分類選択" size="48")
+		tr
 			td.form_title_m 試験中分類
 			td 
 				input#test_middle_class_cd(type="hidden" name="test_middle_class_cd")
-				input#test_middle_class_name(type="text" name="test_middle_class_name" placeholder="分類選択" size="16")
+				input#test_middle_class_name(type="text" name="test_middle_class_name" placeholder="分類選択" size="48")
 			td
-				textarea#test_middle_class_list(cols="16" rows="2" readonly="true")
+				textarea#test_middle_class_list(cols="20" rows="2" readonly="true")
 		tr
 			td.form_title_m 
-				span.remark ＊試験タイトル
+				span(style="font-size:16px;").remark ＊試験タイトル
 			td(colspan=4)
-				input#entry_title(type="text" name="entry_title" size="32" maxlength="128" required="required")
+				input#entry_title(type="text" name="entry_title" size="48" maxlength="128" required="required")
 	table
 		tr
 			td.form_title_s 受託区分

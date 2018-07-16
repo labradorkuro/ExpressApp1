@@ -686,7 +686,9 @@ billingList.onloadBillingSave = function (e) {
 			$("#billing_info_list").GridUnload();
 			billingList.createBillingListGrid();
 			// 案件リストの再ロード
-			entryList.reloadGrid();
+			//entryList.reloadGrid();
+			// 案件リストの請求区分と未入金の情報の表示を更新する
+			billingList.requestBillingForEntryUpdate(billingList.currentEntry.currentEntry.entry_no);
 		}
 	}
 };
@@ -751,5 +753,20 @@ billingList.onloadBillingTotalReq = function (e) {
 		}
 		$("#pay_amount_zan").val(scheduleCommon.numFormatter(amount_zan,11));
 		$("#billing_form_dialog").dialog("open");
+	}
+};
+// 請求情報の更新時の案件リストの表示更新（請求区分と未入金情報）
+billingList.requestBillingForEntryUpdate = function (no) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '/billing_for_entry_grid_update/' + no, true);
+	xhr.responseType = 'json';
+	xhr.onload = billingList.onloadBillingReqForEntryGridUpdate;
+	xhr.send();
+};
+billingList.onloadBillingReqForEntryGridUpdate = function (e) {
+	if (this.status == 200) {
+		var billing = this.response;
+		// 案件リストの表示更新
+		entryList.updateGrid_BillingInfo(billing);
 	}
 };

@@ -216,6 +216,8 @@ app.post('/itakusaki_person_post', upload.array(),itakusaki_post.itakusaki_perso
 app.post('/billing_info_post', upload.array(), billing_post.billing_post);
 app.get('/billing_info_get', billing_get.billing_get);
 app.get('/billing_get_total/:entry_no', billing_get.billing_get_total);
+app.get('/billing_for_entry_grid_update/:entry_no', billing_get.get_billing_for_entry_grid_update);       // 案件リストの更新用データの取得
+
 app.post('/test_item_post', upload.array(), test_item_post.test_item_post);
 app.get('/test_item_get/:class', test_item_get.test_item_get);
 app.get('/large_item_list_get', test_item_get.get_large_item_list);                             // 2016.02.08 テンプレート用にリスト取得APIを追加

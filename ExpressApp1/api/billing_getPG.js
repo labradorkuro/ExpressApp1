@@ -208,3 +208,35 @@ exports.billing_get_total = function (req, res) {
 		});
 	});
 };
+
+exports.get_billing_for_entry_grid_update = function(req, res) {
+	var sql = 'SELECT '
+		+ 'entry_info.entry_no,'
+		+ 'subq.pay_complete,'
+		+ 'subq2.pay_result,'
+		+ 'subq3.pay_result_1'
+		+ ' FROM drc_sch.entry_info '
+		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
+		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_complete FROM drc_sch.billing_info WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = 0 GROUP BY entry_no) as subq ON(subq.entry_no = entry_info.entry_no)'
+		// 請求情報のサブクエリ 請求区分を表示するため
+		+ ' LEFT JOIN (SELECT entry_no,MIN(pay_result) AS pay_result FROM drc_sch.billing_info WHERE billing_info.delete_check = 0 GROUP BY entry_no) as subq2 ON(subq2.entry_no = entry_info.entry_no)'
+		+ ' LEFT JOIN (SELECT entry_no,COUNT(pay_result) AS pay_result_1 FROM drc_sch.billing_info WHERE (pay_result = 1 AND billing_info.delete_check = 0) GROUP BY entry_no) as subq3 ON(subq3.entry_no = entry_info.entry_no)'
+		+ ' WHERE entry_info.entry_no = $1 AND entry_info.delete_check = 0'
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		// データを取得するためのクエリーを実行する
+		connection.query(sql, [req.params.entry_no], function (err, results) {
+			if (err) {
+				console.log(err);
+			} else {
+				var billing = [];
+				for (var i in results.rows) {
+					billing = results.rows[i];
+				}
+				connection.end();
+				console.log(billing);
+				res.send(billing);
+			}
+		});
+	});
+}
