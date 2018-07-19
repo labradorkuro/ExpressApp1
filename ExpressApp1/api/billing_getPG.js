@@ -86,8 +86,8 @@ var billing_get_list = function (req, res) {
 		//+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd)'
 		+ ' LEFT JOIN drc_sch.client_division_list ON (billing_info.client_cd = client_division_list.client_cd AND billing_info.client_division_cd = client_division_list.division_cd)'
 		+ ' LEFT JOIN drc_sch.client_person_list ON (billing_info.client_cd = client_person_list.client_cd AND billing_info.client_division_cd = client_person_list.division_cd AND billing_info.client_person_id = client_person_list.person_id)'
-		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON (billing_info.agent_cd = client_division_list.client_cd AND billing_info.agent_division_cd = client_division_list.division_cd)'
-		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON (billing_info.agent_cd = client_person_list.client_cd AND billing_info.agent_division_cd = client_person_list.division_cd AND billing_info.agent_person_id = client_person_list.person_id)'
+		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON (billing_info.agent_cd = agent_division_list.client_cd AND billing_info.agent_division_cd = agent_division_list.division_cd)'
+		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON (billing_info.agent_cd = agent_person_list.client_cd AND billing_info.agent_division_cd = agent_person_list.division_cd AND billing_info.agent_person_id = agent_person_list.person_id)'
 		+ ' WHERE billing_info.entry_no = $1 AND billing_info.delete_check = $2 ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
