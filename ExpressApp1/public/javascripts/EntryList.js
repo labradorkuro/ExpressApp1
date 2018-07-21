@@ -572,7 +572,7 @@ entryList.openEntryDialog = function (event) {
 		}
 	} else if ($(event.target).attr('id') == 'add_entry') {
 		$("#entry_status").val("01");
-	// 追加ボタンの処理
+		// 追加ボタンの処理
 		// 権限チェック
 		if (entryList.auth_entry_add == 2) {
 			$(".ui-dialog-buttonpane button:contains('追加')").button("enable");			
@@ -580,7 +580,8 @@ entryList.openEntryDialog = function (event) {
 			$(".ui-dialog-buttonpane button:contains('追加')").button("disable");
 		}
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
-    $(".ui-dialog-buttonpane button:contains('複写')").button("disable");
+		$(".ui-dialog-buttonpane button:contains('複写')").button("disable");
+		$("#entry_list").resetSelection();
 	} else if ($(event.target).attr('id') == 'ref_entry') {
 		// 請求情報画面からの参照
 		$("#entry_dialog").dialog({modal:false});	// 参照の時はモードレス
@@ -831,14 +832,8 @@ entryList.getFormData = function () {
 entryList.onloadEntrySave = function (e) {
 	if (this.status == 200) {
 		var entry = this.response;
-    var id = $("#entry_list").getGridParam('selrow');
-    if (id != null) {
-      // 更新時
-      entryList.updateGridEntryData(id,entry);
-    } else {
-      // 追加時
-      entryList.reloadGrid();
-    }
+		var id = $("#entry_list").getGridParam('selrow');
+		entryList.updateGridEntryData(id,entry);
 	}
 };
 
@@ -871,7 +866,11 @@ entryList.updateGridEntryData = function(id,entry) {
 		row.updated = entry.updated;
 		row.updated_id = entry.updated_id;
   		row.created_id = entryList.currentEntry.created_id;
-    $("#entry_list").setRowData(id,row);
+    	$("#entry_list").setRowData(id,row);
+	} else {
+		// 新規追加の場合、最下行に追加する
+    	$("#entry_list").addRowData(1,entry,0,0);
+
 	}
 };
 

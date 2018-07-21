@@ -93,7 +93,7 @@ var http = require('http');
 var path = require('path');
 
 // Version
-drc_version = ' Ver.1.0.4';
+drc_version = ' Ver.1.0.5';
 
 // all environments
 app.set('port', process.env.PORT || 80);
@@ -350,6 +350,6 @@ Object.keys(models).forEach(function(modelName) {
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
-  var msg = '基幹システム(Build:2018.04.01)';
+  var msg = '基幹システム(Build:2018.07.21)';
   console.log(msg);
 });

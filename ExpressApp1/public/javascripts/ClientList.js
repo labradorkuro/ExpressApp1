@@ -449,6 +449,7 @@ clientList.openClientDialog = function (event) {
 		$(".ui-dialog-buttonpane button:contains('追加')").button("enable");
 		$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 		$("#client_cd").attr("disabled",false);
+		$("#client_list_" + (clientList.currentClientListTabNo + 1)).resetSelection()
 	}
 
 	$("#client_dialog").dialog("open");
@@ -706,7 +707,10 @@ clientList.saveClient = function () {
 };
 clientList.onloadClientSave = function (event) {
 	if (this.status == 200) {
-		clientList.reloadGrid();
+		var id = $("#entry_list").getGridParam('selrow');
+		// リロードをやめて行データの更新にする。
+		var client = this.response;
+		clientList.updateRowData(client);
 	}
 };
 // 部署情報の保存
@@ -774,6 +778,33 @@ clientList.changeClientDivisionOption = function (event) {
 // 担当者リスト削除分の表示チェックイベント
 clientList.changeClientPersonOption = function (event) {
 	clientList.reloadPersonGrid(clientList.currentClient.client_cd, clientList.currentClientDivision.division_cd);
+};
+// 得意先リストグリッドの行データ更新
+clientList.updateRowData = function (client) {
+	var row_id = $("#client_list_" + (clientList.currentClientListTabNo + 1)).getGridParam('selrow');
+	if (row_id != null) {
+		var row_data = $("#client_list_" + (clientList.currentClientListTabNo + 1)).getRowData(row_id);
+		row_data.client_cd = client.client_cd;
+		row_data.name_1 = client.name_1;
+		row_data.name_2 = client.name_2;
+		row_data.kana = client.kana;
+		row_data.zipcode = client.zipcode;
+		row_data.address_1 = client.address_1;
+		row_data.address_2 = client.address_2;
+		row_data.tel_no = client.tel_no;
+		row_data.fax_no = client.fax_no;
+		row_data.email = client.email;
+		row_data.memo = client.memo;
+		row_data.created = client.created;
+		row_data.created_id = client.created_id;
+		row_data.updated = client.updated;
+		row_data.updated_id = client.updated_id;
+		row_data.delete_check = client.delete_check;
+		$("#client_list_" + (clientList.currentClientListTabNo + 1)).setRowData(row_id, row_data);
+	} else {
+		// 新規追加の場合、最下行に追加する
+		$("#client_list_" + (clientList.currentClientListTabNo + 1)).addRowData(1, client,0,0);
+	}
 };
 // 得意先リストグリッドの再ロード
 clientList.reloadGrid = function () {
