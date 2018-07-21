@@ -22,11 +22,6 @@ block content
 			span ]
 		a.titlebar_button#edit_password パスワード変更
 	div.main_menu
-		div.main_menu_row
-			div.menu_title(style="background-color:peru;") お知らせ
-			span(style="margin:2px;" )
-				p ・2018/07/21 案件リストと顧客管理の操作性を改善しました。
-				p ・2018/07/21 請求情報入力画面を改善しました。
 		div.main_menu_row#entry_menu
 			div.menu_title(style="background-color:MediumSeaGreen") 営業管理
 			a.menu_button_b(href="entry_list") 案件リスト
@@ -63,6 +58,11 @@ block content
 		div.main_menu_row_b#auth_menu
 			div.menu_title 権限設定
 			a.menu_button_a#auth_settings_menu(href="auth_settings") 権限設定
+		div.main_menu_row
+			div.menu_title(style="background-color:peru;") お知らせ
+			span(style="margin:2px;" )
+				p ・2018/07/21 案件リストと顧客管理の操作性を改善しました。（追加、更新時にリストが再ロードされないようにしました）
+				p ・2018/07/21 案件入力、請求情報入力画面を改善しました。（社名、部署名のフィールドの幅を拡げました）
 	div
 		div#password_dialog
 			include password_form
