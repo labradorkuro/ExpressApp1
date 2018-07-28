@@ -78,6 +78,20 @@ form#entryForm(method="post",action="javascript:return false;")
 	hr
 	table
 		tr
+			td.form_title_m 試験場
+			td
+				label
+					input#shikenjo_01(type="radio" name="shikenjo" value="1" checked="true")
+					| 大阪
+				label
+					input#shikenjo_02(type="radio" name="shikenjo" value="2")
+					| 札幌
+				label
+					input#shikenjo_03(type="radio" name="shikenjo" value="3")
+					| 東京
+
+	table
+		tr
 			td.form_title_m 試験大分類
 			td 
 				input#test_large_class_cd(type="hidden" name="test_large_class_cd")

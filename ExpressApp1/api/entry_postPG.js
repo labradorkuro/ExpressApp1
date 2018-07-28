@@ -50,7 +50,8 @@ var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ 'created,'						// 作成日
 		+ 'created_id,'						// 作成者ID
 		+ 'updated,'						// 更新日
-		+ 'updated_id'						// 更新者ID
+		+ 'updated_id,'						// 更新者ID
+		+ 'shikenjo'						// 試験場情報
 		+ ') values ('
 		+ '$1,'		// 案件No
 		+ '$2,'		// 見積番号
@@ -94,7 +95,8 @@ var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ '$40,'	// 作成日
 		+ '$41,'	// 作成者ID
 		+ '$42,'	// 更新日
-		+ '$43'		// 更新者ID
+		+ '$43,'	// 更新者ID
+		+ '$44'		// 試験場情報
 		+ ')'
 		;
 // 案件基本データのPOST
@@ -231,7 +233,8 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			dateCheck(created),				// 作成日
 			created_id,						// 作成者ID
 			dateCheck(updated),				// 更新日
-			updated_id						// 更新者ID
+			updated_id,						// 更新者ID
+			entry.shikenjo
 		]);
 	query.on('end', function (result, err) {
 		connection.end();
@@ -294,7 +297,8 @@ var copyEntryInfo = function(connection, entry, count, req, res) {
 			dateCheck(created),				// 作成日
 			created_id,						// 作成者ID
 			dateCheck(updated),				// 更新日
-			updated_id						// 更新者ID
+			updated_id,						// 更新者ID
+			entry.shikenjo
 		]);
 	query.on('end', function (result, err) {
 			// 見積情報のコピー
@@ -351,8 +355,9 @@ var updateEntryInfo = function(entry, req, res) {
 			+ 'confirm_check = $37,'				// 確認完了チェック
 			+ 'confirm_operator_id = $38,'			// 確認者ID
 			+ 'updated = $39,'						// 更新日
-			+ 'updated_id = $40'					// 更新者ID
-			+ ' WHERE entry_no = $41';
+			+ 'updated_id = $40,'					// 更新者ID
+			+ 'shikenjo = $41'
+			+ ' WHERE entry_no = $42';
 
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
@@ -397,6 +402,7 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.confirm_operator_id,		// 確認者ID
 			dateCheck(updated),				// 更新日
 			updated_id,						// 更新者ID
+			shikenjo,
 			entry.entry_no					// 案件No
 		]);
 		query.on('end', function (result, err) {
@@ -1365,7 +1371,8 @@ var getEntryInfo = function (quote,created_id) {
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"		// 作成日
 		+ 'entry_info.created_id,'												// 作成者ID
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"		// 更新日
-		+ 'entry_info.updated_id'												// 更新者ID
+		+ 'entry_info.updated_id,'												// 更新者ID
+		+ 'entry_info.shikenjo'
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'

@@ -477,7 +477,8 @@ var entry_get_list_sql = function() {
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'entry_info.created_id,'
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
-		+ 'entry_info.updated_id'
+		+ 'entry_info.updated_id,'
+		+ 'entry_info.shikenjo'
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
@@ -563,7 +564,8 @@ var mikaishu_list_sql = function() {
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'entry_info.created_id,'
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
-		+ 'entry_info.updated_id'
+		+ 'entry_info.updated_id,'
+		+ 'entry_info.shikenjo'
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
@@ -618,7 +620,8 @@ exports.entry_get_list_gantt = function (req, res) {
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'entry_info.created_id,'
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
-		+ 'entry_info.updated_id'
+		+ 'entry_info.updated_id,'
+		+ 'entry_info.shikenjo'
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
@@ -654,7 +657,8 @@ exports.entry_get_list_cal = function (req, res) {
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'entry_info.created_id,'
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
-		+ 'entry_info.updated_id'
+		+ 'entry_info.updated_id,'
+		+ 'entry_info.shikenjo'
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
@@ -857,7 +861,8 @@ var entry_get_detail = function (req, res) {
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"		// 作成日
 		+ 'entry_info.created_id,'												// 作成者ID
 		+ "to_char(entry_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"		// 更新日
-		+ 'entry_info.updated_id'												// 更新者ID
+		+ 'entry_info.updated_id,'												// 更新者ID
+		+ 'entry_info.shikenjo'
 		+ ' FROM drc_sch.entry_info'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)'
 		+ ' LEFT JOIN drc_sch.test_middle_class ON(entry_info.test_middle_class_cd = test_middle_class.item_cd AND entry_info.test_large_class_cd = test_middle_class.large_item_cd)'
