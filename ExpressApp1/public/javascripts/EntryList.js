@@ -316,7 +316,7 @@ entryList.createGridSub = function (req_url) {
 				,'client_tel_no','client_fax_no','client_division_tel_no','client_division_fax_no','client_person_id'
 				,'クライアント担当者','client_person_compellation','代理店'
 				,'試験タイトル','問合せ日', '案件ステータス', '営業担当者'
-				,'受注日','仮受注チェック','受託区分','試験担当者','消費税率','作成日','作成者','更新日','更新者'],
+				,'受注日','仮受注チェック','受託区分','試験担当者','消費税率','作成日','作成者','更新日','更新者','試験場'],
 		colModel: [
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter,searchoptions:{sopt:["eq","ne"]}},
 			{ name: 'pay_result_1', hidden:true},
@@ -357,6 +357,7 @@ entryList.createGridSub = function (req_url) {
 			{ name: 'created_id', index: 'created_id' , align: "center", formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
 			{ name: 'updated', index: 'updated', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
+			{ name: 'shikenjo', index: 'shikenjo', align: "center", formatter: entryList.shikenjoFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
 		],
 		height:260,
 		//width:960,
@@ -549,6 +550,19 @@ entryList.orderTypeFormatter = function (cellval, options, rowObject) {
 		return "外部国内";
 	else if (cellval == 3)
 		return "外部海外";
+};
+// 試験場のフォーマッター
+entryList.shikenjoFormatter = function (cellval, options, rowObject) {
+	if (cellval == "大阪") return cellval;
+	if (cellval == "札幌") return cellval;
+	if (cellval == "東京") return cellval;
+
+	if (cellval == 1)
+		return "大阪";
+	else if (cellval == 2)
+		return "札幌";
+	else if (cellval == 3)
+		return "東京";
 };
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {
@@ -865,7 +879,8 @@ entryList.updateGridEntryData = function(id,entry) {
 		row.consumption_tax = entry.consumption_tax;
 		row.updated = entry.updated;
 		row.updated_id = entry.updated_id;
-  		row.created_id = entryList.currentEntry.created_id;
+		row.created_id = entryList.currentEntry.created_id;
+		row.shikenjo = entry.shikenjo;
     	$("#entry_list").setRowData(id,row);
 	} else {
 		// 新規追加の場合、最下行に追加する
@@ -983,6 +998,14 @@ entryList.setEntryForm = function (entry) {
 	} else if (entry.order_type === 3) {
 		$("#order_type_03").prop('checked', true);
 	}
+	// 試験場
+	if (entry.shikenjo === 1) {
+		$("#shikenjo_01").prop('checked', true);
+	} else if (entry.shikenjo === 2) {
+		$("#shikenjo_02").prop('checked', true);
+	} else if (entry.shikenjo === 3) {
+		$("#shikenjo_03").prop('checked', true);
+	}
 	$("#contract_type").val(entry.contract_type);				// 契約区分
 	$("#outsourcing_cd").val(entry.outsourcing_cd);				// 委託先CD
 	$("#outsourcing_name").val(entry.outsourcing_name);			// 委託先CD
@@ -1086,6 +1109,7 @@ entryList.clearEntry = function () {
 	entry.created_id = "";			// 作成者ID
 	entry.updated = "";				// 更新日
 	entry.updated_id = "";			// 更新者ID
+	entry.shikenjo = 1;				// 試験場
 	return entry;
 };
 

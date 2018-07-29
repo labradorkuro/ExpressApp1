@@ -402,7 +402,7 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.confirm_operator_id,		// 確認者ID
 			dateCheck(updated),				// 更新日
 			updated_id,						// 更新者ID
-			shikenjo,
+			entry.shikenjo,
 			entry.entry_no					// 案件No
 		]);
 		query.on('end', function (result, err) {
