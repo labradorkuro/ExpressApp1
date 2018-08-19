@@ -8,6 +8,12 @@ exports.billing_get = function (req, res) {
 		billing_get_list(req, res);
 	}
 };
+
+// 請求情報集計用リストの取得
+exports.billing_summary_list_get = function (req, res) {
+	billing_get_summary_list(req, res);
+};
+
 var getPagingParams = function (req) {
 	var pg_param = {};
 	pg_param.sidx = "billing_no";
@@ -93,6 +99,90 @@ var billing_get_list = function (req, res) {
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return billing_get_list_for_grid(res, sql_count, sql, [req.query.entry_no,del_chk], pg_params);
 };
+// 請求情報集計用リストの取得
+var billing_get_summary_list = function (req, res) {
+	var pg_params = getPagingParams(req);
+	var del_chk = 0;
+	if (req.query.delete_check == 1) del_chk = 1;
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.billing_info WHERE delete_check = $1';
+	var sql = 'SELECT '
+		+ 'billing_info.entry_no,'
+		+ 'billing_no,'
+		+ 'billing_number,'
+		+ 'entry_info.entry_title,'
+		+ 'test_large_class.item_name AS test_large_class_name,'				// 試験大分類名
+		+ "to_char(entry_info.report_limit_date, 'YYYY/MM/DD') AS report_limit_date,"
+		+ "entry_info.shikenjo,"
+		+ "CASE WHEN pay_result = 0 THEN to_char(pay_planning_date, 'YYYY/MM/DD') ELSE '' END AS pay_planning_date,"
+		+ "to_char(nyukin_yotei_date, 'YYYY/MM/DD') AS nyukin_yotei_date,"
+		+ "to_char(pay_complete_date, 'YYYY/MM/DD') AS pay_complete_date,"
+		+ "CASE WHEN pay_result >= 1 THEN to_char(pay_planning_date, 'YYYY/MM/DD') ELSE '' END AS seikyu_date,"
+		+ 'pay_amount,'					// 請求金額
+		+ 'pay_amount_tax,'				// 請求金額消費税
+		+ 'pay_amount_total,'			// 請求金額税込
+		+ 'pay_complete,'
+		+ 'pay_result,'
+		+ 'total_price AS entry_amount_price,'
+		+ '(total_price * quote_info.consumption_tax) / 100 AS entry_amount_tax,'
+		+ '(total_price + (total_price * quote_info.consumption_tax / 100)) AS entry_amount_total,'
+		+ 'billing_info.client_cd,'
+		+ 'client_name,'
+		//+ 'client_list.name_1 AS client_name,'
+		+ 'billing_info.client_division_cd,'
+		+ 'billing_info.client_division_name,'
+		//+ 'client_division_list.name AS client_division_name,'
+		+ 'client_division_list.address_1  AS client_address_1,'
+		+ 'client_division_list.address_2  AS client_address_2,'
+		+ 'client_division_list.tel_no  AS client_tel_no,'
+		+ 'client_division_list.fax_no  AS client_fax_no,'
+		+ 'billing_info.client_person_id,'
+		+ 'client_person_name,'
+		//+ 'client_person_list.name AS client_person_name,'
+		+ 'client_info,'
+		+ 'billing_info.memo,'
+		+ 'billing_info.agent_cd,'
+		+ 'agent_name,'
+		+ 'billing_info.agent_division_cd,'
+		+ 'agent_division_name,'
+		+ 'agent_division_list.address_1  AS agent_address_1,'
+		+ 'agent_division_list.address_2  AS agent_address_2,'
+		+ 'agent_division_list.tel_no  AS agent_tel_no,'
+		+ 'agent_division_list.fax_no  AS agent_fax_no,'
+		+ 'billing_info.agent_person_id,'
+		+ 'agent_person_name,'
+		+ 'agent_info,'
+		+ 'billing_info.agent_memo,'
+		+ 'billing_info.memo,'
+		+ 'etc_cd,'
+		+ 'etc_name,'
+		+ 'etc_division_cd,'
+		+ 'etc_division_name,'
+		+ 'etc_person_id,'
+		+ 'etc_person_name,'
+		+ 'etc_info,'
+		+ 'billing_info.etc_memo,'
+		+ 'billing_kind,'
+		+ 'billing_info.delete_check,'
+		+ "to_char(billing_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
+		+ 'billing_info.created_id,'
+		+ "to_char(billing_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
+		+ 'billing_info.updated_id'
+		+ ' FROM drc_sch.billing_info'
+		+ ' LEFT JOIN drc_sch.entry_info ON (billing_info.entry_no = entry_info.entry_no AND entry_info.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.entry_no = billing_info.entry_no AND quote_info.order_status = 2 AND quote_info.quote_delete_check=0)'
+		// 合計金額を求めるサブクエリー
+		+ ' LEFT JOIN (SELECT entry_no,quote_no,sum(price) AS total_price FROM drc_sch.quote_specific_info WHERE quote_specific_info.specific_delete_check = 0 GROUP BY entry_no,quote_no) AS subq ON (quote_info.entry_no = subq.entry_no AND quote_info.quote_no = subq.quote_no )'
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd  AND test_large_class.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_division_list ON (billing_info.client_cd = client_division_list.client_cd AND billing_info.client_division_cd = client_division_list.division_cd AND client_division_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_person_list ON (billing_info.client_cd = client_person_list.client_cd AND billing_info.client_division_cd = client_person_list.division_cd AND billing_info.client_person_id = client_person_list.person_id AND client_person_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON (billing_info.agent_cd = agent_division_list.client_cd AND billing_info.agent_division_cd = agent_division_list.division_cd AND agent_division_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON (billing_info.agent_cd = agent_person_list.client_cd AND billing_info.agent_division_cd = agent_person_list.division_cd AND billing_info.agent_person_id = agent_person_list.person_id AND agent_person_list.delete_check=0)'
+		+ ' WHERE billing_info.delete_check = $1 AND billing_info.entry_no <>\'\' ORDER BY '
+		+ pg_params.sidx + ' ' + pg_params.sord
+		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+	return billing_get_list_for_grid(res, sql_count, sql, [del_chk], pg_params);
+};
+
 var billing_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行

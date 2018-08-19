@@ -318,7 +318,7 @@ entryList.createGridSub = function (req_url) {
 				,'試験タイトル','問合せ日', '案件ステータス', '営業担当者'
 				,'受注日','仮受注チェック','受託区分','試験担当者','消費税率','作成日','作成者','更新日','更新者','試験場'],
 		colModel: [
-			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: entryList.payResultFormatter,searchoptions:{sopt:["eq","ne"]}},
+			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: scheduleCommon.payResultFormatter,searchoptions:{sopt:["eq","ne"]}},
 			{ name: 'pay_result_1', hidden:true},
 			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "center" ,sortable:true, formatter: entryList.payCompleteFormatter,searchoptions:{sopt:["eq","ne"]}},
 			{ name: 'report_limit_date', index: 'report_limit_date', width: 120, align: "center" ,sortable:true, formatter: entryList.reportLimitFormatter,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
@@ -357,7 +357,7 @@ entryList.createGridSub = function (req_url) {
 			{ name: 'created_id', index: 'created_id' , align: "center", formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
 			{ name: 'updated', index: 'updated', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
-			{ name: 'shikenjo', index: 'shikenjo', align: "center", formatter: entryList.shikenjoFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
+			{ name: 'shikenjo', index: 'shikenjo', align: "center", formatter: scheduleCommon.shikenjoFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
 		],
 		height:260,
 		//width:960,
@@ -441,30 +441,6 @@ entryList.selectOutsourcing = function () {
 	$("#outsourcing_cd").val(clientList.currentClient.client_cd);
 	$("#outsourcing_name").val(clientList.currentClient.name_1);
 	return true;
-};
-// 請求可のフォーマッター
-entryList.payResultFormatter = function (cellval, options, rowObject) {
-	var result = "<label style='color:red;font-weight:bold;'>未登録</>";
-	if (cellval != null) {
-		if (cellval == "請求待ち") return cellval;
-		if (cellval == "請求可") return cellval;
-		if (cellval == "請求済") return cellval;
-		if (cellval == "入金済") return cellval;
-		switch(cellval) {
-			case 0:result = "請求待ち";
-			break;
-			case 1:result = "請求可";
-			break;
-			case 2:result = "請求済";
-			break;
-			case 3:result = "入金済";
-			break;
-		}
-		if (rowObject.pay_result_1 > 0) {	// 請求可があればそれを優先する
-			result = "請求可";
-		}
-	}
-	return result;
 };
 // 未入金のフォーマッター
 entryList.payCompleteFormatter = function (cellval, options, rowObject) {
@@ -550,19 +526,6 @@ entryList.orderTypeFormatter = function (cellval, options, rowObject) {
 		return "外部国内";
 	else if (cellval == 3)
 		return "外部海外";
-};
-// 試験場のフォーマッター
-entryList.shikenjoFormatter = function (cellval, options, rowObject) {
-	if (cellval == "大阪") return cellval;
-	if (cellval == "札幌") return cellval;
-	if (cellval == "東京") return cellval;
-
-	if (cellval == 1)
-		return "大阪";
-	else if (cellval == 2)
-		return "札幌";
-	else if (cellval == 3)
-		return "東京";
 };
 // 編集用ダイアログの表示
 entryList.openEntryDialog = function (event) {
@@ -1251,7 +1214,7 @@ entryList.entryListPrintSub = function(cw, target) {
       for(var i = 0;i < response.records;i++) {
         var row = response.rows[i].cell;
         var tr = $("<tr>" +
-        "<td class='data_value border_up_left'>" + (row.pay_result != null ? entryList.payResultFormatter(row.pay_result,null,row) : "未登録") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.pay_result != null ? scheduleCommon.payResultFormatter(row.pay_result,null,row) : "未登録") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.pay_complete != null ? entryList.payCompleteFormatter(row.pay_complete,null,row) : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.report_limit_date != null ? row.report_limit_date : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.entry_no != null ? row.entry_no : "") + "</td>" +
@@ -1305,7 +1268,7 @@ entryList.entry_csv_sub = function(req_url,title) {
 	$.get(req_url,function(response) {
 		for(var i = 0;i < response.records;i++) {
 		  var row = response.rows[i].cell;
-		  var text = scheduleCommon.setQuotation(row.pay_result != null ? entryList.payResultFormatter(row.pay_result,null,row) : "未登録") + "," +
+		  var text = scheduleCommon.setQuotation(row.pay_result != null ? scheduleCommon.payResultFormatter(row.pay_result,null,row) : "未登録") + "," +
 			scheduleCommon.setQuotation(row.pay_complete != null ? entryList.payCompleteFormatterForCsv(row.pay_complete,null,row) : "") + "," +
 			scheduleCommon.setQuotation(row.entry_no != null ? row.entry_no : "") + "," +
 			scheduleCommon.setQuotation(row.entry_status != null ? entryList.statusFormatter(row.entry_status,null,row) : "") + "," +

@@ -148,6 +148,20 @@ scheduleCommon.billing_kindFormatter = function(cellval, options, rowObject) {
 	if (cellval == 2) return "その他";
 	return "";
 };
+// 試験場のフォーマッター
+scheduleCommon.shikenjoFormatter = function (cellval, options, rowObject) {
+	if (cellval == "大阪") return cellval;
+	if (cellval == "札幌") return cellval;
+	if (cellval == "東京") return cellval;
+
+	if (cellval == 1)
+		return "大阪";
+	else if (cellval == 2)
+		return "札幌";
+	else if (cellval == 3)
+		return "東京";
+};
+
 // jqgridのフォントサイズを変える
 scheduleCommon.changeFontSize = function(s){
 	var size = '1.1em';
@@ -372,8 +386,34 @@ scheduleCommon.period_unitFormatter = function (cellval, options, rowObject) {
 	}
 	return name;
 };
+// 請求可のフォーマッター
+scheduleCommon.payResultFormatter = function (cellval, options, rowObject) {
+	var result = "<label style='color:red;font-weight:bold;'>未登録</>";
+	if (cellval != null) {
+		if (cellval == "請求待ち") return cellval;
+		if (cellval == "請求可") return cellval;
+		if (cellval == "請求済") return cellval;
+		if (cellval == "入金済") return cellval;
+		switch(cellval) {
+			case 0:result = "請求待ち";
+			break;
+			case 1:result = "請求可";
+			break;
+			case 2:result = "請求済";
+			break;
+			case 3:result = "入金済";
+			break;
+		}
+		if (rowObject.pay_result_1 > 0) {	// 請求可があればそれを優先する
+			result = "請求可";
+		}
+	}
+	return result;
+};
+
 scheduleCommon.numFormatterC = function(num) {
-	return scheduleCommon.numFormatter(num,10);
+	if (num == null) return "";
+	return scheduleCommon.numFormatter(Math.round(num),10);
 }
 // 数値のカンマ区切り
 scheduleCommon.numFormatter = function(num,keta) {

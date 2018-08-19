@@ -22,11 +22,12 @@ block content
 			span ]
 		a.titlebar_button#edit_password パスワード変更
 	div.main_menu
-		div.main_menu_row#entry_menu
+		div.main_menu_row_c#entry_menu
 			div.menu_title(style="background-color:MediumSeaGreen") 営業管理
 			a.menu_button_b(href="entry_list") 案件リスト
 			a.menu_button_b(href="uriage_list") 売上集計
 			a.menu_button_b(href="pay_planning") 入金予測
+			a.menu_button_b(href="billing_summary_list") 請求情報集計(作成中)
 		div.main_menu_row_b
 			div.menu_title(style="background-color:darkorange") 案件スケジュール（ガントチャート）
 			a.menu_button_a(href="schedule#tabs-1") SPF・UVAPF測定試験
@@ -61,6 +62,7 @@ block content
 		div.main_menu_row(style="height:240px;")
 			div.menu_title(style="background-color:peru;") お知らせ
 			span(style="margin:2px;overflow: scroll;display: block;" )
+				p ・2018/07/29 請求情報集計画面を追加しました。これは仮リリースで検索機能などは動作しません。画面確認用です。
 				p ・2018/07/29 案件情報入力に「試験場」が追加されました。（大阪、札幌、東京から選択）
 				p ・2018/07/21 案件リストと顧客管理の操作性を改善しました。（追加、更新時にリストが再ロードされないようにしました）
 				p ・2018/07/21 案件入力、請求情報入力画面を改善しました。（社名、部署名のフィールドの幅を拡げました）

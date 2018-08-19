@@ -1,0 +1,88 @@
+doctype html
+html(lang="ja")
+	head
+		meta(charset="utf-8")
+		title= title
+		link(rel="stylesheet",href="jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js")
+		script(src="jquery-ui-1.10.4.custom/development-bundle/ui/i18n/jquery.ui.datepicker-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/i18n/grid.locale-ja.js")
+		script(src="jquery.jqGrid-4.6.0/js/jquery.jqGrid.min.js")
+		script(src="javascripts/jquery.cookie.js")
+		script(src="javascripts/filesaver.min.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/BillingSummaryList.js")
+		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
+		link(rel="stylesheet" ,href="stylesheets/schedule.css")
+	body
+		div.titlebar
+			span.titlebar
+				a(href="portal") Home
+			img.titlebar_logo(src="images/drc_logo.jpg")
+			span.titlebar= title
+			span.login_user(style='text-align:right')= "ログイン :  " + name + " さん、お疲れ様です。"
+		div(style="margin-left:100px")
+			div.toolbar
+				fieldset.search_option_set#largeItem_check
+				fieldset.search_option_set
+					label
+						input#search_option_shikenjo_all(type="radio" name="search_option_shikenjo" checked=true value="1")
+						| 全試験場&nbsp;
+					label
+						input#search_option_shikenjo_osaka(type="radio" name="search_option_shikenjo" value="2")
+						| 大阪&nbsp;
+					label
+						input#search_option_shikenjo_sapporo(type="radio" name="search_option_shikenjo" value="3")
+						| 札幌&nbsp;&nbsp;&nbsp;&nbsp;
+					label
+						input#search_option_shikenjo_tokyo(type="radio" name="search_option_shikenjo" value="3")
+						| 東京&nbsp;&nbsp;&nbsp;&nbsp;
+				fieldset.search_option_set
+					a.form_button#search_button(style="float:none") 検索
+					a.form_button#uriage_list_print(style="float:none")  印刷
+					a.form_button#uriage_list_csv(style="float:none")  CSVファイル
+			div.toolbar
+				fieldset.entry_search_set(style="border:none")
+					input.billing_search_keyword#uriage_search_keyword(type="text" placeholder="キーワード")
+					label(style="margin-left:5px;") 検索期間：&nbsp;
+					input.datepicker#start_date(type="text" name="start_date",placeholder="開始日付")
+					label &nbsp;～&nbsp;
+					input.datepicker#end_date(type="text" name="end_date",placeholder="終了日付")
+				fieldset.search_option_set
+					label
+						input#search_option_date_1(type="radio" name="search_option_date" checked=true value="1")
+						| 請求予定日&nbsp;
+					label
+						input#search_option_date_2(type="radio" name="search_option_date" value="2")
+						| 請求日&nbsp;
+					label
+						input#search_option_date_3(type="radio" name="search_option_date" value="3")
+						| 入金予定日&nbsp;&nbsp;&nbsp;&nbsp;
+					label
+						input#search_option_date_4(type="radio" name="search_option_date" value="3")
+						| 入金予定日(仮)&nbsp;&nbsp;&nbsp;&nbsp;
+					label
+						input#search_option_date_5(type="radio" name="search_option_date" value="3")
+						| 入金日&nbsp;&nbsp;&nbsp;&nbsp;
+				fieldset.search_option_set
+					label
+						input#search_option_pay_status_1(type="radio" name="search_option_pay_status" checked=true value="1")
+						| 未請求&nbsp;
+					label
+						input#search_option_pay_status_2(type="radio" name="search_option_pay_status" value="2")
+						| 請求済&nbsp;
+					label
+						input#search_option_pay_status_3(type="radio" name="search_option_pay_status" value="3")
+						| 入金済&nbsp;&nbsp;&nbsp;&nbsp;
+					label
+						input#search_option_pay_status_4(type="radio" name="search_option_pay_status" value="3")
+						| 未入金&nbsp;&nbsp;&nbsp;&nbsp;
+		div.result
+			table#billing_summary_list
+			div.grid_pager#billing_summary_list_pager
+		p
+			div.billing_summary_total
+				label#billing_summary_total
+		div#print_data
+		

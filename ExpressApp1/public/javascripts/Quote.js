@@ -101,7 +101,7 @@ quoteInfo.createQuoteInfoGrid = function (no) {
 			{ name: 'quote_no' , index: 'quote_no', width: 80, align: "center" },				// 見積番号
 			{ name: 'quote_date' , index: 'quote_date', width: 120, align: "center" },			// 見積日
 			{ name: 'expire_date' , index: 'expire_date', width: 120, align: "center" ,hidden:true},		// 有効期限
-			{ name: 'total_price' , index: 'total_price', width: 120, align: "right",formatter:quoteInfo.numFormatterC },			// 合計金額
+			{ name: 'total_price' , index: 'total_price', width: 120, align: "right",formatter:scheduleCommon.numFormatterC },			// 合計金額
 			{ name: 'monitors_num', index: 'monitors_num', width: 80,align:"right" },			// 被験者数
 			{ name: 'consumption_tax', index: 'consumption_tax', width: 80,align:"right" },		// 消費税率
 			{ name: 'quote_submit_check', index: 'quote_submit_check', width: 120,align:"center",formatter:quoteInfo.submitCheckFormatter },			// 受注ステータス
@@ -169,9 +169,7 @@ quoteInfo.summaryCheckFormatter = function(no) {
 quoteInfo.numFormatter = function(num) {
 	return Math.round(num);
 };
-quoteInfo.numFormatterC = function(num) {
-	return scheduleCommon.numFormatter( Math.round(num), 10);
-};
+
 // 見積明細リストグリッドの生成
 quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) {
 	// checkboxの状態取得
@@ -189,8 +187,8 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 200 },	// 試験中分類名
 			{ name: 'quantity', index: 'quantity', width: 60,align:"right" },					// 数量
 			{ name: 'unit', index: 'unit', width: 60,align:"center" },							// 単位
-			{ name: 'unit_price', index: 'unit_price', width: 120,align:"right",formatter:quoteInfo.numFormatterC },				// 単価
-			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:quoteInfo.numFormatterC},							// 見積金額
+			{ name: 'unit_price', index: 'unit_price', width: 120,align:"right",formatter:scheduleCommon.numFormatterC },				// 単価
+			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:scheduleCommon.numFormatterC},							// 見積金額
 			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:quoteInfo.summaryCheckFormatter },						// 集計対象チェック
 			{ name: 'created', index: 'created', width: 120 },									// 作成日
 			{ name: 'created_id', index: 'created_id', width: 120, align: "center",formatter: scheduleCommon.personFormatter },							// 作成者ID

@@ -679,9 +679,9 @@ a.menu_button_b {
     display:block;
     width:270px;
     height:60px;
-    padding-top:20px;
-    margin-top:20px;
-    margin-left:20px;
+    padding-top:10px;
+    margin-top:10px;
+    margin-left:10px;
     text-align:center;
     border:2px solid;
     border-color:#aaaaaa #444444 #444444 #aaaaaa;
