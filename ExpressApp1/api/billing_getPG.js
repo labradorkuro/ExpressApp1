@@ -13,6 +13,9 @@ exports.billing_get = function (req, res) {
 exports.billing_summary_list_get = function (req, res) {
 	billing_get_summary_list(req, res);
 };
+exports.billing_summary_total = function (req, res) {
+	billing_summary(req, res);
+};
 
 var getPagingParams = function (req) {
 	var pg_param = {};
@@ -99,12 +102,126 @@ var billing_get_list = function (req, res) {
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	return billing_get_list_for_grid(res, sql_count, sql, [req.query.entry_no,del_chk], pg_params);
 };
+
+// 試験大分類での絞り込み用クエリー変数の取り出しとSQL生成
+var parse_large_item_params = function(req) {
+	var params = "";
+	var searchField = "test_large_class.item_cd";
+	var searchString = "";
+	if (req.query.L01 == '1') {
+		searchString = "'L01'";
+		if (params != "") params += " OR ";
+		params += searchField + "=" + searchString;
+	}
+	if (req.query.L02 == '1') {
+		searchString = "'L02'";
+		if (params != "") params += " OR ";
+		params += searchField + "=" + searchString;
+	}
+	if (req.query.L03 == '1') {
+		searchString = "'L03'";
+		if (params != "") params += " OR ";
+		params += searchField + "=" + searchString;
+	}
+	if (req.query.L04 == '1') {
+		searchString = "'L04'";
+		if (params != "") params += " OR ";
+		params += searchField + "=" + searchString;
+	}
+	if (req.query.L05 == '1') {
+		searchString = "'L05'";
+		if (params != "") params += " OR ";
+		params += searchField + "=" + searchString;
+	}
+	if (req.query.L06 == '1') {
+		if (params != "") params += " OR ";
+		searchString = "'L06'";
+		params += searchField + "=" + searchString;
+	}
+	if (req.query.L07 == '1') {
+		if (params != "") params += " OR ";
+		searchString = "'L07'";
+		params += searchField + "=" + searchString;
+	}
+	if (params != '') {
+		params = 'AND (' + params + ')'
+	}
+	return params;
+}
+
+// 検索対象の日付を取得してクエリー作成
+var search_target_date = function(req) {
+	var query = "";
+	var target_date = req.query.target_date;
+	var sd = req.query.start_date;
+	var ed = req.query.end_date;
+	switch(target_date) {
+		case "01":
+			// 請求予定日
+			query = " billing_info.pay_planning_date >= $2 AND billing_info.pay_planning_date <= $3 " 
+			break;
+		case "02":
+			// 請求日
+			query = " seikyu_date >= $2 AND seikyu_date <= $3 " 
+			break;
+		case "03":
+			// 入金予定日
+			query = " billing_info.nyukin_yotei_date >= $2 AND billing_info.nyukin_yotei_date <= $3 " 
+			break;
+		case "04":
+			// 入金予定日（仮）
+			query = " billing_info.nyukin_yotei_date_p >= $2 AND billing_info.nyukin_yotei_date_p <= $3 " 
+			break;
+		case "05":
+			// 入金日
+			query = " billing_info.pay_complete_date >= $2 AND billing_info.pay_complete_date <= $3 " 
+			break;
+	}
+	return query;
+}
+
+// キーワードの検索文生成
+var getBillingSearchKeywordParam = function(keyword) {
+	var kw = "";
+	if ((keyword != "undefined") && (keyword != "")) {
+		kw = "AND (drc_sch.sf_translate_case(test_large_class.item_name) LIKE drc_sch.sf_translate_case('%" + keyword + "%')  OR drc_sch.sf_translate_case(entry_title) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(client_list.name_1) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR " +
+			"drc_sch.sf_translate_case(client_list.name_2) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(agent_list.name_1) LIKE drc_sch.sf_translate_case('%" + keyword + "%') OR drc_sch.sf_translate_case(entry_info.entry_no) LIKE drc_sch.sf_translate_case('%" + keyword + "%'))";
+	}
+	return kw;
+};
+// 試験場選択
+var getTagetShikenjo = function(req) {
+	var shikenjo = "";
+	if (req.query.shikenjo != 0) {
+		shikenjo = " AND shikenjo = " + req.query.shikenjo;
+	}
+	return shikenjo;
+}
+// 請求ステータス選択
+var getTagetPayResult = function(req) {
+	var result = " AND pay_result = " + req.query.pay_result;
+	return result;
+}
 // 請求情報集計用リストの取得
 var billing_get_summary_list = function (req, res) {
 	var pg_params = getPagingParams(req);
 	var del_chk = 0;
+	var sd = req.query.start_date;
+	var ed = req.query.end_date;
 	if (req.query.delete_check == 1) del_chk = 1;
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.billing_info WHERE delete_check = $1';
+	var large_item = parse_large_item_params(req);
+	var shikenjo = getTagetShikenjo(req);
+	var target_date = search_target_date(req);
+	var pay_result = getTagetPayResult(req)
+	// キーワードを検索するためのSQL生成
+	var keyword = getBillingSearchKeywordParam(req.query.keyword);
+	var sql_count = 'SELECT COUNT(*) AS cnt'
+		+ ' FROM drc_sch.billing_info'
+		+ ' LEFT JOIN drc_sch.entry_info ON (billing_info.entry_no = entry_info.entry_no AND entry_info.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd  AND test_large_class.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd AND client_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_list  AS agent_list ON (billing_info.client_cd = agent_list.client_cd AND agent_list.delete_check=0)'
+		+ ' WHERE billing_info.delete_check = $1 AND ' + target_date + large_item + keyword + shikenjo + pay_result;
 	var sql = 'SELECT '
 		+ 'billing_info.entry_no,'
 		+ 'billing_no,'
@@ -173,14 +290,72 @@ var billing_get_summary_list = function (req, res) {
 		// 合計金額を求めるサブクエリー
 		+ ' LEFT JOIN (SELECT entry_no,quote_no,sum(price) AS total_price FROM drc_sch.quote_specific_info WHERE quote_specific_info.specific_delete_check = 0 GROUP BY entry_no,quote_no) AS subq ON (quote_info.entry_no = subq.entry_no AND quote_info.quote_no = subq.quote_no )'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd  AND test_large_class.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd AND client_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_list  AS agent_list ON (billing_info.client_cd = agent_list.client_cd AND agent_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_division_list ON (billing_info.client_cd = client_division_list.client_cd AND billing_info.client_division_cd = client_division_list.division_cd AND client_division_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_person_list ON (billing_info.client_cd = client_person_list.client_cd AND billing_info.client_division_cd = client_person_list.division_cd AND billing_info.client_person_id = client_person_list.person_id AND client_person_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON (billing_info.agent_cd = agent_division_list.client_cd AND billing_info.agent_division_cd = agent_division_list.division_cd AND agent_division_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON (billing_info.agent_cd = agent_person_list.client_cd AND billing_info.agent_division_cd = agent_person_list.division_cd AND billing_info.agent_person_id = agent_person_list.person_id AND agent_person_list.delete_check=0)'
-		+ ' WHERE billing_info.delete_check = $1 AND billing_info.entry_no <>\'\' ORDER BY '
+		+ ' WHERE billing_info.delete_check = $1 AND billing_info.entry_no <>\'\' AND ' 
+		+ target_date + large_item + keyword + shikenjo + pay_result
+		+ ' ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
-	return billing_get_list_for_grid(res, sql_count, sql, [del_chk], pg_params);
+		return billing_get_list_for_grid(res, sql_count, sql, [del_chk,sd,ed], pg_params);
+};
+
+// 請求情報の合計を取得する
+var billing_summary = function (req, res) {
+	var pg_params = getPagingParams(req);
+	var del_chk = 0;
+	if (req.query.delete_check == 1) del_chk = 1;
+	var sd = req.query.start_date;
+	var ed = req.query.end_date;
+	var large_item = parse_large_item_params(req);
+	var shikenjo = getTagetShikenjo(req);
+	var target_date = search_target_date(req);
+	var pay_result = getTagetPayResult(req)
+	// キーワードを検索するためのSQL生成
+	var keyword = getBillingSearchKeywordParam(req.query.keyword);
+	var sql = 'SELECT '
+		+ 'SUM(pay_amount) as pay_amount_sum,'					// 請求金額
+		+ 'SUM(pay_amount_tax) as pay_amount_tax_sum,'				// 請求金額消費税
+		+ 'SUM(pay_amount_total) as pay_amount_total_sum,'			// 請求金額税込
+		+ 'SUM(pay_complete) as pay_complete_sum,'
+		+ 'SUM(pay_result) as pay_result_sum,'
+		+ 'SUM(total_price) AS entry_amount_price_sum,'
+		+ 'SUM((total_price * quote_info.consumption_tax) / 100) AS entry_amount_tax_sum,'
+		+ 'SUM((total_price + (total_price * quote_info.consumption_tax / 100))) AS entry_amount_total_sum'
+		+ ' FROM drc_sch.billing_info'
+		+ ' LEFT JOIN drc_sch.entry_info ON (billing_info.entry_no = entry_info.entry_no AND entry_info.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.entry_no = billing_info.entry_no AND quote_info.order_status = 2 AND quote_info.quote_delete_check=0)'
+		// 合計金額を求めるサブクエリー
+		+ ' LEFT JOIN (SELECT entry_no,quote_no,sum(price) AS total_price FROM drc_sch.quote_specific_info WHERE quote_specific_info.specific_delete_check = 0 GROUP BY entry_no,quote_no) AS subq ON (quote_info.entry_no = subq.entry_no AND quote_info.quote_no = subq.quote_no )'
+		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd  AND test_large_class.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd AND client_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_list  AS agent_list ON (billing_info.client_cd = agent_list.client_cd AND agent_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_division_list ON (billing_info.client_cd = client_division_list.client_cd AND billing_info.client_division_cd = client_division_list.division_cd AND client_division_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_person_list ON (billing_info.client_cd = client_person_list.client_cd AND billing_info.client_division_cd = client_person_list.division_cd AND billing_info.client_person_id = client_person_list.person_id AND client_person_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON (billing_info.agent_cd = agent_division_list.client_cd AND billing_info.agent_division_cd = agent_division_list.division_cd AND agent_division_list.delete_check=0)'
+		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON (billing_info.agent_cd = agent_person_list.client_cd AND billing_info.agent_division_cd = agent_person_list.division_cd AND billing_info.agent_person_id = agent_person_list.person_id AND agent_person_list.delete_check=0)'
+		+ ' WHERE billing_info.delete_check = $1  AND billing_info.entry_no <>\'\' AND '
+		+ target_date + large_item + keyword + shikenjo + pay_result;
+	// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		// データを取得するためのクエリーを実行する
+		connection.query(sql, [del_chk,sd,ed], function (err, results) {
+			if (err) {
+				console.log(err);
+			} else {
+				var billing = [];
+				for (var i in results.rows) {
+					billing = results.rows[i];
+				}
+				connection.end();
+				res.send(billing);
+			}
+		});
+	});
 };
 
 var billing_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
@@ -193,6 +368,7 @@ var billing_get_list_for_grid = function (res, sql_count, sql, params, pg_params
 				console.log(err);
 			} else {
 				// 取得した件数からページ数を計算する
+				console.log("cnt:" + results.rows[0].cnt);
 				result.total = Math.ceil(results.rows[0].cnt / pg_params.limit);
 				result.page = pg_params.page;
 				// データを取得するためのクエリーを実行する（LIMIT OFFSETあり）

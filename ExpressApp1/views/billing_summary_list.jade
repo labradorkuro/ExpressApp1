@@ -36,7 +36,7 @@ html(lang="ja")
 						input#search_option_shikenjo_sapporo(type="radio" name="search_option_shikenjo" value="3")
 						| 札幌&nbsp;&nbsp;&nbsp;&nbsp;
 					label
-						input#search_option_shikenjo_tokyo(type="radio" name="search_option_shikenjo" value="3")
+						input#search_option_shikenjo_tokyo(type="radio" name="search_option_shikenjo" value="4")
 						| 東京&nbsp;&nbsp;&nbsp;&nbsp;
 				fieldset.search_option_set
 					a.form_button#search_button(style="float:none") 検索
@@ -44,26 +44,26 @@ html(lang="ja")
 					a.form_button#uriage_list_csv(style="float:none")  CSVファイル
 			div.toolbar
 				fieldset.entry_search_set(style="border:none")
-					input.billing_search_keyword#uriage_search_keyword(type="text" placeholder="キーワード")
+					input.billing_search_keyword#billing_search_keyword(type="text" placeholder="キーワード")
 					label(style="margin-left:5px;") 検索期間：&nbsp;
 					input.datepicker#start_date(type="text" name="start_date",placeholder="開始日付")
 					label &nbsp;～&nbsp;
 					input.datepicker#end_date(type="text" name="end_date",placeholder="終了日付")
 				fieldset.search_option_set
 					label
-						input#search_option_date_1(type="radio" name="search_option_date" checked=true value="1")
+						input#search_option_date_01(type="radio" name="search_option_date" checked=true value="1")
 						| 請求予定日&nbsp;
 					label
-						input#search_option_date_2(type="radio" name="search_option_date" value="2")
+						input#search_option_date_02(type="radio" name="search_option_date" value="2")
 						| 請求日&nbsp;
 					label
-						input#search_option_date_3(type="radio" name="search_option_date" value="3")
+						input#search_option_date_03(type="radio" name="search_option_date" value="3")
 						| 入金予定日&nbsp;&nbsp;&nbsp;&nbsp;
 					label
-						input#search_option_date_4(type="radio" name="search_option_date" value="3")
+						input#search_option_date_04(type="radio" name="search_option_date" value="4")
 						| 入金予定日(仮)&nbsp;&nbsp;&nbsp;&nbsp;
 					label
-						input#search_option_date_5(type="radio" name="search_option_date" value="3")
+						input#search_option_date_05(type="radio" name="search_option_date" value="5")
 						| 入金日&nbsp;&nbsp;&nbsp;&nbsp;
 				fieldset.search_option_set
 					label
@@ -76,13 +76,44 @@ html(lang="ja")
 						input#search_option_pay_status_3(type="radio" name="search_option_pay_status" value="3")
 						| 入金済&nbsp;&nbsp;&nbsp;&nbsp;
 					label
-						input#search_option_pay_status_4(type="radio" name="search_option_pay_status" value="3")
+						input#search_option_pay_status_4(type="radio" name="search_option_pay_status" value="4")
 						| 未入金&nbsp;&nbsp;&nbsp;&nbsp;
 		div.result
 			table#billing_summary_list
 			div.grid_pager#billing_summary_list_pager
 		p
 			div.billing_summary_total
-				label#billing_summary_total
+				table.billing_total_table
+					tr
+						th(rowspan=2) 合計
+						th 案件金額
+						th 消費税
+						th 案件金額(税込)
+						th 請求金額
+						th 消費税
+						th 請求金額(税込)
+						th 入金額
+						th 振込手数料
+						th 回収額
+					tr
+						td
+							label#entry_amount_price_total
+						td
+							label#entry_amount_tax_total
+						td
+							label#entry_amount_total_total
+						td
+							label#pay_amount_price_total
+						td
+							label#pay_amount_tax_total
+						td
+							label#pay_amount_total_total
+						td
+							label#nyukingaku_total
+						td
+							label#furikomiryou_total
+						td
+							label#kaishuugaku_total
+							
 		div#print_data
 		
