@@ -41,31 +41,43 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 				label 入金予定日
 			td
 				input.datepicker#nyukin_yotei_date(name="nyukin_yotei_date")
+				br
+				label
+					input#nyukin_yotei_p(type="checkbox" name="nyukin_yotei_p")
+					| 仮予定日		
 		tr
 			td.form_title 金額(税抜)
 			td 
 				input.num_type#pay_amount(type="number" pattern="[0-9]{1,8}" name="pay_amount" size="8" title="")
 			td
-			td.form_title 請求残金額（税抜）
-			td
-				input.num_type#pay_amount_zan(type="text" name="pay_amount_zan" size="8" readonly="true" title="")
+			td.form_title_s 入金日
+			td 
+				input.datepicker#pay_complete_date(name="pay_complete_date")
 		tr
 			td.form_title_m 消費税
 			td 
 				input.num_type#pay_amount_tax(type="number" pattern="[0-9]{1,8}" name="pay_amount_tax" size="8" title="")
 			td
 				input#calc_tax_button(type="button" name="calc_tax_button" value="計算")
-			td.form_title_s 入金日
-			td 
-				input.datepicker#pay_complete_date(name="pay_complete_date")
+			td.form_title_s 入金額
+			td
+				input.num_type#pay_complete(type="number" pattern="[0-9]{1,8}" name="pay_complete" size="8" title="")
 		tr
 			td.form_title 合計(税込)
 			td 
 				input.num_type#pay_amount_total(type="number" pattern="[0-9]{1,8}" name="pay_amount_total" readonly="true" size="8" title="")
 			td
-			td.form_title_s 入金額
+			td.form_title_s 振込手数料
 			td
-				input.num_type#pay_complete(type="number" pattern="[0-9]{1,8}" name="pay_complete" size="8" title="")
+				input.num_type#furikomi_ryo(type="number" pattern="[0-9]{1,8}" name="furikomi_ryo" size="8" title="")
+		tr
+			td.form_title 請求残金額（税抜）
+			td
+				input.num_type#pay_amount_zan(type="number" name="pay_amount_zan" size="8" readonly="true" title="")
+			td
+			td.form_title_s 合計
+			td
+				input.num_type#nyukin_total(type="number" pattern="[0-9]{1,8}" name="nyukin_total" size="8" title="")
 	hr
 	table
 		tr

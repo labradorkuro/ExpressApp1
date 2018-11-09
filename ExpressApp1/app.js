@@ -220,9 +220,10 @@ app.get('/billing_get_total/:entry_no', billing_get.billing_get_total);
 app.get('/billing_for_entry_grid_update/:entry_no', billing_get.get_billing_for_entry_grid_update);       // 案件リストの更新用データの取得
 
 app.get('/billing_summary_list', billing_summary_list.billing_summary_list);
+app.get('/billing_summary_list_print', billing_summary_list.billing_summary_list_print);
 app.get('/billing_summary_total', billing_get.billing_summary_total);
 app.get('/billing_summary_list_get', billing_get.billing_summary_list_get);
-//app.get('/billing_summary_list_print_all', billing_summary_list.billing_summary_print);
+app.get('/billing_summary_print', billing_get.billing_summary_print);
 
 app.post('/test_item_post', upload.array(), test_item_post.test_item_post);
 app.get('/test_item_get/:class', test_item_get.test_item_get);

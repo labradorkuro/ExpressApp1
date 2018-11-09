@@ -37,6 +37,7 @@ exports.billing_post = function (req, res) {
 };
 
 var billing_check = function (billing) {
+	billing.nyukin_yotei_p = (billing.nyukin_yotei_p == 1)
 	// 日付項目チェック
 	billing.nyukin_yotei_date = tools.dateCheck(billing.nyukin_yotei_date);
 	billing.pay_planning_date = tools.dateCheck(billing.pay_planning_date);
@@ -86,6 +87,16 @@ var billing_check = function (billing) {
 	} else {
 		billing.billing_kind = 0;
 	}
+	if (billing.furikomi_ryo) {
+		billing.furikomi_ryo = Number(billing.furikomi_ryo);
+	} else {
+		billing.furikomi_ryo = 0;
+	}
+	if (billing.nyukin_total) {
+		billing.nyukin_total = Number(billing.nyukin_total);
+	} else {
+		billing.nyukin_total = 0;
+	}
 	return billing;
 };
 var insertBilling = function (connection, billing, req, res) {
@@ -129,6 +140,9 @@ var insertBilling = function (connection, billing, req, res) {
 			+ "etc_info,"				// 請求先情報（住所、電話、Fax）
 			+ "etc_memo,"				// 備考
 			+ "billing_kind,"			// 請求先種別
+			+ 'furikomi_ryo,'			// 振込手数料
+			+ 'nyukin_total,'			// 合計
+			+ "nyukin_yotei_p,"			// 入金予定日（仮）
 			+ 'delete_check,'			// 削除フラグ
 			+ 'created,'				// 作成日
 			+ 'created_id,'				// 作成者ID
@@ -137,7 +151,7 @@ var insertBilling = function (connection, billing, req, res) {
 			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'
 			+ '$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,'
-			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40)'
+			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
@@ -176,6 +190,9 @@ var insertBilling = function (connection, billing, req, res) {
 			billing.billing_etc_info,				// 請求先情報（住所、電話、Fax）
 			billing.billing_etc_memo,				// 備考
 			billing.billing_kind,					// 請求先種別
+			billing.furikomi_ryo,					// 振込手数料
+			billing.nyukin_total,					// 合計
+			billing.nyukin_yotei_p,					// 入金予定日（仮）
 			billing.billing_delete_check,			// 削除フラグ
 			created,						// 作成日
 			created_id,						// 作成者ID
@@ -231,10 +248,13 @@ var updateBilling = function (connection, billing, req, res) {
 			+ "etc_info = $33,"				// 請求先情報（住所、電話、Fax）
 			+ "etc_memo = $34,"				// 備考
 			+ "billing_kind = $35,"			// 請求先種別
-			+ 'delete_check = $36,'			// 削除フラグ
-			+ 'updated = $37,'				// 更新日
-			+ 'updated_id = $38'			// 更新者ID
-			+ " WHERE entry_no = $39 AND billing_no = $40";
+			+ 'furikomi_ryo = $36,'
+			+ 'nyukin_total = $37,'
+			+ 'nyukin_yotei_p = $38,'
+			+ 'delete_check = $39,'			// 削除フラグ
+			+ 'updated = $40,'				// 更新日
+			+ 'updated_id = $41'			// 更新者ID
+			+ " WHERE entry_no = $42 AND billing_no = $43";
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
@@ -272,6 +292,9 @@ var updateBilling = function (connection, billing, req, res) {
 			billing.billing_etc_info,				// 請求先情報（住所、電話、Fax）
 			billing.billing_etc_memo,				// 備考
 			billing.billing_kind,					// 請求先種別
+			billing.furikomi_ryo,					// 振込手数料
+			billing.nyukin_total,					// 合計
+			billing.nyukin_yotei_p,					// 入金予定日（仮）
 			billing.billing_delete_check,			// 削除フラグ
 			updated,						// 更新日
 			updated_id,						// 更新者ID

@@ -33,6 +33,7 @@ billingSummaryList.init = function() {
   var today = scheduleCommon.getToday("{0}/{1}/{2}");
   $("#start_date").val(today);
   $("#end_date").val(today);
+  billingSummaryList.createEntryDialog();
 }
 // 検索ボタンクリック処理
 billingSummaryList.onSearchButton = function(ui,event) {
@@ -195,15 +196,15 @@ billingSummaryList.createGrid = function() {
       { name: 'pay_amount_total', index: 'pay_amount_total', width: 160, align: "right",formatter:scheduleCommon.numFormatterC },
       { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
       { name: 'nyukin_yotei_date_p', index: 'nyukin_yotei_date_p', width: 160, align: "center" },
-      { name: 'nyukin_date', index: 'nyukin_date', width: 120, align: "center" },
+      { name: 'pay_complete_date', index: 'pay_complete_date', width: 120, align: "center" },
       { name: 'pay_complete', index: 'pay_complete', width: 100, align: "right",formatter:scheduleCommon.numFormatterC },
-      { name: 'furikomi_tesuuryou', index: 'furikomi_tesuuryou', width: 140, align: "right",formatter:scheduleCommon.numFormatterC },
+      { name: 'furikomi_ryo', index: 'furikomi_ryo', width: 140, align: "right",formatter:scheduleCommon.numFormatterC },
       { name: 'pay_complete_total', index: 'pay_complete_total', width: 100, align: "right",formatter:scheduleCommon.numFormatterC },
       { name: 'pay_result', index: 'pay_result', width: 160, align: "center",formatter: scheduleCommon.payResultFormatter },
       { name: 'shikenjo', index: 'shikenjo', width: 160, align: "center" ,formatter: scheduleCommon.shikenjoFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
 		],
 		height:320,
-		width:screen.width - 50,
+		width:screen.width,
 		shrinkToFit:false,
 		rowNum: 10,
 		rowList: [10,20,30,40,50],
@@ -237,6 +238,8 @@ billingSummaryList.getTotal = function(start_date, end_date,keyword,option,shike
       $("#pay_amount_tax_total").text( billingSummaryList.numFormatterC(response.pay_amount_tax_sum) );
       $("#pay_amount_total_total").text( billingSummaryList.numFormatterC(response.pay_amount_total_sum) );
       $("#nyukingaku_total").text( billingSummaryList.numFormatterC(response.pay_complete_sum) );
+      $("#furikomiryo_total").text( billingSummaryList.numFormatterC(response.furikomiryo_sum) );
+      $("#kaishuugaku_total").text( billingSummaryList.numFormatterC(response.kaishuugaku_total) );
     });
 }
 billingSummaryList.loadCompleteUgiageSummary = function(event) {
@@ -248,4 +251,318 @@ billingSummaryList.loadCompleteUgiageSummary = function(event) {
 billingSummaryList.numFormatterC = function(num) {
     return scheduleCommon.numFormatter( Math.round(num), 13);
 };
+billingSummaryList.onSelectbillingSummaryList = function(rowid) {
+  var row = $("#billing_summary_list").getRowData(rowid);
+  billingSummaryList.openEntryDialog(row);
+};
     
+// 案件参照用ダイアログの生成
+billingSummaryList.createEntryDialog = function () {
+	$('#entry_dialog').dialog({
+		autoOpen: false,
+		width: 900,
+		height: 900,
+		title: '案件情報',
+		closeOnEscape: false,
+		modal: false,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+// 案件情報の参照ダイアログ
+billingSummaryList.openEntryDialog = function (event) {
+	var entry = event;
+	billingSummaryList.requestEntryData(entry.entry_no);
+//	$("#entry_dialog").dialog("open");
+};
+// 案件データの読込み
+billingSummaryList.requestEntryData = function (no) {
+	$.get('/entry_get/' + no,function(response) {
+		var entry = response;
+		// formに取得したデータを埋め込む
+		billingSummaryList.setEntryForm(entry);
+		//$("#entryForm #entry_memo_ref").text(entry.entry_memo);
+		// 見積情報の取得
+		billingSummaryList.requestQuoteInfo(entry.entry_no, entry.test_large_class_cd, entry.consumption_tax);
+	});
+};
+// 請求金額、入金額取得リクエスト
+billingSummaryList.requestBillingTotal = function (no) {
+	$.get('/billing_get_total/' + no,function(response) {
+		var billing = response;
+		if (billing.amount_total != null) {
+			$("#entryForm #entry_amount_billing").val(scheduleCommon.numFormatter(billing.amount_total,11));
+		}
+		if (billing.complete_total != null) {
+			$("#entryForm #entry_amount_deposit").val(scheduleCommon.numFormatter(billing.complete_total,11));
+		}
+		$("#entry_dialog").dialog("open");
+	});
+};
+
+// 受注確定になっている見積情報を取得する
+billingSummaryList.requestQuoteInfo = function(entry_no, large_item_cd, consumption_tax) {
+	$.get('/quote_specific_get_list_for_entryform/' + entry_no + '?large_item_cd=' + large_item_cd, function (quote_list) {
+    billingSummaryList.setQuoteInfo(quote_list, consumption_tax);
+			// 請求情報から請求金額、入金金額合計を取得して表示
+			billingSummaryList.requestBillingTotal(entry_no);
+	});
+};
+billingSummaryList.setQuoteInfo = function (quote_list, consumption_tax) {
+	if (quote_list != null) {
+		var total_price = 0;
+		var rows = quote_list.rows;
+		if (rows.length > 0) {
+			$("#entryForm #quote_no").val(rows[0].quote_no);
+			var list = "";
+			for (var i = 0;i <  rows.length;i++) {
+				list += rows[i].test_middle_class_name + "\n";
+				total_price += Number(rows[i].price);
+			}
+			$("#entryForm #test_middle_class_list").text(list);
+			tax = total_price * (consumption_tax / 100);
+			$("#entryForm #entry_amount_price").val(scheduleCommon.numFormatter(total_price + tax,11));
+      $("#entryForm #entry_amount_price_notax").val(scheduleCommon.numFormatter(total_price,11));	// 金額(税抜)
+			$("#entryForm #entry_amount_tax").val(scheduleCommon.numFormatter(tax,11));					// 消費税
+			$("#entryForm #entry_consumption_tax").val(rows[0].consumption_tax);							// 消費税率
+		}
+	}
+};
+// 案件データをフォームにセットする
+billingSummaryList.setEntryForm = function (entry) {
+	$("#entryForm #entry_no").val(entry.entry_no);					// 案件No
+	$("#entryForm #quote_no").val(entry.quote_no);					// 見積番号
+	$("#entryForm #inquiry_date").val(entry.inquiry_date);			// 問合せ日
+	$("#entryForm #entry_status").val(entry.entry_status);			// 案件ステータス
+	$("#entryForm #sales_person_id").val(entry.sales_person_id);	// 案件ステータス
+//	$("#quote_issue_date").val(entry.quote_issue_date); // 見積書発行日
+	$("#entryForm #agent_cd").val(entry.agent_cd);					// 代理店コード
+	$("#entryForm #agent_name").val(entry.agent_name_1);				// 代理店名
+	$("#entryForm #agent_division_cd").val(entry.agent_division_cd);		// 所属部署CD
+	$("#entryForm #agent_division_name").val(entry.agent_division_name);	// 所属部署名
+	$("#entryForm #agent_division_memo").val(entry.agent_division_memo);	// 所属部署メモ
+	$("#entryForm #agent_person_id").val(entry.agent_person_id);			// 担当者ID
+	$("#entryForm #agent_person_name").val(entry.agent_person_name);		// 担当者名
+	$("#entryForm #agent_person_memo").val(entry.agent_person_memo);		// 担当者メモ
+
+	$("#entryForm #client_cd").val(entry.client_cd);				// 得意先コード
+	var name_1 = entry.client_name_1;
+	var name_2 = entry.client_name_2;
+	$("#entryForm #client_name").val(name_1 );								// 得意先名1
+	$("#entryForm #client_division_cd").val(entry.client_division_cd);		// 所属部署CD
+	$("#entryForm #client_division_name").val(entry.client_division_name);	// 所属部署名
+	$("#entryForm #client_division_memo").val(entry.client_division_memo);	// 所属部署メモ
+	$("#entryForm #client_person_id").val(entry.client_person_id);			// 担当者ID
+	$("#entryForm #client_person_name").val(entry.client_person_name);		// 担当者名
+	$("#entryForm #client_person_memo").val(entry.client_person_memo);		// 担当者メモ
+
+	$("#entryForm #test_large_class_cd").val(entry.test_large_class_cd);		// 試験大分類CD
+	$("#entryForm #test_large_class_name").val(entry.test_large_class_name);	// 試験大分類名
+	$("#entryForm #test_middle_class_cd").val(entry.test_middle_class_cd);		// 試験中分類CD
+	$("#entryForm #test_middle_class_name").val(entry.test_middle_class_name);	// 試験中分類名
+	$("#entryForm #entry_title").val(entry.entry_title);						// 案件名
+
+	$("#entryForm #order_accepted_date").val(entry.order_accepted_date);	// 受注日付
+	$("#entryForm #order_accept_check").val(entry.order_accept_check);		// 仮受注日チェック
+	$("#entryForm #acounting_period_no").val(entry.acounting_period_no);	// 会計期No
+	$("#entryForm #order_type").val(entry.order_type);						// 受託区分
+	$("#entryForm #contract_type").val(entry.contract_type);				// 契約区分
+	$("#entryForm #outsourcing_cd").val(entry.outsourcing_cd);				// 委託先CD
+	$("#entryForm #outsourcing_name").val(entry.outsourcing_name);			// 委託先CD
+	$("#entryForm #entry_amount_price_notax").val(entry.entry_amount_price_notax);		// 案件合計金額（税抜）
+	$("#entryForm #entry_amount_tax").val(entry.entry_amount_tax);			// 消費税額
+	$("#entryForm #entry_amount_price").val(entry.entry_amount_price);		// 案件合計金額（税込）
+	$("#entryForm #entry_amount_billing").val(entry.entry_amount_billing);	// 案件請求合計金額
+	$("#entryForm #entry_amount_deposit").val(entry.entry_amount_deposit); // 案件入金合計金額
+	$("#entryForm #test_person_id").val(entry.test_person_id);				// 試験担当者ID
+
+	$("#entryForm #report_limit_date").val(entry.report_limit_date);		// 報告書提出期限
+	$("#entryForm #report_submit_date").val(entry.report_submit_date);		// 報告書提出日
+	$("#entryForm #prompt_report_limit_date_1").val(entry.prompt_report_limit_date_1);		// 速報提出期限1
+	$("#entryForm #prompt_report_submit_date_1").val(entry.prompt_report_submit_date_1);	// 速報提出日1
+	$("#entryForm #prompt_report_limit_date_2").val(entry.prompt_report_limit_date_2);		// 速報提出期限2
+	$("#entryForm #prompt_report_submit_date_2").val(entry.prompt_report_submit_date_2);	// 速報提出日2
+	$("#entryForm #entry_consumption_tax").val(entry.consumption_tax);		// 消費税率
+	$("#entryForm #entry_memo").val(entry.entry_memo);						// 備考
+	if (entry.delete_check == 1) {
+		$("#entryForm #delete_check").prop("checked", true);				// 削除フラグ
+	} else {
+		$("#entryForm #delete_check").prop("checked", false);				// 削除フラグ
+	}
+	$("#entryForm #delete_reason").val(entry.delete_reason);				// 削除理由
+	$("#entryForm #input_check_date").val(entry.input_check_date);			// 入力日
+	if (entry.input_check == 1) {
+		$("#entryForm #input_check").prop("checked",true);					// 入力完了チェック
+	} else {
+		$("#entryForm #input_check").prop("checked", false);				// 入力完了チェック
+	}
+	$("#entryForm #input_operator_id").val(entry.input_operator_id);		// 入力者ID
+	$("#entryForm #confirm_check_date").val(entry.confirm_check_date);		// 確認日
+	if (entry.confirm_check == 1) {
+		$("#entryForm #confirm_check").prop("checked",true);				// 確認完了チェック
+	} else {
+		$("#entryForm #confirm_check").prop("checked", false);				// 確認完了チェック
+	}
+	$("#entryForm #confirm_operator_id").val(entry.confirm_operator_id);	// 確認者ID
+	$("#entryForm #created").val(entry.created);							// 作成日
+	$("#entryForm #created_id").val(entry.created_id);						// 作成者ID
+	$("#entryForm #updated").val(entry.updated);							// 更新日
+	$("#entryForm #updated_id").val(entry.updated_id);						// 更新者ID
+};
+
+// リスト印刷
+billingSummaryList.billingSummaryListPrint = function() {
+  var keyword = $("#billing_search_keyword").val();
+  var sd = $("#start_date").val();
+  var ed = $("#end_date").val();
+  var option = billingSummaryList.getSearchOption();
+  var shikenjo = billingSummaryList.getShikenjoSelect();
+  var pay_result = billingSummaryList.getPayResultSelect();
+  // 売上集計リストのグリッド
+  var req_url = "/billing_summary_list_get"+ option + "&keyword=" + keyword + "&op=all&start_date=" + sd + "&end_date=" + ed 
+    + "&shikenjo=" + shikenjo + "&pay_result=" + pay_result;
+    var cw = window.open('/billing_summary_list_print','_blank','');
+    $(cw).load(function(){
+      billingSummaryList.billingSummaryListPrintSub(sd, ed, keyword,shikenjo,pay_result,option, cw,"billing_summary_list_table");
+    });
+}
+
+
+billingSummaryList.billingSummaryListPrintSub = function(sd, ed, keyword,shikenjo,pay_result,option, cw,target) {
+  var req_url = "/billing_summary_print" + option + "&keyword=" + keyword + "&op=all&start_date=" + sd + "&end_date=" + ed 
+    + "&shikenjo=" + shikenjo + "&pay_result=" + pay_result;
+  $.get(req_url,function(response) {
+      var tbl = cw.document.getElementById(target);
+      var total = 0;
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+        var tr = $("<tr>" +
+        "<td class='data_value border_up_left'>" + row.entry_no + "</td>" +
+        "<td class='data_value border_up_left'>" + row.client_name + "</td>" +
+        "<td class='data_value border_up_left'>" + row.test_large_class_name + "</td>" +
+        "<td class='data_value border_up_left'>" + row.entry_title + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.entry_amount_price) + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.entry_amount_tax) + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.entry_amount_total) + "</td>" +
+        "<td class='data_value border_up_left'>" + scheduleCommon.dateStringCheck(row.pay_planning_date) + "</td>" +
+        "<td class='data_value border_up_left'>" + scheduleCommon.dateStringCheck(row.report_limit_date) + "</td>" +
+        "<td class='data_value border_up_left'>" + scheduleCommon.dateStringCheck(row.seikyu_date) + "</td>" +
+        "<td class='data_value border_up_left'>" + row.billing_number + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.pay_amount) + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.pay_amount_tax) + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.pay_amount_total) + "</td>" +
+        "<td class='data_value border_up_left'>" + scheduleCommon.dateStringCheck(row.nyukin_yotei_date) + "</td>" +
+        "<td class='data_value border_up_left'>" + scheduleCommon.dateStringCheck(row.nyukin_yotei_date_p) + "</td>" +
+        "<td class='data_value border_up_left'>" + scheduleCommon.dateStringCheck(row.pay_complete_date) + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.pay_complete) + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.furikomi_ryo) + "</td>" +
+        "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.pay_complete_total,11) + "</td>" +
+        "<td class='data_value border_up_left'>" + scheduleCommon.pay_resultFormatter(row.pay_result,null,null) + "</td>" +
+        "<td class='data_value border_up_left_right'>" + scheduleCommon.shikenjoFormatter(row.shikenjo,null,null) + "</td>" +
+        "</tr>");
+        $(tbl).append(tr);
+      }
+      billingSummaryList.getTotalPrint(sd,ed,keyword,option,shikenjo,pay_result,cw);
+
+  });
+
+}
+
+// 合計の取得と表示
+billingSummaryList.getTotalPrint = function(start_date, end_date,keyword,option,shikenjo,pay_result,cw) {
+  $.get('/billing_summary_total' + option + '&start_date=' + start_date + '&end_date=' + end_date + '&keyword=' + keyword 
+    + "&shikenjo=" + shikenjo + "&pay_result=" + pay_result
+    ,function(response) {
+      var tbl = cw.document.getElementById("billing_total_table_p");
+      var tr = $("<tr>" +
+      "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(response.entry_amount_price_sum) + "</td>" +
+      "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(response.entry_amount_tax_sum) + "</td>" +
+      "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(response.entry_amount_total_sum)  + "</td>" +
+      "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(response.pay_amount_sum)  + "</td>" +
+      "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(response.pay_amount_tax_sum) + "</td>" +
+      "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(response.pay_amount_total_sum) + "</td>" +
+      "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(response.pay_complete_sum) + "</td>" +
+      "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(response.furikomiryo_sum) + "</td>" +
+      "<td class='data_value_num border_up_left_right'>" + billingSummaryList.numFormatterC(response.kaishuugaku_total) + "</td>" +
+      "</tr>");
+      $(tbl).append(tr);
+  });
+}
+
+// CSVファイル
+billingSummaryList.billingSummaryListCsv = function() {
+  var lines = [];
+  var colnames = "案件No.,請求先,試験大分類,試験タイトル,案件金額,消費税,案件金額（税込）,請求予定日,報告書提出日,請求日,請求番号,"
+      + "請求金額,消費税,請求金額（税込）,入金予定日,入金予定日（仮）,入金日,入金額,振込手数料,回収額,請求ステータス,試験場";
+  lines.push(colnames);
+  var keyword = $("#billing_search_keyword").val();
+  var sd = $("#start_date").val();
+  var ed = $("#end_date").val();
+  var option = billingSummaryList.getSearchOption();
+  var shikenjo = billingSummaryList.getShikenjoSelect();
+  var pay_result = billingSummaryList.getPayResultSelect();
+  var req_url = "/billing_summary_print"+ option + "&keyword=" + keyword + "&op=all&start_date=" + sd + "&end_date=" + ed 
+    + "&shikenjo=" + shikenjo + "&pay_result=" + pay_result;
+  $.get(req_url,function(response) {
+      var total = 0;
+      for(var i = 0;i < response.records;i++) {
+        var row = response.rows[i].cell;
+
+          var text = scheduleCommon.setQuotation(row.entry_no != null ? row.entry_no :"") + "," +
+          scheduleCommon.setQuotation(row.client_name != null ? row.client_name :"") + "," +
+          scheduleCommon.setQuotation(row.test_large_class_name != null ? row.test_large_class_name:"") + "," +
+          scheduleCommon.setQuotation(row.entry_title != null ? row.entry_title:"") + "," +
+          scheduleCommon.setQuotation(row.entry_amount_price != null ? billingSummaryList.numFormatterC(row.entry_amount_price):"0") + "," +
+          scheduleCommon.setQuotation(row.entry_amount_tax != null ? billingSummaryList.numFormatterC(row.entry_amount_tax):"0") + "," +
+          scheduleCommon.setQuotation(row.entry_amount_total != null ? billingSummaryList.numFormatterC(row.entry_amount_total):"0") + "," +
+          scheduleCommon.setQuotation(row.pay_planning_date != null ? scheduleCommon.dateStringCheck(row.pay_planning_date):"") + "," +
+          scheduleCommon.setQuotation(row.report_limit_date != null ? scheduleCommon.dateStringCheck(row.report_limit_date):"") + "," +
+          scheduleCommon.setQuotation(row.seikyu_date != null ? scheduleCommon.dateStringCheck(row.seikyu_date):"") + "," +
+          scheduleCommon.setQuotation(row.billing_number != null ? row.billing_number:"") + "," +
+          scheduleCommon.setQuotation(row.pay_amount != null ? billingSummaryList.numFormatterC(row.pay_amount):"0") + "," +
+          scheduleCommon.setQuotation(row.pay_amount_tax != null ? billingSummaryList.numFormatterC(row.pay_amount_tax):"0") + "," +
+          scheduleCommon.setQuotation(row.pay_amount_total != null ? billingSummaryList.numFormatterC(row.pay_amount_total):"0") + "," +
+          scheduleCommon.setQuotation(row.nyukin_yotei_date != null ? scheduleCommon.dateStringCheck(row.nyukin_yotei_date):"") + "," +
+          scheduleCommon.setQuotation(row.nyukin_yotei_date_p != null ? scheduleCommon.dateStringCheck(row.nyukin_yotei_date_p):"") + "," +
+          scheduleCommon.setQuotation(row.pay_complete_date != null ? scheduleCommon.dateStringCheck(row.pay_complete_date):"") + "," +
+          scheduleCommon.setQuotation(row.pay_complete != null ? billingSummaryList.numFormatterC(row.pay_complete):"0") + "," +
+          scheduleCommon.setQuotation(row.furikomi_ryo != null ? billingSummaryList.numFormatterC(row.furikomi_ryo) :"0")+ "," +
+          scheduleCommon.setQuotation(row.pay_complete_total != null ? billingSummaryList.numFormatterC(row.pay_complete_total,11):"0") + "," +
+          scheduleCommon.setQuotation(row.pay_result != null ? scheduleCommon.pay_resultFormatter(row.pay_result,null,null):"") + "," +
+          scheduleCommon.setQuotation(row.shikenjo != null ? scheduleCommon.shikenjoFormatter(row.shikenjo,null,null):"") ;
+          lines.push(text);
+      }
+      billingSummaryList.getTotalCsv(sd, ed,keyword,option,shikenjo,pay_result,lines);
+    });
+  return "";
+}
+billingSummaryList.getTotalCsv = function(start_date, end_date,keyword,option,shikenjo,pay_result,lines) {
+  var colnames = "合計,案件金額,消費税,案件金額（税込）,請求金額,消費税,請求金額（税込）,入金額,振込手数料,回収額";
+  var today = scheduleCommon.getToday("{0}_{1}_{2}");
+  var filename = "請求情報集計_" + today;
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = null;
+  $.get('/billing_summary_total' + option + '&start_date=' + start_date + '&end_date=' + end_date + '&keyword=' + keyword 
+    + "&shikenjo=" + shikenjo + "&pay_result=" + pay_result
+    ,function(response) {
+      lines.push("\r\n");
+      lines.push(colnames);
+      var text = "," + scheduleCommon.setQuotation(response.entry_amount_price_sum != null ? billingSummaryList.numFormatterC(response.entry_amount_price_sum):"") + "," +
+      scheduleCommon.setQuotation(response.entry_amount_tax_sum != null ? billingSummaryList.numFormatterC(response.entry_amount_tax_sum):"0") + "," +
+      scheduleCommon.setQuotation(response.entry_amount_total_sum != null ? billingSummaryList.numFormatterC(response.entry_amount_total_sum):"0")  + "," +
+      scheduleCommon.setQuotation(response.pay_amount_sum != null ? billingSummaryList.numFormatterC(response.pay_amount_sum):"0")  + "," +
+      scheduleCommon.setQuotation(response.pay_amount_tax_sum != null ? billingSummaryList.numFormatterC(response.pay_amount_tax_sum):"0") + "," +
+      scheduleCommon.setQuotation(response.pay_amount_total_sum != null ? billingSummaryList.numFormatterC(response.pay_amount_total_sum):"0") + "," +
+      scheduleCommon.setQuotation(response.pay_complete_sum != null ? billingSummaryList.numFormatterC(response.pay_complete_sum):"0") + "," +
+      scheduleCommon.setQuotation(response.furikomiryo_sum != null ? billingSummaryList.numFormatterC(response.furikomiryo_sum):"0") + "," +
+      scheduleCommon.setQuotation(response.kaishuugaku_total != null ? billingSummaryList.numFormatterC(response.kaishuugaku_total):"0") ;
+      lines.push(text);
+      lines.push("\r\n");
+      var detail_text = lines.join("\r\n");
+      blob = new Blob([bom,detail_text], {type: "text/csv;charset=utf-8"});
+      saveAs(blob,filename + ".csv");
+  });
+}

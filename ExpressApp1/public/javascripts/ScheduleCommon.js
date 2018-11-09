@@ -435,6 +435,10 @@ scheduleCommon.addYenMark = function(str) {
 	var af = str.substring(lastIndex + 1);
 	return bf + af;
 };
+scheduleCommon.dateStringCheck = function(str) {
+	if (str == null) return "";
+	return str;
+}
 // ユーザ権限リストの取得 authにはF01:0,F02:0,F03:0,F04:0,F05:0,F06:0,F07:0,F08:0,F09:0,F10:0,F11:1,F12:1のように渡される
 scheduleCommon.getAuthList = function(auth) {
 	var auth_array = [];

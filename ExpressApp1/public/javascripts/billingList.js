@@ -178,7 +178,7 @@ billingList.createBillingListGrid = function () {
 			,'','クライアント名','','クライアント部署','','','','','','クライアント担当者','クライアント情報','備考'
 			,'','代理店名','','代理店部署','','','','','','代理店担当者','代理店情報','代理店備考'
 			,'','その他名','','その他部署','','その他担当者','その他情報','その他備考'
-			,'作成日','作成者','更新日','更新者','削除フラグ'],
+			,'作成日','作成者','更新日','更新者','削除フラグ','','',''],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
@@ -229,6 +229,9 @@ billingList.createBillingListGrid = function () {
 			{ name: 'updated', index: 'updated', width: 120 }, // 更新日
 			{ name: 'updated_id', index: 'updated_id', width: 120 },			// 更新者ID
 			{ name: 'delete_check', index: '', hidden:true },
+			{ name: 'furikomi_ryo', index:'', hidden:true},
+			{ name: 'nyukin_total', index:'', hidden:true},
+			{ name: 'nyukin_yotei_p', index:'', hidden:true}
 		],
 		height: "230px",
 		//width:"800",
@@ -538,6 +541,9 @@ billingList.clearBilling = function() {
 			etc_person_name:'',
 			etc_info: '',
 			etc_memo:'',
+			furikomi_ryo:0,
+			nyukin_total:0,
+			nyukin_yotei_p:"false",
 			delete_check:0
 	};
 	return billing;
@@ -560,6 +566,8 @@ billingList.setBillingForm = function(billing) {
 	$("#pay_amount_tax").val(billing.pay_amount_tax);
 	$("#pay_amount_total").val(billing.pay_amount_total);
 	$("#pay_complete").val(billing.pay_complete);
+	$("#furikomi_ryo").val(billing.furikomi_ryo);
+	$("#nyukin_total").val(billing.nyukin_total);
 //	$("#pay_result").val(billing.pay_result);
 
 	$("#seikyu_date").text("請求日");
@@ -573,6 +581,11 @@ billingList.setBillingForm = function(billing) {
 	} else if (billing.pay_result == "請求待ち") {
 		$("#pay_result_0").prop("checked",true);
 		$("#seikyu_date").text("請求予定日");
+	}
+	if (billing.nyukin_yotei_p == "true") {
+		$("#nyukin_yotei_p").prop("checked",true);
+	} else {
+		$("#nyukin_yotei_p").prop("checked",false);
 	}
 	$("#billing_kind_1").prop("checked",true);
 	if (billing.billing_kind == "クライアント") {
@@ -663,6 +676,9 @@ billingList.saveBillingInfo = function () {
 billingList.checkCheckbox = function () {
 	if ($("#billing_delete_check:checked").val()) {
 		$("#billing_delete_check").val('1');
+	}
+	if ($("#nyukin_yotei_p:checked").val()) {
+		$("#nyukin_yotei_p").val('1');
 	}
 };
 
