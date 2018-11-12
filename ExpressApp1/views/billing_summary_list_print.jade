@@ -1,0 +1,56 @@
+﻿doctype html
+html(lang="ja")
+	head
+		meta(charset="utf-8")
+		title= title
+		script(src="jquery-ui-1.10.4.custom/js/jquery-1.10.2.js")
+		script(src="javascripts/jquery.cookie.js")
+		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/BillingSummaryListPrint.js")
+		link(rel="stylesheet" ,href="stylesheets/page_setting_landscape.css")
+		link(rel="stylesheet" ,href="stylesheets/printout.css",media="screen,print")
+	body
+		section.data_section
+			table
+				tr
+					td#title 請求情報集計
+					td 印刷日
+					td#print_date 
+			table.data_table#billing_summary_list_table(cellspacing="0")
+				tr
+					th.data_title.border_up_left(style="width:15mm") 案件No
+					th.data_title.border_up_left(style="width:30mm") 請求先
+					th.data_title.border_up_left(style="width:30mm") 試験大分類
+					th.data_title.border_up_left(style="width:40mm") 試験タイトル
+					th.data_title.border_up_left(style="width:30mm") 案件金額
+					th.data_title.border_up_left(style="width:20mm") 消費税
+					th.data_title.border_up_left(style="width:30mm") 案件金額（税込）
+					th.data_title.border_up_left(style="width:20mm") 請求予定日
+					th.data_title.border_up_left(style="width:20mm") 報告書提出日
+					th.data_title.border_up_left(style="width:20mm") 請求日
+					th.data_title.border_up_left(style="width:20mm") 請求番号
+					th.data_title.border_up_left(style="width:20mm") 請求金額
+					th.data_title.border_up_left(style="width:20mm") 消費税
+					th.data_title.border_up_left(style="width:20mm") 請求金額（税込）
+					th.data_title.border_up_left(style="width:20mm") 入金予定日
+					th.data_title.border_up_left(style="width:20mm") 入金予定日（仮）
+					th.data_title.border_up_left(style="width:20mm") 入金日
+					th.data_title.border_up_left(style="width:20mm") 入金額
+					th.data_title.border_up_left(style="width:20mm") 振込手数料
+					th.data_title.border_up_left(style="width:20mm") 回収額
+					th.data_title.border_up_left(style="width:20mm") 請求ステータス
+					th.data_title.border_up_left_right(style="width:20mm") 試験場
+			p
+				div.billing_summary_total
+					table.data_table#billing_total_table_p(cellspacing="0")
+						tr
+							th.data_title.border_up_left(style="width:20mm")(rowspan=2) 合計
+							th.data_title.border_up_left(style="width:40mm") 案件金額
+							th.data_title.border_up_left(style="width:30mm") 消費税
+							th.data_title.border_up_left(style="width:40mm") 案件金額(税込)
+							th.data_title.border_up_left(style="width:40mm") 請求金額
+							th.data_title.border_up_left(style="width:30mm") 消費税
+							th.data_title.border_up_left(style="width:40mm") 請求金額(税込)
+							th.data_title.border_up_left(style="width:40mm") 入金額
+							th.data_title.border_up_left(style="width:30mm") 振込手数料
+							th.data_title.border_up_left_right(style="width:40mm") 回収額
