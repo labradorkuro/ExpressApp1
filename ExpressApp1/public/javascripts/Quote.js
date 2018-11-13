@@ -62,8 +62,8 @@ quoteInfo.eventBind = function(kind) {
 quoteInfo.createQuoteFormDialog = function () {
 	$('#quoteForm_dialog').dialog({
 		autoOpen: false,
-		width: 910,
-		height: 600,
+		width: 980,
+		height: 640,
 		title: '見積書',
 		closeOnEscape: false,
 		modal: true,
@@ -217,9 +217,9 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 };
 
 // 試験中分類名のデフォルト値設定
-quoteInfo.setDefaultMiddleClassTestName = function() {
-	$("#test_middle_class_cd_" + 1).val(quoteInfo.currentEntry.test_middle_class_cd);
-	$("#test_middle_class_name_" + 1).val(quoteInfo.currentEntry.test_middle_class_name);
+quoteInfo.setDefaultMiddleClassTestName = function(no) {
+	$("#test_middle_class_cd_" + no).val(quoteInfo.currentEntry.test_middle_class_cd);
+	$("#test_middle_class_name_" + no).val(quoteInfo.currentEntry.test_middle_class_name);
 }
 // 見積書ダイアログ表示
 quoteInfo.openQuoteFormDialog = function (event) {
@@ -246,7 +246,7 @@ quoteInfo.openQuoteFormDialog = function (event) {
 	} else {
 		quoteInfo.setQuoteFormData(quote);
 		// 試験中分類のデフォルト値設定
-		quoteInfo.setDefaultMiddleClassTestName()
+		quoteInfo.setDefaultMiddleClassTestName(1)
 		// イベント設定
 		quoteInfo.eventBind("");
 		quoteInfo.calcSummary();
@@ -351,9 +351,9 @@ quoteInfo.addSpecificInfoToTable = function(specific_list) {
 			$("#period_term_" + no).val(rows[i].period_term);	// 2017.08
 			$("#period_unit_" + no).val(rows[i].period_unit);	// 2017.08
 			$("#unit_" + no).val(rows[i].unit);
-			$("#unit_price_" + no).val(quoteInfo.numFormatter(Number(rows[i].unit_price)));
+			$("#unit_price_" + no).val(scheduleCommon.numFormatter(Number(rows[i].unit_price),11));
 			$("#quantity_" + no).val(rows[i].quantity);
-			$("#price_" + no).val(quoteInfo.numFormatter(Number(rows[i].price)));
+			$("#price_" + no).val(scheduleCommon.numFormatter(Number(rows[i].price),11));
 			$("#summary_check_" + no).prop("checked",(rows[i].summary_check == 1));
 			$("#specific_memo_" + no).val(rows[i].specific_memo);
 		}
@@ -617,6 +617,8 @@ quoteInfo.addQuoteRow = function(event) {
 			$("#meisai_table tbody").append(row);
 			// イベント設定
 			quoteInfo.eventBind("");
+			// 試験中分類のデフォルト値設定
+			quoteInfo.setDefaultMiddleClassTestName(rows)
 		}
 	}
 }
@@ -651,15 +653,16 @@ quoteInfo.calcPrice = function(event) {
 	var no = "1";
 	if (event.target.id.indexOf("unit_price_") == 0) {
 		no = event.target.id.split("_")[2];
-		unit_price = event.target.value;
+		unit_price = Number(event.target.value.replace(',',''));
 		quantity = $("#quantity_" + no).val();
 	} else if (event.target.id.indexOf("quantity_") == 0) {
 		no = event.target.id.split("_")[1];
 		quantity = event.target.value;
-		unit_price = $("#unit_price_" + no).val();
+		unit_price = Number($("#unit_price_" + no).val().replace(',',''));
 	}
+	var price = 0;
 	var price = unit_price * quantity;
-	$("#price_" + no).val(price);
+	$("#price_" + no).val(scheduleCommon.numFormatterC(price,11));
 	quoteInfo.calcSummary();
 };
 
@@ -711,10 +714,10 @@ quoteInfo.addRowCreate = function(no) {
 	var unit = $("<td><input type='text' id='" + id + "' name='" + id + "' size='4' placeholder='単位'/></td>");
 
 	id = "unit_price_" + no;
-	var unit_price = $("<td><input type='number' min='0' max='99999999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='9' placeholder='単価' pattern='[0-9]{1,8}'/></td>");
+	var unit_price = $("<td><input type='text' min='0' max='99999999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='9' placeholder='単価' /></td>");
 
 	id = "price_" + no;
-	var price = $("<td><input type='number'  min='-99999999' max='99999999' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' pattern='[0-9]{1,8}'/></td>");
+	var price = $("<td><input type='text'  min='-99999999' max='99999999' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' /></td>");
 
 	id = "summary_check_" + no;
 	var summary = $("<td><label><input type='checkbox' id='" + id + "' name='" + id + "' checked='true'/>集計する</label></td>");

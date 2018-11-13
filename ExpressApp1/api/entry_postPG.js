@@ -724,7 +724,7 @@ var quote_check = function (quote) {
 // 明細データのチェック
 var quote_specific_check = function(specific) {
 	if (specific.unit_price && specific.unit_price != "") {
-		specific.unit_price = Number(specific.unit_price);
+		specific.unit_price = Number(specific.unit_price.replace(',',''));
 	} else {
 		specific.unit_price = 0;
 	}
@@ -734,7 +734,7 @@ var quote_specific_check = function(specific) {
 		specific.quantity = 0;
 	}
 	if (specific.price && specific.price != "") {
-		specific.price = Number(specific.price);
+		specific.price = Number(specific.price.replace(',',''));
 	} else {
 		specific.price = 0;
 	}
