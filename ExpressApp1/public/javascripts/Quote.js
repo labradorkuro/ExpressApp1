@@ -216,6 +216,11 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 	scheduleCommon.changeFontSize();
 };
 
+// 試験中分類名のデフォルト値設定
+quoteInfo.setDefaultMiddleClassTestName = function() {
+	$("#test_middle_class_cd_" + 1).val(quoteInfo.currentEntry.test_middle_class_cd);
+	$("#test_middle_class_name_" + 1).val(quoteInfo.currentEntry.test_middle_class_name);
+}
 // 見積書ダイアログ表示
 quoteInfo.openQuoteFormDialog = function (event) {
 	// 自社情報のセット
@@ -240,6 +245,8 @@ quoteInfo.openQuoteFormDialog = function (event) {
 		quoteInfo.searchSpecificInfo(entry.entry_no,quote.quote_no, entry.test_large_class_cd);
 	} else {
 		quoteInfo.setQuoteFormData(quote);
+		// 試験中分類のデフォルト値設定
+		quoteInfo.setDefaultMiddleClassTestName()
 		// イベント設定
 		quoteInfo.eventBind("");
 		quoteInfo.calcSummary();
