@@ -352,24 +352,61 @@ billingList.setDefaultClientData = function(billing) {
 // 案件情報から請求先情報を取得
 // kind:0 クライアント情報、kind:1 代理店情報
 billingList.getEntryClientInfo = function(client,kind) {
+	var zipcode = billingList.getZipcode_for_entry(client,kind);
 	var address1 = billingList.getAddress1_for_entry(client,kind);
 	var address2 = billingList.getAddress2_for_entry(client,kind);
 	var tel = billingList.getTel_for_entry(client,kind);
 	var fax = billingList.getFax_for_entry(client,kind);
-	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
+	var client_info = "〒 " + zipcode + "\n住所1 : " + address1 + " \n住所2 : " + address2
 					+ " \ntel : " + tel + " \nfax : " + fax
 	return client_info;
 }
 // 顧客マスタから請求先情報を取得
 billingList.getClientInfo = function(client,division) {
+	var zipcode = billingList.getZipcode_for_client(client,division);
 	var address1 = billingList.getAddress1_for_client(client,division);
 	var address2 = billingList.getAddress2_for_client(client,division);
 	var tel = billingList.getTel_for_client(client,division);
 	var fax = billingList.getFax_for_client(client,division);
-	var client_info = "住所1 : " + address1 + " \n住所2 : " + address2
+	var client_info = "〒 " + zipcode + "\n住所1 : " + address1 + " \n住所2 : " + address2
 					+ " \ntel : " + tel + " \nfax : " + fax
 	return client_info;
 }
+
+// 郵便番号取得（案件情報から取得）
+// kind:0 クライアント情報、kind:1 代理店情報
+billingList.getZipcode_for_entry = function(client,kind) {
+	var zipcode = "";
+	if (kind == 0) {
+		if ((client.client_zipcode != null) && (client.client_zipcode != "")) {
+			zipcode = client.client_zipcode;
+		}
+		if ((client.client_division_zipcode != null) && (client.client_division_zipcode != "")) {
+			zipcode = client.client_division_zipcode;
+		}	
+	} else if (kind == 1) {
+		if ((client.agent_zipcode != null) && (client.agent_zipcode != "")) {
+			zipcode = client.agent_zipcode;
+		}
+		if ((client.agent_division_zipcode != null) && (client.agent_division_zipcode != "")) {
+			zipcode = client.agent_division_zipcode;
+		}
+	}
+	return zipcode;
+}
+
+// 郵便番号取得（顧客マスタから取得）
+billingList.getZipcode_for_client = function(client,division) {
+	var zipcode = "";
+	if ((client.client_zipcode != null) && (client.client_zipcode != "")) {
+		zipcode = client.client_zipcode;
+	}
+	if ((division.client_division_zipcode != null) && (division.client_division_zipcode != "")) {
+		zipcode = division.client_division_zipcode;
+	}
+	return zipcode;
+}
+
 // 住所１取得（案件情報から取得）
 // kind:0 クライアント情報、kind:1 代理店情報
 billingList.getAddress1_for_entry = function(client,kind) {

@@ -714,7 +714,7 @@ quoteInfo.addRowCreate = function(no) {
 	var unit = $("<td><input type='text' id='" + id + "' name='" + id + "' size='4' placeholder='単位'/></td>");
 
 	id = "unit_price_" + no;
-	var unit_price = $("<td><input type='text' min='0' max='99999999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='9' placeholder='単価' /></td>");
+	var unit_price = $("<td><input type='text' min='0' max='99999999' class='num_type calc_price' id='" + id + "' name='" + id + "' size='9' placeholder='単価'/></td>");
 
 	id = "price_" + no;
 	var price = $("<td><input type='text'  min='-99999999' max='99999999' class='num_type summary_target' id='" + id + "' name='" + id + "' size='12' placeholder='金額' /></td>");

@@ -439,8 +439,10 @@ var entry_get_list_sql = function() {
 		+ "entry_info.client_cd,"
 		+ "client_list.name_1 AS client_name_1,"
 		+ "client_list.name_2 AS client_name_2,"
+		+ "client_list.zipcode AS client_zipcode,"
 		+ "client_list.address_1 AS client_address_1,"
 		+ "client_list.address_2 AS client_address_2,"
+		+ "client_division_list.zipcode AS client_division_zipcode,"
 		+ "client_division_list.address_1 AS client_division_address_1,"
 		+ "client_division_list.address_2 AS client_division_address_2,"
 		+ "client_list.tel_no AS client_tel_no,"
@@ -796,12 +798,14 @@ var entry_get_detail = function (req, res) {
 		+ "agent_person_id,"													// 代理店担当者ID
 		+ 'agent_list.name_1 AS agent_name_1,'									// 代理店名称1
 		+ 'agent_list.name_2 AS agent_name_2,'									// 代理店名称2
+		+ "agent_list.zipcode AS agent_zipcode,"						// 郵便番号
 		+ "agent_list.address_1 AS agent_address_1,"					// 代理店住所１
 		+ "agent_list.address_2 AS agent_address_2,"					// 代理店住所２
 		+ "agent_list.tel_no AS agent_tel_no,"
 		+ "agent_list.fax_no AS agent_fax_no,"
 		+ "agent_division_list.name AS agent_division_name,"					// 代理店部署名
 		+ "agent_division_list.memo AS agent_division_memo,"					// 代理店部署メモ
+		+ "agent_division_list.zipcode AS agent_division_zipcode,"				// 郵便番号
 		+ "agent_division_list.address_1 AS agent_division_address_1,"
 		+ "agent_division_list.address_2 AS agent_division_address_2,"
 		+ "agent_division_list.tel_no AS agent_division_tel_no,"
@@ -816,10 +820,12 @@ var entry_get_detail = function (req, res) {
 		+ "client_list.name_2 AS client_name_2,"								// 得意先名２
 		+ "client_list.tel_no AS client_tel_no,"
 		+ "client_list.fax_no AS client_fax_no,"
+		+ "client_list.zipcode AS client_zipcode,"						// 郵便番号
 		+ "client_list.address_1 AS client_address_1,"					// 得意先住所１
 		+ "client_list.address_2 AS client_address_2,"					// 得意先住所２
 		+ "client_division_list.name AS client_division_name,"					// 得意先部署名
 		+ "client_division_list.memo AS client_division_memo,"					// 得意先部署メモ
+		+ "client_division_list.zipcode AS client_division_zipcode,"			// 郵便番号
 		+ "client_division_list.address_1 AS client_division_address_1,"
 		+ "client_division_list.address_2 AS client_division_address_2,"
 		+ "client_division_list.tel_no AS client_division_tel_no,"

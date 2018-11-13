@@ -20,7 +20,7 @@ $(function ()　{
 	entryList.createEntryDialog();				// 案件入力用
 	quoteInfo.createQuoteFormDialog();			// 見積書発行用
 	entryList.createClientListDialog();			// 得意先選択用
-  entryList.createClientList(0);
+  	entryList.createClientList(0);
 	test_itemList.createTestItemSelectDialog();	// 試験分類選択用
 	billingList.createBillingListDialog();		// 請求情報リスト用
 	billingList.createBillingFormDialog();		// 請求情報編集選択用
@@ -312,7 +312,7 @@ entryList.createGridSub = function (req_url) {
 		altRows: true,
 		datatype: "json",
 		colNames: ['請求区分','請求区分_1','未入金','報告書期限','report_submit_date','案件No', 'test_large_class_cd','試験大分類', '試験中分類','client_cd','クライアント名','client_division_cd','クライアント部署'
-				,'client_address_1','client_address_2','client_division_address_1','client_division_address_2'
+				,'client_zipcode','client_address_1','client_address_2','client_division_zipcode','client_division_address_1','client_division_address_2'
 				,'client_tel_no','client_fax_no','client_division_tel_no','client_division_fax_no','client_person_id'
 				,'クライアント担当者','client_person_compellation','代理店'
 				,'試験タイトル','問合せ日', '案件ステータス', '営業担当者'
@@ -331,8 +331,10 @@ entryList.createGridSub = function (req_url) {
 			{ name: 'client_name_1', index: 'client_name_1', width: 160, align: "center" ,sortable:true,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
 			{ name: 'client_division_cd', index: '', hidden:true },
 			{ name: 'client_division_name', index: 'client_division_name', width: 160, align: "center" , hidden:true},
+			{ name: 'client_zipcode', index: '', hidden:true },
 			{ name: 'client_address_1', index: '', hidden:true },
 			{ name: 'client_address_2', index: '', hidden:true },
+			{ name: 'client_division_zipcode', index: '', hidden:true },
 			{ name: 'client_division_address_1', index: '', hidden:true },
 			{ name: 'client_division_address_2', index: '', hidden:true },
 			{ name: 'client_tel_no', index: '', hidden:true },
