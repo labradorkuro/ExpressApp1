@@ -154,7 +154,7 @@ var getPagingParams = function (req) {
 var client_get_list_sql = function(index_no) {
 	var index_str = ['','アイウエオヴ','カキクケコガギグゲゴ','サシスセソザジズゼゾ','タチツテトダヂヅデド','ナニヌネノ','ハヒフヘホバビブベボパピプペポ','マミムメモ','ヤユヨ','ラリルレロ','ワヲン',''];
 	var sql = 'SELECT '
-		+ 'client_cd,'
+		+ 'client_list.client_cd,'
 		+ 'name_1,'
 		+ 'name_2,'
 		+ "kana," // カナ
@@ -164,18 +164,26 @@ var client_get_list_sql = function(index_no) {
 		+ "address_2," // 住所２
 		+ "tel_no," // 電話番号
 		+ "fax_no," // FAX番号
-		+ "memo,"
-		+ 'delete_check,'
-		+ "to_char(created,'YYYY/MM/DD HH24:MI:SS') AS created,"
-		+ 'created_id,'
-		+ "to_char(updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
-		+ 'updated_id';
+		+ "sight_infos.shimebi AS shimebi,"
+		+ "sight_infos.sight_id AS sight_id,"
+		+ "sight_infos.kyujitsu_setting AS kyujitsu_setting,"
+		+ "sight_dates.disp_str AS disp_str,"
+		+ "client_list.memo,"
+		+ 'client_list.delete_check,'
+		+ "to_char(client_list.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
+		+ 'client_list.created_id,'
+		+ "to_char(client_list.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
+		+ 'client_list.updated_id'
+		+ ' FROM drc_sch.client_list'
 //		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd LIKE \'' + index_str[index_no] + '%\' ORDER BY '
 //		+ ' FROM drc_sch.client_list WHERE delete_check = $1 AND client_cd ~* \'^[' + index_str[index_no] + ']\' ORDER BY '
+		+ ' LEFT JOIN drc_sch.sight_infos ON(client_list.client_cd = sight_infos.client_cd)'
+		+ ' LEFT JOIN drc_sch.sight_dates ON(sight_infos.sight_id = sight_dates.sight_id)';
+
 	if (index_no < 11) {
-		sql += ' FROM drc_sch.client_list WHERE delete_check = $1 AND kana ~* \'^[' + index_str[index_no] + ']\' ';
+		sql += ' WHERE client_list.delete_check = $1 AND kana ~* \'^[' + index_str[index_no] + ']\' ';
 	} else {
-		sql += ' FROM drc_sch.client_list WHERE delete_check = $1 ';
+		sql += ' WHERE client_list.delete_check = $1 ';
 	}
 	return sql;
 };

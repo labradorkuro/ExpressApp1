@@ -201,7 +201,7 @@ clientList.createClientListGrid = function (no, keyword) {
 		url: url,
 		altRows: true,
 		datatype: "json",
-		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','メモ','作成日','作成者','更新日','更新者','削除フラグ'],
+		colNames: [fname + 'コード', fname + '名１', fname + '名２', 'カナ','郵便番号','住所１', '住所２','電話番号','FAX番号','メールアドレス','請求書締日','支払日','休日対応','メモ','作成日','作成者','更新日','更新者','削除フラグ'],
 		colModel: [
 			{ name: 'client_cd', index: 'client_cd', width: 80, align: "center",searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']},hidden:true},
 			{ name: 'name_1', index: 'name_1', width: 200, align: "left" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
@@ -213,6 +213,9 @@ clientList.createClientListGrid = function (no, keyword) {
 			{ name: 'tel_no', index: 'tel_no', width: 80 , align: "center" ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
 			{ name: 'fax_no', index: '', width: 80 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
 			{ name: 'email', index: 'email', width: 80 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'shimebi', index: '', width: 100 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'disp_str', index: '', width: 100 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
+			{ name: 'kyujitsu_setting', index: '', formatter: scheduleCommon.kyujitsuFormatter,width: 100 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
 			{ name: 'memo', index: '', width: 100 , align: "center"  ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},
 			{ name: 'created', index: 'created', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'created_id', index: 'created_id' , formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']}},

@@ -411,6 +411,14 @@ scheduleCommon.payResultFormatter = function (cellval, options, rowObject) {
 	return result;
 };
 
+// 休日対応
+scheduleCommon.kyujitsuFormatter = function(cellval, options, rowObject) {
+	if (cellval!= null) {
+		if (cellval == 0) return "前へ";
+		if (cellval == 1) return "後へ";
+	}
+	return "";
+}
 scheduleCommon.numFormatterC = function(num) {
 	if (num == null) return "";
 	return scheduleCommon.numFormatter(Math.round(num),10);
