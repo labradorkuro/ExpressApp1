@@ -128,7 +128,7 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 		url: req_url,
 		altRows: true,
 		datatype: "json",
-    colNames: ['案件No.','試験大分類','試験中分類','クライアント名','代理店','試験タイトル','売上税抜','消費税','売上計','請求日','入金日',
+    colNames: ['案件No.','試験大分類','試験中分類','クライアント名','代理店','試験タイトル','売上(税抜)','消費税','売上計','請求日','入金日',
     '入金予定日','営業担当者'],
 		colModel: [
       { name: 'entry_no', index: 'entry_no', width: 200, align: "center" },
@@ -177,12 +177,14 @@ uriageList.createGrid_division = function() {
 		url: req_url,
 		altRows: true,
 		datatype: "json",
-		colNames: ['CD','試験課','売上金額'],
+		colNames: ['CD','試験課','売上(税抜)','消費税','売上計'],
 		colModel: [
       { name: 'division_cd', index: 'division_cd', hidden:true, sortable:true},
       { name: 'division', index: 'division', width: 300, align: "center" ,sortable:true},
-			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC }
-		],
+			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'uriage_tax', index: 'uriage_tax', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'uriage_total', index: 'uriage_total', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      ],
 		height:320,
 		width:960,
 		shrinkToFit:false,
@@ -217,11 +219,13 @@ uriageList.createGrid_client = function() {
 		url: req_url,
 		altRows: true,
 		datatype: "json",
-		colNames: ['CD','顧客名','売上金額'],
+		colNames: ['CD','顧客名','売上(税抜)','消費税','売上計'],
 		colModel: [
       { name: 'client_cd', index: 'client_cd', hidden:true, sortable:true},
       { name: 'client', index: 'cilent', width: 300, align: "center" ,sortable:true},
-			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC }
+			{ name: 'uriage_sum', index: 'uriage_sum', width: 200, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'uriage_tax', index: 'uriage_tax', width: 100, align: "right",formatter:uriageList.numFormatterC },
+      { name: 'uriage_total', index: 'uriage_total', width: 100, align: "right",formatter:uriageList.numFormatterC },
 		],
 		height:320,
 		width:960,
@@ -498,7 +502,9 @@ uriageList.uriageListPrint = function() {
           var row = response.rows[i].cell;
           var tr = $("<tr>" +
           "<td class='data_value border_up_left'>" + (row.division != null ? row.division : "") + "</td>" +
-          "<td class='data_value_num border_up_left_right'>" + (row.uriage_sum != null ? scheduleCommon.numFormatter(row.uriage_sum,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left'>" + (row.uriage_sum != null ? scheduleCommon.numFormatter(row.uriage_sum,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left'>" + (row.uriage_tax != null ? scheduleCommon.numFormatter(row.uriage_tax,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left_right'>" + (row.uriage_total != null ? scheduleCommon.numFormatter(row.uriage_total,11) : "") + "</td>" +
           "</tr>"
           );
           $(tbl).append(tr);
@@ -518,7 +524,9 @@ uriageList.uriageListPrint = function() {
           var row = response.rows[i].cell;
           var tr = $("<tr>" +
           "<td class='data_value border_up_left'>" + (row.client != null ? row.client : "") + "</td>" +
-          "<td class='data_value_num border_up_left_right'>" + (row.uriage_sum != null ? scheduleCommon.numFormatter(row.uriage_sum,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left'>" + (row.uriage_sum != null ? scheduleCommon.numFormatter(row.uriage_sum,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left'>" + (row.uriage_tax != null ? scheduleCommon.numFormatter(row.uriage_tax,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left_right'>" + (row.uriage_total != null ? scheduleCommon.numFormatter(row.uriage_total,11) : "") + "</td>" +
           "</tr>"
           );
           $(tbl).append(tr);
@@ -554,7 +562,7 @@ uriageList.uriageListCsv = function() {
 
 // 試験課別
 uriageList.getDivisionSummaryList = function() {
-  var colnames = "試験課,売上金額";
+  var colnames = "試験課,売上(税抜),消費税,売上計";
   var keyword = $("#uriage_search_keyword").val();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
@@ -568,7 +576,9 @@ uriageList.getDivisionSummaryList = function() {
       for(var i = 0;i < response.records;i++) {
         var row = response.rows[i].cell;
         var text = scheduleCommon.setQuotation(row.division != null ? row.division : "") + "," +
-          scheduleCommon.setQuotation(row.uriage_sum != null ? row.uriage_sum : "");
+        scheduleCommon.setQuotation(row.uriage_sum != null ? row.uriage_sum : "") + "," +
+        scheduleCommon.setQuotation(row.uriage_tax != null ? row.uriage_tax : "") + "," +
+        scheduleCommon.setQuotation(row.uriage_total != null ? row.uriage_total : "");
         lines.push(text);
       }
       var detail_text = lines.join("\r\n");
@@ -579,7 +589,7 @@ uriageList.getDivisionSummaryList = function() {
 
 // 顧客別
 uriageList.getClientSummaryList = function() {
-  var colnames = "顧客名,売上金額";
+  var colnames = "顧客名,売上(税抜),消費税,売上計";
   var keyword = $("#uriage_search_keyword").val();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
@@ -593,8 +603,10 @@ uriageList.getClientSummaryList = function() {
       for(var i = 0;i < response.records;i++) {
         var row = response.rows[i].cell;
         var text = scheduleCommon.setQuotation(row.client != null ? row.client : "") + "," +
-          scheduleCommon.setQuotation(row.uriage_sum != null ? row.uriage_sum : "");
-        lines.push(text);
+          scheduleCommon.setQuotation(row.uriage_sum != null ? row.uriage_sum : "") + "," +
+          scheduleCommon.setQuotation(row.uriage_tax != null ? row.uriage_tax : "") + "," +
+          scheduleCommon.setQuotation(row.uriage_total != null ? row.uriage_total : "");
+          lines.push(text);
       }
       var detail_text = lines.join("\r\n");
       uriageList.getDetailList(detail_text);

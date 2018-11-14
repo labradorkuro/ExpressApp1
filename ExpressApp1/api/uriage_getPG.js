@@ -109,7 +109,10 @@ uriage_sum.sql_division_summary_count = "select count(*) as cnt from drc_sch.bil
   //+ " group by entry_info.test_large_class_cd";
 
 // 試験課別売上集計
-uriage_sum.sql_division_summary = "select entry_info.test_large_class_cd as division_cd,test_large_class.item_name as division,sum(pay_amount_total) as uriage_sum"
+uriage_sum.sql_division_summary = "select entry_info.test_large_class_cd as division_cd,test_large_class.item_name as division,"
+  + "sum(pay_amount) as uriage_sum,"
+  + "sum(pay_amount_tax) as uriage_tax,"
+  + "sum(pay_amount_total) as uriage_total"  
   + " from drc_sch.billing_info left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
   + " left join drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)"
   + " left join (" + uriage_sum.sqlBillingInfoCount_all + ") as subq1 on(subq1.entry_no = billing_info.entry_no)"
@@ -137,7 +140,11 @@ uriage_sum.sql_client_summary_count = "select count(*) from drc_sch.billing_info
   + " left join drc_sch.client_list as agent_list on(agent_list.client_cd = entry_info.agent_cd)"
   + " where (subq1.billing_count = subq2.seikyu_count) and (subq4.amount_total = subq5.total_price) and (subq3.last_seikyu_date between $1 and $2) and billing_info.delete_check = 0";
   //+ " group by entry_info.client_cd,client_list.name_1";
-uriage_sum.sql_client_summary = "select entry_info.client_cd,client_list.name_1 as client,sum(pay_amount_total) as uriage_sum from drc_sch.billing_info"
+uriage_sum.sql_client_summary = "select entry_info.client_cd,client_list.name_1 as client," 
+  + "sum(pay_amount) as uriage_sum,"
+  + "sum(pay_amount_tax) as uriage_tax,"
+  + "sum(pay_amount_total) as uriage_total"  
+  + " from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
   + " left join drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd) "
   + " left join (" + uriage_sum.sqlBillingInfoCount_all + ") as subq1 on(subq1.entry_no = billing_info.entry_no)"
