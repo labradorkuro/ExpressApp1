@@ -49,19 +49,26 @@ nyukin_yosoku.sql_division_summary_count = "select count(entry_info.test_large_c
   + " group by entry_info.test_large_class_cd,test_large_class.item_name";
 
 // 試験課別入金予測集計
-nyukin_yosoku.sql_division_summary = "select entry_info.test_large_class_cd as division_cd,test_large_class.item_name as division,sum(pay_amount_total) as nyukin_yosoku_sum"
+nyukin_yosoku.sql_division_summary = "select entry_info.test_large_class_cd as division_cd,test_large_class.item_name as division," 
+  + "sum(pay_amount) as yosoku_sum,"
+  + "sum(pay_amount_tax) as yosoku_tax,"
+  + "sum(pay_amount_total) as yosoku_total"
   + " from drc_sch.billing_info left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no)"
   + " left join drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd)"
   + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0"
   + " group by entry_info.test_large_class_cd,test_large_class.item_name";
 
 // 顧客別入金予測集計
-nyukin_yosoku.sql_client_summary_count = "select entry_info.client_cd,client_list.name_1 as client,sum(pay_amount_total) as nyukin_yosoku_sum from drc_sch.billing_info"
+nyukin_yosoku.sql_client_summary_count = "select count(entry_info.client_cd) as cnt from drc_sch.billing_info"
     + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
     + " left join drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd) "
     + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0"
     + " group by entry_info.client_cd,client_list.name_1";
-nyukin_yosoku.sql_client_summary = "select entry_info.client_cd,client_list.name_1 as client,sum(pay_amount_total) as nyukin_yosoku_sum from drc_sch.billing_info"
+nyukin_yosoku.sql_client_summary = "select entry_info.client_cd,client_list.name_1 as client,"
+  + "sum(pay_amount) as yosoku_sum,"
+  + "sum(pay_amount_tax) as yosoku_tax,"
+  + "sum(pay_amount_total) as yosoku_total"
+  + " from drc_sch.billing_info"
   + " left join drc_sch.entry_info ON(billing_info.entry_no = entry_info.entry_no) "
   + " left join drc_sch.client_list ON(entry_info.client_cd = client_list.client_cd) "
   + " where (billing_info.nyukin_yotei_date between $1 and $2) and billing_info.delete_check = 0"

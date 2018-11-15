@@ -122,7 +122,7 @@ yosokuList.createGrid_list = function(list_kind,division_cd) {
 		url: req_url,
 		altRows: true,
 		datatype: "json",
-    colNames: ['案件No.','試験大分類','試験中分類','クライアント名','代理店','試験タイトル','売上税抜','消費税','売上計','請求日','入金日',
+    colNames: ['案件No.','試験大分類','試験中分類','クライアント名','代理店','試験タイトル','売上(税抜)','消費税','売上計','請求日','入金日',
     '入金予定日','営業担当者'],
 		colModel: [
       { name: 'entry_no', index: 'entry_no', width: 200, align: "center" },
@@ -170,11 +170,13 @@ yosokuList.createGrid_division = function() {
 		url: req_url,
 		altRows: true,
 		datatype: "json",
-		colNames: ['CD','試験課','売上金額'],
+		colNames: ['CD','試験課','売上(税抜)','消費税','売上計'],
 		colModel: [
       { name: 'division_cd', index: 'division_cd', hidden:true, sortable:true},
       { name: 'division', index: 'division', width: 300, align: "center" ,sortable:true},
-			{ name: 'nyukin_yosoku_sum', index: 'nyukin_yosoku_sum', width: 200, align: "right",formatter:yosokuList.numFormatterC }
+			{ name: 'yosoku_sum', index: 'yosoku_sum', width: 200, align: "right",formatter:yosokuList.numFormatterC },
+			{ name: 'yosoku_tax', index: 'yosoku_tax', width: 200, align: "right",formatter:yosokuList.numFormatterC },
+			{ name: 'yosoku_total', index: 'yosoku_total', width: 200, align: "right",formatter:yosokuList.numFormatterC }
 		],
 		height:240,
 		width:960,
@@ -209,11 +211,13 @@ yosokuList.createGrid_client = function() {
 		url: req_url,
 		altRows: true,
 		datatype: "json",
-		colNames: ['CD','顧客名','売上金額'],
+		colNames: ['CD','顧客名','売上(税抜)','消費税','売上計'],
 		colModel: [
       { name: 'client_cd', index: 'client_cd', hidden:true, sortable:true},
       { name: 'client', index: 'cilent', width: 300, align: "center" ,sortable:true},
-			{ name: 'nyukin_yosoku_sum', index: 'nyukin_yosoku_sum', width: 200, align: "right",formatter:yosokuList.numFormatterC }
+			{ name: 'yosoku_sum', index: 'yosoku_sum', width: 200, align: "right",formatter:yosokuList.numFormatterC },
+			{ name: 'yosoku_tax', index: 'yosoku_tax', width: 200, align: "right",formatter:yosokuList.numFormatterC },
+			{ name: 'yosoku_total', index: 'yosoku_total', width: 200, align: "right",formatter:yosokuList.numFormatterC }
 		],
 		height:240,
 		width:960,
@@ -437,7 +441,9 @@ yosokuList.getSortParams = function() {
   if (sn == undefined) sn = "entry_no";
   var sd = $("#yosoku_list").getGridParam("sortorder");
   if (sd == undefined) sd = "asc";
-
+	if (sn == 'division_cd') {
+		sn = 'entry_info.test_large_class_cd'
+	}
   return "&sidx=" + sn + "&sord=" + sd;
 }
 yosokuList.nyukinListPrintSub = function(sd, ed, cw,target) {
@@ -496,7 +502,9 @@ yosokuList.nyukinListPrint = function() {
           var row = response.rows[i].cell;
           var tr = $("<tr>" +
           "<td class='data_value border_up_left'>" + (row.division != null ? row.division : "") + "</td>" +
-          "<td class='data_value_num border_up_left_right'>" + (row.yosoku_sum != null ? scheduleCommon.numFormatter(row.yosoku_sum,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left'>" + (row.yosoku_sum != null ? scheduleCommon.numFormatter(row.yosoku_sum,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left'>" + (row.yosoku_tax != null ? scheduleCommon.numFormatter(row.yosoku_tax,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left_right'>" + (row.yosoku_total != null ? scheduleCommon.numFormatter(row.yosoku_total,11) : "") + "</td>" +
           "</tr>"
           );
           $(tbl).append(tr);
@@ -517,7 +525,9 @@ yosokuList.nyukinListPrint = function() {
           var row = response.rows[i].cell;
           var tr = $("<tr>" +
           "<td class='data_value border_up_left'>" + (row.client != null ? row.client : "") + "</td>" +
-          "<td class='data_value_num border_up_left_right'>" + (row.yosoku_sum != null ? scheduleCommon.numFormatter(row.yosoku_sum,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left'>" + (row.yosoku_sum != null ? scheduleCommon.numFormatter(row.yosoku_sum,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left'>" + (row.yosoku_tax != null ? scheduleCommon.numFormatter(row.yosoku_tax,11) : "") + "</td>" +
+          "<td class='data_value_num border_up_left_right'>" + (row.yosoku_total != null ? scheduleCommon.numFormatter(row.yosoku_total,11) : "") + "</td>" +
           "</tr>"
           );
           $(tbl).append(tr);
