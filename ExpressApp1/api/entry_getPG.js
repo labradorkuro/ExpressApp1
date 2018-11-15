@@ -147,6 +147,15 @@ var parse_large_item_params = function(req) {
 	}
 	return params;
 }
+// 試験場選択
+var getTagetShikenjo = function(req) {
+	var shikenjo = "";
+	if (req.query.shikenjo != 0) {
+		shikenjo = " shikenjo = " + req.query.shikenjo;
+	}
+	return shikenjo;
+}
+
 // 検索条件（虫眼鏡アイコンの検索）の解析
 var entry_parse_search_params = function(searchField,searchOper,searchString) {
 	if (searchField === "") {
@@ -262,6 +271,7 @@ var entry_get_list_searchField = function (req, res, func) {
 	var searchField = req.query.searchField;
 	var searchString = req.query.searchString;
 	var searchOper = req.query.searchOper;
+
 	var searchParams = entry_parse_search_params(searchField,searchOper,searchString);
 	// 試験大分類の絞り込み用
 	var large_item_params = parse_large_item_params(req);
@@ -282,6 +292,11 @@ var entry_get_list_searchField = function (req, res, func) {
 	}
 	if (large_item_params != '') {
 		sql += ' ' +  large_item_params + ' AND';
+	}
+	// 試験場
+	var shikenjo = getTagetShikenjo(req);
+	if (shikenjo != "") {
+		sql += ' ' + shikenjo + ' AND '
 	}
 	if (func === "grid") {
 		// grid表示
@@ -364,6 +379,11 @@ var entry_get_searchKeyword = function(req, res, func) {
 	if (ed != '') {
 		sql += ' ' +  ed + " AND ";
 	}
+	// 試験場
+	var shikenjo = getTagetShikenjo(req);
+	if (shikenjo != "") {
+		sql += ' ' + shikenjo + ' AND '
+	}
 	if (func === "grid") {
 		// grid表示
 		sql += ' entry_info.delete_check = $1  ORDER BY '
@@ -394,6 +414,11 @@ var entry_get_list = function (req, res, func) {
 	var sql = entry_get_list_sql();
 	if (large_item_params != '') {
 		sql += ' ' + large_item_params + ' AND ';
+	}
+	// 試験場
+	var shikenjo = getTagetShikenjo(req);
+	if (shikenjo != "") {
+		sql += ' ' + shikenjo + ' AND '
 	}
 	if (func === "grid") {
 		// grid表示
@@ -679,6 +704,7 @@ exports.entry_get_list_cal = function (req, res) {
 // 案件リスト取得
 var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
+	console.log(sql);
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
 		if (err) {

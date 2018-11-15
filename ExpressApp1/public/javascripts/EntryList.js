@@ -106,6 +106,10 @@ $(function ()　{
 	$("#entry_status_03").bind('change', entryList.changeEntryOption);
 	$("#entry_status_04").bind('change', entryList.changeEntryOption);
 	$("#entry_status_05").bind('change', entryList.changeEntryOption);
+	$("#search_option_shikenjo_all").bind('change', entryList.changeEntryOption);
+	$("#search_option_shikenjo_osaka").bind('change', entryList.changeEntryOption);
+	$("#search_option_shikenjo_sapporo").bind('change', entryList.changeEntryOption);
+	$("#search_option_shikenjo_tokyo").bind('change', entryList.changeEntryOption);
 	// 見積書関連のイベント処理登録
 	quoteInfo.eventBind();
 	// 請求情報入力画面のイベント処理登録
@@ -296,10 +300,25 @@ entryList.getSearchOption = function () {
   }
   return option;
 };
-
+// 試験場選択取得
+entryList.getShikenjoSelect = function() {
+	var shikenjo = "";
+	if ($("#search_option_shikenjo_all").prop("checked")) {
+	  shikenjo = "0";
+	} else if ($("#search_option_shikenjo_osaka").prop("checked")) {
+	  shikenjo = "1";
+	} else if ($("#search_option_shikenjo_sapporo").prop("checked")) {
+	  shikenjo = "2";
+	} else if ($("#search_option_shikenjo_tokyo").prop("checked")) {
+	  shikenjo = "3";
+	}
+	return shikenjo;
+  }
+  
 entryList.createGrid = function () {
   var option = entryList.getSearchOption();
-  var req_url = '/entry_get' + option;
+  var shikenjo = entryList.getShikenjoSelect();
+  var req_url = '/entry_get' + option + "&shikenjo=" + shikenjo;
 	// 案件リストのグリッド
   entryList.createGridSub(req_url);
 };
@@ -1375,11 +1394,12 @@ entryList.entrySearch = function() {
   // 期間設定
   var search_start_date = $("#search_start_date").val();
   var search_end_date = $("#search_end_date").val();
-
+  var shikenjo = entryList.getShikenjoSelect();
   var req_url = '/entry_get' + option +
     '&keyword=' + keyword +
     '&search_start_date=' + search_start_date +
-    '&search_end_date=' + search_end_date;
+	'&search_end_date=' + search_end_date + 
+	"&shikenjo=" + shikenjo;
 
 	// 案件リストのグリッド
   entryList.createGridSub(req_url);

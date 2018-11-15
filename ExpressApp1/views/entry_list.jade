@@ -59,6 +59,19 @@ html(lang="ja")
 							| 失注
 				div.toolbar
 					fieldset.search_option_set#largeItem_check
+					fieldset.search_option_set
+						label
+							input#search_option_shikenjo_all(type="radio" name="search_option_shikenjo" checked=true value="1")
+							| 全試験場&nbsp;
+						label
+							input#search_option_shikenjo_osaka(type="radio" name="search_option_shikenjo" value="2")
+							| 大阪&nbsp;
+						label
+							input#search_option_shikenjo_sapporo(type="radio" name="search_option_shikenjo" value="3")
+							| 札幌&nbsp;&nbsp;&nbsp;&nbsp;
+						label
+							input#search_option_shikenjo_tokyo(type="radio" name="search_option_shikenjo" value="4")
+							| 東京&nbsp;&nbsp;&nbsp;&nbsp;
 				div.toolbar
 					fieldset.entry_search_set
 						input.entry_search_keyword#entry_search_keyword(type="text" placeholder="キーワード")
