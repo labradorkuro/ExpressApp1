@@ -54,6 +54,22 @@ uriageList.checkAuth = function() {
 		var auth = user_auth[i];
 	}
 };
+
+// 試験場選択取得
+uriageList.getShikenjoSelect = function() {
+  var shikenjo = "";
+  if ($("#search_option_shikenjo_all").prop("checked")) {
+    shikenjo = "0";
+  } else if ($("#search_option_shikenjo_osaka").prop("checked")) {
+    shikenjo = "1";
+  } else if ($("#search_option_shikenjo_sapporo").prop("checked")) {
+    shikenjo = "2";
+  } else if ($("#search_option_shikenjo_tokyo").prop("checked")) {
+    shikenjo = "3";
+  }
+  return shikenjo;
+}
+
 // 検索集計結果を表示するグリッドの生成処理（全社）
 uriageList.createGrid_all = function() {
   var keyword = $("#uriage_search_keyword").val();
@@ -61,12 +77,16 @@ uriageList.createGrid_all = function() {
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
   var req_url = "/uriage_summary?op=all&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  var shikenjo = uriageList.getShikenjoSelect();
+  if (shikenjo != "") {
+    req_url += "&shikenjo=" + shikenjo;
+  }
 	jQuery("#uriage_list").jqGrid({
 		url: req_url,
 		altRows: true,
 		datatype: "json",
 		colNames: ['案件No.','試験大分類','試験中分類','クライアント名','代理店','試験タイトル','売上税抜','消費税','売上計','請求日','入金日',
-    '入金予定日','営業担当者'],
+    '入金予定日','営業担当者','試験場'],
 		colModel: [
       { name: 'entry_no', index: 'entry_no', width: 200, align: "center" },
 			{ name: 'test_large_class_name', index: 'test_large_class_name', width: 160, align: "center" },
@@ -81,6 +101,7 @@ uriageList.createGrid_all = function() {
       { name: 'nyukin_date', index: 'nyukin_date', width: 120, align: "center" },
       { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
       { name: 'sales_person_name', index: 'sales_person_name', width: 160, align: "center" },
+			{ name: 'shikenjo', index: 'shikenjo', align: "center", formatter: scheduleCommon.shikenjoFormatter  },
 		],
 		height:320,
 		//width:960,
@@ -102,16 +123,17 @@ uriageList.createGrid_all = function() {
   $('#uriage_pager_left').css('width','30%');
   $('#uriage_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
-  uriageList.getUriageTotal(sd,ed,keyword);
+  uriageList.getUriageTotal(sd,ed,keyword,shikenjo);
 };
 
 // 売上集計総合計の取得
-uriageList.getUriageTotal = function(start_date, end_date,keyword) {
-    $.get('/uriage_total?start_date=' + start_date + '&end_date=' + end_date + '&keyword=' + keyword,function(response) {
+uriageList.getUriageTotal = function(start_date, end_date,keyword,shikenjo) {
+  $("#uriage_total").text("合計：0円");
+  $.get('/uriage_total?start_date=' + start_date + '&end_date=' + end_date + '&keyword=' + keyword + '&shikenjo=' + shikenjo,function(response) {
         if (response.uriage_total) {
           $("#uriage_total").text('合計：' + uriageList.numFormatterC(response.uriage_total) + '円');
         } else {
-          $("#uriage_total").text("");
+          $("#uriage_total").text("合計：0円");
         }
     });
 }
@@ -129,7 +151,7 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 		altRows: true,
 		datatype: "json",
     colNames: ['案件No.','試験大分類','試験中分類','クライアント名','代理店','試験タイトル','売上(税抜)','消費税','売上計','請求日','入金日',
-    '入金予定日','営業担当者'],
+    '入金予定日','営業担当者','試験場'],
 		colModel: [
       { name: 'entry_no', index: 'entry_no', width: 200, align: "center" },
 			{ name: 'test_large_class_name', index: 'test_large_class_name', width: 160, align: "center" },
@@ -144,6 +166,7 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
       { name: 'nyukin_date', index: 'nyukin_date', width: 120, align: "center" },
       { name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 120, align: "center" },
       { name: 'sales_person_name', index: 'sales_person_name', width: 160, align: "center" },
+			{ name: 'shikenjo', index: 'shikenjo', align: "center", formatter: scheduleCommon.shikenjoFormatter  },
 		],
 		height:320,
 		shrinkToFit:false,
@@ -169,10 +192,14 @@ uriageList.createGrid_list = function(list_kind,division_cd) {
 // 検索集計結果を表示するグリッドの生成処理（試験課別）
 uriageList.createGrid_division = function() {
   var keyword = $("#uriage_search_keyword").val();
+  var shikenjo = uriageList.getShikenjoSelect();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
   var req_url = "/uriage_summary?op=division&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  if (shikenjo != "") {
+    req_url += "&shikenjo=" + shikenjo;
+  }
 	jQuery("#uriage_list").jqGrid({
 		url: req_url,
 		altRows: true,
@@ -205,16 +232,20 @@ uriageList.createGrid_division = function() {
   $('#uriage_pager_left').css('width','50%');
   $('#uriage_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
-  uriageList.getUriageTotal(sd,ed,keyword);
+  uriageList.getUriageTotal(sd,ed,keyword,shikenjo);
 };
 
 // 検索集計結果を表示するグリッドの生成処理（顧客別）
 uriageList.createGrid_client = function() {
   var keyword = $("#uriage_search_keyword").val();
+  var shikenjo = uriageList.getShikenjoSelect();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   // 売上集計リストのグリッド
   var req_url = "/uriage_summary?op=client&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  if (shikenjo != "") {
+    req_url += "&shikenjo=" + shikenjo;
+  }
 	jQuery("#uriage_list").jqGrid({
 		url: req_url,
 		altRows: true,
@@ -247,7 +278,7 @@ uriageList.createGrid_client = function() {
   $('#uriage_pager_left').css('width','50%');
   $('#uriage_pager_center').css('vertical-align','top');
 	scheduleCommon.changeFontSize();
-  uriageList.getUriageTotal(sd,ed,keyword);
+  uriageList.getUriageTotal(sd,ed,keyword,shikenjo);
 };
 
 uriageList.onSelectUriageSummary = function(rowid) {
@@ -289,7 +320,7 @@ uriageList.loadCompleteUgiageList = function(event) {
 
 };
 uriageList.numFormatterC = function(num) {
-	return scheduleCommon.numFormatter( Math.round(num), 11);
+	return scheduleCommon.numFormatter( Math.round(num), 12);
 };
 // 案件参照用ダイアログの生成
 uriageList.createEntryDialog = function () {
@@ -448,8 +479,8 @@ uriageList.setEntryForm = function (entry) {
 	$("#entryForm #updated_id").val(entry.updated_id);						// 更新者ID
 };
 
-uriageList.uriageListPrintSub = function(sd, ed, keyword, cw,target) {
-  var req_url = "/uriage_summary_print?op=all&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+uriageList.uriageListPrintSub = function(sd, ed, keyword, shikenjo,cw,target) {
+  var req_url = "/uriage_summary_print?op=all&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword + "&shikenjo=" + shikenjo;
   $.get(req_url,function(response) {
       var tbl = cw.document.getElementById(target);
       var total = 0;
@@ -468,7 +499,8 @@ uriageList.uriageListPrintSub = function(sd, ed, keyword, cw,target) {
         "<td class='data_value border_up_left'>" + (row.seikyu_date != null ? row.seikyu_date : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.nyukin_date != null ? row.nyukin_date : "") + "</td>" +
         "<td class='data_value border_up_left'>" + (row.nyukin_yotei_date != null ? row.nyukin_yotei_date : "") + "</td>" +
-        "<td class='data_value border_up_left_right'>" + (row.sales_person_name != null ? row.sales_person_name : "") + "</td>" +
+        "<td class='data_value border_up_left'>" + (row.sales_person_name != null ? row.sales_person_name : "") + "</td>" +
+        "<td class='data_value border_up_left_right'>" + (row.shikenjo != null ? scheduleCommon.shikenjoFormatter(row.shikenjo,null,null):"") + "</td>" +
         "</tr>");
         total += Number(row.uriage_total);
         $(tbl).append(tr);
@@ -484,16 +516,17 @@ uriageList.uriageListPrint = function() {
   var keyword = $("#uriage_search_keyword").val();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
+  var shikenjo = uriageList.getShikenjoSelect();
   if ($("#search_option_all").prop('checked')) {
     // 全社
     // 売上集計
     var cw = window.open('/uriage_list_print_all','_blank','');
     $(cw).load(function(){
-      uriageList.uriageListPrintSub(sd, ed, keyword, cw,"uriage_list_table");
+      uriageList.uriageListPrintSub(sd, ed, keyword, shikenjo,cw,"uriage_list_table");
     });
   } else if ($("#search_option_division").prop('checked')) {
     // 試験課別
-    var req_url = "/uriage_summary_print?op=division&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+    var req_url = "/uriage_summary_print?op=division&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword + "&shikenjo=" + shikenjo;
     $.get(req_url,function(response) {
       var cw = window.open('/uriage_list_print_division','_blank','');
       $(cw).load(function(){
@@ -509,13 +542,13 @@ uriageList.uriageListPrint = function() {
           );
           $(tbl).append(tr);
         }
-        uriageList.uriageListPrintSub(sd, ed, keyword, cw,"uriage_list_detail_table");
+        uriageList.uriageListPrintSub(sd, ed, keyword, shikenjo,cw,"uriage_list_detail_table");
 
       })
   	});
   } else if ($("#search_option_client").prop('checked')) {
     // 顧客別
-    var req_url = "/uriage_summary_print?op=client&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+    var req_url = "/uriage_summary_print?op=client&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword + "&shikenjo=" + shikenjo;
     $.get(req_url,function(response) {
       var cw = window.open('/uriage_list_print_client','_blank','');
       $(cw).load(function(){
@@ -531,7 +564,7 @@ uriageList.uriageListPrint = function() {
           );
           $(tbl).append(tr);
         }
-        uriageList.uriageListPrintSub(sd, ed, keyword, cw,"uriage_list_detail_table");
+        uriageList.uriageListPrintSub(sd, ed, keyword, shikenjo, cw,"uriage_list_detail_table");
 
       })
   	});
@@ -623,7 +656,7 @@ uriageList.getDetailList = function(summary_text) {
   var filename = "売上集計_" + today;
   var empty_line = "\r\n\r\n";
   var lines = [];
-  var colnames = "案件No.,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,売上税抜,消費税,売上計,請求日,入金日,入金予定日,営業担当者";
+  var colnames = "案件No.,試験大分類,試験中分類,クライアント名,代理店,試験タイトル,売上税抜,消費税,売上計,請求日,入金日,入金予定日,営業担当者,試験場";
   lines.push(colnames);
   var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
   var blob = null;
@@ -645,7 +678,8 @@ uriageList.getDetailList = function(summary_text) {
           scheduleCommon.setQuotation(row.seikyu_date != null ? row.seikyu_date : "") + "," +
           scheduleCommon.setQuotation(row.nyukin_date != null ? row.nyukin_date : "") + "," +
           scheduleCommon.setQuotation(row.nyukin_yotei_date != null ? row.nyukin_yotei_date : "") + "," +
-          scheduleCommon.setQuotation(row.sales_person_name != null ? row.sales_person_name : "");
+          scheduleCommon.setQuotation(row.sales_person_name != null ? row.sales_person_name : "") + "," +
+          scheduleCommon.setQuotation(row.shikenjo != null ? scheduleCommon.shikenjoFormatter(row.shikenjo,null,null):"");
         lines.push(text);
         total += Number(row.uriage_total);
       }

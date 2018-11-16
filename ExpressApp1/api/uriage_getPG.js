@@ -276,6 +276,11 @@ exports.total = function(req, res) {
     if (keyword != "") {
       sql_summary += " AND " + keyword;
     }
+    // 試験場
+    var shikenjo = uriage_sum.getTagetShikenjo(req);
+    if (shikenjo != "") {
+      sql_summary += shikenjo;
+    }
 		// SQL実行
 		pg.connect(connectionString, function (err, connection) {
 			// データを取得するためのクエリーを実行する
@@ -305,6 +310,15 @@ uriage_sum.getSearchKeywordParam = function(keyword) {
 	return kw;
 };
 
+// 試験場選択
+uriage_sum.getTagetShikenjo = function(req) {
+	var shikenjo = "";
+	if (req.query.shikenjo != 0) {
+		shikenjo = " AND shikenjo = " + req.query.shikenjo;
+	}
+	return shikenjo;
+}
+
 // 検索集計処理
 uriage_sum.getUriageSummary = function(req, res, pg_params) {
   var sql_summary = "";
@@ -312,6 +326,7 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
   var params = [req.query.start_date,req.query.end_date];
   // キーワード検索用SQL文生成
   var keyword = uriage_sum.getSearchKeywordParam(req.query.keyword);
+  var shikenjo = uriage_sum.getTagetShikenjo(req);
   if (req.query.op == 'all') {
     // 全社
     sql_count = uriage_sum.sql_zensha_list_count;
@@ -321,6 +336,10 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
     if (keyword != "") {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
+    }
+    if (shikenjo != "") {
+      sql_count += shikenjo;
+      sql_summary += shikenjo;
     }
     sql_count += " group by entry_info.entry_no";
     sql_summary += " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
@@ -334,6 +353,10 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
     }
+    if (shikenjo != "") {
+      sql_count += shikenjo;
+      sql_summary += shikenjo;
+    }
     sql_count += " group by entry_info.test_large_class_cd";
     sql_summary += " group by entry_info.test_large_class_cd,test_large_class.item_name";
     sql_summary += " ORDER BY entry_info.test_large_class_cd, "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
@@ -346,11 +369,16 @@ uriage_sum.getUriageSummary = function(req, res, pg_params) {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
     }
+    if (shikenjo != "") {
+      sql_count += shikenjo;
+      sql_summary += shikenjo;
+    }
     sql_count += " group by entry_info.client_cd,client_list.name_1";
     sql_summary += " group by entry_info.client_cd,client_list.name_1";
     sql_summary += " ORDER BY "  + pg_params.sidx + ' ' + pg_params.sord  + ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
   }
   // SQL実行
+  console.log(sql_summary);
   uriage_sum.exeQuery(req,res,pg_params,sql_count,sql_summary,params);
 }
 
@@ -361,6 +389,7 @@ uriage_sum.getUriageSummaryPrint = function(req, res) {
   var params = [req.query.start_date,req.query.end_date];
   // キーワード検索用SQL文生成
   var keyword = uriage_sum.getSearchKeywordParam(req.query.keyword);
+  var shikenjo = uriage_sum.getTagetShikenjo(req);
   if (req.query.op == 'all') {
     // 全社
     sql_count = uriage_sum.sql_zensha_list_count;
@@ -370,6 +399,10 @@ uriage_sum.getUriageSummaryPrint = function(req, res) {
     if (keyword != "") {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
+    }
+    if (shikenjo != "") {
+      sql_count += shikenjo;
+      sql_summary += shikenjo;
     }
     sql_count += " group by billing_info.entry_no, entry_info.entry_no";
     sql_summary += " group by billing_info.entry_no,billing_info.pay_planning_date,billing_info.pay_complete_date,billing_info.nyukin_yotei_date,entry_info.entry_no,test_large_class.item_name,test_middle_class.item_name,client_list.name_1, agent_list.name_1,user_list.name";
@@ -383,6 +416,10 @@ uriage_sum.getUriageSummaryPrint = function(req, res) {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
     }
+    if (shikenjo != "") {
+      sql_count += shikenjo;
+      sql_summary += shikenjo;
+    }
     sql_count += " group by entry_info.test_large_class_cd";
     sql_summary += " group by entry_info.test_large_class_cd,test_large_class.item_name";
     sql_summary += " ORDER BY division_cd";
@@ -395,11 +432,16 @@ uriage_sum.getUriageSummaryPrint = function(req, res) {
       sql_count += " AND " + keyword;
       sql_summary += " AND " + keyword;
     }
+    if (shikenjo != "") {
+      sql_count += shikenjo;
+      sql_summary += shikenjo;
+    }
     sql_count += " group by entry_info.client_cd,client_list.name_1";
     sql_summary += " group by entry_info.client_cd,client_list.name_1";
     sql_summary += " ORDER BY entry_info.client_cd";
   }
   // SQL実行
+  console.log(sql_summary);
   uriage_sum.exeQueryPrint(req,res,sql_count,sql_summary,params);
 }
 
