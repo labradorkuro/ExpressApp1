@@ -60,8 +60,9 @@ $(function ()　{
 	$("#add_quote").bind('click' ,  {entryList:entryList}, quoteInfo.openQuoteFormDialog);
 	// 見積編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_quote").bind('click' , {entryList:entryList}, quoteInfo.openQuoteFormDialog);
-  	// 受注日の入力
-  	$("#order_date").bind('change', quoteInfo.changeOrderDate);
+  	// 受注日の入力 仕様変更：試験開始日を追加してその日から通常納期を計算する。
+	$("#order_date").bind('change', quoteInfo.changeOrderDate);
+	$("#shiken_kaishi_date").bind('change',entryList.changeShikenKaishiDate)
 	// クライアント選択ダイアログを表示するイベント処理を登録する
   	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
   	$("#client_name").bind('change' , {}, entryList.checkClientName);
@@ -726,29 +727,30 @@ entryList.saveEntry = function () {
 };
 // 複写
 entryList.copyEntry = function () {
-  var today = scheduleCommon.getToday("{0}/{1}/{2}");
-  $("#entry_dialog").dialog({title:"案件情報のコピー"});	// デフォルトはモーダル
-  $("#copy_entry_no").val($("#entry_no").val());					// 案件No
-  $("#entry_no").val("");
+  	var today = scheduleCommon.getToday("{0}/{1}/{2}");
+	$("#entry_dialog").dialog({title:"案件情報のコピー"});	// デフォルトはモーダル
+	$("#copy_entry_no").val($("#entry_no").val());					// 案件No
+	$("#entry_no").val("");
 	$("#quote_no").val("");					// 見積番号
 	$("#inquiry_date").val(today);			// 問合せ日
 	$("#entry_status").val("01");			// 案件ステータス
-  $("#sales_person_id").val($.cookie('userid'));	// 入力者ID
-  $("#report_limit_date").val("");		// 報告書提出期限
+	$("#sales_person_id").val($.cookie('userid'));	// 入力者ID
+	$("#shiken_kaishi_date").val("");		// 試験開始日
+	$("#report_limit_date").val("");		// 報告書提出期限
 	$("#report_submit_date").val("");		// 報告書提出日
 	$("#prompt_report_limit_date_1").val("");		// 速報提出期限1
 	$("#prompt_report_submit_date_1").val("");	// 速報提出日1
 	$("#prompt_report_limit_date_2").val("");		// 速報提出期限2
 	$("#prompt_report_submit_date_2").val("");	// 速報提出日2
-  $("#order_accepted_date").val(""); // 受注日付
+	  $("#order_accepted_date").val(""); // 受注日付
 	$("#order_accept_check").val(0);	// 仮受注日チェック
-  $("#entry_memo").val("");        // 備考
-  $("#input_check_date").val(today);			// 入力日
-  $("#input_operator_id").val($.cookie('userid'));	// 入力者ID
-  $(".btn-entry_add").button("enable");
-  $(".ui-dialog-buttonpane button:contains('更新')").button("disable");
-  //$(".btn-entry_update").button("disable");
-  $(".btn-entry_copy").button("disable");
+	$("#entry_memo").val("");        // 備考
+	$("#input_check_date").val(today);			// 入力日
+	$("#input_operator_id").val($.cookie('userid'));	// 入力者ID
+	$(".btn-entry_add").button("enable");
+	$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
+	//$(".btn-entry_update").button("disable");
+	$(".btn-entry_copy").button("disable");
 };
 
 // checkboxのチェック状態確認と値設定
@@ -1000,6 +1002,7 @@ entryList.setEntryForm = function (entry) {
 	$("#entry_amount_deposit").val(entry.entry_amount_deposit); // 案件入金合計金額
 	$("#test_person_id").val(entry.test_person_id);				// 試験担当者ID
 
+	$("#shiken_kaishi_date").val(entry.shiken_kaishi_date);		// 試験開始日
 	$("#report_limit_date").val(entry.report_limit_date);		// 報告書提出期限
 	$("#report_submit_date").val(entry.report_submit_date);		// 報告書提出日
 	$("#prompt_report_limit_date_1").val(entry.prompt_report_limit_date_1);		// 速報提出期限1
@@ -1073,6 +1076,7 @@ entryList.clearEntry = function () {
 	entry.entry_amount_billing = 0;	// 案件請求合計金額
 	entry.entry_amount_deposit = 0; // 案件入金合計金額
 	entry.test_person_id = "";		// 試験担当者ID
+	entry.shiken_kaishi_date = "";				// 試験開始日
 	entry.report_limit_date = "";				// 報告書提出期限
 	entry.report_submit_date = "";				// 報告書提出日
 	entry.prompt_report_limit_date_1 = "";		// 速報提出期限1
@@ -1460,4 +1464,46 @@ entryList.checkShicchu = function(event) {
 				$("#entry_status_str").val("見積");
 			}
 		}
+}
+
+// 試験開始日の変更イベント：通常納期計算
+entryList.changeShikenKaishiDate = function(event) {
+	// 報告書提出日を更新する
+	var od = scheduleCommon.dateStringToDate($("#shiken_kaishi_date").val());
+	var total = 0;
+	var max = 0;
+	// 受注確定の見積を取得する
+	$.ajax({
+		url: '/quote_specific_get_list_for_entryform/' + entryList.currentEntryNo,
+		cache: false,
+		dataType: 'json',
+		success: function (quote_list) {
+			if (quote_list != null) {
+				var total_price = 0;
+				var rows = quote_list.rows;
+				if (rows.length > 0) {
+					for(i=0;i<rows.length;i++) {
+						var term = rows[i].period_term;
+						var unit = rows[i].period_unit;
+						if (unit == 1) {
+							// 週の場合は日数に変換する（1週5日）
+							term = 5 * term;
+						}
+						if (max < term) {
+							// 期間が長い方を記録する
+							max = term;
+						}						
+					}
+				}
+				if (max > 1) max -= 1;
+				if (max > 0) {	// 通常納期がマスタに未設定の場合は納期を設定しない
+					scheduleCommon.calcPeriod(od, max, function(period){
+						// 報告書提出日を表示する
+						$("#report_limit_date").val(scheduleCommon.getDateString( period,'{0}/{1}/{2}'));
+					});
+				}
+			}
+		}
+	});
+
 }

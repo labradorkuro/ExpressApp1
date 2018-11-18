@@ -31,6 +31,7 @@ var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ 'entry_amount_price,'				// 案件合計金額
 		+ 'entry_amount_billing,'			// 案件請求合計金額
 		+ 'entry_amount_deposit,'			// 案件入金合計金額
+		+ 'shiken_kashi_date,'				// 試験開始日
 		+ 'report_limit_date,'				// 報告書提出期限
 		+ 'report_submit_date,'				// 報告書提出日
 		+ 'prompt_report_limit_date_1,'		// 速報提出期限１
@@ -76,27 +77,28 @@ var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ '$21,'	// 案件合計金額
 		+ '$22,'	// 案件請求合計金額
 		+ '$23,'	// 案件入金合計金額
-		+ '$24,'	// 報告書提出期限
-		+ '$25,'	// 報告書提出日
-		+ '$26,'	// 速報提出期限１
-		+ '$27,'	// 速報提出日１
-		+ '$28,'	// 速報提出期限２
-		+ '$29,'	// 速報提出日２
-		+ '$30,'	// 消費税率
-		+ '$31,'	// メモ
-		+ '$32,'	// 削除フラグ
-		+ '$33,'	// 削除理由
-		+ '$34,'	// 入力日
-		+ '$35,'	// 入力完了チェック
-		+ '$36,'	// 入力者ID
-		+ '$37,'	// 確認日
-		+ '$38,'	// 確認完了チェック
-		+ '$39,'	// 確認者ID
-		+ '$40,'	// 作成日
-		+ '$41,'	// 作成者ID
-		+ '$42,'	// 更新日
-		+ '$43,'	// 更新者ID
-		+ '$44'		// 試験場情報
+		+ '$24,'	// 試験開始日
+		+ '$25,'	// 報告書提出期限
+		+ '$26,'	// 報告書提出日
+		+ '$27,'	// 速報提出期限１
+		+ '$28,'	// 速報提出日１
+		+ '$29,'	// 速報提出期限２
+		+ '$30,'	// 速報提出日２
+		+ '$31,'	// 消費税率
+		+ '$32,'	// メモ
+		+ '$33,'	// 削除フラグ
+		+ '$34,'	// 削除理由
+		+ '$35,'	// 入力日
+		+ '$36,'	// 入力完了チェック
+		+ '$37,'	// 入力者ID
+		+ '$38,'	// 確認日
+		+ '$39,'	// 確認完了チェック
+		+ '$40,'	// 確認者ID
+		+ '$41,'	// 作成日
+		+ '$42,'	// 作成者ID
+		+ '$43,'	// 更新日
+		+ '$44,'	// 更新者ID
+		+ '$45'		// 試験場情報
 		+ ')'
 		;
 // 案件基本データのPOST
@@ -214,6 +216,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			entry.entry_amount_price,		// 案件合計金額
 			entry.entry_amount_billing,		// 案件請求合計金額
 			entry.entry_amount_deposit,		// 案件入金合計金額
+			entry.shiken_kaishi_date,		// 試験開始日
 			entry.report_limit_date,		// 報告書提出期限
 			entry.report_submit_date,		// 報告書提出日
 			entry.prompt_report_limit_date_1,	// 速報提出期限１
@@ -278,6 +281,7 @@ var copyEntryInfo = function(connection, entry, count, req, res) {
 			entry.entry_amount_price,		// 案件合計金額
 			entry.entry_amount_billing,		// 案件請求合計金額
 			entry.entry_amount_deposit,		// 案件入金合計金額
+			entry.shiken_kaishi_date,		// 試験開始日
 			entry.report_limit_date,		// 報告書提出期限
 			entry.report_submit_date,		// 報告書提出日
 			entry.prompt_report_limit_date_1,	// 速報提出期限１
@@ -338,26 +342,27 @@ var updateEntryInfo = function(entry, req, res) {
 			+ 'entry_amount_price = $20,'			// 案件合計金額
 			+ 'entry_amount_billing = $21,'			// 案件請求合計金額
 			+ 'entry_amount_deposit = $22,'			// 案件入金合計金額
-			+ 'report_limit_date = $23,'			// 報告書提出期限
-			+ 'report_submit_date = $24,'			// 報告書提出日
-			+ 'prompt_report_limit_date_1 = $25,'	// 速報提出期限１
-			+ 'prompt_report_submit_date_1 = $26,'	// 速報提出日１
-			+ 'prompt_report_limit_date_2 = $27,'	// 速報提出期限２
-			+ 'prompt_report_submit_date_2 = $28,'	// 速報提出日２
-			+ 'consumption_tax = $29,'				// 消費税率
-			+ 'entry_memo = $30,'					// メモ
-			+ 'delete_check = $31,'					// 削除フラグ
-			+ 'delete_reason = $32,'				// 削除理由
-			+ 'input_check_date = $33,'				// 入力日
-			+ 'input_check = $34,'					// 入力完了チェック
-			+ 'input_operator_id = $35,'			// 入力者ID
-			+ 'confirm_check_date = $36,'			// 確認日
-			+ 'confirm_check = $37,'				// 確認完了チェック
-			+ 'confirm_operator_id = $38,'			// 確認者ID
-			+ 'updated = $39,'						// 更新日
-			+ 'updated_id = $40,'					// 更新者ID
-			+ 'shikenjo = $41'
-			+ ' WHERE entry_no = $42';
+			+ 'shiken_kaishi_date = $23,'			// 試験開始日
+			+ 'report_limit_date = $24,'			// 報告書提出期限
+			+ 'report_submit_date = $25,'			// 報告書提出日
+			+ 'prompt_report_limit_date_1 = $26,'	// 速報提出期限１
+			+ 'prompt_report_submit_date_1 = $27,'	// 速報提出日１
+			+ 'prompt_report_limit_date_2 = $28,'	// 速報提出期限２
+			+ 'prompt_report_submit_date_2 = $29,'	// 速報提出日２
+			+ 'consumption_tax = $30,'				// 消費税率
+			+ 'entry_memo = $31,'					// メモ
+			+ 'delete_check = $32,'					// 削除フラグ
+			+ 'delete_reason = $33,'				// 削除理由
+			+ 'input_check_date = $34,'				// 入力日
+			+ 'input_check = $35,'					// 入力完了チェック
+			+ 'input_operator_id = $36,'			// 入力者ID
+			+ 'confirm_check_date = $37,'			// 確認日
+			+ 'confirm_check = $38,'				// 確認完了チェック
+			+ 'confirm_operator_id = $39,'			// 確認者ID
+			+ 'updated = $40,'						// 更新日
+			+ 'updated_id = $41,'					// 更新者ID
+			+ 'shikenjo = $42'
+			+ ' WHERE entry_no = $43';
 
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
@@ -384,6 +389,7 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.entry_amount_price,		// 案件合計金額
 			entry.entry_amount_billing,		// 案件請求合計金額
 			entry.entry_amount_deposit,		// 案件入金合計金額
+			entry.shiken_kaishi_date,		// 試験開始日
 			entry.report_limit_date,		// 報告書提出期限
 			entry.report_submit_date,		// 報告書提出日
 			entry.prompt_report_limit_date_1,	// 速報提出期限１
@@ -453,6 +459,7 @@ var entry_check = function (entry) {
 	entry.prior_payment_accept = dateCheck(entry.prior_payment_accept);
 	entry.input_check_date = dateCheck(entry.input_check_date);
 	entry.confirm_check_date = dateCheck(entry.confirm_check_date);
+	entry.shiken_kaishi_date = dateCheck(entry.shiken_kaishi_date);
 	entry.report_limit_date = dateCheck(entry.report_limit_date);
 	entry.report_submit_date = dateCheck(entry.report_submit_date);
 	entry.prompt_report_limit_date_1 = dateCheck(entry.prompt_report_limit_date_1);
@@ -1011,8 +1018,8 @@ var updateEntryStatus = function(connection,quote) {
 	}
 	else if (quote.order_status == 2) {	// 受注確定
 		entry_status = "03";
-		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 ,report_limit_date = $3 ,order_accepted_date = $4 WHERE entry_no = $2';
-		var query = connection.query(sql, [entry_status, quote.entry_no,quote.period_date,quote.order_date]);	// 案件ステータス:03　依頼
+		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 ,order_accepted_date = $3 WHERE entry_no = $2';
+		var query = connection.query(sql, [entry_status, quote.entry_no,quote.order_date]);	// 案件ステータス:03　依頼
 		query.on('end', function (result, err) {
 			console.log(err);
 		});

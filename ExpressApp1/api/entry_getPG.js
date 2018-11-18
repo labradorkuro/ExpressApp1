@@ -440,6 +440,7 @@ var entry_get_list_sql = function() {
 		+ 'entry_info.entry_no,'
 		+ 'entry_title,'
 		+ "to_char(inquiry_date, 'YYYY/MM/DD') AS inquiry_date,"
+		+ "to_char(shiken_kaishi_date, 'YYYY/MM/DD') AS shiken_kaishi_date,"
 		+ "to_char(report_limit_date, 'YYYY/MM/DD') AS report_limit_date,"
 		+ "to_char(report_submit_date, 'YYYY/MM/DD') AS report_submit_date,"
 		+ 'to_char(prompt_report_limit_date_1,\'YYYY/MM/DD\') AS prompt_report_limit_date_1,'		// 速報提出期限１
@@ -550,6 +551,7 @@ var mikaishu_list_sql = function() {
 		+ 'entry_info.entry_no,'
 		+ 'entry_title,'
 		+ "to_char(inquiry_date, 'YYYY/MM/DD') AS inquiry_date,"
+		+ "to_char(shiken_kaishi_date, 'YYYY/MM/DD') AS shiken_kaishi_date,"
 		+ "to_char(report_limit_date, 'YYYY/MM/DD') AS report_limit_date,"
 		+ "to_char(report_submit_date, 'YYYY/MM/DD') AS report_submit_date,"
 		+ 'subq.pay_complete,'
@@ -874,6 +876,7 @@ var entry_get_detail = function (req, res) {
 		+ 'entry_amount_price,'													// 案件合計金額
 		+ 'entry_amount_billing,'												// 案件請求合計金額
 		+ 'entry_amount_deposit,'												// 案件入金合計金額
+		+ 'to_char(shiken_kaishi_date,\'YYYY/MM/DD\') AS shiken_kaishi_date,'						// 試験開始日
 		+ 'to_char(report_limit_date,\'YYYY/MM/DD\') AS report_limit_date,'							// 報告書提出期限
 		+ 'to_char(report_submit_date,\'YYYY/MM/DD\') AS report_submit_date,'						// 報告書提出日
 		+ 'to_char(prompt_report_limit_date_1,\'YYYY/MM/DD\') AS prompt_report_limit_date_1,'		// 速報提出期限１
@@ -1274,6 +1277,8 @@ exports.quote_specific_get_list_for_entryform = function (req, res) {
 		+ 'quote_specific_info.test_middle_class_cd,'
 		+ 'test_middle_class_name,'
 		//+ 'test_middle_class.item_name AS test_middle_class_name,'
+		+ 'period_term,'	// 2018.11
+		+ 'period_unit,'	// 2018.11
 		+ 'unit,'
 		+ 'unit_price,'
 		+ 'quantity,'
@@ -1286,7 +1291,7 @@ exports.quote_specific_get_list_for_entryform = function (req, res) {
 		+ 'quote_specific_info.updated_id'
 		+ ' FROM drc_sch.quote_specific_info'
 		+ ' LEFT JOIN drc_sch.entry_info ON (entry_info.entry_no = $1)'
-		//+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
+		+ ' LEFT JOIN drc_sch.test_middle_class ON (test_middle_class.item_cd = quote_specific_info.test_middle_class_cd AND test_middle_class.large_item_cd = entry_info.test_large_class_cd)'
 		+ ' LEFT JOIN drc_sch.quote_info ON (quote_info.quote_no = quote_specific_info.quote_no AND quote_info.entry_no = $1 AND quote_info.order_status = 2)'
 		+ ' WHERE quote_info.quote_delete_check = 0 AND specific_delete_check = 0 AND (quote_specific_info.entry_no = $1 AND quote_info.order_status = 2) ORDER BY quote_detail_no'
 	// SQL実行
