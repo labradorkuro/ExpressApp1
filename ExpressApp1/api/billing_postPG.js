@@ -350,7 +350,7 @@ var updateEntryStatus = function(billing,entry_status) {
 	pg.connect(connectionString, function (err, connection) {
 		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 WHERE entry_no = $2';
 		var query = connection.query(sql, [entry_status, billing.billing_entry_no]);	// 案件ステータス:04　完了
-		console.log("updateEntryStatus:" + billing.billing_entry_no);
+		console.log("updateEntryStatus:" + billing.billing_entry_no + " status:" + entry_status);
 		query.on('end', function (result, err) {
 			console.log(err);
 			connection.end();
@@ -398,7 +398,7 @@ var checkPayResultForUpdateEntryStatus = function(billing) {
 							var f = 0;
 							for (var i in results.rows) {
 								console.log(results.rows[i]);
-								if (results.rows[i].amount_total == results.rows[i].complete_total + results.rows[i].furikomi_total) {
+								if (Number(results.rows[i].amount_total) == Number(results.rows[i].complete_total) + Number(results.rows[i].furikomi_total)) {
 									f = 1;
 									break;
 								}
