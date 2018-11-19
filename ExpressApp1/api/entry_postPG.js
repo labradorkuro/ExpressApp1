@@ -31,7 +31,7 @@ var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ 'entry_amount_price,'				// 案件合計金額
 		+ 'entry_amount_billing,'			// 案件請求合計金額
 		+ 'entry_amount_deposit,'			// 案件入金合計金額
-		+ 'shiken_kashi_date,'				// 試験開始日
+		+ 'shiken_kaishi_date,'				// 試験開始日
 		+ 'report_limit_date,'				// 報告書提出期限
 		+ 'report_submit_date,'				// 報告書提出日
 		+ 'prompt_report_limit_date_1,'		// 速報提出期限１
