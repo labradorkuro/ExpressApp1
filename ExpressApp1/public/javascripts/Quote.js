@@ -632,7 +632,7 @@ quoteInfo.calcSummary = function(event) {
 	for(var i = 1;i <= rows - 1;i++) {
 		var price = 0;
 		if ($("#specific_delete_check_" + i).val() == "0") {
-			var p = $("#price_" + i).val().replace(',','');
+			var p = $("#price_" + i).val().replace(/,/g,'');
 			// 数値チェックしてから変換して合計する
 			if (scheduleCommon.isNumber( p )) {
 				price = Number(p);
@@ -653,12 +653,12 @@ quoteInfo.calcPrice = function(event) {
 	var no = "1";
 	if (event.target.id.indexOf("unit_price_") == 0) {
 		no = event.target.id.split("_")[2];
-		unit_price = Number(event.target.value.replace(',',''));
+		unit_price = Number(event.target.value.replace(/,/g,''));
 		quantity = $("#quantity_" + no).val();
 	} else if (event.target.id.indexOf("quantity_") == 0) {
 		no = event.target.id.split("_")[1];
 		quantity = event.target.value;
-		unit_price = Number($("#unit_price_" + no).val().replace(',',''));
+		unit_price = Number($("#unit_price_" + no).val().replace(/,/g,''));
 	}
 	var price = 0;
 	var price = unit_price * quantity;

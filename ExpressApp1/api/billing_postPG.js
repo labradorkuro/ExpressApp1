@@ -27,7 +27,7 @@ exports.billing_post = function (req, res) {
 						// 請求データの更新
 						updateBilling(connection, billing, req, res);
 					}
-					checkPayResultForUpdateEntryStatus(billing);
+					checkPayResultForUpdateEntryStatus(billing.billing_entry_no);
 					// 請求区分が「請求可」の場合はメール通知する
 					checkPayResult(billing);
 				}
@@ -345,12 +345,12 @@ var checkPayResult = function(billing) {
 };
 
 // entry_noの案件情報の案件ステータスを依頼に変更する
-var updateEntryStatus = function(billing,entry_status) {
+var updateEntryStatus = function(entry_no,entry_status) {
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
 		var sql = 'UPDATE drc_sch.entry_info SET entry_status = $1 WHERE entry_no = $2';
-		var query = connection.query(sql, [entry_status, billing.billing_entry_no]);	// 案件ステータス:04　完了
-		console.log("updateEntryStatus:" + billing.billing_entry_no + " status:" + entry_status);
+		var query = connection.query(sql, [entry_status, entry_no]);	// 案件ステータス:04　完了
+		console.log("updateEntryStatus:" + entry_no + " status:" + entry_status);
 		query.on('end', function (result, err) {
 			console.log(err);
 			connection.end();
@@ -359,7 +359,7 @@ var updateEntryStatus = function(billing,entry_status) {
 };
 
 // 請求区分を確認して案件ステータスを更新する
-var checkPayResultForUpdateEntryStatus = function(billing) {
+exports.checkPayResultForUpdateEntryStatus = function(entry_no) {
 	var sql_pay_result = "SELECT pay_result FROM drc_sch.billing_info WHERE entry_no = $1 AND delete_check = $2";
 	var sql = 'SELECT '
 		+ 'MIN(entry_info.report_submit_date) as report_submit_date,'
@@ -372,7 +372,7 @@ var checkPayResultForUpdateEntryStatus = function(billing) {
 		+ ' WHERE billing_info.entry_no = $1 AND billing_info.delete_check = $2'
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
-		connection.query(sql_pay_result, [billing.billing_entry_no,0], function (err, results) {
+		connection.query(sql_pay_result, [entry_no,0], function (err, results) {
 			if (err) {
 				console.log(err);
 			} else {
@@ -387,11 +387,11 @@ var checkPayResultForUpdateEntryStatus = function(billing) {
 				}
 				if (f == 1) {
 					// 入金確認済になっていない請求情報がある
-					updateEntryStatus(billing,"03");
+					updateEntryStatus(entry_no,"03");
 					connection.end();
 					return;
 				} else {
-					connection.query(sql, [billing.billing_entry_no,0], function (err, results) {
+					connection.query(sql, [entry_no,0], function (err, results) {
 						if (err) {
 							console.log(err);
 						} else {
@@ -406,12 +406,12 @@ var checkPayResultForUpdateEntryStatus = function(billing) {
 							if (f == 1) {
 								// 案件合計額と入金済金額が一致している場合
 								// 報告書提出日が入力済？
-								if (results.rows[0].report_submit_date != "") {
-									updateEntryStatus(billing,"04");
+								if (results.rows[0].report_submit_date != null && results.rows[0].report_submit_date != "") {
+									updateEntryStatus(entry_no,"04");
 								}
 							} else {
 								// 案件合計額と入金済金額が一致していない場合
-								updateEntryStatus(billing,"03");
+								updateEntryStatus(entry_no,"03");
 							}
 							connection.end();
 						}

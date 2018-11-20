@@ -6,6 +6,7 @@ var tools = require('../tools/tool');
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var notify = models['notify_settings'];
+var billing_post = require('./billing_postPG');
 
 var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ 'entry_no,'						// 案件No
@@ -415,6 +416,7 @@ var updateEntryInfo = function(entry, req, res) {
 			connection.end();
 			res.send(entry);
 			checkEntryStatus(entry);	// 案件ステータスが「依頼」になったら通知メール
+			billing_post.checkPayResultForUpdateEntryStatus(entry.entry_no);	// 案件ステータス更新
 		});
 		query.on('error', function (error) {
 			console.log(sql + ' ' + error);
@@ -731,7 +733,7 @@ var quote_check = function (quote) {
 // 明細データのチェック
 var quote_specific_check = function(specific) {
 	if (specific.unit_price && specific.unit_price != "") {
-		specific.unit_price = Number(specific.unit_price.replace(',',''));
+		specific.unit_price = Number(specific.unit_price.replace(/,/g,''));
 	} else {
 		specific.unit_price = 0;
 	}
@@ -741,7 +743,7 @@ var quote_specific_check = function(specific) {
 		specific.quantity = 0;
 	}
 	if (specific.price && specific.price != "") {
-		specific.price = Number(specific.price.replace(',',''));
+		specific.price = Number(specific.price.replace(/,/g,''));
 	} else {
 		specific.price = 0;
 	}

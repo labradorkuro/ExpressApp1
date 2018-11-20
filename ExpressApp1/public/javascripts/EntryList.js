@@ -63,6 +63,9 @@ $(function ()　{
   	// 受注日の入力 仕様変更：試験開始日を追加してその日から通常納期を計算する。
 	$("#order_date").bind('change', quoteInfo.changeOrderDate);
 	$("#shiken_kaishi_date").bind('change',entryList.changeShikenKaishiDate)
+	// 報告書提出日
+	$("#report_submit_date").bind('change',entryList.changeReportSubmitDate)
+
 	// クライアント選択ダイアログを表示するイベント処理を登録する
   	$("#client_name").bind('click' , {}, entryList.openClientListDialog);
   	$("#client_name").bind('change' , {}, entryList.checkClientName);
@@ -1505,5 +1508,10 @@ entryList.changeShikenKaishiDate = function(event) {
 			}
 		}
 	});
+
+}
+
+// 報告書提出日の変更イベント処理：案件ステータスの変更
+entryList.changeReportSubmitDate = function(event) {
 
 }
