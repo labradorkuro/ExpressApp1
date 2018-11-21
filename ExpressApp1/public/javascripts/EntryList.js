@@ -1441,11 +1441,13 @@ entryList.entrySearchClear = function() {
   // 期間設定
   var search_start_date = $("#search_start_date").val();
   var search_end_date = $("#search_end_date").val();
+  var shikenjo = entryList.getShikenjoSelect();
 
   var req_url = '/entry_get' + option +
     '&keyword=' + keyword +
     '&search_start_date=' + search_start_date +
-    '&search_end_date=' + search_end_date;
+    '&search_end_date=' + search_end_date +
+	"&shikenjo=" + shikenjo;
 
 	// 案件リストのグリッド
   entryList.createGridSub(req_url);
