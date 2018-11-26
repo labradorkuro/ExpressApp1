@@ -181,7 +181,7 @@ billingSummaryList.createGrid = function() {
         '請求日','請求番号','請求金額','消費税','請求金額(税込)','入金予定日','入金予定日(仮)','入金日','入金額','振込手数料','回収額','請求ステータス','試験場'],
 		colModel: [
       { name: 'entry_no', index: 'entry_no', width: 120, align: "center" },
-      { name: 'client_name', index: 'client_name', width: 160, align: "center" },
+      { name: 'seikyu_name', index: 'seikyu_name', width: 160, align: "center" },
 	    { name: 'test_large_class_name', index: 'test_large_class_name', width: 160, align: "center" },
       { name: 'entry_title', index: 'entry_title', width: 160, align: "center" },
       { name: 'entry_amount_price', index: 'entry_amount_price', width: 100, align: "right",formatter:scheduleCommon.numFormatterC },
