@@ -602,7 +602,9 @@ exports.billing_get_total = function (req, res) {
 	var sql = 'SELECT '
 		+ 'SUM(pay_amount) AS amount_total_notax,'
 		+ 'SUM(pay_amount_total) AS amount_total,'
-		+ 'SUM(pay_complete) AS complete_total'
+		+ 'SUM(pay_complete) AS complete_total,'
+		+ 'SUM(furikomi_ryo) AS furikomi_total,'
+		+ 'SUM(nyukin_total) AS nyukin_total'
 		+ ' FROM drc_sch.billing_info'
 		+ ' WHERE entry_no = $1 AND delete_check = $2'
 	// SQL実行

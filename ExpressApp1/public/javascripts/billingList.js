@@ -16,6 +16,9 @@ billingList.eventBind = function() {
 	$("#calc_tax_button").bind("click",billingList.calc_tax);
 	// 入金予定日計算ボタン
 	$("#nyukin_yotei_button").bind("click",billingList.calc_nyukin_yotei_date);
+	// 金額の変更
+	$("#pay_complete").bind("change",billingList.calc_kingaku);
+	$("#furikomi_ryo").bind("change",billingList.calc_kingaku);
 };
 
 // 入金予定日の計算
@@ -116,6 +119,15 @@ billingList.calc_amount = function() {
 //	}
 		var total = amount + tax;
 		$("#pay_amount_total").val(total);
+	}
+};
+// 金額の計算
+billingList.calc_kingaku = function() {
+	if (billingList.inputCheck()) {
+		var amount = Number($("#pay_complete").val());
+		var furikomi_ryo = Number($("#furikomi_ryo").val());
+		var total = amount + furikomi_ryo;
+		$("#nyukin_total").val(total);
 	}
 };
 
@@ -801,8 +813,8 @@ billingList.onloadBillingTotalReq = function (e) {
 	if (this.status == 200) {
 		var amount_zan = 0;
 		var billing = this.response;
-		if (billingList.currentEntry.currentEntry.entry_amount_price_notax > 0) {
-			amount_zan = (billingList.currentEntry.currentEntry.entry_amount_price_notax - billing.amount_total_notax);
+		if (billingList.currentEntry.currentEntry.entry_amount_price > 0) {
+			amount_zan = (billingList.currentEntry.currentEntry.entry_amount_price - billing.nyukin_total);
 		}
 		$("#pay_amount_zan").val(scheduleCommon.numFormatter(amount_zan,11));
 		$("#billing_form_dialog").dialog("open");

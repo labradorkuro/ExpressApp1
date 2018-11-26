@@ -6,6 +6,7 @@ var tools = require('../tools/tool');
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var notify = models['notify_settings'];
+var billing_post = require('./billing_postPG');
 
 // 請求データのPOST
 exports.billing_post = function (req, res) {
@@ -27,7 +28,7 @@ exports.billing_post = function (req, res) {
 						// 請求データの更新
 						updateBilling(connection, billing, req, res);
 					}
-					checkPayResultForUpdateEntryStatus(billing.billing_entry_no);
+					billing_post.checkPayResultForUpdateEntryStatus(billing.billing_entry_no);
 					// 請求区分が「請求可」の場合はメール通知する
 					checkPayResult(billing);
 				}
