@@ -128,6 +128,9 @@ billingList.calc_kingaku = function() {
 		var furikomi_ryo = Number($("#furikomi_ryo").val());
 		var total = amount + furikomi_ryo;
 		$("#nyukin_total").val(total);
+		// 請求残金額の計算と表示
+		billingList.calcAmountZan(billingList.currentEntry.currentEntry.entry_amount_price,total);
+
 	}
 };
 
@@ -811,15 +814,21 @@ billingList.requestBillingTotal = function (no) {
 // 請求金額、入金額取得リクエストのコールバック
 billingList.onloadBillingTotalReq = function (e) {
 	if (this.status == 200) {
-		var amount_zan = 0;
 		var billing = this.response;
-		if (billingList.currentEntry.currentEntry.entry_amount_price > 0) {
-			amount_zan = (billingList.currentEntry.currentEntry.entry_amount_price - billing.nyukin_total);
-		}
-		$("#pay_amount_zan").val(scheduleCommon.numFormatter(amount_zan,11));
+		billingList.calcAmountZan(billingList.currentEntry.currentEntry.entry_amount_price,billing.nyukin_total);
 		$("#billing_form_dialog").dialog("open");
 	}
 };
+// 請求残金額の計算と表示
+billingList.calcAmountZan = function(entry_amount_price,nyukin_total) {
+	var amount_zan = 0;
+	if (nyukin_total == null) nyukin_total = 0;
+	if (entry_amount_price > 0) {
+		amount_zan = (entry_amount_price - nyukin_total);
+	}
+	$("#pay_amount_zan").val(scheduleCommon.numFormatter(amount_zan,11));
+};
+
 // 請求情報の更新時の案件リストの表示更新（請求区分と未入金情報）
 billingList.requestBillingForEntryUpdate = function (no) {
 	var xhr = new XMLHttpRequest();

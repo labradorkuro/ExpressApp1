@@ -12,6 +12,7 @@ html(lang="ja")
 		script(src="javascripts/jquery.cookie.js")
 		script(src="javascripts/filesaver.min.js")
 		script(src="javascripts/ScheduleCommon.js")
+		script(src="javascripts/BillingList.js")
 		script(src="javascripts/BillingSummaryList.js")
 		link(rel="stylesheet" ,href="jquery.jqGrid-4.6.0/css/ui.jqgrid.css")
 		link(rel="stylesheet" ,href="stylesheets/schedule.css")
@@ -42,6 +43,9 @@ html(lang="ja")
 					a.form_button#search_button(style="float:none") 検索
 					a.form_button#uriage_list_print(style="float:none")  印刷
 					a.form_button#uriage_list_csv(style="float:none")  CSVファイル
+				fieldset.search_option_set
+					a.form_button#entry_info(style="float:none") 案件情報
+					a.form_button#entry_billing(style="float:none") 請求情報
 			div.toolbar
 				fieldset.entry_search_set(style="border:none")
 					input.billing_search_keyword#billing_search_keyword(type="text" placeholder="キーワード")
@@ -116,6 +120,18 @@ html(lang="ja")
 							label#kaishuugaku_total
 		div#entry_dialog
 			include entry_form
+		div#billing_list_dialog
+			div.toolbar
+				a.tool_button_a#edit_billing 編 集
+				fieldset.search_option_set
+					label.search_option_check#billig_delete_disp(value=1)
+						input.search_option_check#billing_delete_check_disp(type="checkbox")
+						| 削除分を表示
+			div.admin_div
+				table#billing_info_list
+				div#billing_info_list_pager
 							
 		div#print_data
+		div#billing_form_dialog
+			include billing_info_form
 		

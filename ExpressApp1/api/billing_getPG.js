@@ -235,7 +235,7 @@ var billing_get_summary_list = function (req, res) {
 		+ 'billing_number,'
 		+ 'entry_info.entry_title,'
 		+ 'test_large_class.item_name AS test_large_class_name,'				// 試験大分類名
-		+ "to_char(entry_info.report_limit_date, 'YYYY/MM/DD') AS report_limit_date,"
+		+ "to_char(entry_info.report_submit_date, 'YYYY/MM/DD') AS report_submit_date,"
 		+ "entry_info.shikenjo,"
 		+ "CASE WHEN pay_result = 0 THEN to_char(pay_planning_date, 'YYYY/MM/DD') ELSE '' END AS pay_planning_date,"
 		+ "CASE WHEN nyukin_yotei_p = 'TRUE' THEN to_char(nyukin_yotei_date, 'YYYY/MM/DD') ELSE '' END AS nyukin_yotei_date_p,"

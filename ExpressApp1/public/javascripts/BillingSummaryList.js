@@ -20,6 +20,14 @@ $(function ()　{
 	$("#uriage_list_csv").bind('click' , {}, billingSummaryList.billingSummaryListCsv);
   // 試験大分類リストの取得とセット
   billingSummaryList.getLargeItemList();
+  // 請求情報ボタンイベント（登録・編集用画面の表示）
+	billingSummaryList.createBillingListDialog();		// 請求情報リスト用
+  $("#entry_billing").bind('click' , {},billingSummaryList.openBillingListDialog);
+  // 案件情報ボタン
+  $("#entry_info").bind('click' , {},billingSummaryList.onOpenEntryInfoDialog);
+	// 請求先編集ボタンイベント（登録・編集用画面の表示）
+	$("#edit_billing").bind('click' , {}, billingSummaryList.openBillingFormDialog);
+	billingSummaryList.createBillingFormDialog();		// 請求情報編集選択用
 });
 
 // 処理用オブジェクト
@@ -27,6 +35,8 @@ var billingSummaryList = billingSummaryList || {}
 
 // 検索オプション用
 billingSummaryList.large_item_list = null;
+// 請求情報の表示用
+billingSummaryList.currentBilling = null;
 
 // 初期化処理
 billingSummaryList.init = function() {
@@ -188,7 +198,7 @@ billingSummaryList.createGrid = function() {
       { name: 'entry_amount_tax', index: 'entry_amount_tax', width: 100, align: "right",formatter:scheduleCommon.numFormatterC },
       { name: 'entry_amount_total', index: 'entry_amount_total', width: 160, align: "right",formatter:scheduleCommon.numFormatterC },
       { name: 'pay_planning_date', index: 'pay_planning_date', width: 120, align: "center" },
-      { name: 'report_limit_date', index: 'report_limit_date', width: 140, align: "center" },
+      { name: 'report_submit_date', index: 'report_submit_date', width: 140, align: "center" },
       { name: 'seikyu_date', index: 'seikyu_date', width: 120, align: "center" },
       { name: 'billing_number', index: 'billing_number', width: 120, align: "center" },
       { name: 'pay_amount', index: 'pay_amout', width: 100, align: "right",formatter:scheduleCommon.numFormatterC },
@@ -215,7 +225,7 @@ billingSummaryList.createGrid = function() {
 		viewrecords: true,
 		sortorder: "desc",
 		caption: "請求情報集計",
-    onSelectRow:billingSummaryList.onSelectbillingSummaryList,
+    //onSelectRow:billingSummaryList.onSelectbillingSummaryList,
     loadComplete:billingSummaryList.loadCompleteUgiageSummary
 	});
 	jQuery("#billing_summary_list").jqGrid('navGrid', '#billing_summary_list_pager', { edit: false, add: false, del: false ,search:false});
@@ -301,6 +311,16 @@ billingSummaryList.requestBillingTotal = function (no) {
 		}
 		$("#entry_dialog").dialog("open");
 	});
+};
+// 請求金額、入金額取得リクエスト
+billingSummaryList.requestBillingTotalForBillingForm = function (no) {
+	$.get('/billing_get_total/' + no,function(response) {
+		var billing = response;
+    if (billing != null) {
+      billingList.calcAmountZan(billingSummaryList.currentBilling.pay_amount_total,billing.nyukin_total);
+      $("#billing_form_dialog").dialog("open");
+    }
+  });
 };
 
 // 受注確定になっている見積情報を取得する
@@ -566,3 +586,176 @@ billingSummaryList.getTotalCsv = function(start_date, end_date,keyword,option,sh
       saveAs(blob,filename + ".csv");
   });
 }
+// 案件情報ダイアログの表示
+billingSummaryList.onOpenEntryInfoDialog = function (event) {
+  var rowid = $("#billing_summary_list").getGridParam('selrow');
+  var row = $("#billing_summary_list").getRowData(rowid);
+  billingSummaryList.openEntryDialog(row);
+};
+
+// 請求情報リストダイアログの表示
+billingSummaryList.openBillingListDialog = function (event) {
+  var rowid = $("#billing_summary_list").getGridParam('selrow');
+  var row = $("#billing_summary_list").getRowData(rowid);
+	$("#billing_info_list").GridUnload();
+	billingSummaryList.createBillingListGrid(row.entry_no);
+};
+// 請求情報リストの生成
+billingSummaryList.createBillingListGrid = function (entry_no) {
+	// 請求情報リストのグリッド
+	jQuery("#billing_info_list").jqGrid({
+		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=0',
+		altRows: true,
+		datatype: "json",
+		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額'
+			,'消費税','請求金額合計','入金額', '入金日','請求区分','請求先区分'
+			,'','クライアント名','','クライアント部署','','','','','','クライアント担当者','クライアント情報','備考'
+			,'','代理店名','','代理店部署','','','','','','代理店担当者','代理店情報','代理店備考'
+			,'','その他名','','その他部署','','その他担当者','その他情報','その他備考'
+			,'作成日','作成者','更新日','更新者','削除フラグ','','',''],
+		colModel: [
+			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
+			{ name: 'billing_no', index: 'billing_no', hidden:true },
+			{ name: 'billing_number', index: 'billing_number', width: 80, align: "center" },
+			{ name: 'pay_planning_date', index: 'pay_planning_date', width: 80, align: "center" },
+			{ name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 100, align: "center" },
+			{ name: 'pay_amount', index: 'pay_amount', width: 120, align: "right" ,formatter:scheduleCommon.numFormatterC},
+			{ name: 'pay_amount_tax', index: 'pay_amount_tax', width: 80, align: "right" ,formatter:scheduleCommon.numFormatterC},
+			{ name: 'pay_amount_total', index: 'pay_amount_total', width: 120, align: "right" ,formatter:scheduleCommon.numFormatterC},
+			{ name: 'pay_complete', index: 'pay_complete', width: 80, align: "right" },
+			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
+			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
+			{ name: 'billing_kind', index: 'billing_kind', width: 100 , align: "center", formatter:scheduleCommon.billing_kindFormatter},
+			{ name: 'client_cd', index: '', hidden:true },
+			{ name: 'client_name', index: 'client_name', width: 200 , align: "center" },
+			{ name: 'client_division_cd', index: '', hidden:true },
+			{ name: 'client_division_name', index: 'client_division_name', width: 200 , align: "center" },
+			{ name: 'client_address_1', index: '', hidden:true },
+			{ name: 'client_address_2', index: '', hidden:true },
+			{ name: 'client_tel_no', index: '', hidden:true },
+			{ name: 'client_fax_no', index: '', hidden:true },
+			{ name: 'client_person_id', index: '', hidden:true },
+			{ name: 'client_person_name', index: 'client_person_name', width: 120 , align: "center" },
+			{ name: 'client_info', hidden:true},
+			{ name: 'memo', index: 'memo', width: 100, align: "center" },
+			{ name: 'agent_cd', index: '', hidden:true },
+			{ name: 'agent_name', index: 'agent_name', width: 200 , align: "center" },
+			{ name: 'agent_division_cd', index: '', hidden:true },
+			{ name: 'agent_division_name', index: 'agent_division_name', width: 200 , align: "center" },
+			{ name: 'agent_address_1', index: '', hidden:true },
+			{ name: 'agent_address_2', index: '', hidden:true },
+			{ name: 'agent_tel_no', index: '', hidden:true },
+			{ name: 'agent_fax_no', index: '', hidden:true },
+			{ name: 'agent_person_id', index: '', hidden:true },
+			{ name: 'agent_person_name', index: 'agent_person_name', width: 120 , align: "center" },
+			{ name: 'agent_info', hidden:true},
+			{ name: 'agent_memo', index: 'agent_memo', width: 100, align: "center" },
+			{ name: 'etc_cd', index: '', hidden:true },
+			{ name: 'etc_name', index: 'etc_name', width: 200 , align: "center" },
+			{ name: 'etc_division_cd', index: '', hidden:true },
+			{ name: 'etc_division_name', index: 'etc_division_name', width: 200 , align: "center" },
+			{ name: 'etc_person_id', index: '', hidden:true },
+			{ name: 'etc_person_name', index: 'etc_person_name', width: 120 , align: "center" },
+			{ name: 'etc_info', hidden:true},
+			{ name: 'etc_memo', index: 'etc_memo', width: 100, align: "center" },
+			{ name: 'created', index: 'created', width: 120 }, // 作成日
+			{ name: 'created_id', index: 'created_id', width: 120 }, // 作成者ID
+			{ name: 'updated', index: 'updated', width: 120 }, // 更新日
+			{ name: 'updated_id', index: 'updated_id', width: 120 },			// 更新者ID
+			{ name: 'delete_check', index: '', hidden:true },
+			{ name: 'furikomi_ryo', index:'', hidden:true},
+			{ name: 'nyukin_total', index:'', hidden:true},
+			{ name: 'nyukin_yotei_p', index:'', hidden:true}
+		],
+		height: "230px",
+		//width:"800",
+		shrinkToFit:false,
+		rowNum: 10,
+		rowList: [10],
+		pager: '#billing_info_list_pager',
+		sortname: 'billing_number',
+		viewrecords: true,
+		sortorder: "asc",
+    caption: "請求情報",
+		onSelectRow: billingSummaryList.onSelectBillingList,
+    loadComplete:billingSummaryList.loadComplete
+	});
+	jQuery("#billing_info_list").jqGrid('navGrid', '#billing_info_list_pager', { edit: false, add: false, del: false });
+	scheduleCommon.changeFontSize();
+};
+billingSummaryList.loadComplete = function() {
+  $("#billing_list_dialog").dialog("open");
+}
+
+// 請求情報リストダイアログの生成
+billingSummaryList.createBillingListDialog = function () {
+	$('#billing_list_dialog').dialog({
+		autoOpen: false,
+		width: 900,
+		height: 600,
+		title: '請求情報',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+// 請求選択イベント
+billingSummaryList.onSelectBillingList = function (rowid) {
+	billingSummaryList.currentBilling = $("#billing_info_list").getRowData(rowid);
+	$("#add_billing").css("display","none");
+	$("#edit_billing").css("display","inline");
+};
+// 請求情報編集ダイアログの生成
+billingSummaryList.createBillingFormDialog = function () {
+	$('#billing_form_dialog').dialog({
+		autoOpen: false,
+		width: 960,
+		height: 900,
+		title: '請求情報の編集',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"追加": function () {
+				if (billingList.saveBillingInfo()) {
+					$(this).dialog('close');
+				}
+			},
+			"更新": function () {
+				if (billingList.saveBillingInfo()) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+// 請求情報編集用ダイアログの表示
+billingSummaryList.openBillingFormDialog = function (event) {
+	// フォームをクリアする
+	billingList.clearPayResult();	// 請求区分のチェックをクリアする
+	var billing = billingList.clearBilling();
+	billingList.setBillingForm(billing);
+	if ($(event.target).attr('id') == 'edit_billing') {
+		// 編集ボタンから開いた場合
+		billingSummaryList.openEditDialog();
+  }
+	// 請求金額合計を取得する
+	billingSummaryList.requestBillingTotalForBillingForm(billingSummaryList.currentBilling.entry_no);
+};
+
+// 編集用にダイアログを表示する
+billingSummaryList.openEditDialog = function() {
+	billingSummaryList.status = "edit";
+	//billingSummaryList.currentBilling.client_info = client_info;
+	var billing = billingSummaryList.currentBilling;
+	billing.pay_amount = billing.pay_amount.trim().replace(/,/g,'');
+	billing.pay_amount_tax = billing.pay_amount_tax.trim().replace(/,/g,'');
+	billing.pay_amount_total = billing.pay_amount_total.trim().replace(/,/g,'');
+	billingList.setBillingForm(billing);
+};
