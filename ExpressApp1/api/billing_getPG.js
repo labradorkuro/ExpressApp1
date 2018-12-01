@@ -162,28 +162,31 @@ var search_target_date = function(req) {
 	var target_date = req.query.target_date;
 	var sd = req.query.start_date;
 	var ed = req.query.end_date;
-	switch(target_date) {
-		case "01":
-			// 請求予定日
-			query = " billing_info.pay_result = 0 AND  billing_info.pay_planning_date >= $2 AND billing_info.pay_planning_date <= $3 " 
-			break;
-		case "02":
-			// 請求日
-			query = " billing_info.pay_result >= 1 AND billing_info.pay_planning_date >= $2 AND billing_info.pay_planning_date <= $3 " 
-			break;
-		case "03":
-			// 入金予定日
-			query = " nyukin_yotei_p = 'FALSE' AND billing_info.nyukin_yotei_date >= $2 AND billing_info.nyukin_yotei_date <= $3 " 
-			break;
-		case "04":
-			// 入金予定日（仮）
-			query = " nyukin_yotei_p = 'TRUE' AND billing_info.nyukin_yotei_date >= $2 AND billing_info.nyukin_yotei_date <= $3 " 
-			break;
-		case "05":
-			// 入金日
-			query = " billing_info.pay_complete_date >= $2 AND billing_info.pay_complete_date <= $3 " 
-			break;
+	if ((target_date & 0x01) == 0x01) {
+		// 請求予定日
+		query = " (billing_info.pay_result = 0 AND  billing_info.pay_planning_date >= $2 AND billing_info.pay_planning_date <= $3) " 
 	}
+	if ((target_date & 0x02) == 0x02) {
+		if (query != "") query += " OR ";
+		// 請求日
+		query += " (billing_info.pay_result >= 1 AND billing_info.pay_planning_date >= $2 AND billing_info.pay_planning_date <= $3) " 
+	}
+	if ((target_date & 0x04) == 0x04) {
+		if (query != "") query += " OR ";
+		// 入金予定日
+		query += " (nyukin_yotei_p = 'FALSE' AND billing_info.nyukin_yotei_date >= $2 AND billing_info.nyukin_yotei_date <= $3) " 
+	}
+	if ((target_date & 0x08) == 0x08) {
+		if (query != "") query += " OR ";
+		// 入金予定日（仮）
+		query += " (nyukin_yotei_p = 'TRUE' AND billing_info.nyukin_yotei_date >= $2 AND billing_info.nyukin_yotei_date <= $3) " 
+	}
+	if ((target_date & 0x10) == 0x10) {
+		if (query != "") query += " OR ";
+		// 入金日
+		query += " (billing_info.pay_complete_date >= $2 AND billing_info.pay_complete_date <= $3) " 
+	}
+	if (query != "") query = "(" + query + ")";
 	return query;
 }
 

@@ -106,23 +106,12 @@ billingSummaryList.getLargeItem_check = function() {
 
 // 検索対象の日付を取得する
 billingSummaryList.getSearchTargetDate = function() {
-  var dt = '0';
-	var date01 = ($("#search_option_date_01").prop("checked")) ? '01':'0';
-	var date02 = ($("#search_option_date_02").prop("checked")) ? '02':'0';
-	var date03 = ($("#search_option_date_03").prop("checked")) ? '03':'0';
-	var date04 = ($("#search_option_date_04").prop("checked")) ? '04':'0';
-	var date05 = ($("#search_option_date_05").prop("checked")) ? '05':'0';
-  if (date01 != '0') {
-    dt = date01;
-  } else if (date02 != '0') {
-    dt = date02;
-  } else if (date03 != '0') {
-    dt = date03;
-  } else if (date04 != '0') {
-    dt = date04;
-  } else if (date05 != '0') {
-    dt = date05;
-  }
+  var dt = 0;
+	dt += ($("#search_option_date_01").prop("checked")) ? 1: 0;
+	dt += ($("#search_option_date_02").prop("checked")) ? 2: 0;
+	dt += ($("#search_option_date_03").prop("checked")) ? 4: 0;
+	dt += ($("#search_option_date_04").prop("checked")) ? 8: 0;
+	dt += ($("#search_option_date_05").prop("checked")) ? 16: 0;
   return dt;
 }
 
