@@ -206,7 +206,38 @@ var getTagetShikenjo = function(req) {
 }
 // 請求ステータス選択
 var getTagetPayResult = function(req) {
-	var result = " AND pay_result = " + req.query.pay_result;
+	var pay_result = Number(req.query.pay_result);
+	console.log("pay_result:" + pay_result);
+	var result = "";
+	if (pay_result != 0){
+		if ((pay_result  & 0x01) == 0x01) {
+			if (result == "") 
+				result = "pay_result <= 1"; 
+			else
+				result += " OR pay_result <= 1";
+		}
+		if ((pay_result  & 0x02) == 0x02) {
+			if (result == "") 
+				result = "pay_result = 2"; 
+			else
+				result += " OR pay_result = 2";
+		}
+		if ((pay_result  & 0x04) == 0x04) {
+			if (result == "") 
+				result = "pay_result = 3"; 
+			else
+				result += " OR pay_result = 3";
+		}
+		if ((pay_result  & 0x08) == 0x08) {
+			if (result == "") 
+				result = "pay_result = 4"; 
+			else
+				result += " OR pay_result = 4";
+		}
+		result = " AND (" + result + ") ";
+
+	}
+	console.log("pay_result:" + result);
 	return result;
 }
 // 請求情報集計用リストの取得

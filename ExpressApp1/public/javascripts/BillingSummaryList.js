@@ -143,15 +143,18 @@ billingSummaryList.getShikenjoSelect = function() {
 
 // 請求ステータス選択の取得
 billingSummaryList.getPayResultSelect = function() {
-  var pr = "";
+  var pr = 0;
   if ($("#search_option_pay_status_1").prop("checked")) { // 未請求
-    pr = "0";
-  } else if ($("#search_option_pay_status_2").prop("checked")) {  // 請求済
-    pr = "2";
-  } else if ($("#search_option_pay_status_3").prop("checked")) {  // 入金済
-    pr = "3";
-  } else if ($("#search_option_pay_status_4").prop("checked")) {  // 未入金
-    pr = "4";
+    pr += 1;
+	} 
+	if ($("#search_option_pay_status_2").prop("checked")) {  // 請求済
+    pr += 2;
+	}
+	if ($("#search_option_pay_status_3").prop("checked")) {  // 入金済
+    pr += 4;
+	}
+	if ($("#search_option_pay_status_4").prop("checked")) {  // 未入金
+    pr += 8;
   }
   return pr;
 }
