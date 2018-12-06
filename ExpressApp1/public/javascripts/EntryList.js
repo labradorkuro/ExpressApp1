@@ -1228,6 +1228,7 @@ entryList.entryListPrintSub = function(cw, target) {
   var req_url = '/entry_print' + option;
   // キーワード
   var keyword = $("#entry_search_keyword").val();
+  var shikenjo = entryList.getShikenjoSelect();
   // 期間設定
   var search_start_date = $("#search_start_date").val();
   var search_end_date = $("#search_end_date").val();
@@ -1236,6 +1237,7 @@ entryList.entryListPrintSub = function(cw, target) {
     '&search_start_date=' + search_start_date +
     '&search_end_date=' + search_end_date;
   }
+  req_url += '&shikenjo=' + shikenjo;
   req_url += "&sidx=" + $("#entry_list").getGridParam("sortname") + "&sord=" + $("#entry_list").getGridParam("sortorder");
   $.get(req_url,function(response) {
       var tbl = cw.document.getElementById(target);
@@ -1270,6 +1272,7 @@ entryList.entryListCsv = function() {
 	var req_url = '/entry_print' + option;
 	// キーワード
 	var keyword = $("#entry_search_keyword").val();
+	var shikenjo = entryList.getShikenjoSelect();
 	// 期間設定
 	var search_start_date = $("#search_start_date").val();
 	var search_end_date = $("#search_end_date").val();
@@ -1278,6 +1281,7 @@ entryList.entryListCsv = function() {
 	  '&search_start_date=' + search_start_date +
 	  '&search_end_date=' + search_end_date;
 	}
+	req_url += '&shikenjo=' + shikenjo;
 	req_url += "&sidx=" + $("#entry_list").getGridParam("sortname") + "&sord=" + $("#entry_list").getGridParam("sortorder");
 	entryList.entry_csv_sub(req_url, "案件リスト_");
 }
@@ -1416,7 +1420,8 @@ entryList.entrySearch = function() {
 entryList.mikaishu_list = function() {
 	$("#entry_list").GridUnload();
 	var option = entryList.getSearchOption();
-	var req_url = '/mikaishu_list' + option;
+	var shikenjo = entryList.getShikenjoSelect();
+	var req_url = '/mikaishu_list' + option + '&shikenjo=' + shikenjo;
   
 	  // 案件リストのグリッド
 	entryList.createGridSub(req_url);
@@ -1425,7 +1430,8 @@ entryList.mikaishu_list = function() {
 // 未回収リストCSV出力
 entryList.mikaishu_list_csv = function() {
 	var option = entryList.getSearchOption();
-	var req_url = '/mikaishu_list_csv' + option;
+	var shikenjo = entryList.getShikenjoSelect();
+	var req_url = '/mikaishu_list_csv' + option + '&shikenjo=' + shikenjo;
 	entryList.entry_csv_sub(req_url, "未回収リスト_");
 }
 // 案件のキーワード検索クリア

@@ -41,11 +41,16 @@ exports.mikaishu_list = function(req,res) {
 	// 試験大分類の絞り込み用
 	var large_item_params = parse_large_item_params(req);
 	var pg_params = getPagingParams(req);
+	// 試験場
+	var shikenjo = getTagetShikenjo(req);
 	// レコード件数取得用SQL生成
 	var sql_count = mikaishu_list_sql_count();
 
 	if (large_item_params != '') {
 		sql_count += ' ' +  large_item_params + ' AND ';
+	}
+	if (shikenjo != "") {
+		sql_count += ' ' + shikenjo + ' AND '
 	}
 
 	sql_count += ' entry_info.delete_check = $1' + ' AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\'';
@@ -54,6 +59,9 @@ exports.mikaishu_list = function(req,res) {
 	var sql = mikaishu_list_sql();
 	if (large_item_params != '') {
 		sql += ' ' + large_item_params + ' AND ';
+	}
+	if (shikenjo != "") {
+		sql += ' ' + shikenjo + ' AND '
 	}
 	sql	+= ' entry_info.delete_check = $1 AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\' ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord
@@ -73,6 +81,9 @@ exports.mikaishu_list_csv = function(req,res) {
 	if (large_item_params != '') {
 		sql_count += ' ' +  large_item_params + ' AND ';
 	}
+	if (shikenjo != "") {
+		sql_count += ' ' + shikenjo + ' AND '
+	}
 
 	sql_count += ' entry_info.delete_check = $1' + ' AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\'';
 
@@ -81,6 +92,12 @@ exports.mikaishu_list_csv = function(req,res) {
 	if (large_item_params != '') {
 		sql += ' ' + large_item_params + ' AND ';
 	}
+	// 試験場
+	var shikenjo = getTagetShikenjo(req);
+	if (shikenjo != "") {
+		sql += ' ' + shikenjo + ' AND '
+	}
+
 	sql	+= ' entry_info.delete_check = $1 AND subq2.pay_result = 2 AND subq2.nyukin_yotei_date < \'' + today + '\' ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord;
 	//console.log(sql);
@@ -347,6 +364,8 @@ var entry_get_searchKeyword = function(req, res, func) {
 	var sql_count = entry_get_list_sql_count();
 	// キーワードを検索するためのSQL生成
 	var keyword = getEntrySearchKeywordParam(req.query.keyword);
+	// 試験場
+	var shikenjo = getTagetShikenjo(req);
 	// 期間設定
 	var sd = getEntrySearchStartDateParam(req.query.search_start_date);
 	var ed = getEntrySearchEndDateParam(req.query.search_end_date);
@@ -362,6 +381,9 @@ var entry_get_searchKeyword = function(req, res, func) {
 	}
 	if (ed != '') {
 		sql_count += ' ' +  ed + " AND ";
+	}
+	if (shikenjo != "") {
+		sql_count += ' ' + shikenjo + ' AND '
 	}
 	sql_count += ' entry_info.delete_check = $1';
 
@@ -379,8 +401,6 @@ var entry_get_searchKeyword = function(req, res, func) {
 	if (ed != '') {
 		sql += ' ' +  ed + " AND ";
 	}
-	// 試験場
-	var shikenjo = getTagetShikenjo(req);
 	if (shikenjo != "") {
 		sql += ' ' + shikenjo + ' AND '
 	}
@@ -404,10 +424,15 @@ var entry_get_list = function (req, res, func) {
 	// 試験大分類の絞り込み用
 	var large_item_params = parse_large_item_params(req);
 	var pg_params = getPagingParams(req);
+	// 試験場
+	var shikenjo = getTagetShikenjo(req);
 	// レコード件数取得用SQL生成
 	var sql_count = entry_get_list_sql_count();
 	if (large_item_params != '') {
 		sql_count += ' ' +  large_item_params + ' AND';
+	}
+	if (shikenjo != "") {
+		sql_count += ' ' + shikenjo + ' AND '
 	}
 	sql_count += ' entry_info.delete_check = $1';
 	// 案件リスト取得用SQL生成
@@ -415,8 +440,6 @@ var entry_get_list = function (req, res, func) {
 	if (large_item_params != '') {
 		sql += ' ' + large_item_params + ' AND ';
 	}
-	// 試験場
-	var shikenjo = getTagetShikenjo(req);
 	if (shikenjo != "") {
 		sql += ' ' + shikenjo + ' AND '
 	}
