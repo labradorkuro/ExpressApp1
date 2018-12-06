@@ -453,7 +453,7 @@ billingSummaryList.billingSummaryListPrintSub = function(sd, ed, keyword,shikenj
         var row = response.rows[i].cell;
         var tr = $("<tr>" +
         "<td class='data_value border_up_left'>" + row.entry_no + "</td>" +
-        "<td class='data_value border_up_left'>" + row.client_name + "</td>" +
+        "<td class='data_value border_up_left'>" + row.seikyu_name + "</td>" +
         "<td class='data_value border_up_left'>" + row.test_large_class_name + "</td>" +
         "<td class='data_value border_up_left'>" + row.entry_title + "</td>" +
         "<td class='data_value_num border_up_left'>" + billingSummaryList.numFormatterC(row.entry_amount_price) + "</td>" +
@@ -524,7 +524,7 @@ billingSummaryList.billingSummaryListCsv = function() {
         var row = response.rows[i].cell;
 
           var text = scheduleCommon.setQuotation(row.entry_no != null ? row.entry_no :"") + "," +
-          scheduleCommon.setQuotation(row.client_name != null ? row.client_name :"") + "," +
+          scheduleCommon.setQuotation(row.seikyu_name != null ? row.seikyu_name :"") + "," +
           scheduleCommon.setQuotation(row.test_large_class_name != null ? row.test_large_class_name:"") + "," +
           scheduleCommon.setQuotation(row.entry_title != null ? row.entry_title:"") + "," +
           scheduleCommon.setQuotation(row.entry_amount_price != null ? billingSummaryList.numFormatterC(row.entry_amount_price):"0") + "," +
