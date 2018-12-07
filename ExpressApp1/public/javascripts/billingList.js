@@ -816,8 +816,8 @@ billingList.onloadBillingTotalReq = function (e) {
 	if (this.status == 200) {
 		var amount_zan = 0;
 		var billing = this.response;
-		if (billingList.currentEntry.currentEntry.entry_amount_price_notax > 0) {
-			amount_zan = (billingList.currentEntry.currentEntry.entry_amount_price_notax - billing.amount_total_notax);
+		if (Number(billingList.currentEntry.currentEntry.entry_amount_price_notax) > 0) {
+			amount_zan = (Number(billingList.currentEntry.currentEntry.entry_amount_price_notax) - Number(billing.amount_total_notax));
 		}
 		$("#pay_amount_zan").val(scheduleCommon.numFormatter(amount_zan,11));
 		$("#billing_form_dialog").dialog("open");
@@ -830,7 +830,6 @@ billingList.calcAmountZan = function(entry_amount_price,nyukin_total) {
 	if (entry_amount_price > 0) {
 		amount_zan = (entry_amount_price - nyukin_total);
 	}
-	$("#pay_amount_zan").val(scheduleCommon.numFormatter(amount_zan,11));
 };
 
 // 請求情報の更新時の案件リストの表示更新（請求区分と未入金情報）

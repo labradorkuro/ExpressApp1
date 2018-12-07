@@ -922,7 +922,7 @@ entryList.onloadBillingTotalReq = function (e) {
 			$("#entry_amount_billing").val(scheduleCommon.numFormatter(billing.amount_total,11));
 		}
 		if (billing.complete_total != null) {
-			$("#entry_amount_deposit").val(scheduleCommon.numFormatter(billing.complete_total,11));
+			$("#entry_amount_deposit").val(scheduleCommon.numFormatter(Number(billing.complete_total) + Number(billing.furikomi_total),11));
 		}
 	}
 };
