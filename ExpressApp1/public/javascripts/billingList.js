@@ -814,8 +814,12 @@ billingList.requestBillingTotal = function (no) {
 // 請求金額、入金額取得リクエストのコールバック
 billingList.onloadBillingTotalReq = function (e) {
 	if (this.status == 200) {
+		var amount_zan = 0;
 		var billing = this.response;
-		billingList.calcAmountZan(billingList.currentEntry.currentEntry.entry_amount_price,billing.nyukin_total);
+		if (billingList.currentEntry.currentEntry.entry_amount_price_notax > 0) {
+			amount_zan = (billingList.currentEntry.currentEntry.entry_amount_price_notax - billing.amount_total_notax);
+		}
+		$("#pay_amount_zan").val(scheduleCommon.numFormatter(amount_zan,11));
 		$("#billing_form_dialog").dialog("open");
 	}
 };
