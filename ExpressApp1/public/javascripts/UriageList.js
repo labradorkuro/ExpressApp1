@@ -597,6 +597,7 @@ uriageList.uriageListCsv = function() {
 uriageList.getDivisionSummaryList = function() {
   var colnames = "試験課,売上(税抜),消費税,売上計";
   var keyword = $("#uriage_search_keyword").val();
+  var shikenjo = uriageList.getShikenjoSelect();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   var lines = [];
@@ -604,7 +605,7 @@ uriageList.getDivisionSummaryList = function() {
   var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
   var blob = null;
   // 売上集計
-  var req_url = "/uriage_summary_print?op=division&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  var req_url = "/uriage_summary_print?op=division&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword + "&shikenjo=" + shikenjo;
   $.get(req_url,function(response) {
       for(var i = 0;i < response.records;i++) {
         var row = response.rows[i].cell;
@@ -621,9 +622,10 @@ uriageList.getDivisionSummaryList = function() {
 }
 
 // 顧客別
-uriageList.getClientSummaryList = function() {
+uriageList.getClientSummaryList = function(shikenjo) {
   var colnames = "顧客名,売上(税抜),消費税,売上計";
   var keyword = $("#uriage_search_keyword").val();
+  var shikenjo = uriageList.getShikenjoSelect();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   var lines = [];
@@ -631,7 +633,7 @@ uriageList.getClientSummaryList = function() {
   var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
   var blob = null;
   // 売上集計
-  var req_url = "/uriage_summary_print?op=client&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  var req_url = "/uriage_summary_print?op=client&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword + "&shikenjo=" + shikenjo;
   $.get(req_url,function(response) {
       for(var i = 0;i < response.records;i++) {
         var row = response.rows[i].cell;
@@ -650,6 +652,7 @@ uriageList.getClientSummaryList = function() {
 // 詳細リスト
 uriageList.getDetailList = function(summary_text) {
   var keyword = $("#uriage_search_keyword").val();
+  var shikenjo = uriageList.getShikenjoSelect();
   var sd = $("#start_date").val();
   var ed = $("#end_date").val();
   var today = scheduleCommon.getToday("{0}_{1}_{2}");
@@ -661,7 +664,7 @@ uriageList.getDetailList = function(summary_text) {
   var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
   var blob = null;
   // 売上集計
-  var req_url = "/uriage_summary_print?op=all&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword;
+  var req_url = "/uriage_summary_print?op=all&start_date=" + sd + "&end_date=" + ed + "&keyword=" + keyword + "&shikenjo=" + shikenjo;
   $.get(req_url,function(response) {
       var total = 0;
       for(var i = 0;i < response.records;i++) {
