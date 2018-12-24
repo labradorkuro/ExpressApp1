@@ -24,7 +24,7 @@ billingList.eventBind = function() {
 // 入金予定日の計算
 billingList.calc_nyukin_yotei_date = function() {
 	// 請求先の支払いサイト情報を取得する
-	var sight_info = {client_cd:0,shimebi:"",sight_id:0,kyujitsu_setting:0,memo:""};
+	var sight_info = {client_cd:"",shimebi:"",sight_id:0,kyujitsu_setting:0,memo:""};
 	// 請求先の選択状態を取得する
 	var billing_kind = 0;
 	if ($("#billing_kind_1").prop("checked")) {
@@ -66,10 +66,11 @@ billingList.set_nyukin_yotei_date = function(sight_info) {
 	var seikyu_date = $("#pay_planning_date").val();
 	if (seikyu_date != "") {
 		var shiharaibi = nyukinYotei.getShiharaibi(seikyu_date, sight_info);
+		console.log("nyukinYotei.getShiharaibi:" + shiharaibi)
 		// 入金予定日が営業日か判定し、休日の場合は前後に移動する
 		// 土日チェック
-		var date = nyukinYotei.checkHoliday_ss(shiharaibi,sight_info.kyujitsu_setting);
-	
+		var date = nyukinYotei.checkHoliday_ss(scheduleCommon.dateStringToDate(shiharaibi),sight_info.kyujitsu_setting);
+		console.log("nyukinYotei.checkHoliday_ss:" + date)
 		// 休日マスタ検索
 		nyukinYotei.checkHoliday_db(date).then(function(holiday){
 			if (holiday.length) {

@@ -18,9 +18,9 @@ nyukinYotei.getYear = function(seikyu_date, sight_info) {
 // 請求日と締日を参照して、支払日を決定する
 nyukinYotei.getShiharaibi = function(seikyu_date, sight_info) {
   var month = 0;
-  if (sight_info.client_cd == 0) {
+  if (sight_info.client_cd == "") {
     // 支払いサイト情報がない場合
-    return scheduleCommon.dateStringToDate(seikyu_date);
+    return scheduleCommon.getDateString(scheduleCommon.dateStringToDate(seikyu_date),'{0}/{1}/{2}');
   }
   // 請求日
   var sd = scheduleCommon.dateStringToDate(seikyu_date);
@@ -48,7 +48,7 @@ nyukinYotei.getShiharaibi = function(seikyu_date, sight_info) {
   } else {
     shiharaibi.setDate(Number(sight_info.sight_date.shiharaibi));
   }
-  return shiharaibi;
+  return scheduleCommon.getDateString(shiharaibi,'{0}/{1}/{2}');
 };
 
 // 入金予定日が営業日か判定し、休日の場合は前後に移動する

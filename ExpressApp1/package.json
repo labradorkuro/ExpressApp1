@@ -26,7 +26,8 @@
     "stylus": "*",
     "nodemailer": "*",
     "nodemailer-smtp-transport": "*",
-    "fullcalendar": "*"
+    "fullcalendar": "*",
+    "moment":"*"
   },
   "scripts": {
     "start": "node app.js"
