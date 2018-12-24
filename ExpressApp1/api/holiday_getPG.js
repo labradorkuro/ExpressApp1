@@ -3,8 +3,6 @@
 //
 var tools = require('../tools/tool');
 var holiday = models['holiday'];
-var moment = require('moment');
-moment.locale('ja');
 
 exports.holiday_get = function(req, res) {
   if (req.query.id) {
