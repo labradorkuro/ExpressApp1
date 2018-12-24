@@ -94,7 +94,7 @@ var http = require('http');
 var path = require('path');
 
 // Version
-drc_version = ' Ver.1.1.0';
+drc_version = ' Ver.1.1.1';
 
 // all environments
 app.set('port', process.env.PORT || 80);
