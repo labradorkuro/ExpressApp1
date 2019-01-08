@@ -28,6 +28,11 @@ $(function ()　{
 	// 請求先編集ボタンイベント（登録・編集用画面の表示）
 	$("#edit_billing").bind('click' , {}, billingSummaryList.openBillingFormDialog);
 	billingSummaryList.createBillingFormDialog();		// 請求情報編集選択用
+	// 未入金のチェック
+	$("#search_option_pay_status_1").bind('click' , {}, billingSummaryList.checkPayStatus);
+	$("#search_option_pay_status_2").bind('click' , {}, billingSummaryList.checkPayStatus);
+	$("#search_option_pay_status_3").bind('click' , {}, billingSummaryList.checkPayStatus);
+	$("#search_option_pay_status_4").bind('click' , {}, billingSummaryList.checkMinyukin);
 });
 
 // 処理用オブジェクト
@@ -751,3 +756,14 @@ billingSummaryList.openEditDialog = function() {
 	billing.pay_amount_total = billing.pay_amount_total.trim().replace(/,/g,'');
 	billingList.setBillingForm(billing);
 };
+billingSummaryList.checkMinyukin = function() {
+	if ($("#search_option_pay_status_4").prop("checked")) {  // 未入金
+    $("#search_option_pay_status_1").prop("checked",false);
+    $("#search_option_pay_status_2").prop("checked",false);
+    $("#search_option_pay_status_3").prop("checked",false);
+  }
+
+}
+billingSummaryList.checkPayStatus = function() {
+    $("#search_option_pay_status_4").prop("checked",false);
+}

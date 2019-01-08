@@ -212,7 +212,7 @@ var getTagetPayResult = function(req) {
 	var pay_result = Number(req.query.pay_result);
 	console.log("pay_result:" + pay_result);
 	var result = "";
-	if (pay_result != 0){
+	if ((pay_result != 0) && (pay_result != 0x08)) {
 		if ((pay_result  & 0x01) == 0x01) {
 			if (result == "") 
 				result = "pay_result <= 1"; 
@@ -231,16 +231,23 @@ var getTagetPayResult = function(req) {
 			else
 				result += " OR pay_result = 3";
 		}
-		if ((pay_result  & 0x08) == 0x08) {
-			if (result == "") 
-				result = "pay_result = 4"; 
-			else
-				result += " OR pay_result = 4";
-		}
 		result = " AND (" + result + ") ";
 
 	}
 	console.log("pay_result:" + result);
+	return result;
+}
+// 請求ステータス選択(未入金のチェック判定)
+var getMinyukinCheck = function(req) {
+	var pay_result = Number(req.query.pay_result);
+	console.log("pay_result:" + pay_result);
+	var result = "";
+	if (pay_result != 0){
+		if ((pay_result  & 0x08) == 0x08) {
+			result = "AND minyukin=1"; 
+		}
+	}
+	console.log("minyukin_check:" + result);
 	return result;
 }
 // 請求情報集計用リストの取得
@@ -253,7 +260,8 @@ var billing_get_summary_list = function (req, res) {
 	var large_item = parse_large_item_params(req);
 	var shikenjo = getTagetShikenjo(req);
 	var target_date = search_target_date(req);
-	var pay_result = getTagetPayResult(req)
+	var pay_result = getTagetPayResult(req);
+	var minyukin = getMinyukinCheck(req);
 	// キーワードを検索するためのSQL生成
 	var keyword = getBillingSearchKeywordParam(req.query.keyword);
 	var sql_count = 'SELECT COUNT(*) AS cnt'
@@ -262,7 +270,11 @@ var billing_get_summary_list = function (req, res) {
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd  AND test_large_class.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd AND client_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_list  AS agent_list ON (billing_info.client_cd = agent_list.client_cd AND agent_list.delete_check=0)'
-		+ ' WHERE billing_info.delete_check = $1 AND ' + target_date + large_item + keyword + shikenjo + pay_result;
+		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
+		+ ' LEFT JOIN (SELECT billing_info.entry_no,COUNT(pay_result) AS minyukin FROM drc_sch.billing_info' 
+		+ ' WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = $1 AND '  + target_date
+		+ ' GROUP BY billing_info.entry_no) as subq2 ON(subq2.entry_no = billing_info.entry_no)'
+		+ ' WHERE billing_info.delete_check = $1 AND ' + target_date + large_item + keyword + shikenjo + pay_result + minyukin;
 	var sql = 'SELECT '
 		+ 'billing_info.entry_no,'
 		+ 'billing_no,'
@@ -343,11 +355,16 @@ var billing_get_summary_list = function (req, res) {
 		+ ' LEFT JOIN drc_sch.client_person_list ON (billing_info.client_cd = client_person_list.client_cd AND billing_info.client_division_cd = client_person_list.division_cd AND billing_info.client_person_id = client_person_list.person_id AND client_person_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON (billing_info.agent_cd = agent_division_list.client_cd AND billing_info.agent_division_cd = agent_division_list.division_cd AND agent_division_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON (billing_info.agent_cd = agent_person_list.client_cd AND billing_info.agent_division_cd = agent_person_list.division_cd AND billing_info.agent_person_id = agent_person_list.person_id AND agent_person_list.delete_check=0)'
+		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
+		+ ' LEFT JOIN (SELECT billing_info.entry_no,COUNT(pay_result) AS minyukin FROM drc_sch.billing_info' 
+		+ ' WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = $1 AND '  + target_date
+		+ ' GROUP BY billing_info.entry_no) as subq2 ON(subq2.entry_no = billing_info.entry_no)'
 		+ ' WHERE billing_info.delete_check = $1 AND billing_info.entry_no <>\'\' AND ' 
-		+ target_date + large_item + keyword + shikenjo + pay_result
+		+ target_date + large_item + keyword + shikenjo + pay_result + minyukin
 		+ ' ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
+
 		return billing_get_list_for_grid(res, sql_count, sql, [del_chk,sd,ed], pg_params);
 };
 
@@ -362,6 +379,7 @@ var billing_summary = function (req, res) {
 	var shikenjo = getTagetShikenjo(req);
 	var target_date = search_target_date(req);
 	var pay_result = getTagetPayResult(req)
+	var minyukin = getMinyukinCheck(req);
 	// キーワードを検索するためのSQL生成
 	var keyword = getBillingSearchKeywordParam(req.query.keyword);
 	var sql = 'SELECT '
@@ -387,8 +405,12 @@ var billing_summary = function (req, res) {
 		+ ' LEFT JOIN drc_sch.client_person_list ON (billing_info.client_cd = client_person_list.client_cd AND billing_info.client_division_cd = client_person_list.division_cd AND billing_info.client_person_id = client_person_list.person_id AND client_person_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON (billing_info.agent_cd = agent_division_list.client_cd AND billing_info.agent_division_cd = agent_division_list.division_cd AND agent_division_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON (billing_info.agent_cd = agent_person_list.client_cd AND billing_info.agent_division_cd = agent_person_list.division_cd AND billing_info.agent_person_id = agent_person_list.person_id AND agent_person_list.delete_check=0)'
+		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
+		+ ' LEFT JOIN (SELECT billing_info.entry_no,COUNT(pay_result) AS minyukin FROM drc_sch.billing_info' 
+		+ ' WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = $1 AND '  + target_date
+		+ ' GROUP BY billing_info.entry_no) as subq2 ON(subq2.entry_no = billing_info.entry_no)'
 		+ ' WHERE billing_info.delete_check = $1  AND billing_info.entry_no <>\'\' AND '
-		+ target_date + large_item + keyword + shikenjo + pay_result;
+		+ target_date + large_item + keyword + shikenjo + pay_result + minyukin;
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
 		// データを取得するためのクエリーを実行する
@@ -421,13 +443,18 @@ var billing_get_summary_list_print = function (req, res) {
 	var pay_result = getTagetPayResult(req)
 	// キーワードを検索するためのSQL生成
 	var keyword = getBillingSearchKeywordParam(req.query.keyword);
+	var minyukin = getMinyukinCheck(req);
 	var sql_count = 'SELECT COUNT(*) AS cnt'
 		+ ' FROM drc_sch.billing_info'
 		+ ' LEFT JOIN drc_sch.entry_info ON (billing_info.entry_no = entry_info.entry_no AND entry_info.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.test_large_class ON(entry_info.test_large_class_cd = test_large_class.item_cd  AND test_large_class.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd AND client_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_list  AS agent_list ON (billing_info.client_cd = agent_list.client_cd AND agent_list.delete_check=0)'
-		+ ' WHERE billing_info.delete_check = $1 AND ' + target_date + large_item + keyword + shikenjo + pay_result;
+		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
+		+ ' LEFT JOIN (SELECT billing_info.entry_no,COUNT(pay_result) AS minyukin FROM drc_sch.billing_info' 
+		+ ' WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = $1 AND '  + target_date
+		+ ' GROUP BY billing_info.entry_no) as subq2 ON(subq2.entry_no = billing_info.entry_no)'
+		+ ' WHERE billing_info.delete_check = $1 AND ' + target_date + large_item + keyword + shikenjo + pay_result + minyukin;
 	var sql = 'SELECT '
 		+ 'billing_info.entry_no,'
 		+ 'billing_no,'
@@ -508,8 +535,12 @@ var billing_get_summary_list_print = function (req, res) {
 		+ ' LEFT JOIN drc_sch.client_person_list ON (billing_info.client_cd = client_person_list.client_cd AND billing_info.client_division_cd = client_person_list.division_cd AND billing_info.client_person_id = client_person_list.person_id AND client_person_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_division_list AS agent_division_list ON (billing_info.agent_cd = agent_division_list.client_cd AND billing_info.agent_division_cd = agent_division_list.division_cd AND agent_division_list.delete_check=0)'
 		+ ' LEFT JOIN drc_sch.client_person_list AS agent_person_list ON (billing_info.agent_cd = agent_person_list.client_cd AND billing_info.agent_division_cd = agent_person_list.division_cd AND billing_info.agent_person_id = agent_person_list.person_id AND agent_person_list.delete_check=0)'
+		// 請求情報のサブクエリ 未入金ありを表示するため(入金確認済になっていないか、入金確認済でも入金額が少ないもの)
+		+ ' LEFT JOIN (SELECT billing_info.entry_no,COUNT(pay_result) AS minyukin FROM drc_sch.billing_info' 
+		+ ' WHERE (pay_result < 3 OR (pay_result = 3 AND (pay_amount > pay_complete))) AND billing_info.delete_check = $1 AND '  + target_date
+		+ ' GROUP BY billing_info.entry_no) as subq2 ON(subq2.entry_no = billing_info.entry_no)'
 		+ ' WHERE billing_info.delete_check = $1 AND billing_info.entry_no <>\'\' AND ' 
-		+ target_date + large_item + keyword + shikenjo + pay_result
+		+ target_date + large_item + keyword + shikenjo + pay_result + minyukin
 		+ ' ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord;
 		return billing_get_list_for_print(res, sql_count, sql, [del_chk,sd,ed], pg_params);
