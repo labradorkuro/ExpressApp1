@@ -737,6 +737,8 @@ entryList.copyEntry = function () {
 	$("#quote_no").val("");					// 見積番号
 	$("#inquiry_date").val(today);			// 問合せ日
 	$("#entry_status").val("01");			// 案件ステータス
+	$("#entry_status_str").val("引合");
+	$("#shicchu_check").prop('checked',false);
 	$("#sales_person_id").val($.cookie('userid'));	// 入力者ID
 	$("#shiken_kaishi_date").val("");		// 試験開始日
 	$("#report_limit_date").val("");		// 報告書提出期限
