@@ -1152,19 +1152,19 @@ quoteInfo.createSVG = function (data) {
 		top = 460;
 		h = 600;
 		canvas.add(new fabric.Line([280,460,280,1060],{fill: 'black', stroke: 'black', strokeWidth: 1, opacity: 1 }));
-		canvas.add(new fabric.Line([330,460,330,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
-		canvas.add(new fabric.Line([390,460,390,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
-		canvas.add(new fabric.Line([510,460,510,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
+		canvas.add(new fabric.Line([360,460,360,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
+		canvas.add(new fabric.Line([420,460,420,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
+		canvas.add(new fabric.Line([520,460,520,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Line([630,460,630,1060],{fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 
 		top = 460;
 		font_size = 16;
 		quoteInfo.outputTextBold(canvas, "件　　名", font_size, 130, top);
-		quoteInfo.outputTextBold(canvas, "数量", font_size, 290, top);
-		quoteInfo.outputTextBold(canvas, "単位"  , font_size, 345, top);
-		quoteInfo.outputTextBold(canvas, "単　価", font_size, 430, top);
+		quoteInfo.outputTextBold(canvas, "数  量",   font_size, 300, top);
+		quoteInfo.outputTextBold(canvas, "単  位"  , font_size, 370, top);
+		quoteInfo.outputTextBold(canvas, "単　価", font_size, 445, top);
 		quoteInfo.outputTextBold(canvas, "金　額", font_size, 550, top);
-		quoteInfo.outputTextBold(canvas, "備　考", font_size, 720, top);
+		quoteInfo.outputTextBold(canvas, "備　考", font_size, 710, top);
 		// 印鑑枠
 		canvas.add(new fabric.Rect({ top : 380, left : 630, width : 180, height : 60, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
 		canvas.add(new fabric.Rect({ top : 380, left : 690, width : 60, height : 60, fill: 'none', stroke: 'black', strokeWidth: 1, opacity: 1 }));
@@ -1218,25 +1218,29 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	var left = 0;
 	for (var i in data.rows) {
 		var row = data.rows[i];
+		var row_unit_price = Number(row.unit_price.replace(/,/g,''));
+		var row_price = Number(row.price.replace(/,/g,''));
+		var row_quantity = Number(row.quantity.replace(/,/g,''));
 		// 試験中分類名
-		quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);
+		quoteInfo.multiLines(canvas, top, 65, font_size, row.test_middle_class_name);
+		//quoteInfo.outputText(canvas, row.test_middle_class_name, font_size, 65, top);
 		// 数量
-		if (row.quantity > 0)
-			quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row.quantity,5), font_size, 295, top);
+		if (row_quantity > 0)
+			quoteInfo.outputText(canvas, scheduleCommon.numFormatter(row_quantity,5), font_size, 295, top);
 		// 単位
-		quoteInfo.outputText(canvas, row.unit, font_size, 350, top);
+		quoteInfo.outputText(canvas, row.unit, font_size, 380, top);
 		// 単価
-		if (row.unit_price > 0) {
-			var unit_price = scheduleCommon.addYenMark(scheduleCommon.numFormatter(row.unit_price,12));
+		if (row_unit_price > 0) {
+			var unit_price = scheduleCommon.addYenMark(scheduleCommon.numFormatter(row_unit_price,12));
 			len = unit_price.indexOf("\\");
 			left = 410;
 			if (ua == 'chrome') left += (len * (font_size / 2));
 			quoteInfo.outputTextMono(canvas, unit_price, font_size, left, top);
 		}
 		// 金額
-		var pr = scheduleCommon.numFormatter(Math.round(row.price),12);
-		if (row.price < 0) {
-			pr = scheduleCommon.numFormatter(Math.round(row.price),12);
+		var pr = scheduleCommon.numFormatter(Math.round(row_price),12);
+		if (row_price < 0) {
+			pr = scheduleCommon.numFormatter(Math.round(row_price),12);
 			pr = pr.replace("  -","▲ ");
 			len = pr.indexOf("▲");
 			left = 520;
@@ -1251,29 +1255,10 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		}
 		len = row.specific_memo.length;
 		if (len > 0) {
-
-			var memo_top = top;
-			var memo_font_size = font_size;
-			var lines = "";
-			if (len <= 13) {
-				lines = row.specific_memo;
-			} else if ((len > 13) && (len <=26)) {
-				memo_font_size /= 2;
-				memo_top += 4;
-				for(var k = 0;k < 2;k++) {
-					lines += row.specific_memo.substring((k * 21),(k * 21) + 21) + "\n";
-				}
-			} else if (len > 26) {
-				memo_font_size /= 3;
-				memo_top += 2;
-				for(var k = 0;k < 3;k++) {
-					lines += row.specific_memo.substring((k * 21),(k * 21) + 21) + "\n";
-				}
-			}
-			quoteInfo.outputText(canvas, lines, memo_font_size, 632, memo_top);		// 備考
+			quoteInfo.multiLines(canvas, top, 632, font_size, row.specific_memo);
 		}
 		top += 24;
-		total += Number(row.price);
+		total += Number(row_price);
 	}
 	top = top_wk + (21 * 24);
 	var tax = total * (quoteInfo.currentConsumption_tax / 100);
@@ -1299,6 +1284,32 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	quoteInfo.outputTextMono(canvas, tt, font_size, left, top);
 };
 
+// 出力文字が長い時にフォントサイズ調整と折り返しを行う
+quoteInfo.multiLines = function(canvas,top, left, font_size, str) {
+	var len = str.length;
+	var w_top = top;
+	var w_font_size = font_size;
+	var lines = "";
+
+	if (len <= 13) {
+		lines = str;
+	} else if ((len > 13) && (len <=26)) {
+		w_font_size /= 2;
+		//w_top += 4;
+		//for(var k = 0;k < 2;k++) {
+		//	lines += str.substring((k * 21),(k * 21) + 21) + "\n";
+		//}
+		lines = str;
+	} else if (len > 26) {
+		w_font_size /= 2;
+		w_top += 2;
+		for(var k = 0;k < 2;k++) {
+			lines += str.substring((k * 21),(k * 21) + 21) + "\n";
+		}
+	}
+	quoteInfo.outputText(canvas, lines, w_font_size, left, w_top);
+
+}
 // 備考を選択したらテキストエリアにコピーする
 quoteInfo.selectMemoList = function(event) {
 
