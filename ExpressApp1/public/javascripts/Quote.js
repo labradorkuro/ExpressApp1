@@ -62,7 +62,7 @@ quoteInfo.eventBind = function(kind) {
 quoteInfo.createQuoteFormDialog = function () {
 	$('#quoteForm_dialog').dialog({
 		autoOpen: false,
-		width: 980,
+		width: 1120,
 		height: 640,
 		title: '見積書',
 		closeOnEscape: false,
@@ -726,7 +726,7 @@ quoteInfo.addRowCreate = function(no) {
 	var memo = $("<td><input type='text' id='" + id + "' name='" + id + "' size='12' placeholder='備考'/></td>");
 
 	id = "del_row_btn_" + no;
-	var button = $("<td><input type='button' id='" + id + "' class='del_row_btn' name='" + id + "' value='行削除'/><input type='hidden' id='specific_delete_check_" + no + "' name='specific_delete_check_" + no + "' value='0'/></td>");
+	var button = $("<td style='display: table;width: 200px;border:none;margin-top:10px;'><input type='button' id='" + id + "' class='del_row_btn' name='" + id + "' value='行削除'/>&nbsp;<input type='button' id='" + id + "' class='add_template_btn' name='" + id + "' value='保存'/>&nbsp;<input type='button' id='" + id + "' class='select_template_btn' name='" + id + "' value='選択'/><input type='hidden' id='specific_delete_check_" + no + "' name='specific_delete_check_" + no + "' value='0'/></td>");
 
 	$(row).append(qty);
 	$(row).append(unit);

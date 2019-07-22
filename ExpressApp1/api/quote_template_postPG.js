@@ -4,6 +4,7 @@
 
 // テンプレートに追加
 var sqlInsertQuoteTemplate = 'INSERT INTO drc_sch.quote_specific_template ('
+	+ 'template_id,'			// 
 	+ 'test_middle_class_cd,'	// 試験中分類CD
 	+ 'test_middle_class_name,'	// 試験中分類名称
 	+ 'unit,'					// 単位
@@ -18,19 +19,20 @@ var sqlInsertQuoteTemplate = 'INSERT INTO drc_sch.quote_specific_template ('
 	+ "updated,"			// 更新日
 	+ "updated_id"			// 更新者ID
 	+ ") values ("
-	+ "$1," // 試験中分類CD
-	+ "$2," // 試験中分類名称
-	+ "$3," // 単位
-	+ "$4," // 単価
-	+ "$5," // 数量
-	+ "$6," // 金額
-	+ "$7," // 集計対象フラグ
-	+ "$8," // 備考
-	+ "$9," // 削除フラグ
-	+ "$10," // 作成日
-	+ "$11," // 作成者ID
-	+ "$12," // 更新日
-	+ "$13"  // 更新者ID
+	+ "$1," // テンプレートID
+	+ "$2," // 試験中分類CD
+	+ "$3," // 試験中分類名称
+	+ "$4," // 単位
+	+ "$5," // 単価
+	+ "$6," // 数量
+	+ "$7," // 金額
+	+ "$8," // 集計対象フラグ
+	+ "$9," // 備考
+	+ "$10," // 削除フラグ
+	+ "$11," // 作成日
+	+ "$12," // 作成者ID
+	+ "$13," // 更新日
+	+ "$14"  // 更新者ID
 	+ ")";
 
 // テンプレートに追加
@@ -78,7 +80,7 @@ var updateQuoteTemplate = function (connection,quote, specific, req, res, no) {
 		+ "specific_delete_check = $9,"	// 削除フラグ
 		+ "updated = $10,"				// 更新日
 		+ "updated_id = $11"			// 更新者ID
-		+ " WHERE template_id = $12"
+		+ " WHERE id = $12"
 	// SQL実行
 	var query = connection.query(sql, [
 		specific.test_middle_class_cd,	// 試験中分類CD
@@ -92,7 +94,7 @@ var updateQuoteTemplate = function (connection,quote, specific, req, res, no) {
 		specific.template_delete_check,	// 削除フラグ
 		updated,						// 更新日
 		updated_id,						// 更新者ID
-		template_id
+		id
 	]);
 	query.on('end', function(result,err) {
 
