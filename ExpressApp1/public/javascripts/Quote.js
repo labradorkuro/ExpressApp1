@@ -46,7 +46,12 @@ quoteInfo.eventBind = function(kind) {
 	if (kind == "add_row_btn") {
 		$(".add_row_btn").bind("click", quoteInfo.addQuoteRow);
 	}
+	// 見積行削除
 	$(".del_row_btn").bind("click", quoteInfo.delQuoteRow);
+	// 見積テンプレート保存
+	$(".add_template_btn").bind("click", quoteInfo.addTemplate);
+	// 見積テンプレート選択
+	$(".select_template_btn").bind("click", quoteInfo.selectTemplate);
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
 	// 合計計算用
@@ -86,6 +91,52 @@ quoteInfo.createQuoteFormDialog = function () {
 		}
 	});
 };
+
+// 見積テンプレート保存用ダイアログの生成
+quoteInfo.createQuoteTemplateSaveDialog = function () {
+	$('#quoteTemplateSaveDialog').dialog({
+		autoOpen: false,
+		width: 460,
+		height: 240,
+		title: '見積テンプレートの保存',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"登録": function () {
+				// データの保存
+				if (quoteInfo.saveQuoteTemplate("")) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+// 見積テンプレート選択用ダイアログの生成
+quoteInfo.createQuoteTemplateListDialog = function () {
+	$('#quoteTemplateListDialog').dialog({
+		autoOpen: false,
+		width: 300,
+		height: 240,
+		title: '見積テンプレートの選択',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"選択": function () {
+				// データの選択
+				if (quoteInfo.selectQuoteTemplate("")) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+
 // 見積情報リストグリッドの生成(noは案件番号）
 quoteInfo.createQuoteInfoGrid = function (no) {
 
@@ -757,6 +808,36 @@ quoteInfo.checkDeleteRow = function(id) {
 		return false;
 	}
 };
+
+// テンプレート保存ダイアログ表示
+quoteInfo.addTemplate = function (event) {
+	$("#quoteTemplateSaveDialog").dialog({
+		buttons: {
+			"追加": function () {
+					$(this).dialog('close');
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+	$("#quoteTemplateSaveDialog").dialog("open");
+};
+// テンプレート選択ダイアログ表示
+quoteInfo.selectTemplate = function (event) {
+	$("#quoteTemplatelistDialog").dialog({
+		buttons: {
+			"追加": function () {
+					$(this).dialog('close');
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+	$("#quoteTemplateListDialog").dialog("open");
+};
+
 
 // テーブル行のデータ取得
 quoteInfo.getRowsData = function() {

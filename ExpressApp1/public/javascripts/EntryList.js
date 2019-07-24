@@ -19,6 +19,8 @@ $(function ()　{
 	// 編集用ダイアログの設定
 	entryList.createEntryDialog();				// 案件入力用
 	quoteInfo.createQuoteFormDialog();			// 見積書発行用
+	quoteInfo.createQuoteTemplateSaveDialog();	// 見積テンプレート保存用
+	quoteInfo.createQuoteTemplateListDialog();	// 見積テンプレート選択用
 	entryList.createClientListDialog();			// 得意先選択用
   	entryList.createClientList(0);
 	test_itemList.createTestItemSelectDialog();	// 試験分類選択用
