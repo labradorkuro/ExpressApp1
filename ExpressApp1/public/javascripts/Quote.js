@@ -51,7 +51,7 @@ quoteInfo.eventBind = function(kind) {
 	// 見積テンプレート保存
 	$(".add_template_btn").bind("click", quoteInfo.addTemplate);
 	// 見積テンプレート選択
-	$(".select_template_btn").bind("click", quoteInfo.selectTemplate);
+	$(".select_template_btn").bind("click", quoteInfo.createTemplateGrid);
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
 	// 合計計算用
@@ -118,15 +118,15 @@ quoteInfo.createQuoteTemplateSaveDialog = function () {
 quoteInfo.createQuoteTemplateListDialog = function () {
 	$('#quoteTemplateListDialog').dialog({
 		autoOpen: false,
-		width: 300,
-		height: 240,
+		width: 800,
+		height: 440,
 		title: '見積テンプレートの選択',
 		closeOnEscape: false,
 		modal: true,
 		buttons: {
 			"選択": function () {
 				// データの選択
-				if (quoteInfo.selectQuoteTemplate("")) {
+				if (quoteInfo.selectQuoteTemplate()) {
 					$(this).dialog('close');
 				}
 			},
@@ -742,10 +742,11 @@ quoteInfo.addHeader = function() {
 // 明細行の生成
 quoteInfo.addRowCreate = function(no) {
 	var id = "row_" + no;
+	
 	var row = $("<tr id='" + id + "'></tr>");
 	// 行に追加する要素
 	var td = $("<td></td>");
-	var id = "test_middle_class_cd_" + no;
+	id = "test_middle_class_cd_" + no;
 	var name_1 = $("<input type='hidden' id='quote_detail_no_" + no + "' name='quote_detail_no_" + no + "' value='" + no + "' +/>");
 	var name_2 = $("<input type='hidden' id='" + id + "' name='" + id + "'/>");
 	var name_3 = $("<input type='text' class='test_middle_class' id='test_middle_class_name_" + no + "' name='test_middle_class_name_" + no + "' size='20' placeholder='試験中分類'required='true'/>");
@@ -777,7 +778,8 @@ quoteInfo.addRowCreate = function(no) {
 	var memo = $("<td><input type='text' id='" + id + "' name='" + id + "' size='12' placeholder='備考'/></td>");
 
 	id = "del_row_btn_" + no;
-	var button = $("<td style='display: table;width: 200px;border:none;margin-top:10px;'><input type='button' id='" + id + "' class='del_row_btn' name='" + id + "' value='行削除'/>&nbsp;<input type='button' id='" + id + "' class='add_template_btn' name='" + id + "' value='保存'/>&nbsp;<input type='button' id='" + id + "' class='select_template_btn' name='" + id + "' value='選択'/><input type='hidden' id='specific_delete_check_" + no + "' name='specific_delete_check_" + no + "' value='0'/></td>");
+	var button = $("<td style='display: table;width: 200px;border:none;margin-top:10px;'><input type='button' id='" + id + "' class='del_row_btn' name='" + id + "' value='行削除'/>&nbsp;<input type='button' id='add_template_btn_" + no + "' class='add_template_btn' name='add_template_btn_" + no + "' value='保存'/>&nbsp;<input type='button' id='select_template_btn_" + no + "' class='select_template_btn' name='select_template_bnt_" + no + "' value='選択'/>" 
+		+ "<input type='hidden' id='specific_delete_check_" + no + "' name='specific_delete_check_" + no + "' value='0'/></td>");
 
 	$(row).append(qty);
 	$(row).append(unit);
@@ -811,10 +813,28 @@ quoteInfo.checkDeleteRow = function(id) {
 
 // テンプレート保存ダイアログ表示
 quoteInfo.addTemplate = function (event) {
+	// 当該明細データの取得
+	var no = quoteInfo.getMeisaiNo( $(event.target).attr("id"));
+	var parent_tr = event.target.parentElement.parentElement;
+	var template = {};
+	template.test_large_class_cd = quoteInfo.currentEntry.test_large_class_cd;
+	template.test_middle_class_cd = $("#test_middle_class_cd_" + no).val();
+	template.test_middle_class_name = $("#test_middle_class_name_" + no).val();
+	template.quantity = $("#quantity_" + no).val();
+	template.unit = $("#unit_" + no).val();
+	template.unit_price = $("#unit_price_" + no).val();
+	template.price = $("#price_" + no).val();
+	template.summary_check = $("#summary_check_" + no).val() == "on" ? 1:0;
+	template.memo = $("#specific_memo_" + no).val();
+	template.delete_check = 0;
 	$("#quoteTemplateSaveDialog").dialog({
 		buttons: {
 			"追加": function () {
-					$(this).dialog('close');
+				// post
+				var id = $("#template_id").val();
+				template.template_id = id;
+				quoteInfo.postTemplateData(template);
+				$(this).dialog('close');
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -823,11 +843,71 @@ quoteInfo.addTemplate = function (event) {
 	});
 	$("#quoteTemplateSaveDialog").dialog("open");
 };
+quoteInfo.postTemplateData = function(template) {
+	var xhr = new XMLHttpRequest();
+	var data = new FormData();
+	data.append('template_id',template.template_id);
+	data.append('test_large_class_cd',template.test_large_class_cd);
+	data.append('test_middle_class_cd',template.test_middle_class_cd);
+	data.append('test_middle_class_name',template.test_middle_class_name);
+	data.append('quantity',Number(template.quantity.replace(/,/g, '')));
+	data.append('unit',template.unit);
+	data.append('unit_price',Number(template.unit_price.replace(/,/g, '')));
+	data.append('price',Number(template.price.replace(/,/g, '')));
+	data.append('summary_check',template.summary_check);
+	data.append('memo',template.memo);
+	data.append('delete_check',template.delete_check);
+
+	xhr.open('POST', '/quote_template_post', true);
+	xhr.responseType = 'json';
+	xhr.send(data);
+
+}
+// 試験中分類リストの生成
+quoteInfo.createTemplateGrid = function () {
+	$("#quote_template_list").GridUnload();
+	var dc = 0;//$("#test_middle_delete_check_disp:checked").val();
+	var delchk = (dc) ? 1:0;
+	jQuery("#quote_template_list").jqGrid({
+		url: '/quote_template_get' + '?delete_check=' + delchk,
+		altRows: true,
+		datatype: "json",
+		colNames: ['テンプレートID','試験中分類CD','名称','数量','単位','単価','金額','集計','備考'],
+		colModel: [
+			{ name: 'template_id', index: 'template_id', width: 80, align: "center" },
+			{ name: 'test_middle_class_cd', index: 'test_middle_class_cd', hidden:true },
+			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 200, align: "center" },
+			{ name: 'quantity', index: 'quantity', width: 80, align: "right" ,formatter:scheduleCommon.numFormatterC},
+			{ name: 'unit', index: 'unit', width: 80, align: "center" },
+			{ name: 'unit_price', index: 'unit_price', width: 80, align: "right" ,formatter:scheduleCommon.numFormatterC},
+			{ name: 'price', index: 'price', width: 100, align: "right",formatter:scheduleCommon.numFormatterC },
+			{ name: 'summary_check', index: 'summary_check', width: 80, align: "center" , formatter:quoteInfo.summaryCheckFormatter },
+			{ name: 'memo', index: 'memo', width: 200, align: "center" }
+		],
+		height: "460px",
+		rowNum: 10,
+		rowList: [10],
+		pager: '#quote_template_list_pager',
+		sortname: 'template_id',
+		multiSort:true,
+		viewrecords: true,
+		sortorder: "asc",
+		caption: "見積テンプレートリスト",
+		onSelectRow: quoteInfo.onSelectTemplateRow,
+		loadComplete:quoteInfo.selectTemplate
+	});
+	jQuery("#quote_template_list").jqGrid('navGrid', '#quote_template_list_pager', { edit: false, add: false, del: false });
+	scheduleCommon.changeFontSize();
+};
+// リストで選択中の情報を取得する
+quoteInfo.onSelectTemplateRow = function (rowid) {
+};
+
 // テンプレート選択ダイアログ表示
 quoteInfo.selectTemplate = function (event) {
-	$("#quoteTemplatelistDialog").dialog({
+	$("#quoteTemplateListDialog").dialog({
 		buttons: {
-			"追加": function () {
+			"選択": function () {
 					$(this).dialog('close');
 			},
 			"閉じる": function () {
@@ -837,7 +917,10 @@ quoteInfo.selectTemplate = function (event) {
 	});
 	$("#quoteTemplateListDialog").dialog("open");
 };
-
+// テンプレートの選択
+quoteInfo.selectQuoteTemplate = function() {
+	
+}
 
 // テーブル行のデータ取得
 quoteInfo.getRowsData = function() {

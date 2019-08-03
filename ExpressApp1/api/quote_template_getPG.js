@@ -1,38 +1,39 @@
 //
 // 見積り明細テンプレート処理
 //
+var tools = require('../tools/tool');
 
 // 見積明細テンプレートの取得
-var quote_template_get = function (req, res) {
-	var pg_params = getPagingParams(req);
-	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.quote_specific_info WHERE specific_delete_check = $1 AND (entry_no = $2 AND quote_no = $3)';
+exports.quote_template_get = function (req, res) {
+	var pg_params = tools.getPagingParams(req);
+	var sql_count = 'SELECT COUNT(*) AS cnt FROM drc_sch.quote_specific_template WHERE delete_check = $1';
     var sql = 'SELECT '
         + 'template_id,'
+		+ 'quote_specific_template.test_large_class_cd,'
 		+ 'quote_specific_template.test_middle_class_cd,'
-		+ 'test_middle_class_name,'
+		+ 'quote_specific_template.test_middle_class_name,'
 		+ 'unit,'
 		+ 'unit_price,'
 		+ 'quantity,'
 		+ 'price,'
 		+ 'summary_check,'
-		+ 'specific_memo,'
+		+ 'quote_specific_template.memo'
 		+ ' FROM drc_sch.quote_specific_template'
-		+ ' WHERE template_delete_check = $1 ORDER BY '
+//		+ ' LEFT JOIN drc_sch.test_middle_class ON(quote_specific_template.test_middle_class_cd = test_middle_class.item_cd AND quote_specific_template.test_large_class_cd = test_middle_class.large_item_cd)'
+		+ ' WHERE quote_specific_template.delete_check = $1 ORDER BY '
 		+ pg_params.sidx + ' ' + pg_params.sord
 		+ ' LIMIT ' + pg_params.limit + ' OFFSET ' + pg_params.offset;
 	var result = { page: 1, total: 20, records: 0, rows: [] };
 	// SQL実行
 	var rows = [];
-	var dc = Number(req.query.template_delete_check);
-	var params_0 = [dc,req.params.entry_no, req.params.quote_no];
-	//var params = [dc,req.params.entry_no, req.params.quote_no,req.query.large_item_cd];
+	var dc = Number(req.query.delete_check);
 	var params = [dc];
 	pg.connect(connectionString, function (err, connection) {
 		if (err) {
 			console.log(err);
 		}
 		// 最初に件数を取得する
-		connection.query(sql_count, params_0, function (err, results) {
+		connection.query(sql_count, params, function (err, results) {
 			if (err) {
 				console.log(err);
 			} else {
@@ -57,7 +58,7 @@ var quote_template_get = function (req, res) {
 						res.send(result);
 					}
 				});
-			}
+			};
 		});
 	});
 };

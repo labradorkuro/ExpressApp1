@@ -85,6 +85,8 @@ var holiday_post = require('./api/holiday_postPG');
 var notify_settings_get = require('./api/notify_settings_getPG'); // 通知メール設定
 var notify_settings_post = require('./api/notify_settings_postPG'); // 通知メール設定
 //mysql = require('mysql');
+var quote_template_post = require('./api/quote_template_postPG');   // 見積テンプレート
+var quote_template_get  = require('./api/quote_template_getPG');
 
 
 //var sequelize = new Sequelize('postgres://drc_root:drc_r00t@@localhost:5432/drc_sch');
@@ -185,6 +187,10 @@ app.get('/quote_specific_get_grid/:entry_no/:quote_no', entry_get.quote_specific
 app.get('/quote_specific_get_list/:entry_no/:quote_no?', entry_get.quote_specific_get_list);
 app.get('/quote_specific_get_list_for_entryform/:entry_no', entry_get.quote_specific_get_list_for_entryform);
 app.get('/quote_specific_get_list_for_calendar/:entry_no', entry_get.quote_specific_get_list_for_calendar);
+// 見積テンプレート
+app.post('/quote_template_post',upload.array(),quote_template_post.postQuoteTemplate);
+app.get('/quote_template_get', quote_template_get.quote_template_get);
+
 app.get('/workitem_get/:entry_no/:item_type', workitem_get.workitem_get);
 app.get('/template_get_all/:item_type?', template_get.template_get_all);
 app.get('/template_get_list/:template_cd/:item_type?', template_get.template_get_list);
