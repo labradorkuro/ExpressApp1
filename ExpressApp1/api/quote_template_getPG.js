@@ -12,6 +12,8 @@ exports.quote_template_get = function (req, res) {
 		+ 'quote_specific_template.test_large_class_cd,'
 		+ 'quote_specific_template.test_middle_class_cd,'
 		+ 'quote_specific_template.test_middle_class_name,'
+		+ 'period_term,'
+		+ 'period_unit,'
 		+ 'unit,'
 		+ 'unit_price,'
 		+ 'quantity,'

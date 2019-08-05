@@ -16,6 +16,8 @@ var sqlInsertQuoteTemplate = 'INSERT INTO drc_sch.quote_specific_template ('
 	+ 'test_large_class_cd,'	// 試験大分類CD
 	+ 'test_middle_class_cd,'	// 試験中分類CD
 	+ 'test_middle_class_name,'	// 試験中分類
+	+ 'period_term,'					// 
+	+ 'period_unit,'					// 
 	+ 'unit,'					// 単位
 	+ 'unit_price,'				// 単価
 	+ 'quantity,'				// 数量
@@ -32,17 +34,19 @@ var sqlInsertQuoteTemplate = 'INSERT INTO drc_sch.quote_specific_template ('
 	+ "$2," // 試験大分類CD
 	+ "$3," // 試験中分類CD
 	+ "$4," // 試験中分類
-	+ "$5," // 単位
-	+ "$6," // 単価
-	+ "$7," // 数量
-	+ "$8," // 金額
-	+ "$9," // 集計対象フラグ
-	+ "$10," // 備考
-	+ "$11," // 削除フラグ
-	+ "$12," // 作成日
-	+ "$13," // 作成者ID
-	+ "$14," // 更新日
-	+ "$15"  // 更新者ID
+	+ "$5," // 
+	+ "$6," // 
+	+ "$7," // 単位
+	+ "$8," // 単価
+	+ "$9," // 数量
+	+ "$10," // 金額
+	+ "$11," // 集計対象フラグ
+	+ "$12," // 備考
+	+ "$13," // 削除フラグ
+	+ "$14," // 作成日
+	+ "$15," // 作成者ID
+	+ "$16," // 更新日
+	+ "$17"  // 更新者ID
 	+ ")";
 
 // テンプレートに追加
@@ -57,6 +61,8 @@ var insertQuoteTemplate = function (connection,specific, req) {
 		specific.test_large_class_cd,	// 試験大分類CD
 		specific.test_middle_class_cd,	// 試験中分類CD
 		specific.test_middle_class_name,	// 試験中分類
+		specific.period_term,
+		specific.period_unit,
 		specific.unit,					// 単位
 		specific.unit_price,			// 単価
 		specific.quantity,				// 数量
@@ -84,10 +90,12 @@ var updateQuoteTemplate = function (connection,quote, specific, req, res, no) {
 		+ 'test_large_class_cd = $1,'	// 試験大分類CD
 		+ 'test_middle_class_cd = $2,'	// 試験中分類CD
 		+ 'test_middle_class_name = $3,'	// 試験中分類
-		+ 'unit = $4,'					// 単位
-		+ 'unit_price = $5,'			// 単価
-		+ 'quantity = $6,'				// 数量
-		+ 'price = $7,'					// 金額
+		+ 'period_term = $4,'					// 
+		+ 'period_unit = $5,'					// 
+		+ 'unit = $6,'					// 単位
+		+ 'unit_price = $7,'			// 単価
+		+ 'quantity = $8,'				// 数量
+		+ 'price = $9,'					// 金額
 		+ 'summary_check = $8,'			// 集計対象フラグ
 		+ 'memo = $9,'			// 備考
 		+ "delete_check = $10,"	// 削除フラグ
@@ -99,6 +107,8 @@ var updateQuoteTemplate = function (connection,quote, specific, req, res, no) {
 		specific.test_large_class_cd,	// 試験大分類CD
 		specific.test_middle_class_cd,	// 試験中分類CD
 		specific.test_middle_class_name,	// 試験中分類
+		specific.period_term,					// 
+		specific.period_unit,					// 
 		specific.unit,					// 単位
 		specific.unit_price,			// 単価
 		specific.quantity,				// 数量
