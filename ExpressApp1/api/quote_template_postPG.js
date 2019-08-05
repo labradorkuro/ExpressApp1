@@ -5,8 +5,20 @@ var tools = require('../tools/tool');
 exports.postQuoteTemplate = function (req, res) {
 	var template = req.body;
 	console.log("template:" + template.template_id);
+	var sql = "SELECT template_id FROM drc_sch.quote_specific_template WHERE template_id = $1";
 	pg.connect(connectionString, function (err, connection) {
-		insertQuoteTemplate(connection,template,req);
+		// SQL実行
+		connection.query(sql,[template.template_id], function (err, results) {
+			if (err) {
+				console.log(err);
+			} else {
+				if (results.rows.length == 0) {
+					insertQuoteTemplate(connection,template,req);
+				} else {
+					updateQuoteTemplate(connection,template,req);
+				}
+			}
+		});
 	});
 };
 
@@ -83,7 +95,7 @@ var insertQuoteTemplate = function (connection,specific, req) {
 };
 
 // テンプレートの更新
-var updateQuoteTemplate = function (connection,quote, specific, req, res, no) {
+var updateQuoteTemplate = function (connection,specific, req) {
 	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
 	var updated_id = req.session.uid;
 	var sql = 'UPDATE drc_sch.quote_specific_template SET '
@@ -96,12 +108,12 @@ var updateQuoteTemplate = function (connection,quote, specific, req, res, no) {
 		+ 'unit_price = $7,'			// 単価
 		+ 'quantity = $8,'				// 数量
 		+ 'price = $9,'					// 金額
-		+ 'summary_check = $8,'			// 集計対象フラグ
-		+ 'memo = $9,'			// 備考
-		+ "delete_check = $10,"	// 削除フラグ
-		+ "updated = $11,"				// 更新日
-		+ "updated_id = $12"			// 更新者ID
-		+ " WHERE id = $13"
+		+ 'summary_check = $10,'			// 集計対象フラグ
+		+ 'memo = $11,'			// 備考
+		+ "delete_check = $12,"	// 削除フラグ
+		+ "updated = $13,"				// 更新日
+		+ "updated_id = $14"			// 更新者ID
+		+ " WHERE template_id = $15"
 	// SQL実行
 	var query = connection.query(sql, [
 		specific.test_large_class_cd,	// 試験大分類CD
@@ -118,7 +130,7 @@ var updateQuoteTemplate = function (connection,quote, specific, req, res, no) {
 		specific.delete_check,	// 削除フラグ
 		updated,						// 更新日
 		updated_id,						// 更新者ID
-		id
+		specific.template_id
 	]);
 	query.on('end', function(result,err) {
 
