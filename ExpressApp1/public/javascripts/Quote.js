@@ -123,7 +123,7 @@ quoteInfo.createQuoteTemplateListDialog = function () {
 	$('#quoteTemplateListDialog').dialog({
 		autoOpen: false,
 		width: 800,
-		height: 440,
+		height: 600,
 		title: '見積テンプレートの選択',
 		closeOnEscape: false,
 		modal: true,
@@ -856,8 +856,8 @@ quoteInfo.postTemplateData = function(template) {
 	data.append('test_large_class_cd',template.test_large_class_cd);
 	data.append('test_middle_class_cd',template.test_middle_class_cd);
 	data.append('test_middle_class_name',template.test_middle_class_name);
-	data.append('period_term',template.period_term);
-	data.append('period_unit',template.period_unit);
+	data.append('period_term',Number(template.period_term));
+	data.append('period_unit',Number(template.period_unit));
 	data.append('quantity',Number(template.quantity.replace(/,/g, '')));
 	data.append('unit',template.unit);
 	data.append('unit_price',Number(template.unit_price.replace(/,/g, '')));
@@ -893,8 +893,8 @@ quoteInfo.createTemplateGrid = function (event) {
 			{ name: 'template_id', index: 'template_id', width: 80, align: "center" },
 			{ name: 'test_middle_class_cd', index: 'test_middle_class_cd', hidden:true },
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 200, align: "center" },
-			{ name: 'perid_term', index: 'period_term', hidden:true },
-			{ name: 'perid_unit', index: 'period_unit', hidden:true },
+			{ name: 'period_term', index: 'period_term', hidden:true },
+			{ name: 'period_unit', index: 'period_unit', hidden:true },
 			{ name: 'quantity', index: 'quantity', width: 80, align: "right" ,formatter:scheduleCommon.numFormatterC},
 			{ name: 'unit', index: 'unit', width: 80, align: "center" },
 			{ name: 'unit_price', index: 'unit_price', width: 80, align: "right" ,formatter:scheduleCommon.numFormatterC},
@@ -902,9 +902,9 @@ quoteInfo.createTemplateGrid = function (event) {
 			{ name: 'summary_check', index: 'summary_check', width: 80, align: "center" , formatter:quoteInfo.summaryCheckFormatter },
 			{ name: 'memo', index: 'memo', width: 200, align: "center" }
 		],
-		height: "460px",
+		//height: "460px",
 		rowNum: 10,
-		rowList: [10],
+		rowList: [10,20,30],
 		pager: '#quote_template_list_pager',
 		sortname: 'template_id',
 		multiSort:true,
@@ -928,6 +928,8 @@ quoteInfo.onSelectTemplateRow = function (rowid) {
 
 // テンプレート選択ダイアログ表示
 quoteInfo.selectTemplate = function (event) {
+	var rowNum = Number($("#quote_template_list").getGridParam('rowNum'));
+	$("#quote_template_list").setGridHeight(rowNum * 25);
 	$("#quoteTemplateListDialog").dialog({
 		buttons: {
 			"選択": function () {
