@@ -212,14 +212,6 @@ quoteInfo.orderCheckFormatter = function(no) {
 		return "受注確定";
 	}
 };
-// グリッド表示用（集計対象フラグ）
-quoteInfo.summaryCheckFormatter = function(no) {
-	if (no == 0) {
-		return "しない";
-	} else {
-		return "する";
-	}
-};
 // 小数点以下を四捨五入して表示
 quoteInfo.numFormatter = function(num) {
 	return Math.round(num);
@@ -244,7 +236,7 @@ quoteInfo.createQuoteSpecificGrid = function (entry_no, quote_no,large_item_cd) 
 			{ name: 'unit', index: 'unit', width: 60,align:"center" },							// 単位
 			{ name: 'unit_price', index: 'unit_price', width: 120,align:"right",formatter:scheduleCommon.numFormatterC },				// 単価
 			{ name: 'price', index: 'price', width: 120,align:"right" ,formatter:scheduleCommon.numFormatterC},							// 見積金額
-			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:quoteInfo.summaryCheckFormatter },						// 集計対象チェック
+			{ name: 'summary_check', index: 'summary_check', width: 120 ,align:"center", formatter:scheduleCommon.summaryCheckFormatter },						// 集計対象チェック
 			{ name: 'created', index: 'created', width: 120 },									// 作成日
 			{ name: 'created_id', index: 'created_id', width: 120, align: "center",formatter: scheduleCommon.personFormatter },							// 作成者ID
 			{ name: 'updated', index: 'updated', width: 120 },									// 更新日
@@ -821,7 +813,6 @@ quoteInfo.addTemplate = function (event) {
 	var no = quoteInfo.getMeisaiNo( $(event.target).attr("id"));
 	var parent_tr = event.target.parentElement.parentElement;
 	var template = {};
-	template.test_large_class_cd = quoteInfo.currentEntry.test_large_class_cd;
 	template.test_middle_class_cd = $("#test_middle_class_cd_" + no).val();
 	template.test_middle_class_name = $("#test_middle_class_name_" + no).val();
 	template.period_term = $("#period_term_" + no).val();
@@ -853,7 +844,6 @@ quoteInfo.postTemplateData = function(template) {
 	var xhr = new XMLHttpRequest();
 	var data = new FormData();
 	data.append('template_id',template.template_id);
-	data.append('test_large_class_cd',template.test_large_class_cd);
 	data.append('test_middle_class_cd',template.test_middle_class_cd);
 	data.append('test_middle_class_name',template.test_middle_class_name);
 	data.append('period_term',Number(template.period_term));
@@ -899,7 +889,7 @@ quoteInfo.createTemplateGrid = function (event) {
 			{ name: 'unit', index: 'unit', width: 80, align: "center" },
 			{ name: 'unit_price', index: 'unit_price', width: 80, align: "right" ,formatter:scheduleCommon.numFormatterC},
 			{ name: 'price', index: 'price', width: 100, align: "right",formatter:scheduleCommon.numFormatterC },
-			{ name: 'summary_check', index: 'summary_check', width: 80, align: "center" , formatter:quoteInfo.summaryCheckFormatter },
+			{ name: 'summary_check', index: 'summary_check', width: 80, align: "center" , formatter:scheduleCommon.summaryCheckFormatter },
 			{ name: 'memo', index: 'memo', width: 200, align: "center" }
 		],
 		//height: "460px",

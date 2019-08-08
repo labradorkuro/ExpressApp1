@@ -49,6 +49,7 @@ var holiday_master = require('./routes/holiday_master_list')        // 休日マ
 var notify_settings = require('./routes/notify_settings')           // メール通知設定
 var billing_summary_list = require('./routes/billing_summary_list') // 請求情報集計
 //var drc_calendar = require('./routes/drc_calendar')               // 売り上げ、予測カレンダー
+var quote_template_list = require('./routes/quote_template_list');  // 見積テンプレート管理画面
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -99,7 +100,7 @@ var path = require('path');
 drc_version = ' Ver.1.1.4';
 
 // all environments
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(bodyParser.json());
@@ -147,6 +148,7 @@ app.get('/test_item_list', test_item_list.list);	//
 app.get('/division_list', division_list.list);		//
 app.get('/schedule', schedule.list);				//
 app.get('/template', template.list);				//
+app.get('/quote_template_list', quote_template_list.list);				//
 app.get('/calendar', calendar.list);				//
 app.post('/login',login.login);
 app.post('/portal',portal.portal);

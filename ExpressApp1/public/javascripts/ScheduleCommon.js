@@ -503,4 +503,12 @@ scheduleCommon.checkUserAgent = function(window) {
 scheduleCommon.setQuotation = function(str) {
 	return "\"" + str + "\"";
 }
-// end
+
+// グリッド表示用（集計対象フラグ）
+scheduleCommon.summaryCheckFormatter = function(no) {
+	if (no == 0) {
+		return "しない";
+	} else {
+		return "する";
+	}
+};

@@ -1,0 +1,47 @@
+form#quoteTemplateListForm(method="post",action="javascript:return false;")
+	div.admin_div
+		table
+			tr
+				td.form_title_s テンプレートID
+				td
+					input#template_id(type="text" name="template_id" placeholder="テンプレートID" size="12")
+				td.form_title_s 名称
+				td
+					input#test_middle_class_cd(type="hidden" name="test_middle_class_cd")
+					input#test_middle_class_name(type="text" name="test_middle_class_name" placeholder="名称" size="20")
+					input#period_term(type="hidden" name="period_term")
+					input#period_unit(type="hidden" name="period_unit")
+		hr
+		table
+			tr
+				td.form_title_s 数量
+				td
+					input.num_type#quantity(type="text" name="quantity" size="5")
+				td.form_title_s 単位
+				td
+					input#unit(type="text" name="unit" size="5")
+				td.form_title_s 単価
+				td
+					input.num_type#unit_price(type="text" name="unit_price" size="10")
+				td.form_title_s 金額
+				td
+					input.num_type#price(type="text" name="price" size="10")
+		table
+			tr
+				td.form_title_s 集計
+				td
+					input#summary_check_1(type="radio" name="summary_check_1" value=1)
+					| あり
+					input#summary_check_0(type="radio" name="summary_check_0" value=0)
+					| なし
+				td.form_title_s 備考
+				td
+					input#memo(type="text" name="memo" placeholder="メモ" size="20")
+		hr
+		table
+			tr
+				td.form_title_s 削除
+					input#delete_check_disp(type="checkbox", name="delete_check_disp")
+	div#message_dialog
+		div
+			span#message 

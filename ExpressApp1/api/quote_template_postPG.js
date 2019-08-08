@@ -4,7 +4,17 @@ var tools = require('../tools/tool');
 //
 exports.postQuoteTemplate = function (req, res) {
 	var template = req.body;
-	console.log("template:" + template.template_id);
+	template.quantity = Number(template.quantity.replace(/,/g, ''));
+	template.price = Number(template.price.replace(/,/g, ''));
+	template.unit_price = Number(template.unit_price.replace(/,/g, ''));
+	template.delete_check = Number(template.delete_check);
+//	if (template.delete_check == 'on'){
+//		template.delete_check = 1;
+//	} else {
+//		template.delete_check = 0;
+//	}
+	console.log("template.period_term:" + template.period_term);
+	console.log("template.period_unit:" + template.period_unit);
 	var sql = "SELECT template_id FROM drc_sch.quote_specific_template WHERE template_id = $1";
 	pg.connect(connectionString, function (err, connection) {
 		// SQL実行
