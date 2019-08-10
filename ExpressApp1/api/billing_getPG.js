@@ -53,6 +53,7 @@ var billing_get_list = function (req, res) {
 		+ 'pay_amount_total,'
 		+ 'pay_complete,'
 		+ 'pay_result,'
+		+ 'kentai,'
 		+ 'billing_info.client_cd,'
 		+ 'client_name,'
 		//+ 'client_list.name_1 AS client_name,'
@@ -298,6 +299,7 @@ var billing_get_summary_list = function (req, res) {
 		+ '(total_price + (total_price * quote_info.consumption_tax / 100)) AS entry_amount_total,'
 		+ 'billing_info.client_cd,'
 		+ "CASE WHEN billing_kind = 1 THEN agent_name WHEN billing_kind = 2 THEN etc_name ELSE client_name END AS seikyu_name,"
+		+ 'kentai,'
 		+ 'client_name,'
 		//+ 'client_list.name_1 AS client_name,'
 		+ 'billing_info.client_division_cd,'
@@ -478,6 +480,7 @@ var billing_get_summary_list_print = function (req, res) {
 		+ '(total_price + (total_price * quote_info.consumption_tax / 100)) AS entry_amount_total,'
 		+ 'billing_info.client_cd,'
 		+ "CASE WHEN billing_kind = 1 THEN agent_name WHEN billing_kind = 2 THEN etc_name ELSE client_name END AS seikyu_name,"
+		+ 'kentai,'
 		+ 'client_name,'
 		//+ 'client_list.name_1 AS client_name,'
 		+ 'billing_info.client_division_cd,'
@@ -618,6 +621,7 @@ var billing_get_detail = function (req, res) {
 		+ 'pay_amount_total,'
 		+ 'pay_complete,'
 		+ 'pay_result,'
+		+ 'kentai,'
 		+ 'billing_info.client_cd,'
 		+ 'client_name,'
 		//+ 'client_list.name_1 AS client_name,'
