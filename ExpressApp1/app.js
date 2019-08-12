@@ -50,6 +50,7 @@ var notify_settings = require('./routes/notify_settings')           // メール
 var billing_summary_list = require('./routes/billing_summary_list') // 請求情報集計
 //var drc_calendar = require('./routes/drc_calendar')               // 売り上げ、予測カレンダー
 var quote_template_list = require('./routes/quote_template_list');  // 見積テンプレート管理画面
+var bank_master = require('./routes/bank_master')
 
 var entry_post = require('./api/entry_postPG');
 var entry_get = require('./api/entry_getPG');
@@ -88,6 +89,8 @@ var notify_settings_post = require('./api/notify_settings_postPG'); // 通知メ
 //mysql = require('mysql');
 var quote_template_post = require('./api/quote_template_postPG');   // 見積テンプレート
 var quote_template_get  = require('./api/quote_template_getPG');
+var bank_info_get = require('./api/bank_getPG');
+var bank_info_post = require('./api/bank_postPG');
 
 
 //var sequelize = new Sequelize('postgres://drc_root:drc_r00t@@localhost:5432/drc_sch');
@@ -100,7 +103,7 @@ var path = require('path');
 drc_version = ' Ver.1.1.5';
 
 // all environments
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(bodyParser.json());
@@ -277,6 +280,10 @@ app.post('/holiday_post',upload.array(),holiday_post.holiday_post); //api
 app.get('/notify_settings',notify_settings.list);
 app.get('/notify_settings_get/:id',notify_settings_get.notify_settings_get); //api
 app.post('/notify_settings_post',upload.array(),notify_settings_post.notify_settings_post); //api
+
+app.get('/bank_list',bank_master.list);
+app.get('/bank_info',bank_info_get.bank_info);
+app.post('/bank_info_post',upload.array(),bank_info_post.bank_info_post);
 
 // 売り上げ、予測カレンダー
 //app.get('/drc_calendar',drc_calendar.list);
