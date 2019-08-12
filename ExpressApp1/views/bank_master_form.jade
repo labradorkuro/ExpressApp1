@@ -1,0 +1,35 @@
+form#bankMasterForm(method="post" action="javascript:return false;")
+  table
+    tr
+      td.form_title 金融機関名
+      td
+        input#id(type="hidden" name="id")
+        input#bank_name(type="text" name="bank_name" required=true)
+    tr
+      td.form_title 支店名
+      td
+        input#branch_name(type="text" name="branch_name" required=true)
+    tr
+      td.form_title 口座種別
+      td
+        input#kouza_kind_1(name="kouza_kind" type="radio" value=0)
+        | 普通
+        input#kouza_kind_2(name="kouza_kind" type="radio" value=1)
+        | 当座
+    tr
+      td.form_title 口座番号
+      td
+        input#kouza_no(type="text" name="kouza_no")
+    tr
+      td.form_title 名義人名
+      td
+        input#meigi_name(type="text" name="meigi_name")
+    tr
+      td.form_title メモ
+      td
+        input#memo(type="text" name="memo")
+    tr
+      td.form_title 削除フラグ
+      td
+        input#delete_check(type="checkbox" name="delete_check" value="1")
+        label 削除
