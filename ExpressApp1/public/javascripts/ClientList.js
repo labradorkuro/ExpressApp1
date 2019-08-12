@@ -98,6 +98,8 @@ clientList.init = function(toolbar) {
 	// キーワード検索
 	$("#search_client").bind('click',{},clientList.searchClient);
 	$("#search_client_clear").bind('click',{},clientList.searchClientClear);
+	// 振込口座マスタリスト取得
+	clientList.getBankInfo();
 };
 
 clientList.initSub = function(i,toolbar) {
@@ -1028,6 +1030,7 @@ clientList.clearSightInfo = function() {
 	sight_info.shimebi = 0;
 	sight_info.sight_id = 0;
 	sight_info.kyujitsu_setting = 0;
+	sight_info.bank_id = 0;
 	return sight_info;
 };
 clientList.setSightInfoForm = function(sight_info) {
@@ -1035,6 +1038,7 @@ clientList.setSightInfoForm = function(sight_info) {
 	$("#shimebi").val(sight_info.shimebi);
 	$("#sight_id").val(sight_info.sight_id);
 	$("#kyujitsu_setting").val(sight_info.kyujitsu_setting);
+	$("#bank_info").val(sight_info.bank_id);
 }
 // 支払日マスタからリストを取得する
 clientList.getSightMasterList = function() {
@@ -1170,5 +1174,16 @@ clientList.getListText = function(no) {
 		lines.push(text);
   });
 	return lines.join("\r\n");
+
+}
+
+// 振込口座マスタのリスト取得
+clientList.getBankInfo = function() {
+	$.ajax({type:'get',url:'/bank_info?delete_check=0'}).then(function(bank){
+		$("#bank_info").empty();
+		$.each(bank.rows,function(index,row) {
+			$("#bank_info").append($("<option value='" + row.cell.id + "'>" + row.cell.bank_name +  "</option>"));
+		});
+	});
 
 }

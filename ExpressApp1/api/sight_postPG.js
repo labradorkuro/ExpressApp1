@@ -57,7 +57,7 @@ sightInfo.save = function(req, res) {
   sight_info.schema('drc_sch').find(attr).then(function(sight){
     if (sight) {
       // 更新
-      attr = {client_cd:req.body.sight_client_cd,shimebi:req.body.shimebi, sight_id:req.body.sight_id,kyujitsu_setting:req.body.kyujitsu_setting,delete_check:0};
+      attr = {client_cd:req.body.sight_client_cd,shimebi:req.body.shimebi, sight_id:req.body.sight_id,kyujitsu_setting:req.body.kyujitsu_setting,bank_id:req.body.bank_info,delete_check:0};
       sight_info.schema('drc_sch').update(attr,{where:{client_cd:req.body.sight_client_cd}}).then(function(result) {
         res.send(attr);
       }).catch(function(error){
@@ -67,7 +67,7 @@ sightInfo.save = function(req, res) {
 
     } else {
       // 新規登録
-      attr = {client_cd:req.body.sight_client_cd,shimebi:req.body.shimebi, sight_id:req.body.sight_id,kyujitsu_setting:req.body.kyujitsu_setting,delete_check:0};
+      attr = {client_cd:req.body.sight_client_cd,shimebi:req.body.shimebi, sight_id:req.body.sight_id,kyujitsu_setting:req.body.kyujitsu_setting,bank_id:req.body.bank_info,delete_check:0};
       var si = sight_info.schema('drc_sch').build(attr);
       si.save().then(function(result) {
         res.send(attr);

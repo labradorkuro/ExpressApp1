@@ -11,6 +11,7 @@ var Sight_info = sequelize.define("sight_info", {
 	shimebi: Sequelize.INTEGER,
 	sight_id: Sequelize.INTEGER,
 	kyujitsu_setting: Sequelize.INTEGER,
+	bank_id:Sequelize.INTEGER,
 	memo: Sequelize.STRING,
 	delete_check: Sequelize.INTEGER,
 	create_id: Sequelize.STRING,
