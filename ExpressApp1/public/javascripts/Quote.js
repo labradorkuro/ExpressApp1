@@ -22,6 +22,8 @@ quoteInfo.drc_info = {
 quoteInfo.currentTemplateRow = {};
 quoteInfo.currentSpecificRowNo = 1;
 
+quoteInfo.textColor = "#000000";	// 印刷文字色
+
 quoteInfo.getMyInfo = function() {
 	var config = $.get('/config_get/1', {});
 	$.when(config)
@@ -1231,6 +1233,7 @@ quoteInfo.createSVG = function (data) {
 
 		var top = 80;
 		var font_size = 32;
+		quoteInfo.setTextColor("#000000");
 		// タイトル
 		quoteInfo.outputText(canvas, data.title, font_size, 350, top);
 		// 請求先情報
@@ -1389,14 +1392,14 @@ quoteInfo.createSVG = function (data) {
 // canvasにテキストを出力
 quoteInfo.outputText = function (canvas, text,font_size,left, top) {
 //	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size}));
-	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo',left: left, top: top, fontSize: font_size}));
+	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo',left: left, top: top, fontSize: font_size}).setColor(quoteInfo.textColor));
 };
 quoteInfo.outputTextBold = function (canvas, text,font_size,left, top) {
 //	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size}));
-	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo', fontWeight:'bold',left: left, top: top, fontSize: font_size}));
+	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo', fontWeight:'bold',left: left, top: top, fontSize: font_size}).setColor(quoteInfo.textColor));
 };
 quoteInfo.outputTextMono = function (canvas, text,font_size,left, top) {
-	canvas.add(new fabric.Text(text, { fontFamily: 'MS Gothic', left: left, top: top, fontSize: font_size }));
+	canvas.add(new fabric.Text(text, { fontFamily: 'MS Gothic', left: left, top: top, fontSize: font_size }).setColor(quoteInfo.textColor));
 };
 
 // 見積明細データの出力
@@ -1501,6 +1504,32 @@ quoteInfo.multiLines = function(canvas,top, left, font_size, str) {
 	quoteInfo.outputText(canvas, lines, w_font_size, left, w_top);
 
 }
+// 出力文字が長い時にフォントサイズ調整と折り返しを行う（請求書印刷用）
+quoteInfo.multiLines_2 = function(canvas,top, left, font_size, str) {
+	var len = str.length;
+	var w_top = top;
+	var w_font_size = font_size;
+	var lines = "";
+
+	if (len <= 20) {
+		lines = str;
+	} else if ((len > 20) && (len <=40)) {
+		w_font_size /= 2;
+		//w_top += 4;
+		//for(var k = 0;k < 2;k++) {
+		//	lines += str.substring((k * 21),(k * 21) + 21) + "\n";
+		//}
+		lines = str;
+	} else if (len > 40) {
+		w_font_size /= 2;
+		w_top += 2;
+		for(var k = 0;k < 2;k++) {
+			lines += str.substring((k * 21),(k * 21) + 21) + "\n";
+		}
+	}
+	quoteInfo.outputText(canvas, lines, w_font_size, left, w_top);
+
+}
 // 備考を選択したらテキストエリアにコピーする
 quoteInfo.selectMemoList = function(event) {
 
@@ -1551,4 +1580,9 @@ quoteInfo.changeOrderDate = function(event) {
 			$("#period_date").val(scheduleCommon.getDateString( period,'{0}/{1}/{2}'));
 		});
 		}
+};
+
+// 印刷文字色の設定
+quoteInfo.setTextColor = function(color) {
+	quoteInfo.textColor = color;
 };

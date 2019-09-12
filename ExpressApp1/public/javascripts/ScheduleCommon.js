@@ -426,6 +426,7 @@ scheduleCommon.numFormatterC = function(num) {
 // 数値のカンマ区切り
 scheduleCommon.numFormatter = function(num,keta) {
 	var sp = "";
+	num = Math.round(num);
 	for(var i = 0;i < keta - 1;i++) sp += " ";
 	return (sp + String(num).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,' )).slice(-keta);
 }

@@ -3,6 +3,7 @@
 //
 var billingList = billingList || {};
 
+billingList.printCanvas = null;
 billingList.currentEntry = null;
 billingList.currentBilling = null;
 billingList.status = "add"; // or "edit" 追加でフォームを開いたか、編集で開いたか（デフォルトの税計算をするかしないか）
@@ -161,6 +162,11 @@ billingList.createBillingFormDialog = function () {
 		closeOnEscape: false,
 		modal: true,
 		buttons: {
+			"請求書作成": function () {
+				if (billingList.printBillingInfo()) {
+					$(this).dialog('close');
+				}
+			},
 			"追加": function () {
 				if (billingList.saveBillingInfo()) {
 					$(this).dialog('close');
@@ -170,6 +176,26 @@ billingList.createBillingFormDialog = function () {
 				if (billingList.saveBillingInfo()) {
 					$(this).dialog('close');
 				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+// 請求書印刷プレビュー画面
+billingList.createBillingPrintPreviewDialog = function () {
+	$('#billing_print_preview_dialog').dialog({
+		autoOpen: false,
+		width: 980,
+		height: 800,
+		title: '請求書印刷プレビュー',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"印刷": function () {
+				billingList.saveBillingSVGFile();
+				$(this).dialog('close');
 			},
 			"閉じる": function () {
 				$(this).dialog('close');
@@ -349,6 +375,14 @@ billingList.openAddDialog = function(client_info,agent_info) {
 	$(".ui-dialog-buttonpane button:contains('更新')").button("disable");
 
 }
+
+// 請求情報リストダイアログの表示
+billingList.openBillingPrintPreviewDialog = function (event) {
+
+	$("#billing_print_preview_dialog").dialog("open");
+};
+
+
 // 選択中の案件情報から得意先情報をコピーする（デフォルト設定として）
 billingList.setDefaultClientData = function(billing) {
 	billing.client_cd = billingList.currentEntry.currentEntry.client_cd;
@@ -852,3 +886,292 @@ billingList.onloadBillingReqForEntryGridUpdate = function (e) {
 		entryList.updateGrid_BillingInfo(billing);
 	}
 };
+
+// 請求書印刷
+billingList.printBillingInfo = function() {
+	// 自社データ取得
+	// 請求先の選択状態を取得する
+	var c_cd = 0;
+	if ($("#billing_kind_1").prop("checked")) {
+		c_cd = $("#billing_client_cd").val();
+	}
+	else if ($("#billing_kind_2").prop("checked")) {
+		c_cd = $("#billing_agent_cd").val();
+	}
+	// 請求先の支払いサイト情報を取得して振込口座情報を取得する
+	billingList.getSightInfo(c_cd);
+	// データ送信
+};
+
+// 支払いサイト情報から振込口座情報を得る
+billingList.getSightInfo = function(cd) {
+	// 請求先情報の取得
+	$.ajax({type:'get',url:'/client_get?client_cd=' + cd }).done(function(client){
+		if (client.client_cd == cd) {
+			// 請求先の支払いサイト情報を取得する
+			var sight_info = {client_cd:"",shimebi:"",sight_id:0,kyujitsu_setting:0,bank_id:0,memo:""};
+			nyukinYotei.getSightInfo(cd).done(function(data){
+				if (data != "") {
+					if ((data.bank_id == 0) || (data.bank_id == null)) {
+						// 振込口座設定がない時は既定の口座を印刷する
+						$.ajax({type:'get',url:'/default_get'}).done(function(bank_info) {
+							client.bank_info = bank_info;
+							billingList.printBilling(client);
+						})
+						.fail(function(){
+							$("#message").text("振込口座情報が取得できません。");
+							$("#message_dialog").dialog("option", { title: "振込口座情報" });
+							$("#message_dialog").dialog("open");
+						});
+					} else {
+						client.sight_info = data;
+						// 振込口座情報の取得
+						$.ajax({type:'get',url:'/bank_find?bank_id=' + data.bank_id}).done(function(bank_info) {
+							client.bank_info = bank_info;
+							billingList.printBilling(client);
+						})
+						.fail(function(){
+							$("#message").text("振込口座情報が取得できません。");
+							$("#message_dialog").dialog("option", { title: "振込口座情報" });
+							$("#message_dialog").dialog("open");
+						});	
+					}
+				} else {
+					$("#message").text("顧客の支払いサイト情報がありません。");
+					$("#message_dialog").dialog("option", { title: "支払いサイト情報" });
+					$("#message_dialog").dialog("open");
+				}
+			})
+			.fail(function(){
+				$("#message").text("支払いサイト情報が取得できません。");
+				$("#message_dialog").dialog("option", { title: "支払いサイト情報" });
+				$("#message_dialog").dialog("open");
+			});
+		} 
+	})
+	.fail(function() {
+		$("#message").text("顧客情報がありません。");
+		$("#message_dialog").dialog("option", { title: "顧客マスタ情報" });
+		$("#message_dialog").dialog("open");
+	});
+};
+billingList.printBilling = function(billing_info) {
+	var data = billingList.printDataSetup(billing_info);
+	// 明細データの取得
+	billingList.getBillingMeisai(data);
+};
+// 請求書印刷、明細データの取得
+billingList.getBillingMeisai = function(data) {
+	// 案件情報
+	var entry_no = billingList.currentEntry.currentEntry.entry_no;
+	// 見積情報
+	$.ajax({type:'get',url:'/quote_specific_get_list_for_entryform/' + entry_no }).done(function(quote){
+		data.rows = quote.rows;
+		// 印刷レイアウト作成
+		billingList.createSVG(data);	
+	});
+		
+	return data;
+};
+// 請求書用データの生成
+billingList.printDataSetup = function (billing_info) {
+	// 印刷用データ
+	var data = {
+		title: '請　　求　　書',
+		no: 'No.',
+		code:'お客様コードNo.',
+		date_template: '     年　　　　月　　　　日　締切分',
+		billing_issue_date: billing_info.billing_date,
+		drc_zipcode: quoteInfo.drc_info.zipcode,
+		drc_address1: quoteInfo.drc_info.address1,
+		drc_address2: quoteInfo.drc_info.address2,
+		drc_tel: quoteInfo.drc_info.telno,
+		drc_fax: quoteInfo.drc_info.faxno,
+		drc_name:quoteInfo.drc_info.name,
+		drc_bank:'振込銀行',
+		drc_bank_name:billing_info.bank_info.bank_name,
+		drc_bank_branch:billing_info.bank_info.branch_name,
+		drc_bank_kouza_kind:billing_info.bank_info.kouza_kind,
+		drc_bank_kouza_no:billing_info.bank_info.kouza_no,
+		drc_bank_meigi:billing_info.bank_info.meigi_name,
+		discription:'毎度ありがとうございます。下記の通り御請求申し上げます。',
+		header_1:'前回御請求額',
+		header_2:'御 入 金 額',
+		header_3:'繰 越 金 額',
+		header_4:'御 買 上 額',
+		header_5:'今回御請求額',
+		meisai_1:'伝票日付',
+		meisai_2:'伝票No.',
+		meisai_3:'品　　　　　　　　名',
+		meisai_4:'数　　　量',
+		meisai_5:'単位',
+		meisai_6:'単　　価',
+		meisai_7:'金　　　額',
+		rows: []
+	};
+	// 明細データの生成
+	data.client_info = billing_info;
+	return data;
+};
+
+// 請求書の作成
+billingList.createSVG = function (data) {
+	var blue_define = '#1e90ff';
+	canvas = new fabric.Canvas('billing_canvas', { backgroundColor : "#ffffff" });
+	canvas.setHeight(1400);
+	canvas.setWidth(960);
+
+	var top = 10;
+	var font_size = 28;
+	quoteInfo.setTextColor(blue_define);
+	// タイトル
+	quoteInfo.outputText(canvas, data.title, font_size, 480, top);
+	top += font_size;
+	// No.
+	font_size = 12;
+	quoteInfo.outputText(canvas, data.no, font_size, 750, top);
+	top += font_size;
+	canvas.add(new fabric.Line([750,top + 4,900,top + 4],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	// date
+	font_size = 12;
+	quoteInfo.outputText(canvas, data.date_template, font_size, 500, top);
+	// 請求先情報
+	quoteInfo.setTextColor("#000000");
+	font_size = 16;
+	var left = 50;
+	top = 85;
+	if (data.client_info.zipcode != "") {
+		quoteInfo.outputText(canvas, data.client_info.zipcode, font_size, left, top);
+	}
+	top += font_size + font_size + 6;
+	if (data.client_info.address_1 != "") {
+		quoteInfo.outputText(canvas, data.client_info.address_1, font_size, left, top);
+	}
+	top += font_size + 6;
+	if (data.client_info.name_1 != "") {
+		quoteInfo.outputText(canvas, data.client_info.name_1, font_size, left, top);
+	}
+	top += font_size + 6;
+	if (data.client_info.name_2 != "") {
+		quoteInfo.outputText(canvas, data.client_info.name_2, font_size, left, top);
+	}
+	top += font_size + font_size + 6;
+	if (data.client_info.tel_no != "") {
+		quoteInfo.outputText(canvas, "TEL:" + data.client_info.tel_no, font_size, left, top);
+	}
+	if (data.client_info.fax_no != "") {
+		quoteInfo.outputText(canvas, "FAX:" + data.client_info.fax_no, font_size, left + 200, top);
+	}
+	// 自社情報
+	left = 480;
+	top = 85;
+	font_size = 16;
+	quoteInfo.outputText(canvas, data.drc_name, font_size, left, top);
+	top += font_size + 10;
+	quoteInfo.outputText(canvas, data.drc_zipcode, font_size, left, top);
+	top += font_size + 6;
+	//font_size = 14;
+	quoteInfo.outputText(canvas, data.drc_address1, font_size, left, top);
+	top += font_size + 6;
+	quoteInfo.outputText(canvas, data.drc_address2, font_size, left, top);
+	top += font_size + 6;
+	quoteInfo.outputTextMono(canvas, data.drc_tel + "    " + data.drc_fax, font_size, left, top);
+	// 振込口座情報
+	top += font_size + 6;
+	quoteInfo.outputText(canvas, data.drc_bank, font_size, left, top);
+	top += font_size + 6;
+	quoteInfo.outputText(canvas, data.drc_bank_name + "　　" + data.drc_bank_branch + "支店", font_size, left, top);
+	top += font_size + 6;
+	if (data.drc_bank_kouza_kind == 0) {
+		quoteInfo.outputText(canvas, "普通預金　" + data.drc_bank_kouza_no + "　　" + data.drc_bank_meigi, font_size, left, top);
+	} else {
+		quoteInfo.outputText(canvas, "当座預金　" + data.drc_bank_kouza_no + "　　" + data.drc_bank_meigi, font_size, left, top);
+	}
+
+	top += (font_size * 3) + 6;
+	// 毎度ありがとうございます。
+	quoteInfo.setTextColor(blue_define);
+	font_size = 14;
+	quoteInfo.outputText(canvas, data.discription, font_size, 50, top);
+	top += font_size + 6;
+	// ヘッダー
+	left = 40;
+	var w = 740;
+	h = 22;
+	// 枠
+	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top + 22, left : left, width : w, height : 50, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : 640, width : 140, height : h, fill: blue_define, stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
+	// 印鑑枠
+	canvas.add(new fabric.Rect({ top : top ,left : 800, width : 62, height : 72, fill:'none',stroke: blue_define,opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top ,left : 862, width : 62, height : 72, fill:'none',stroke: blue_define,opacity: 0.7 }));
+	// 縦線
+	canvas.add(new fabric.Line([190,top,190,top + 72],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Line([340,top,340,top + 72],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Line([490,top,490,top + 72],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Line([640,top,640,top + 72],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	font_size = 14;
+	quoteInfo.outputText(canvas, data.header_1, font_size, 75, top);	// 前回御請求額
+	quoteInfo.outputText(canvas, data.header_2, font_size, 225, top);	// 御入金額
+	quoteInfo.outputText(canvas, data.header_3, font_size, 375, top);	// 繰越金額
+	quoteInfo.outputText(canvas, data.header_4, font_size, 525, top);	// 御買上額
+	quoteInfo.setTextColor("#ffffff");
+	quoteInfo.outputText(canvas, data.header_5, font_size, 670, top);	// 今回御請求額
+	// 明細
+	// 枠
+	top += 80;
+	left = 40;
+	w = 882;
+	h = 1000;
+	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
+	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : font_size + 10, fill:blue_define,stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
+	// 縦線
+	canvas.add(new fabric.Line([165,top,165,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Line([230,top,230,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Line([545,top,545,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Line([640,top,640,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Line([690,top,690,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	canvas.add(new fabric.Line([790,top,790,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	quoteInfo.setTextColor("#ffffff");
+	quoteInfo.outputText(canvas, data.meisai_1, font_size, 75, top);	// 伝票日付
+	quoteInfo.outputText(canvas, data.meisai_2, font_size, 175, top);	// 伝票No.
+	quoteInfo.outputText(canvas, data.meisai_3, font_size, 335, top);	// 品名
+	quoteInfo.outputText(canvas, data.meisai_4, font_size, 555, top);	// 数量
+	quoteInfo.outputText(canvas, data.meisai_5, font_size, 650, top);	// 単位
+	quoteInfo.outputText(canvas, data.meisai_6, font_size, 710, top);	// 単価
+	quoteInfo.outputText(canvas, data.meisai_7, font_size, 810, top);	// 金額
+	top += font_size + 12;
+	quoteInfo.setTextColor("#000000");
+	// 明細データ
+	if (data.rows.length > 0) {
+		quoteInfo.multiLines_2(canvas, top, 240, font_size, data.rows[0].test_middle_class_name);	// 品名
+		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(data.rows[0].quantity,12), font_size, 555, top);	// 数量
+		quoteInfo.outputText(canvas, data.rows[0].unit, font_size, 650, top);		// 単位
+		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(data.rows[0].unit_price,12), font_size, 700, top);		// 単位
+		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(data.rows[0].price,12), font_size, 800, top);		// 金額
+		top += font_size + 12;
+		quoteInfo.outputText(canvas, "  消費税等 " + quoteInfo.currentConsumption_tax + ".0%", font_size, 240, top);	// 数量
+		var tax = data.rows[0].price * (quoteInfo.currentConsumption_tax / 100);
+		}
+	billingList.printCanvas = canvas;
+	//var svg = canvas.toSVG();
+	//var blob = new Blob([svg], {type: "text/plain;charset=utf-8"});
+	//saveAs(blob,"billing.svg");
+	//canvas.setHeight(0);
+	//canvas.setWidth(0);
+	document.body.style.cursor = "default";
+	// プレビュー画面表示
+	billingList.openBillingPrintPreviewDialog();
+	return true;
+};
+// 請求書印刷用SVG生成
+billingList.saveBillingSVGFile = function() {
+	var svg = billingList.printCanvas.toSVG();
+	var blob = new Blob([svg], {type: "text/plain;charset=utf-8"});
+	saveAs(blob,"billing.svg");
+	billingList.printCanvas.setHeight(0);
+	billingList.printCanvas.setWidth(0);
+	document.body.style.cursor = "default";
+
+}
+

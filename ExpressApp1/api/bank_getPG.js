@@ -14,12 +14,31 @@ exports.bank_info = function(req, res) {
     bankInfo.list_grid(req, res);
   }
 }
+exports.bank_find = function(req,res) {
+  bankInfo.find(req.query.bank_id,res);
+}
+// デフォルト設定の取得
+exports.defalut_get = function(req,res) {
+  bankInfo.defalut_get(req,res);
+}
 var bankInfo = bankInfo || {}
 
 
 // 指定されたidのデータを取得する
 bankInfo.find = function(id,res) {
-  bank_date.schema('drc_sch').findById(id).then(function(bank){
+  bank_info.schema('drc_sch').findById(id).then(function(bank){
+    res.send(bank);
+  }).catch(function(error){
+    console.log(error);
+    res.send("");
+  });
+}
+
+
+// defultのデータを取得する
+bankInfo.defalut_get = function(req,res) {
+  var attr = {where:{memo:'既定',delete_check:0}};
+  bank_info.schema('drc_sch').find(attr).then(function(bank){
     res.send(bank);
   }).catch(function(error){
     console.log(error);

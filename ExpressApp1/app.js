@@ -1,5 +1,5 @@
 ﻿var express = require('express');
-var router = express.Router();
+//var router = express.Router();
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -13,7 +13,7 @@ var routes = require('./routes/index');
 var session = require('express-session');
 var methodOverride = require('method-override');
 var errorHandler = require('errorhandler');
-var Sequelize = require('sequelize');
+//var Sequelize = require('sequelize');
 var app = express();
 
 pg = require('pg');
@@ -103,7 +103,7 @@ var path = require('path');
 drc_version = ' Ver.1.1.5';
 
 // all environments
-app.set('port', process.env.PORT || 8080);
+app.set('port', process.env.PORT || 80);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(bodyParser.json());
@@ -283,6 +283,8 @@ app.post('/notify_settings_post',upload.array(),notify_settings_post.notify_sett
 
 app.get('/bank_list',bank_master.list);
 app.get('/bank_info',bank_info_get.bank_info);
+app.get('/bank_find',bank_info_get.bank_find);
+app.get('/default_get',bank_info_get.defalut_get);
 app.post('/bank_info_post',upload.array(),bank_info_post.bank_info_post);
 
 // 売り上げ、予測カレンダー
