@@ -1027,8 +1027,10 @@ billingList.createSVG = function (data) {
 	// タイトル
 	quoteInfo.outputText(canvas, data.title, font_size, 480, top);
 	top += font_size;
-	// No.
 	font_size = 12;
+	// Code
+	quoteInfo.outputText(canvas, data.code, font_size, 50, top);
+	// No.
 	quoteInfo.outputText(canvas, data.no, font_size, 750, top);
 	top += font_size;
 	canvas.add(new fabric.Line([750,top + 4,900,top + 4],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
@@ -1098,6 +1100,7 @@ billingList.createSVG = function (data) {
 	left = 40;
 	var w = 740;
 	h = 22;
+	var top_wk = top + (font_size * 3);
 	// 枠
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
 	canvas.add(new fabric.Rect({ top : top + 22, left : left, width : w, height : 50, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
@@ -1144,15 +1147,36 @@ billingList.createSVG = function (data) {
 	quoteInfo.setTextColor("#000000");
 	// 明細データ
 	if (data.rows.length > 0) {
-		quoteInfo.multiLines_2(canvas, top, 240, font_size, data.rows[0].test_middle_class_name);	// 品名
-		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(data.rows[0].quantity,12), font_size, 555, top);	// 数量
-		quoteInfo.outputText(canvas, data.rows[0].unit, font_size, 650, top);		// 単位
-		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(data.rows[0].unit_price,12), font_size, 700, top);		// 単位
-		quoteInfo.outputText(canvas, scheduleCommon.numFormatter(data.rows[0].price,12), font_size, 800, top);		// 金額
-		top += font_size + 12;
-		quoteInfo.outputText(canvas, "  消費税等 " + quoteInfo.currentConsumption_tax + ".0%", font_size, 240, top);	// 数量
-		var tax = data.rows[0].price * (quoteInfo.currentConsumption_tax / 100);
+		var price_total = 0;
+		var tax_total = 0;
+		for(i = 0;i < data.rows.length;i++) {
+			quoteInfo.multiLines_2(canvas, top, 240, font_size, data.rows[i].test_middle_class_name);	// 品名
+			quoteInfo.outputTextMono(canvas, scheduleCommon.numFormatter(data.rows[i].quantity,12), font_size, 550, top);	// 数量
+			quoteInfo.outputText(canvas, data.rows[i].unit, font_size, 650, top);		// 単位
+			quoteInfo.outputTextMono(canvas, scheduleCommon.numFormatter(data.rows[i].unit_price,12), font_size, 700, top);		// 単価
+			quoteInfo.outputTextMono(canvas, scheduleCommon.numFormatter(data.rows[i].price,12), font_size, 830, top);		// 金額
+			top += font_size + 12;
+			var tax = data.rows[i].price * (quoteInfo.currentConsumption_tax / 100);
+			quoteInfo.outputText(canvas, "  消費税等 " + quoteInfo.currentConsumption_tax + ".0%", font_size, 240, top);
+			quoteInfo.outputTextMono(canvas,  scheduleCommon.numFormatter(tax, 12), font_size, 830, top);
+			price_total += Number(data.rows[i].price) + Number(tax);
+			tax_total += Number(tax);
 		}
+		top += font_size  + 20;
+		canvas.add(new fabric.Line([815,top,915,top],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+		top += font_size  + 12;
+		quoteInfo.outputText(canvas, "  【合　　　　計】 " , font_size, 240, top);
+		quoteInfo.outputTextMono(canvas,  scheduleCommon.numFormatter(price_total, 12), font_size, 830, top);
+		top += font_size  + 12;
+		quoteInfo.outputText(canvas, "  （内消費税等 8.0%） " , font_size, 240, top);
+		quoteInfo.outputTextMono(canvas,  "(" + scheduleCommon.numFormatter(tax_total, 11) +")", font_size, 830, top);
+		var konkai = scheduleCommon.addYenMark(scheduleCommon.numFormatter(price_total,12));
+		// 御買上額
+		quoteInfo.outputTextMono(canvas, konkai, font_size, 550, top_wk);
+		// 今回請求額
+		quoteInfo.outputTextMono(canvas, konkai, font_size, 700, top_wk);
+				
+	}
 	billingList.printCanvas = canvas;
 	//var svg = canvas.toSVG();
 	//var blob = new Blob([svg], {type: "text/plain;charset=utf-8"});
