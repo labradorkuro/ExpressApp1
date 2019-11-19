@@ -811,28 +811,24 @@ quoteInfo.checkDeleteRow = function(id) {
 
 // テンプレート保存ダイアログ表示
 quoteInfo.addTemplate = function (event) {
-	// 当該明細データの取得
-	var no = quoteInfo.getMeisaiNo( $(event.target).attr("id"));
-	var parent_tr = event.target.parentElement.parentElement;
-	var template = {};
-	template.test_middle_class_cd = $("#test_middle_class_cd_" + no).val();
-	template.test_middle_class_name = $("#test_middle_class_name_" + no).val();
-	template.period_term = $("#period_term_" + no).val();
-	template.period_unit = $("#period_unit_" + no).val();
-	template.quantity = $("#quantity_" + no).val();
-	template.unit = $("#unit_" + no).val();
-	template.unit_price = $("#unit_price_" + no).val();
-	template.price = $("#price_" + no).val();
-	template.summary_check = $("#summary_check_" + no).val() == "on" ? 1:0;
-	template.memo = $("#specific_memo_" + no).val();
-	template.delete_check = 0;
 	$("#quoteTemplateSaveDialog").dialog({
 		buttons: {
 			"追加": function () {
-				// post
+				// 現在の行数を取得する（見出し行を含む）
+				var rows = $("#meisai_table tbody").children().length;
+				var check_all = $("#check_all").prop('checked');
+				var meisai = {};
 				var id = $("#template_id").val();
-				template.template_id = id;
-				quoteInfo.postTemplateData(template);
+				if (check_all) {
+					// 全行保存
+					meisai = quoteInfo.getMeisaiData(id,1,rows - 1);
+				} else {
+					// 選択行のみ保存
+					var no = quoteInfo.getMeisaiNo( $(event.target).attr("id"));
+					meisai = quoteInfo.getMeisaiData(id,no,no);
+				}
+				// post
+				quoteInfo.postTemplateData(meisai);
 				$(this).dialog('close');
 			},
 			"閉じる": function () {
@@ -842,10 +838,37 @@ quoteInfo.addTemplate = function (event) {
 	});
 	$("#quoteTemplateSaveDialog").dialog("open");
 };
+// 見積行データを取得する
+quoteInfo.getMeisaiData = function(id,start,end) {
+	var templates = new Array();
+	for(var no = start;no <= end ;no++) {
+		var template = {};
+		template.template_id = id;
+		template.test_large_class_cd = quoteInfo.currentEntry.test_large_class_cd;
+		template.test_middle_class_cd = $("#test_middle_class_cd_" + no).val();
+		template.test_middle_class_name = $("#test_middle_class_name_" + no).val();
+		template.period_term = Number($("#period_term_" + no).val());
+		template.period_unit = Number($("#period_unit_" + no).val());
+		template.quantity = Number($("#quantity_" + no).val().replace(/,/g, ''));
+		template.unit = $("#unit_" + no).val();
+		template.unit_price = Number($("#unit_price_" + no).val().replace(/,/g, ''));
+		template.price = Number($("#price_" + no).val().replace(/,/g, ''));
+		template.summary_check = $("#summary_check_" + no).val() == "on" ? 1:0;
+		template.memo = $("#specific_memo_" + no).val();
+		template.delete_check = 0;
+		templates.push(template);
+	}
+	return templates;
+}
 quoteInfo.postTemplateData = function(template) {
+	console.log("data:" + JSON.stringify(template));
+	$.ajax({type:'post',url:'/quote_template_post',dataType: 'json',contentType: 'application/json',data: JSON.stringify(template)});
+	/*
 	var xhr = new XMLHttpRequest();
 	var data = new FormData();
+	data.append('id',0);
 	data.append('template_id',template.template_id);
+	data.append('test_large_class_cd',template.test_large_class_cd);
 	data.append('test_middle_class_cd',template.test_middle_class_cd);
 	data.append('test_middle_class_name',template.test_middle_class_name);
 	data.append('period_term',Number(template.period_term));
@@ -861,7 +884,7 @@ quoteInfo.postTemplateData = function(template) {
 	xhr.open('POST', '/quote_template_post', true);
 	xhr.responseType = 'json';
 	xhr.send(data);
-
+	*/
 }
 // 試験中分類リストの生成
 quoteInfo.createTemplateGrid = function (event) {

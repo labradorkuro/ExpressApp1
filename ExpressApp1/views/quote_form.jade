@@ -138,6 +138,10 @@ form#estimateForm(method="post",action="javascript:return false;")
 					td 見積テンプレート名
 					td
 						input#template_id(type="text" name="template_id" placeholder="見積テンプレート名")
+				tr
+					td(colspan=2)
+						input#check_all(type="checkbox" name="check_all")
+						| まとめて保存する
 		div#quoteTemplateListDialog
 			div.admin_div
 				table#quote_template_list

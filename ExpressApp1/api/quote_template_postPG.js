@@ -3,32 +3,29 @@ var tools = require('../tools/tool');
 // 見積り明細のテンプレート
 //
 exports.postQuoteTemplate = function (req, res) {
-	var template = req.body;
-	template.quantity = Number(template.quantity.replace(/,/g, ''));
-	template.price = Number(template.price.replace(/,/g, ''));
-	template.unit_price = Number(template.unit_price.replace(/,/g, ''));
-	template.delete_check = Number(template.delete_check);
-//	if (template.delete_check == 'on'){
-//		template.delete_check = 1;
-//	} else {
-//		template.delete_check = 0;
-//	}
-	console.log("template.period_term:" + template.period_term);
-	console.log("template.period_unit:" + template.period_unit);
-	var sql = "SELECT template_id FROM drc_sch.quote_specific_template WHERE template_id = $1";
+	var templates = req.body;
+	console.log(templates);
 	pg.connect(connectionString, function (err, connection) {
-		// SQL実行
-		connection.query(sql,[template.template_id], function (err, results) {
-			if (err) {
-				console.log(err);
-			} else {
-				if (results.rows.length == 0) {
-					insertQuoteTemplate(connection,template,req);
+		for(var i = 0;i < templates.length;i++) {
+			var template = templates[i];
+			//template.quantity = Number(template.quantity.replace(/,/g, ''));
+			//template.price = Number(template.price.replace(/,/g, ''));
+			//template.unit_price = Number(template.unit_price.replace(/,/g, ''));
+			template.delete_check = Number(template.delete_check);
+			var sql = "SELECT template_id FROM drc_sch.quote_specific_template WHERE id = $1";
+			// SQL実行
+			connection.query(sql,[template.id], function (err, results,template) {
+				if (err) {
+					console.log(err);
 				} else {
-					updateQuoteTemplate(connection,template,req);
+					if (results.rows.length == 0) {
+						insertQuoteTemplate(connection,template,req);
+					} else {
+						updateQuoteTemplate(connection,template,req);
+					}
 				}
-			}
-		});
+			});
+		}	
 	});
 };
 
