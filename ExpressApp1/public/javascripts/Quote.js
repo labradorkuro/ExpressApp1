@@ -828,7 +828,7 @@ quoteInfo.addTemplate = function (event) {
 					meisai = quoteInfo.getMeisaiData(id,no,no);
 				}
 				// post
-				quoteInfo.postTemplateData(meisai);
+//				quoteInfo.postTemplateData(meisai);
 				$(this).dialog('close');
 			},
 			"閉じる": function () {
@@ -857,6 +857,7 @@ quoteInfo.getMeisaiData = function(id,start,end) {
 		template.memo = $("#specific_memo_" + no).val();
 		template.delete_check = 0;
 		templates.push(template);
+		quoteInfo.postTemplateData(template);
 	}
 	return templates;
 }

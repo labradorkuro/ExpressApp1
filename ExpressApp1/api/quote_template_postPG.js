@@ -3,29 +3,22 @@ var tools = require('../tools/tool');
 // 見積り明細のテンプレート
 //
 exports.postQuoteTemplate = function (req, res) {
-	var templates = req.body;
-	console.log(templates);
+	var template = req.body;
 	pg.connect(connectionString, function (err, connection) {
-		for(var i = 0;i < templates.length;i++) {
-			var template = templates[i];
-			//template.quantity = Number(template.quantity.replace(/,/g, ''));
-			//template.price = Number(template.price.replace(/,/g, ''));
-			//template.unit_price = Number(template.unit_price.replace(/,/g, ''));
-			template.delete_check = Number(template.delete_check);
-			var sql = "SELECT template_id FROM drc_sch.quote_specific_template WHERE id = $1";
-			// SQL実行
-			connection.query(sql,[template.id], function (err, results,template) {
-				if (err) {
-					console.log(err);
+		template.delete_check = Number(template.delete_check);
+		var sql = "SELECT template_id FROM drc_sch.quote_specific_template WHERE id = $1";
+		// SQL実行
+		connection.query(sql,[template.id],(err,results) => {
+			if (err) {
+				console.log(err);
+			} else {
+				if (results.rows.length == 0) {
+					insertQuoteTemplate(connection,template,req);
 				} else {
-					if (results.rows.length == 0) {
-						insertQuoteTemplate(connection,template,req);
-					} else {
-						updateQuoteTemplate(connection,template,req);
-					}
+					updateQuoteTemplate(connection,template,req);
 				}
-			});
-		}	
+			}
+		});		
 	});
 };
 
