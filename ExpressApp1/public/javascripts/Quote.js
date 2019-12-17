@@ -817,15 +817,14 @@ quoteInfo.addTemplate = function (event) {
 				// 現在の行数を取得する（見出し行を含む）
 				var rows = $("#meisai_table tbody").children().length;
 				var check_all = $("#check_all").prop('checked');
-				var meisai = {};
 				var id = $("#template_id").val();
 				if (check_all) {
 					// 全行保存
-					meisai = quoteInfo.getMeisaiData(id,1,rows - 1);
+					quoteInfo.getMeisaiData(id,1,rows - 1);
 				} else {
 					// 選択行のみ保存
 					var no = quoteInfo.getMeisaiNo( $(event.target).attr("id"));
-					meisai = quoteInfo.getMeisaiData(id,no,no);
+					quoteInfo.getMeisaiData(id,no,no);
 				}
 				// post
 //				quoteInfo.postTemplateData(meisai);
@@ -840,7 +839,6 @@ quoteInfo.addTemplate = function (event) {
 };
 // 見積行データを取得する
 quoteInfo.getMeisaiData = function(id,start,end) {
-	var templates = new Array();
 	for(var no = start;no <= end ;no++) {
 		var template = {};
 		template.template_id = id;
@@ -856,10 +854,8 @@ quoteInfo.getMeisaiData = function(id,start,end) {
 		template.summary_check = $("#summary_check_" + no).val() == "on" ? 1:0;
 		template.memo = $("#specific_memo_" + no).val();
 		template.delete_check = 0;
-		templates.push(template);
 		quoteInfo.postTemplateData(template);
 	}
-	return templates;
 }
 quoteInfo.postTemplateData = function(template) {
 	console.log("data:" + JSON.stringify(template));

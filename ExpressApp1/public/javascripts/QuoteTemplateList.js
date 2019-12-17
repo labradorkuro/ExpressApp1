@@ -48,9 +48,10 @@ quote_template_list.createFormDialog = function () {
 		}
 	});
 };
+// テンプレートの編集ダイアログ表示
 quote_template_list.openFormDialog = function() {
 	var rowid = $("#quote_template_list").getGridParam('selrow');
-	var template = $("#quote_template_list").getRowData(rowid);
+	var template = $("#quote_template_meisai").getRowData();
 	$('#id').val(template.id);
 	$('#template_id').val(template.template_id);
 	$('#test_middle_class_cd').val(template.test_middle_class_cd);

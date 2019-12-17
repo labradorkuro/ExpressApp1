@@ -39,6 +39,11 @@ nyukinYotei.getShiharaibi = function(seikyu_date, sight_info) {
   }
   // 支払いサイトに設定されている支払い月（翌月：１、翌々月：２）を加算する
   month += sight_info.sight_date.shiharai_month;
+  if (month >= 12) {
+    month -= 12;
+    var year = shiharaibi.getFullYear() + 1;
+    shiharaibi.setFullYear(year);
+  }
   shiharaibi.setMonth(month);
   if (sight_info.sight_date.shiharaibi == 31) {
     // 月末支払の場合、翌月にしてから1日引いて月末日を得る
