@@ -22,7 +22,7 @@ quote_template_list.checkAuth = function() {
 	}
 };
 
-// 試験分類入力用ダイアログの生成
+// ダイアログの生成
 quote_template_list.createFormDialog = function () {
 	$('#quote_template_dialog').dialog({
 		autoOpen: false,
@@ -119,7 +119,7 @@ quote_template_list.createTemplateGrid = function(large_cd) {
 		colNames: ['テンプレート名',''],
 		colModel: [
 			{ name: 'template_id', index: 'template_id', width: 800, align: "center" },
-			{ name: 'delete_check', index: 'delete_check', hidden:true }
+			{ name: 'template_name_delete_check', index: 'template_name_delete_check', hidden:true }
 		],
 		//height: "460px",
 		rowNum: 10,
@@ -166,7 +166,7 @@ quote_template_list.createTemplateMeisaiGrid = function(large_cd,template_id) {
 			{ name: 'price', index: 'price', width: 100, align: "right",formatter:scheduleCommon.numFormatterC },
 			{ name: 'summary_check', index: 'summary_check', width: 80, align: "center" , formatter:scheduleCommon.summaryCheckFormatter },
 			{ name: 'memo', index: 'memo', width: 200, align: "center" },
-			{ name: 'delete_check', index: 'delete_check', hidden:true }
+			{ name: 'template_meisai_delete_check', index: 'template_meisai_delete_check', hidden:true }
 		],
 		//height: "460px",
 		rowNum: 10,

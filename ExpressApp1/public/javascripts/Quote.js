@@ -57,7 +57,7 @@ quoteInfo.eventBind = function(kind) {
 	// 見積テンプレート保存
 	$(".add_template_btn").bind("click", quoteInfo.addTemplate);
 	// 見積テンプレート選択
-	$(".select_template_btn").bind("click", quoteInfo.createTemplateGrid);
+	$(".select_template_btn").bind("click", quoteInfo.openQuoteTemplateListDialog);
 	// 試験中分類選択ダイアログを表示するイベント処理を登録する
 	$(".test_middle_class").bind('click',{}, quoteInfo.openTestItemSelectDialog);
 	// 合計計算用
@@ -124,8 +124,8 @@ quoteInfo.createQuoteTemplateSaveDialog = function () {
 quoteInfo.createQuoteTemplateListDialog = function () {
 	$('#quoteTemplateListDialog').dialog({
 		autoOpen: false,
-		width: 800,
-		height: 600,
+		width: 820,
+		height: 500,
 		title: '見積テンプレートの選択',
 		closeOnEscape: false,
 		modal: true,
@@ -860,49 +860,64 @@ quoteInfo.getMeisaiData = function(id,start,end) {
 quoteInfo.postTemplateData = function(template) {
 	console.log("data:" + JSON.stringify(template));
 	$.ajax({type:'post',url:'/quote_template_post',dataType: 'json',contentType: 'application/json',data: JSON.stringify(template)});
-	/*
-	var xhr = new XMLHttpRequest();
-	var data = new FormData();
-	data.append('id',0);
-	data.append('template_id',template.template_id);
-	data.append('test_large_class_cd',template.test_large_class_cd);
-	data.append('test_middle_class_cd',template.test_middle_class_cd);
-	data.append('test_middle_class_name',template.test_middle_class_name);
-	data.append('period_term',Number(template.period_term));
-	data.append('period_unit',Number(template.period_unit));
-	data.append('quantity',Number(template.quantity.replace(/,/g, '')));
-	data.append('unit',template.unit);
-	data.append('unit_price',Number(template.unit_price.replace(/,/g, '')));
-	data.append('price',Number(template.price.replace(/,/g, '')));
-	data.append('summary_check',template.summary_check);
-	data.append('memo',template.memo);
-	data.append('delete_check',template.delete_check);
-
-	xhr.open('POST', '/quote_template_post', true);
-	xhr.responseType = 'json';
-	xhr.send(data);
-	*/
 }
-// 試験中分類リストの生成
-quoteInfo.createTemplateGrid = function (event) {
-	var id = $(event.target).attr("id");
-	if (id != "") {
-		var s = id.split("_");
-		if (s.length == 4) {
-			var no = s[3];
-			quoteInfo.currentSpecificRowNo = no;
-		}
-	}
+
+// テンプレートIDのリスト
+quoteInfo.createTemplateNameGrid = function() {
+	$("#quote_template_meisai").GridUnload();
 	$("#quote_template_list").GridUnload();
-	var dc = 0;//$("#test_middle_delete_check_disp:checked").val();
+	var dc = $("#quote_template_delete_check_disp:checked").val();
 	var delchk = (dc) ? 1:0;
 	jQuery("#quote_template_list").jqGrid({
-		url: '/quote_template_get' + '?delete_check=' + delchk,
+		url: '/quote_template_get' + '?large_cd=' +  quoteInfo.currentEntry.test_large_class_cd + '&delete_check=' + delchk,
+		altRows: true,
+		datatype: "json",
+		colNames: ['テンプレート名',''],
+		colModel: [
+			{ name: 'template_id', index: 'template_id', width: 800, align: "center" },
+			{ name: 'template_name_delete_check', index: 'template_name_delete_check', hidden:true }
+		],
+		//height: "460px",
+		rowNum: 10,
+		rowList: [10,20,30],
+		pager: '#quote_template_list_pager',
+		sortname: 'template_id',
+		multiSort:true,
+		viewrecords: true,
+		sortorder: "asc",
+		caption: "見積テンプレートリスト",
+		onSelectRow: quoteInfo.selectTemplateName,
+		loadComplete: quoteInfo.setTemplateNameGridHeight
+	});
+	jQuery("#quote_template_list").jqGrid('navGrid', '#quote_template_list_pager', { edit: false, add: false, del: false });
+	scheduleCommon.changeFontSize();
+};
+// グリッドデータのロード完了時処理
+quoteInfo.setTemplateNameGridHeight = function() {
+	// データ行数に合わせて高さを変更する
+	var aa = $('#quote_template_list').jqGrid('getDataIDs');
+	$("#quote_template_list").setGridHeight(aa.length * 25);
+};
+// テンプレート名選択
+quoteInfo.selectTemplateName = function (rowid) {
+	var template = $("#quote_template_list").getRowData(rowid);
+	$("#quote_template_meisai").GridUnload();
+	// 明細の表示
+	quoteInfo.createTemplateMeisaiGrid(quoteInfo.currentEntry.test_large_class_cd,template.template_id);
+};
+
+// テンプレートリストの生成
+quoteInfo.createTemplateMeisaiGrid = function (large_cd, template_id) {
+	$("#quote_template_meisai").GridUnload();
+	var dc = 0;//$("#test_middle_delete_check_disp:checked").val();
+	var delchk = (dc) ? 1:0;
+	jQuery("#quote_template_meisai").jqGrid({
+		url: '/quote_template_meisai_get' + '?large_cd=' +  large_cd + '&template_id=' + template_id +'&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
 		colNames: ['テンプレートID','試験中分類CD','名称','','','数量','単位','単価','金額','集計','備考'],
 		colModel: [
-			{ name: 'template_id', index: 'template_id', width: 80, align: "center" },
+			{ name: 'template_id', index: 'template_id', width: 140, align: "center" },
 			{ name: 'test_middle_class_cd', index: 'test_middle_class_cd', hidden:true },
 			{ name: 'test_middle_class_name', index: 'test_middle_class_name', width: 200, align: "center" },
 			{ name: 'period_term', index: 'period_term', hidden:true },
@@ -915,33 +930,38 @@ quoteInfo.createTemplateGrid = function (event) {
 			{ name: 'memo', index: 'memo', width: 200, align: "center" }
 		],
 		//height: "460px",
-		rowNum: 10,
-		rowList: [10,20,30],
-		pager: '#quote_template_list_pager',
+		rowNum: 5,
+		rowList: [5,10,20],
+		pager: '#quote_template_meisai_pager',
 		sortname: 'template_id',
 		multiSort:true,
 		viewrecords: true,
 		sortorder: "asc",
 		caption: "見積テンプレートリスト",
-		onSelectRow: quoteInfo.onSelectTemplateRow,
-		loadComplete:quoteInfo.selectTemplate
+		onSelectRow: quoteInfo.onSelectTemplateMeisaiRow,
+		loadComplete: quoteInfo.setTemplateMeisaiGridHeight
 	});
-	jQuery("#quote_template_list").jqGrid('navGrid', '#quote_template_list_pager', { edit: false, add: false, del: false });
+	jQuery("#quote_template_meisai").jqGrid('navGrid', '#quote_template_meisai_pager', { edit: false, add: false, del: false });
 	scheduleCommon.changeFontSize();
 };
+// グリッドデータのロード完了時処理
+quoteInfo.setTemplateMeisaiGridHeight = function() {
+	// データ行数に合わせて高さを変更する
+	var aa = $('#quote_template_meisai').jqGrid('getDataIDs');
+	$("#quote_template_meisai").setGridHeight(aa.length * 25);
+};
+
 // リストで選択中の情報を取得する
-quoteInfo.onSelectTemplateRow = function (rowid) {
+quoteInfo.onSelectTemplateMeisaiRow = function (rowid) {
 	//var rowid = $("#quote_template_list").getGridParam('selrow');
 	if (rowid != null) {
-		quoteInfo.currentTemplateRow = $("#quote_template_list").getRowData(rowid);
+		quoteInfo.currentTemplateRow = $("#quote_template_meisai").getRowData(rowid);
 	}
 
 };
 
 // テンプレート選択ダイアログ表示
-quoteInfo.selectTemplate = function (event) {
-	var rowNum = Number($("#quote_template_list").getGridParam('rowNum'));
-	$("#quote_template_list").setGridHeight(rowNum * 25);
+quoteInfo.openQuoteTemplateListDialog = function (event) {
 	$("#quoteTemplateListDialog").dialog({
 		buttons: {
 			"選択": function () {
@@ -953,23 +973,40 @@ quoteInfo.selectTemplate = function (event) {
 			}
 		}
 	});
+	quoteInfo.createTemplateNameGrid();
+	//var rowNum = Number($("#quote_template_list").getGridParam('rowNum'));
 	$("#quoteTemplateListDialog").dialog("open");
 };
 // 選択したテンプレートを見積明細にコピーする
 quoteInfo.setSelectTemplate = function(row) {
-	var no = Number(quoteInfo.currentSpecificRowNo);
-	$("#test_middle_class_cd_" + no).val(row.test_middle_class_cd);
-	$("#test_middle_class_name_" + no).val(row.test_middle_class_name);
-	// 通常納期を計算するための情報を追加
-	$("#period_term_" + no).val(row.period_term);	// 2017.08
-	$("#period_unit_" + no).val(row.period_unit);	// 2017.08
-	$("#unit_" + no).val(row.unit);
-	$("#unit_price_" + no).val(row.unit_price);
-	$("#quantity_" + no).val(Number(row.quantity.replace(/,/g, '')));
-	$("#price_" + no).val(row.price);
-	$("#summary_check_" + no).prop("checked",(row.summary_check == "する"));
-	$("#specific_memo_" + no).val(row.memo);
-	quoteInfo.calcSummary();
+	// 複数行対応する
+//	var no = Number(quoteInfo.currentSpecificRowNo);
+	// テンプレートデータ取得
+	var meisai = $("#quote_template_meisai").jqGrid('getRowData');
+	// 見積行数取得
+	var table_rows = $("#meisai_table tbody").children().length;
+	for(var i = 0;i < meisai.length;i++) {
+		var no = Number(i) + 1;
+		if (no > table_rows) {
+			// 行追加
+			$("#meisai_table tbody").append(quoteInfo.addRowCreate(no));
+		}
+		$("#test_middle_class_cd_" + no).val(meisai[i].test_middle_class_cd);
+		$("#test_middle_class_name_" + no).val(meisai[i].test_middle_class_name);
+		// 通常納期を計算するための情報を追加
+		$("#period_term_" + no).val(meisai[i].period_term);	// 2017.08
+		$("#period_unit_" + no).val(meisai[i].period_unit);	// 2017.08
+		$("#unit_" + no).val(meisai[i].unit);
+		$("#unit_price_" + no).val(meisai[i].unit_price);
+		$("#quantity_" + no).val(Number(meisai[i].quantity.replace(/,/g, '')));
+		$("#price_" + no).val(meisai[i].price);
+		$("#summary_check_" + no).prop("checked",(meisai[i].summary_check == "する"));
+		$("#specific_memo_" + no).val(meisai[i].memo);
+		// イベント設定
+		quoteInfo.eventBind("");
+		quoteInfo.calcSummary();
+	
+	}
 }
 // テーブル行のデータ取得
 quoteInfo.getRowsData = function() {
