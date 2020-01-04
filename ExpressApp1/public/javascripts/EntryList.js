@@ -342,7 +342,7 @@ entryList.createGridSub = function (req_url) {
 				,'client_tel_no','client_fax_no','client_division_tel_no','client_division_fax_no','client_person_id'
 				,'クライアント担当者','client_person_compellation','代理店'
 				,'試験タイトル','問合せ日', '案件ステータス', '営業担当者'
-				,'受注日','仮受注チェック','受託区分','試験担当者','消費税率','作成日','作成者','更新日','更新者','試験場'],
+				,'受注日','仮受注チェック','受託区分','試験担当者','消費税率','作成日','作成者','更新日','更新者','試験場','検体名'],
 		colModel: [
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,sortable:true, formatter: scheduleCommon.payResultFormatter,searchoptions:{sopt:["eq","ne"]}},
 			{ name: 'pay_result_1', hidden:true},
@@ -386,6 +386,7 @@ entryList.createGridSub = function (req_url) {
 			{ name: 'updated', index: 'updated', width: 130, align: "center" ,searchoptions:{sopt:["eq","ne","ge","le"]},searchrules: {date: true}},
 			{ name: 'updated_id', index: 'updated_id', align: "center", formatter: scheduleCommon.personFormatter ,searchoptions:{sopt:['cn','nc','eq', 'ne', 'bw', 'bn', 'ew', 'en']} },
 			{ name: 'shikenjo', index: 'shikenjo', align: "center", formatter: scheduleCommon.shikenjoFormatter  },
+			{ name: 'kentai_name', index: 'kentai_name', width: 200, align: "center"  },
 		],
 		height:260,
 		//width:960,
@@ -752,6 +753,7 @@ entryList.copyEntry = function () {
 	$("#prompt_report_submit_date_2").val("");	// 速報提出日2
 	  $("#order_accepted_date").val(""); // 受注日付
 	$("#order_accept_check").val(0);	// 仮受注日チェック
+	$("#kentai_name").val("");        // 検体名
 	$("#entry_memo").val("");        // 備考
 	$("#input_check_date").val(today);			// 入力日
 	$("#input_operator_id").val($.cookie('userid'));	// 入力者ID
@@ -803,6 +805,9 @@ entryList.entryInputCheck = function () {
 					break;
 				} else if (ctl.id == "entry_amount_deposit") {
 					err = "入金合計の入力値を確認して下さい";
+					break;
+				} else if (ctl.id == "kentai_name") {
+					err = "検体名の文字数を確認して下さい";
 					break;
 				} else if (ctl.id == "entry_memo") {
 					err = "備考の文字数を確認して下さい";
@@ -1018,6 +1023,7 @@ entryList.setEntryForm = function (entry) {
 	$("#prompt_report_limit_date_2").val(entry.prompt_report_limit_date_2);		// 速報提出期限2
 	$("#prompt_report_submit_date_2").val(entry.prompt_report_submit_date_2);	// 速報提出日2
 	$("#entry_consumption_tax").val(entry.consumption_tax);		// 消費税率
+	$("#kentai_name").val(entry.kentai_name);					// 検体名
 	$("#entry_memo").val(entry.entry_memo);						// 備考
 	if (entry.delete_check == 1) {
 		$("#delete_check").prop("checked", true);				// 削除フラグ
@@ -1092,6 +1098,7 @@ entryList.clearEntry = function () {
 	entry.prompt_report_limit_date_2 = "";		// 速報提出期限2
 	entry.prompt_report_submit_date_2 = "";		// 速報提出日2
 	entry.consumption_tax = quoteInfo.drc_info.consumption_tax;	// 消費税率
+	entry.kentai_name = "";			// 検体名
 	entry.entry_memo = "";			// メモ
 	entry.delete_check = 0;			// 削除フラグ
 	entry.delete_reason = "";		// 削除理由
@@ -1296,7 +1303,7 @@ entryList.entry_csv_sub = function(req_url,title) {
 	var empty_line = "\r\n\r\n";
 	var lines = [];
 	var colnames = "請求区分,未入金,案件No.,案件ステータス,受注ステータス,受注日,試験大分類,試験中分類,"
-	 + "クライアント名,クライアント部署,クライアント担当者,代理店,代理店部署,代理店担当者,委託先,試験タイトル,受託区分,担当者,金額（税抜）,消費税,合計（税込）,請求合計,入金合計,会計期No,問合せ日,案件メモ,営業担当者,仮受注チェック,"
+	 + "クライアント名,クライアント部署,クライアント担当者,代理店,代理店部署,代理店担当者,委託先,試験タイトル,受託区分,担当者,金額（税抜）,消費税,合計（税込）,請求合計,入金合計,会計期No,問合せ日,検体名,案件メモ,営業担当者,仮受注チェック,"
 	 + "報告書期限,報告書提出日,速報期限１,速報提出日１,速報期限２,速報提出日２,"
 	 + "見積番号,見積日,見積合計金額（税別）,被験者数,PDF発行,作成日,作成者";
 	lines.push(colnames);
@@ -1330,6 +1337,7 @@ entryList.entry_csv_sub = function(req_url,title) {
 			scheduleCommon.setQuotation(row.complete_total != null ? row.complete_total : "") + "," +   // 入金合計
 			scheduleCommon.setQuotation(row.acounting_period_no != null ? row.acounting_period_no : "") + "," +
 			scheduleCommon.setQuotation(row.inquiry_date != null ? row.inquiry_date : "") + "," +
+			scheduleCommon.setQuotation(row.kentai_name != null ? row.kentai_name : "") + "," +
 			scheduleCommon.setQuotation(row.entry_memo != null ? row.entry_memo : "") + "," +
 			scheduleCommon.setQuotation(row.sales_person_id != null ? scheduleCommon.personFormatter(row.sales_person_id) : "") + "," +
 			scheduleCommon.setQuotation(row.order_accept_check != null ? entryList.orderAcceptFormatter(row.order_accept_check,null,row) : "") + "," +

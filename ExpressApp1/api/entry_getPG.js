@@ -524,6 +524,7 @@ var entry_get_list_sql = function() {
 		+ 'acounting_period_no,'
 		+ 'out_list.name_1 AS outsourcing_name,'
 		+ 'test_person_id,'
+		+ 'kentai_name,'
 		+ 'entry_memo,'
 		+ "to_char(entry_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'entry_info.created_id,'
@@ -907,6 +908,7 @@ var entry_get_detail = function (req, res) {
 		+ 'to_char(prompt_report_limit_date_2,\'YYYY/MM/DD\') AS prompt_report_limit_date_2,'		// 速報提出期限２
 		+ 'to_char(prompt_report_submit_date_2,\'YYYY/MM/DD\') AS prompt_report_submit_date_2,'		// 速報提出日２
 		+ 'consumption_tax,'															//
+		+ 'kentai_name,'																// 検体名
 		+ 'entry_memo,'																	// メモ
 		+ "entry_info.delete_check,"													// 削除フラグ
 		+ "entry_info.delete_reason,"													// 削除理由

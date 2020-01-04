@@ -144,7 +144,6 @@ var insertBilling = function (connection, billing, req, res) {
 			+ 'furikomi_ryo,'			// 振込手数料
 			+ 'nyukin_total,'			// 合計
 			+ "nyukin_yotei_p,"			// 入金予定日（仮）
-			+ 'kentai,'					// 検体名
 			+ 'delete_check,'			// 削除フラグ
 			+ 'created,'				// 作成日
 			+ 'created_id,'				// 作成者ID
@@ -153,7 +152,7 @@ var insertBilling = function (connection, billing, req, res) {
 			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'
 			+ '$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,'
-			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43,$44)'
+			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
@@ -195,7 +194,6 @@ var insertBilling = function (connection, billing, req, res) {
 			billing.furikomi_ryo,					// 振込手数料
 			billing.nyukin_total,					// 合計
 			billing.nyukin_yotei_p,					// 入金予定日（仮）
-			billing.kentai,							// 検体名
 			billing.billing_delete_check,			// 削除フラグ
 			created,						// 作成日
 			created_id,						// 作成者ID
@@ -254,11 +252,10 @@ var updateBilling = function (connection, billing, req, res) {
 			+ 'furikomi_ryo = $36,'
 			+ 'nyukin_total = $37,'
 			+ 'nyukin_yotei_p = $38,'
-			+ 'kentai = $39,'				// 検体名
-			+ 'delete_check = $40,'			// 削除フラグ
-			+ 'updated = $41,'				// 更新日
-			+ 'updated_id = $42'			// 更新者ID
-			+ " WHERE entry_no = $43 AND billing_no = $44";
+			+ 'delete_check = $39,'			// 削除フラグ
+			+ 'updated = $40,'				// 更新日
+			+ 'updated_id = $41'			// 更新者ID
+			+ " WHERE entry_no = $42 AND billing_no = $43";
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
@@ -299,7 +296,6 @@ var updateBilling = function (connection, billing, req, res) {
 			billing.furikomi_ryo,					// 振込手数料
 			billing.nyukin_total,					// 合計
 			billing.nyukin_yotei_p,					// 入金予定日（仮）
-			billing.kentai,							// 検体名
 			billing.billing_delete_check,			// 削除フラグ
 			updated,						// 更新日
 			updated_id,						// 更新者ID

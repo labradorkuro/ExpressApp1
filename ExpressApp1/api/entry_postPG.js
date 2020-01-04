@@ -40,6 +40,7 @@ var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ 'prompt_report_limit_date_2,'		// 速報提出期限２
 		+ 'prompt_report_submit_date_2,'	// 速報提出日２
 		+ 'consumption_tax,'				// 消費税率
+		+ 'kentai_name,'					// 検体名
 		+ 'entry_memo,'						// メモ
 		+ 'delete_check,'					// 削除フラグ
 		+ 'delete_reason,'					// 削除理由
@@ -86,20 +87,21 @@ var sqlInsertEntry = 'INSERT INTO drc_sch.entry_info('
 		+ '$29,'	// 速報提出期限２
 		+ '$30,'	// 速報提出日２
 		+ '$31,'	// 消費税率
-		+ '$32,'	// メモ
-		+ '$33,'	// 削除フラグ
-		+ '$34,'	// 削除理由
-		+ '$35,'	// 入力日
-		+ '$36,'	// 入力完了チェック
-		+ '$37,'	// 入力者ID
-		+ '$38,'	// 確認日
-		+ '$39,'	// 確認完了チェック
-		+ '$40,'	// 確認者ID
-		+ '$41,'	// 作成日
-		+ '$42,'	// 作成者ID
-		+ '$43,'	// 更新日
-		+ '$44,'	// 更新者ID
-		+ '$45'		// 試験場情報
+		+ '$32,'	// 検体名
+		+ '$33,'	// メモ
+		+ '$34,'	// 削除フラグ
+		+ '$35,'	// 削除理由
+		+ '$36,'	// 入力日
+		+ '$37,'	// 入力完了チェック
+		+ '$38,'	// 入力者ID
+		+ '$39,'	// 確認日
+		+ '$40,'	// 確認完了チェック
+		+ '$41,'	// 確認者ID
+		+ '$42,'	// 作成日
+		+ '$43,'	// 作成者ID
+		+ '$44,'	// 更新日
+		+ '$45,'	// 更新者ID
+		+ '$46'		// 試験場情報
 		+ ')'
 		;
 // 案件基本データのPOST
@@ -225,6 +227,7 @@ var insertEntryInfo = function(connection, entry, count, req, res) {
 			entry.prompt_report_limit_date_2,	// 速報提出期限２
 			entry.prompt_report_submit_date_2,	// 速報提出日２
 			entry.entry_consumption_tax,		// 消費税率
+			entry.kentai_name,				// 検体名
 			entry.entry_memo,				// メモ
 			entry.delete_check,				// 削除フラグ
 			entry.delete_reason,			// 削除理由
@@ -290,6 +293,7 @@ var copyEntryInfo = function(connection, entry, count, req, res) {
 			entry.prompt_report_limit_date_2,	// 速報提出期限２
 			entry.prompt_report_submit_date_2,	// 速報提出日２
 			entry.entry_consumption_tax,		// 消費税率
+			entry.kentai_name,				// 検体名
 			entry.entry_memo,				// メモ
 			entry.delete_check,				// 削除フラグ
 			entry.delete_reason,			// 削除理由
@@ -351,19 +355,20 @@ var updateEntryInfo = function(entry, req, res) {
 			+ 'prompt_report_limit_date_2 = $28,'	// 速報提出期限２
 			+ 'prompt_report_submit_date_2 = $29,'	// 速報提出日２
 			+ 'consumption_tax = $30,'				// 消費税率
-			+ 'entry_memo = $31,'					// メモ
-			+ 'delete_check = $32,'					// 削除フラグ
-			+ 'delete_reason = $33,'				// 削除理由
-			+ 'input_check_date = $34,'				// 入力日
-			+ 'input_check = $35,'					// 入力完了チェック
-			+ 'input_operator_id = $36,'			// 入力者ID
-			+ 'confirm_check_date = $37,'			// 確認日
-			+ 'confirm_check = $38,'				// 確認完了チェック
-			+ 'confirm_operator_id = $39,'			// 確認者ID
-			+ 'updated = $40,'						// 更新日
-			+ 'updated_id = $41,'					// 更新者ID
-			+ 'shikenjo = $42'
-			+ ' WHERE entry_no = $43';
+			+ 'kentai_name = $31,'					// 検体名
+			+ 'entry_memo = $32,'					// メモ
+			+ 'delete_check = $33,'					// 削除フラグ
+			+ 'delete_reason = $34,'				// 削除理由
+			+ 'input_check_date = $35,'				// 入力日
+			+ 'input_check = $36,'					// 入力完了チェック
+			+ 'input_operator_id = $37,'			// 入力者ID
+			+ 'confirm_check_date = $38,'			// 確認日
+			+ 'confirm_check = $39,'				// 確認完了チェック
+			+ 'confirm_operator_id = $40,'			// 確認者ID
+			+ 'updated = $41,'						// 更新日
+			+ 'updated_id = $42,'					// 更新者ID
+			+ 'shikenjo = $43'
+			+ ' WHERE entry_no = $44';
 
 	// SQL実行
 	pg.connect(connectionString,function (err, connection) {
@@ -398,6 +403,7 @@ var updateEntryInfo = function(entry, req, res) {
 			entry.prompt_report_limit_date_2,	// 速報提出期限２
 			entry.prompt_report_submit_date_2,	// 速報提出日２
 			entry.entry_consumption_tax,	// 消費税率
+			entry.kentai_name,				// 検体名
 			entry.entry_memo,				// メモ
 			entry.delete_check,				// 削除フラグ
 			entry.delete_reason,			// 削除理由
@@ -1368,6 +1374,7 @@ var getEntryInfo = function (quote,created_id) {
 		+ 'to_char(prompt_report_limit_date_2,\'YYYY/MM/DD\') AS prompt_report_limit_date_2,'		// 速報提出期限２
 		+ 'to_char(prompt_report_submit_date_2,\'YYYY/MM/DD\') AS prompt_report_submit_date_2,'		// 速報提出日２
 		+ 'consumption_tax,'															//
+		+ 'kentai_name,'																// 検体名
 		+ 'entry_memo,'																	// メモ
 		+ "entry_info.delete_check,"													// 削除フラグ
 		+ "entry_info.delete_reason,"													// 削除理由

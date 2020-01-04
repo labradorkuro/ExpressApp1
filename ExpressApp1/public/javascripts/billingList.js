@@ -216,7 +216,7 @@ billingList.createBillingListGrid = function () {
 		altRows: true,
 		datatype: "json",
 		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額'
-			,'消費税','請求金額合計','入金額', '入金日','請求区分','請求先区分','検体名'
+			,'消費税','請求金額合計','入金額', '入金日','請求区分','請求先区分'
 			,'','クライアント名','','クライアント部署','','','','','','クライアント担当者','クライアント情報','備考'
 			,'','代理店名','','代理店部署','','','','','','代理店担当者','代理店情報','代理店備考'
 			,'','その他名','','その他部署','','その他担当者','その他情報','その他備考'
@@ -234,7 +234,7 @@ billingList.createBillingListGrid = function () {
 			{ name: 'pay_complete_date', index: 'pay_complete_date', width: 80, align: "center" },
 			{ name: 'pay_result', index: 'pay_result', width: 80, align: "center" ,formatter:scheduleCommon.pay_resultFormatter},
 			{ name: 'billing_kind', index: 'billing_kind', width: 100 , align: "center", formatter:scheduleCommon.billing_kindFormatter},
-			{ name: 'kentai', index: 'kentai', width: 200 , align: "center" },
+//			{ name: 'kentai', index: 'kentai', width: 200 , align: "center" },
 			{ name: 'client_cd', index: '', hidden:true },
 			{ name: 'client_name', index: 'client_name', width: 200 , align: "center" },
 			{ name: 'client_division_cd', index: '', hidden:true },
@@ -308,6 +308,7 @@ billingList.onSelectBillingList = function (rowid) {
 billingList.openBillingListDialog = function (event) {
 	billingList.currentEntry = event.data.entryList;					// 選択中の案件情報
 	$("#billing_entry_no").val(event.data.entryList.currentEntryNo);
+	$("#kentai").val(event.data.entryList.currentEntry.kentai_name);
 	$("#billing_info_list").GridUnload();
 	billingList.createBillingListGrid();
 	if (entryList.auth_entry_add == 2) {
@@ -605,7 +606,6 @@ billingList.clearBilling = function() {
 			pay_complete:0,
 			pay_result:"請求待ち",
 			memo:'',
-			kentai:'',
 			billing_kind:"クライアント",
 			client_cd:'',
 			client_name:'',
@@ -685,7 +685,7 @@ billingList.setBillingForm = function(billing) {
 		$("#billing_kind_3").prop("checked",true);
 	}
 	// 検体名
-	$("#kentai").val(billing.kentai);
+	//$("#kentai").val(billing.kentai);
 	// クライアント情報
 	$("#billing_client_cd").val(billing.client_cd);
 	$("#billing_client_name").val(billing.client_name);
