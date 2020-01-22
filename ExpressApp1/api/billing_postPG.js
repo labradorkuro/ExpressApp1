@@ -8,6 +8,40 @@ var smtpTransport = require('nodemailer-smtp-transport');
 var notify = models['notify_settings'];
 var billing_post = require('./billing_postPG');
 
+// 請求書Noの保存と請求区分の更新
+exports.seikyusho_no_update = function(req, res) {
+	var params = req.body;
+	var sql = "SELECT entry_no,billing_no ,seikyusho_no FROM drc_sch.billing_info WHERE entry_no = $1 AND billing_no = $2";
+	var sql_update = 'UPDATE drc_sch.billing_info SET '
+	+ "seikyusho_no = $1,"				// 請求書No
+	+ "pay_result = $2"
+	+ " WHERE entry_no = $3 AND billing_no = $4";
+	pg.connect(connectionString, function (err, connection) {
+		if (err) {
+			console.log(err);
+		} else {
+			// SQL実行
+			connection.query(sql,[params.entry_no, params.billing_no], function (err, results) {
+				if (err) {
+					console.log(err);
+				} else {
+					if (results.rows.length > 0) {
+						// SQL実行
+						var query = connection.query(sql_update, [params.seikyusho_no,params.pay_result,params.entry_no,params.billing_no], function(err, results) {
+							connection.end();
+							if (err) {
+								console.log(err);
+							} else {
+								res.send(results);
+							}
+						});
+					}
+				}
+			});
+
+		}
+	});
+};
 // 請求データのPOST
 exports.billing_post = function (req, res) {
 	var billing = billing_check(req.body);
@@ -148,11 +182,13 @@ var insertBilling = function (connection, billing, req, res) {
 			+ 'created,'				// 作成日
 			+ 'created_id,'				// 作成者ID
 			+ 'updated,'				// 更新日
-			+ 'updated_id'				// 更新者ID
+			+ 'updated_id,'				// 更新者ID
+			+ 'nouhin_date,'				// 納品日
+			+ 'seikyusho_no'			// 請求書No
 			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'
 			+ '$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,'
-			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43)'
+			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43,$44,$45,$46)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
@@ -198,7 +234,9 @@ var insertBilling = function (connection, billing, req, res) {
 			created,						// 作成日
 			created_id,						// 作成者ID
 			updated,						// 更新日
-			updated_id						// 更新者ID
+			updated_id,						// 更新者ID
+			billing.nouhin_date,			// 納品日
+			billing.seikyusho_no			// 請求書No
 		], function (err, result) {
 			connection.end();
 			if (err) {
@@ -254,8 +292,10 @@ var updateBilling = function (connection, billing, req, res) {
 			+ 'nyukin_yotei_p = $38,'
 			+ 'delete_check = $39,'			// 削除フラグ
 			+ 'updated = $40,'				// 更新日
-			+ 'updated_id = $41'			// 更新者ID
-			+ " WHERE entry_no = $42 AND billing_no = $43";
+			+ 'updated_id = $41,'			// 更新者ID
+			+ 'nouhin_date= $42,'			// 納品日
+			+ 'seikyusho_no= $43'			// 請求書No
+			+ " WHERE entry_no = $44 AND billing_no = $45";
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
@@ -299,6 +339,8 @@ var updateBilling = function (connection, billing, req, res) {
 			billing.billing_delete_check,			// 削除フラグ
 			updated,						// 更新日
 			updated_id,						// 更新者ID
+			billing.nouhin_date,
+			billing.seikyusho_no,			// 請求書No
 			billing.billing_entry_no,
 			billing.billing_no
 		], function (err, results) {

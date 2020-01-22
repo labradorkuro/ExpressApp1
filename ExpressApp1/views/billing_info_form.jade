@@ -13,6 +13,9 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 			td 
 				input#billing_number(type="text" name="billing_number" placeholder="請求番号"  maxlength="16")
 				input#billing_no(type="hidden" name="billing_no" )
+			td.form_title_s 納品日
+			td 
+				input.datepicker#nouhin_date(name="nouhin_date" placeholder="納品日")
 	table
 		tr
 			td.form_title_s 請求区分
@@ -29,6 +32,9 @@ form#billingInfoForm(method="post",action="javascript:return false;")
 				label
 					input#pay_result_3(type="radio" name="pay_result" value="3")
 					| 入金確認済
+			td.form_title_s 請求書No
+			td
+				input#seikyusho_no(type="text" name="seikyusho_no", readonly=true)
 	table
 		tr
 			td.form_title_s

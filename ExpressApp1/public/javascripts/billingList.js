@@ -7,6 +7,8 @@ billingList.printCanvas = null;
 billingList.currentEntry = null;
 billingList.currentBilling = null;
 billingList.status = "add"; // or "edit" 追加でフォームを開いたか、編集で開いたか（デフォルトの税計算をするかしないか）
+billingList.billing_date = "";	// 納品日
+billingList.current_seikyusho_no = "";
 
 // イベント処理登録
 billingList.eventBind = function() {
@@ -20,8 +22,17 @@ billingList.eventBind = function() {
 	// 金額の変更
 	$("#pay_complete").bind("change",billingList.calc_kingaku);
 	$("#furikomi_ryo").bind("change",billingList.calc_kingaku);
+	// 請求可ボタン
+	$("#pay_result_1").bind("click",billingList.checked_pay_result);
 };
 
+// 請求区分が請求待ちから請求可になった時、その日の日付を納品日に設定する
+billingList.checked_pay_result = function() {
+	if (billingList.currentBilling.pay_result == "請求待ち") {
+		var today = scheduleCommon.getToday("{0}/{1}/{2}");
+		$("#nouhin_date").val(today);
+	}
+};
 // 入金予定日の計算
 billingList.calc_nyukin_yotei_date = function() {
 	// 請求先の支払いサイト情報を取得する
@@ -215,7 +226,7 @@ billingList.createBillingListGrid = function () {
 		url: '/billing_info_get?entry_no=' + entry_no + '&delete_check=' + delchk,
 		altRows: true,
 		datatype: "json",
-		colNames: ['案件番号','請求番号serial','請求番号','請求日', '入金予定日','税抜請求金額'
+		colNames: ['案件番号','請求番号serial','請求番号','請求書NO','納品日','請求日', '入金予定日','税抜請求金額'
 			,'消費税','請求金額合計','入金額', '入金日','請求区分','請求先区分'
 			,'','クライアント名','','クライアント部署','','','','','','クライアント担当者','クライアント情報','備考'
 			,'','代理店名','','代理店部署','','','','','','代理店担当者','代理店情報','代理店備考'
@@ -225,6 +236,8 @@ billingList.createBillingListGrid = function () {
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
 			{ name: 'billing_number', index: 'billing_number', width: 80, align: "center" },
+			{ name: 'seikyusho_no', index: 'seikyusho_no', width: 120, align: "center" },
+			{ name: 'nouhin_date', index: 'nouhin_date', width: 80, align: "center" },
 			{ name: 'pay_planning_date', index: 'pay_planning_date', width: 80, align: "center" },
 			{ name: 'nyukin_yotei_date', index: 'nyukin_yotei_date', width: 100, align: "center" },
 			{ name: 'pay_amount', index: 'pay_amount', width: 120, align: "right" ,formatter:scheduleCommon.numFormatterC},
@@ -377,7 +390,7 @@ billingList.openAddDialog = function(client_info,agent_info) {
 
 }
 
-// 請求情報リストダイアログの表示
+// 請求書プレビューダイアログの表示
 billingList.openBillingPrintPreviewDialog = function (event) {
 
 	$("#billing_print_preview_dialog").dialog("open");
@@ -597,6 +610,7 @@ billingList.clearBilling = function() {
 	var billing = {
 			billing_no:'',
 			billing_number:'',
+			nouhin_date:'',
 			pay_planning_date:'',
 			nyukin_yotei_date:'',
 			pay_complete_date:'',
@@ -633,7 +647,8 @@ billingList.clearBilling = function() {
 			furikomi_ryo:0,
 			nyukin_total:0,
 			nyukin_yotei_p:"false",
-			delete_check:0
+			delete_check:0,
+			seikyusho_no:''
 	};
 	return billing;
 };
@@ -647,7 +662,8 @@ billingList.clearPayResult = function() {
 billingList.setBillingForm = function(billing) {
 	$("#billing_no").val(billing.billing_no);
 	$("#billing_number").val(billing.billing_number);
-
+	$("#seikyusho_no").val(billing.seikyusho_no);
+	$("#nouhin_date").val(billing.nouhin_date);
 	$("#pay_planning_date").val(billing.pay_planning_date);
 	$("#nyukin_yotei_date").val(billing.nyukin_yotei_date);
 	$("#pay_complete_date").val(billing.pay_complete_date);
@@ -957,9 +973,21 @@ billingList.getSightInfo = function(cd) {
 };
 billingList.printBilling = function(billing_info) {
 	var data = billingList.printDataSetup(billing_info);
-	// 明細データの取得
-	billingList.getBillingMeisai(data);
-};
+	data.seikyusho_no = billingList.currentBilling.seikyusho_no;
+	billingList.current_seikyusho_no = billingList.currentBilling.seikyusho_no;
+	if (billingList.currentBilling.seikyusho_no == "") {
+		$.ajax({type:'get',url:'/billing_no_get/' }).done(function(billing_no){
+			// 請求書NOセット
+			data.seikyusho_no = billing_no.billing_no;
+			billingList.current_seikyusho_no = billing_no.billing_no;
+			// 明細データの取得
+			billingList.getBillingMeisai(data);
+		});
+	} else {
+		// 明細データの取得
+		billingList.getBillingMeisai(data);
+	}
+ };
 // 請求書印刷、明細データの取得
 billingList.getBillingMeisai = function(data) {
 	// 案件情報
@@ -976,12 +1004,11 @@ billingList.getBillingMeisai = function(data) {
 // 請求書用データの生成
 billingList.printDataSetup = function (billing_info) {
 	// 印刷用データ
-	var data = {
+	var data = {					
 		title: '請　　求　　書',
 		no: 'No.',
-		code:'お客様コードNo.',
 		date_template: '     年　　　　月　　　　日　締切分',
-		billing_issue_date: billing_info.billing_date,
+		billing_issue_date: billing_info.nouhin_date,
 		drc_zipcode: quoteInfo.drc_info.zipcode,
 		drc_address1: quoteInfo.drc_info.address1,
 		drc_address2: quoteInfo.drc_info.address2,
@@ -1013,7 +1040,12 @@ billingList.printDataSetup = function (billing_info) {
 	data.client_info = billing_info;
 	return data;
 };
-
+billingList.getBillingDateForPrint = function(dateStr) {
+	var y = dateStr.substring(0,4);
+	var m = dateStr.substring(5,7);
+	var d = dateStr.substring(8,10);
+	return(y + "          " + m + "          " + d);
+}
 // 請求書の作成
 billingList.createSVG = function (data) {
 	var blue_define = '#1e90ff';
@@ -1029,16 +1061,21 @@ billingList.createSVG = function (data) {
 	top += font_size;
 	font_size = 12;
 	// Code
-	quoteInfo.outputText(canvas, data.code, font_size, 50, top);
+	//quoteInfo.outputText(canvas, data.code, font_size, 50, top);
 	// No.
 	quoteInfo.outputText(canvas, data.no, font_size, 750, top);
+	quoteInfo.setTextColor("#000000");
+	quoteInfo.outputText(canvas, data.seikyusho_no, font_size, 785, top);
+	quoteInfo.setTextColor(blue_define);
+
 	top += font_size;
 	canvas.add(new fabric.Line([750,top + 4,900,top + 4],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	// date
 	font_size = 12;
 	quoteInfo.outputText(canvas, data.date_template, font_size, 500, top);
-	// 請求先情報
 	quoteInfo.setTextColor("#000000");
+	quoteInfo.outputText(canvas, billingList.getBillingDateForPrint($("#pay_planning_date").val()), font_size, 480, top);
+	// 請求先情報
 	font_size = 16;
 	var left = 50;
 	top = 85;
@@ -1157,8 +1194,8 @@ billingList.createSVG = function (data) {
 			quoteInfo.outputTextMono(canvas, scheduleCommon.numFormatter(data.rows[i].price,12), font_size, 830, top);		// 金額
 			top += font_size + 12;
 			var tax = data.rows[i].price * (quoteInfo.currentConsumption_tax / 100);
-			quoteInfo.outputText(canvas, "  消費税等 " + quoteInfo.currentConsumption_tax + ".0%", font_size, 240, top);
-			quoteInfo.outputTextMono(canvas,  scheduleCommon.numFormatter(tax, 12), font_size, 830, top);
+//			quoteInfo.outputText(canvas, "  消費税等 " + quoteInfo.currentConsumption_tax + ".0%", font_size, 240, top);
+//			quoteInfo.outputTextMono(canvas,  scheduleCommon.numFormatter(tax, 12), font_size, 830, top);
 			price_total += Number(data.rows[i].price) + Number(tax);
 			tax_total += Number(tax);
 		}
@@ -1168,7 +1205,7 @@ billingList.createSVG = function (data) {
 		quoteInfo.outputText(canvas, "  【合　　　　計】 " , font_size, 240, top);
 		quoteInfo.outputTextMono(canvas,  scheduleCommon.numFormatter(price_total, 12), font_size, 830, top);
 		top += font_size  + 12;
-		quoteInfo.outputText(canvas, "  （内消費税等 8.0%） " , font_size, 240, top);
+		quoteInfo.outputText(canvas, "  （内消費税等 " + quoteInfo.currentConsumption_tax + ".0%)"  , font_size, 240, top);
 		quoteInfo.outputTextMono(canvas,  "(" + scheduleCommon.numFormatter(tax_total, 11) +")", font_size, 830, top);
 		var konkai = scheduleCommon.addYenMark(scheduleCommon.numFormatter(price_total,12));
 		// 御買上額
@@ -1196,6 +1233,17 @@ billingList.saveBillingSVGFile = function() {
 	billingList.printCanvas.setHeight(0);
 	billingList.printCanvas.setWidth(0);
 	document.body.style.cursor = "default";
+	billingList.updateBillingInfo();
+}
+// 請求書NoをDBに保存する
+billingList.updateBillingInfo = function() {
+
+	$.ajax({type:'post',url:'/seikyusho_no_update' 
+		,data:{entry_no:billingList.currentBilling.entry_no
+			,billing_no:billingList.currentBilling.billing_no
+			,pay_result:2
+			,seikyusho_no:billingList.current_seikyusho_no}}).done(function(){
+	});
 
 }
 

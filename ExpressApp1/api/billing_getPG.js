@@ -1,6 +1,8 @@
 ﻿//
 // 請求情報データの取得
 //
+var tools = require('../tools/tool');
+
 exports.billing_get = function (req, res) {
 	if ((req.query.billing_no != undefined) && (req.query.billing_no != '')) {
 		billing_get_detail(req, res);
@@ -20,7 +22,10 @@ exports.billing_summary_total = function (req, res) {
 exports.billing_summary_print = function (req, res) {
 	billing_get_summary_list_print(req, res);
 };
-
+// 請求書No取得
+exports.billing_no_get = function(req,res) {
+	getSeikyushoNo(req,res);
+};
 var getPagingParams = function (req) {
 	var pg_param = {};
 	pg_param.sidx = "billing_no";
@@ -98,7 +103,9 @@ var billing_get_list = function (req, res) {
 		+ "to_char(billing_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'billing_info.created_id,'
 		+ "to_char(billing_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
-		+ 'billing_info.updated_id'
+		+ 'billing_info.updated_id,'
+		+ "to_char(billing_info.nouhin_date,'YYYY/MM/DD') AS nouhin_date,"
+		+ "seikyusho_no"
 		+ ' FROM drc_sch.billing_info'
 		+ ' LEFT JOIN drc_sch.entry_info ON (billing_info.entry_no = entry_info.entry_no)'
 		//+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd)'
@@ -645,7 +652,8 @@ var billing_get_detail = function (req, res) {
 		+ "to_char(billing_info.created,'YYYY/MM/DD HH24:MI:SS') AS created,"
 		+ 'billing_info.created_id,'
 		+ "to_char(billing_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
-		+ 'billing_info.updated_id'
+		+ 'billing_info.updated_id,'
+		+ 'seikyusho_no'
 		+ ' FROM drc_sch.billing_info'
 		//+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd)'
 		+ ' LEFT JOIN drc_sch.client_division_list ON (billing_info.client_cd = client_division_list.client_cd AND billing_info.client_division_cd = client_division_list.division_cd)'
@@ -728,3 +736,54 @@ exports.get_billing_for_entry_grid_update = function(req, res) {
 		});
 	});
 }
+
+// 請求書番号の取得
+var getSeikyushoNo = function (req, res){
+	var rtn = "";
+	var count = 1;
+	var now = tools.getToday("{0}/{1}/{2}");
+	var datestr = tools.getToday("{0}{1}{2}_");
+	var sql = 'SELECT billing_count FROM drc_sch.billing_number WHERE billing_date = $1';
+	// SQL実行
+	var rows = [];
+	pg.connect(connectionString, function (err, connection) {
+		var query = connection.query(sql, [now]);
+		query.on('row' , function (row) {
+			rows.push(row);
+		});
+		query.on('end', function (result, err) {
+			if (rows.length == 0) {
+				// その日のカウントが未登録
+				sql = 'INSERT INTO drc_sch.billing_number (billing_date,billing_count) VALUES ($1,$2)';
+				query = connection.query(sql, [now,count]);
+				query.on('end', function (result, err) {
+					res.send({"billing_no":datestr + count});
+				});
+				query.on('error', function (error) {
+					console.log(sql + ' ' + error);
+					res.render('tables', { title: 'DRC 試験スケジュール管理 error!!' });
+				});
+			} else {
+				// カウントの登録あり
+				for (var i in rows) {
+					count = rows[i].billing_count;
+				}
+				// カウントの更新
+				count++;
+				sql = 'UPDATE drc_sch.billing_number SET billing_count = $1 WHERE billing_date = $2';
+				query = connection.query(sql, [count,now]);
+				query.on('end', function (result, err) {
+					res.send({"billing_no": datestr + count});
+				});
+				query.on('error', function (error) {
+					console.log(sql + ' ' + error);
+					res.render('tables', { title: 'DRC 試験スケジュール管理 error!!' });
+				});
+			}
+		});
+		query.on('error', function (error) {
+			console.log(sql + ' ' + error);
+			res.render('tables', { title: 'DRC 試験スケジュール管理 error!!' });
+		});
+	});
+};
