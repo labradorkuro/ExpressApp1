@@ -105,7 +105,8 @@ var billing_get_list = function (req, res) {
 		+ "to_char(billing_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
 		+ 'billing_info.updated_id,'
 		+ "to_char(billing_info.nouhin_date,'YYYY/MM/DD') AS nouhin_date,"
-		+ "seikyusho_no"
+		+ "seikyusho_no,"
+		+ "seikyusho_memo"
 		+ ' FROM drc_sch.billing_info'
 		+ ' LEFT JOIN drc_sch.entry_info ON (billing_info.entry_no = entry_info.entry_no)'
 		//+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd)'
@@ -653,7 +654,8 @@ var billing_get_detail = function (req, res) {
 		+ 'billing_info.created_id,'
 		+ "to_char(billing_info.updated,'YYYY/MM/DD HH24:MI:SS') AS updated,"
 		+ 'billing_info.updated_id,'
-		+ 'seikyusho_no'
+		+ 'seikyusho_no,'
+		+ 'seikyusho_memo'
 		+ ' FROM drc_sch.billing_info'
 		//+ ' LEFT JOIN drc_sch.client_list ON (billing_info.client_cd = client_list.client_cd)'
 		+ ' LEFT JOIN drc_sch.client_division_list ON (billing_info.client_cd = client_division_list.client_cd AND billing_info.client_division_cd = client_division_list.division_cd)'

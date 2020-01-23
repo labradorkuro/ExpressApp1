@@ -184,11 +184,12 @@ var insertBilling = function (connection, billing, req, res) {
 			+ 'updated,'				// 更新日
 			+ 'updated_id,'				// 更新者ID
 			+ 'nouhin_date,'				// 納品日
-			+ 'seikyusho_no'			// 請求書No
+			+ 'seikyusho_no,'			// 請求書No
+			+ 'seikyusho_memo'			// 請求書memo
 			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'
 			+ '$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,'
-			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43,$44,$45,$46)'
+			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43,$44,$45,$46,$47)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
@@ -236,7 +237,8 @@ var insertBilling = function (connection, billing, req, res) {
 			updated,						// 更新日
 			updated_id,						// 更新者ID
 			billing.nouhin_date,			// 納品日
-			billing.seikyusho_no			// 請求書No
+			billing.seikyusho_no,			// 請求書No
+			billing.seikyusho_memo			// 請求書memo
 		], function (err, result) {
 			connection.end();
 			if (err) {
@@ -294,8 +296,9 @@ var updateBilling = function (connection, billing, req, res) {
 			+ 'updated = $40,'				// 更新日
 			+ 'updated_id = $41,'			// 更新者ID
 			+ 'nouhin_date= $42,'			// 納品日
-			+ 'seikyusho_no= $43'			// 請求書No
-			+ " WHERE entry_no = $44 AND billing_no = $45";
+			+ 'seikyusho_no= $43,'			// 請求書No
+			+ 'seikyusho_memo= $44'			// 請求書memo
+			+ " WHERE entry_no = $45 AND billing_no = $46";
 		// SQL実行
 		var query = connection.query(sql, [
 			billing.billing_entry_no,		// 案件番号
@@ -341,6 +344,7 @@ var updateBilling = function (connection, billing, req, res) {
 			updated_id,						// 更新者ID
 			billing.nouhin_date,
 			billing.seikyusho_no,			// 請求書No
+			billing.seikyusho_memo,			// 請求書memo
 			billing.billing_entry_no,
 			billing.billing_no
 		], function (err, results) {

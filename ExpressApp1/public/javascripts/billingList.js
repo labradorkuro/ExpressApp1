@@ -231,7 +231,7 @@ billingList.createBillingListGrid = function () {
 			,'','クライアント名','','クライアント部署','','','','','','クライアント担当者','クライアント情報','備考'
 			,'','代理店名','','代理店部署','','','','','','代理店担当者','代理店情報','代理店備考'
 			,'','その他名','','その他部署','','その他担当者','その他情報','その他備考'
-			,'作成日','作成者','更新日','更新者','削除フラグ','','',''],
+			,'作成日','作成者','更新日','更新者','削除フラグ','','','','請求書備考'],
 		colModel: [
 			{ name: 'entry_no', index: 'entry_no', width: 80, align: "center" },
 			{ name: 'billing_no', index: 'billing_no', hidden:true },
@@ -287,7 +287,8 @@ billingList.createBillingListGrid = function () {
 			{ name: 'delete_check', index: '', hidden:true },
 			{ name: 'furikomi_ryo', index:'', hidden:true},
 			{ name: 'nyukin_total', index:'', hidden:true},
-			{ name: 'nyukin_yotei_p', index:'', hidden:true}
+			{ name: 'nyukin_yotei_p', index:'', hidden:true},
+			{ name: 'seikyusho_memo', index:'', hidden:true}
 		],
 		height: "230px",
 		//width:"800",
@@ -648,7 +649,8 @@ billingList.clearBilling = function() {
 			nyukin_total:0,
 			nyukin_yotei_p:"false",
 			delete_check:0,
-			seikyusho_no:''
+			seikyusho_no:'',
+			seikyusho_memo:''
 	};
 	return billing;
 };
@@ -729,6 +731,7 @@ billingList.setBillingForm = function(billing) {
 	$("#billing_etc_person_name").val(billing.etc_person_name);
 	$("#billing_etc_info").val(billing.etc_info);
 	$("#billing_etc_memo").val(billing.etc_memo);
+	$("#seikyusho_memo").val(billing.seikyusho_memo);
 
 	$("#billing_delete_check").prop("checked",Number(billing.delete_check));
 };
@@ -974,6 +977,7 @@ billingList.getSightInfo = function(cd) {
 billingList.printBilling = function(billing_info) {
 	var data = billingList.printDataSetup(billing_info);
 	data.seikyusho_no = billingList.currentBilling.seikyusho_no;
+	data.seikyusho_memo = billingList.currentBilling.seikyusho_memo;
 	billingList.current_seikyusho_no = billingList.currentBilling.seikyusho_no;
 	if (billingList.currentBilling.seikyusho_no == "") {
 		$.ajax({type:'get',url:'/billing_no_get/' }).done(function(billing_no){
@@ -1034,6 +1038,7 @@ billingList.printDataSetup = function (billing_info) {
 		meisai_5:'単位',
 		meisai_6:'単　　価',
 		meisai_7:'金　　　額',
+		memo:'備　考',
 		rows: []
 	};
 	// 明細データの生成
@@ -1080,7 +1085,7 @@ billingList.createSVG = function (data) {
 	var left = 50;
 	top = 85;
 	if (data.client_info.zipcode != "") {
-		quoteInfo.outputText(canvas, data.client_info.zipcode, font_size, left, top);
+		quoteInfo.outputText(canvas, "〒" + data.client_info.zipcode, font_size, left, top);
 	}
 	top += font_size + font_size + 6;
 	if (data.client_info.address_1 != "") {
@@ -1162,9 +1167,16 @@ billingList.createSVG = function (data) {
 	top += 80;
 	left = 40;
 	w = 882;
-	h = 1000;
+	h = 800;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : font_size + 10, fill:blue_define,stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
+	// 備考枠
+	canvas.add(new fabric.Rect({ top : top + h, left : left, width : w, height : 80, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
+	quoteInfo.setTextColor(blue_define);
+	quoteInfo.outputText(canvas, data.memo, font_size, 75, top + h + 10);	// 備考
+	quoteInfo.setTextColor("#000000");
+	quoteInfo.outputText(canvas, data.seikyusho_memo, font_size, 140, top + h + 10);
+	quoteInfo.setTextColor(blue_define);
 	// 縦線
 	canvas.add(new fabric.Line([165,top,165,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Line([230,top,230,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
@@ -1211,7 +1223,7 @@ billingList.createSVG = function (data) {
 		// 御買上額
 		quoteInfo.outputTextMono(canvas, konkai, font_size, 550, top_wk);
 		// 今回請求額
-		quoteInfo.outputTextMono(canvas, konkai, font_size, 700, top_wk);
+		quoteInfo.outputTextMono(canvas, konkai, font_size, 680, top_wk);
 				
 	}
 	billingList.printCanvas = canvas;

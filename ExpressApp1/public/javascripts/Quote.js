@@ -1345,7 +1345,7 @@ quoteInfo.createSVG = function (data) {
 		font_size = 30;
 		quoteInfo.outputText(canvas, "御見積合計金額　", font_size, left, top);
 		font_size = 24;
-		quoteInfo.outputText(canvas, scheduleCommon.addYenMark(scheduleCommon.numFormatter(data.quote_total_price)) + ".-", font_size, 280 , top + 4);
+		quoteInfo.outputText(canvas, scheduleCommon.addYenMark(data.quote_total_price) + ".-", font_size, 280 , top + 4);
 		top += font_size + 12;
 		canvas.add(new fabric.Rect({ top : top, left : left, width : 400, height : 2 }));	// 下線
 		// 見積情報
@@ -1483,7 +1483,7 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 		// 単価
 		if (row_unit_price > 0) {
 			var unit_price = scheduleCommon.addYenMark(scheduleCommon.numFormatter(row_unit_price,12));
-			len = unit_price.indexOf("\\");
+			len = unit_price.indexOf("¥");
 			left = 410;
 			if (ua == 'chrome') left += (len * (font_size / 2));
 			quoteInfo.outputTextMono(canvas, unit_price, font_size, left, top);
@@ -1494,13 +1494,13 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 			pr = scheduleCommon.numFormatter(Math.round(row_price),12);
 			pr = pr.replace("  -","▲ ");
 			len = pr.indexOf("▲");
-			left = 520;
+			left = 510;
 			if (ua == 'chrome') left += (len * (font_size / 2));
 			quoteInfo.outputTextMono(canvas, pr, font_size, left, top);
 		} else {
 			pr = scheduleCommon.addYenMark(pr);
-			var len = pr.indexOf("\\");
-			left = 530;
+			var len = pr.indexOf("¥");
+			left = 520;
 			if (ua == 'chrome') left += (len * (font_size / 2));
 			quoteInfo.outputTextMono(canvas, pr, font_size, left, top);
 		}
@@ -1515,22 +1515,22 @@ quoteInfo.outputQuoteList = function (canvas, data, top, font_size) {
 	var tax = total * (quoteInfo.currentConsumption_tax / 100);
 	quoteInfo.outputTextBold(canvas, "（合計）", font_size, 450, top);
 	var total_str = scheduleCommon.addYenMark(scheduleCommon.numFormatter(total,12));
-	var len = total_str.indexOf("\\");
-	left = 530;
+	var len = total_str.indexOf("¥");
+	left = 520;
 	if (ua == 'chrome') left += (len * (font_size / 2));
 	quoteInfo.outputTextMono(canvas, total_str, font_size, left, top);
 	top += 24;
 	quoteInfo.outputTextBold(canvas, "（消費税）", font_size, 435, top);
 	var tax_str = scheduleCommon.addYenMark(scheduleCommon.numFormatter(tax,12));
-	len = tax_str.indexOf("\\");
-	left = 530;
+	len = tax_str.indexOf("¥");
+	left = 520;
 	if (ua == 'chrome') left += (len * (font_size / 2));
 	quoteInfo.outputTextMono(canvas, tax_str, font_size, left, top);
 	top += 24;
 	quoteInfo.outputTextBold(canvas, " 総合計 ", font_size, 455, top);
 	var tt = scheduleCommon.addYenMark(scheduleCommon.numFormatter(total + tax,12));
-	len = tt.indexOf("\\");
-	left = 530;
+	len = tt.indexOf("¥");
+	left = 520;
 	if (ua == 'chrome') left += (len * (font_size / 2));
 	quoteInfo.outputTextMono(canvas, tt, font_size, left, top);
 };

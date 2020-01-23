@@ -440,7 +440,7 @@ scheduleCommon.isNumber = function(x) {
 scheduleCommon.addYenMark = function(str) {
 	var wk = "";
 	var lastIndex = str.lastIndexOf(" ");
-	var bf = str.substring(0,lastIndex - 1) + "\\";
+	var bf = str.substring(0,lastIndex - 1) + "¥";
 	var af = str.substring(lastIndex + 1);
 	return bf + af;
 };
