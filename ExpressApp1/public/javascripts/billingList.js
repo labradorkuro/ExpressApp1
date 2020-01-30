@@ -174,9 +174,10 @@ billingList.createBillingFormDialog = function () {
 		modal: true,
 		buttons: {
 			"請求書作成": function () {
-				if (billingList.printBillingInfo()) {
-					$(this).dialog('close');
-				}
+				billingList.editPrintBilling();
+//				if (billingList.printBillingInfo()) {
+//					$(this).dialog('close');
+//				}
 			},
 			"追加": function () {
 				if (billingList.saveBillingInfo()) {
@@ -185,6 +186,27 @@ billingList.createBillingFormDialog = function () {
 			},
 			"更新": function () {
 				if (billingList.saveBillingInfo()) {
+					$(this).dialog('close');
+				}
+			},
+			"閉じる": function () {
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+// 請求書編集画面
+billingList.createBillingPrintEditDialog = function () {
+	$('#billing_print_edit_dialog').dialog({
+		autoOpen: false,
+		width: 1200,
+		height: 600,
+		title: '請求書編集',
+		closeOnEscape: false,
+		modal: true,
+		buttons: {
+			"印刷プレビュー": function () {
+				if (billingList.printBillingInfo()) {
 					$(this).dialog('close');
 				}
 			},
@@ -391,6 +413,11 @@ billingList.openAddDialog = function(client_info,agent_info) {
 
 }
 
+// 請求書編集ダイアログの表示
+billingList.openBillingPrintEditDialog = function (event) {
+
+	$("#billing_print_edit_dialog").dialog("open");
+};
 // 請求書プレビューダイアログの表示
 billingList.openBillingPrintPreviewDialog = function (event) {
 
@@ -906,6 +933,29 @@ billingList.onloadBillingReqForEntryGridUpdate = function (e) {
 	}
 };
 
+// 請求書編集画面のデータ作成
+billingList.editPrintBilling = function() {
+	var today = scheduleCommon.getToday("{0}/{1}/{2}");
+	$("#shimekiri_date").val(today);
+	$("#seikyusho_no_edit").val(billingList.currentBilling.seikyusho_no);
+	$("#seikyu_gaku").val(scheduleCommon.numFormatter($("#pay_amount_total").val(),12));
+	// 
+	var entry_no = billingList.currentEntry.currentEntry.entry_no;
+	// 見積情報
+	$.ajax({type:'get',url:'/quote_specific_get_list_for_entryform/' + entry_no }).done(function(quote){
+		var rows = quote.rows;
+		for(var i = 0;i < rows.length;i++) {
+			$("#hinmei_" + (i + 1)).val(rows[i].test_middle_class_name);
+			$("#kosuu_" + (i + 1)).val(rows[i].quantity);	// 数量
+			$("#tani_" + (i + 1)).val(rows[i].unit);		// 単位
+			$("#tanka_" + (i + 1)).val(scheduleCommon.numFormatter(rows[i].unit_price,12));		// 単価
+			$("#kingaku_" + (i + 1)).val(scheduleCommon.numFormatter(rows[i].price,12));		// 金額
+		}
+		billingList.openBillingPrintEditDialog();
+	});
+	
+}
+
 // 請求書印刷
 billingList.printBillingInfo = function() {
 	// 自社データ取得
@@ -956,9 +1006,19 @@ billingList.getSightInfo = function(cd) {
 						});	
 					}
 				} else {
-					$("#message").text("顧客の支払いサイト情報がありません。");
-					$("#message_dialog").dialog("option", { title: "支払いサイト情報" });
-					$("#message_dialog").dialog("open");
+					// 振込口座設定がない時は既定の口座を印刷する
+					$.ajax({type:'get',url:'/default_get'}).done(function(bank_info) {
+						client.bank_info = bank_info;
+						billingList.printBilling(client);
+					})
+					.fail(function(){
+						$("#message").text("振込口座情報が取得できません。");
+						$("#message_dialog").dialog("option", { title: "振込口座情報" });
+						$("#message_dialog").dialog("open");
+					});
+//					$("#message").text("顧客の支払いサイト情報がありません。");
+//					$("#message_dialog").dialog("option", { title: "支払いサイト情報" });
+//					$("#message_dialog").dialog("open");
 				}
 			})
 			.fail(function(){
@@ -1079,7 +1139,7 @@ billingList.createSVG = function (data) {
 	font_size = 12;
 	quoteInfo.outputText(canvas, data.date_template, font_size, 500, top);
 	quoteInfo.setTextColor("#000000");
-	quoteInfo.outputText(canvas, billingList.getBillingDateForPrint($("#pay_planning_date").val()), font_size, 480, top);
+	quoteInfo.outputText(canvas, billingList.getBillingDateForPrint($("#shimekiri_date").val()), font_size, 480, top);
 	// 請求先情報
 	font_size = 16;
 	var left = 50;
@@ -1219,7 +1279,7 @@ billingList.createSVG = function (data) {
 		top += font_size  + 12;
 		quoteInfo.outputText(canvas, "  （内消費税等 " + quoteInfo.currentConsumption_tax + ".0%)"  , font_size, 240, top);
 		quoteInfo.outputTextMono(canvas,  "(" + scheduleCommon.numFormatter(tax_total, 11) +")", font_size, 830, top);
-		var konkai = scheduleCommon.addYenMark(scheduleCommon.numFormatter(price_total,12));
+		var konkai = scheduleCommon.addYenMark($("#seikyu_gaku").val());
 		// 御買上額
 		quoteInfo.outputTextMono(canvas, konkai, font_size, 550, top_wk);
 		// 今回請求額

@@ -26,6 +26,7 @@ $(function ()　{
 	test_itemList.createTestItemSelectDialog();	// 試験分類選択用
 	billingList.createBillingListDialog();		// 請求情報リスト用
 	billingList.createBillingFormDialog();		// 請求情報編集選択用
+	billingList.createBillingPrintEditDialog();		// 請求書編集プレビュー
 	billingList.createBillingPrintPreviewDialog();		// 請求書印刷プレビュー
 	// 検索用オプションの初期化
 	$("#entry_status_01").prop("checked", true);
