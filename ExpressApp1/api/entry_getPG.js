@@ -730,7 +730,7 @@ exports.entry_get_list_cal = function (req, res) {
 // 案件リスト取得
 var entry_get_list_for_grid = function (res, sql_count, sql, params, pg_params) {
 	var result = { page: 1, total: 20, records: 0, rows: [] };
-	console.log(sql);
+//	console.log(sql);
 	// SQL実行
 	pg.connect(connectionString, function (err, connection) {
 		if (err) {

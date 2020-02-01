@@ -939,10 +939,12 @@ billingList.editPrintBilling = function() {
 	$("#shimekiri_date").val(today);
 	$("#seikyusho_no_edit").val(billingList.currentBilling.seikyusho_no);
 	$("#seikyu_gaku").val(scheduleCommon.numFormatter($("#pay_amount_total").val(),12));
+	var seikyu_gaku = Number($("#pay_amount_total").val());
 	// 
 	var entry_no = billingList.currentEntry.currentEntry.entry_no;
 	// 見積情報
 	$.ajax({type:'get',url:'/quote_specific_get_list_for_entryform/' + entry_no }).done(function(quote){
+		var sum = 0;
 		var rows = quote.rows;
 		for(var i = 0;i < rows.length;i++) {
 			$("#hinmei_" + (i + 1)).val(rows[i].test_middle_class_name);
@@ -950,12 +952,65 @@ billingList.editPrintBilling = function() {
 			$("#tani_" + (i + 1)).val(rows[i].unit);		// 単位
 			$("#tanka_" + (i + 1)).val(scheduleCommon.numFormatter(rows[i].unit_price,12));		// 単価
 			$("#kingaku_" + (i + 1)).val(scheduleCommon.numFormatter(rows[i].price,12));		// 金額
+			sum = sum + Number(rows[i].price);
+		}
+		var tax = sum * (quoteInfo.currentConsumption_tax / 100)
+		if (seikyu_gaku != (sum + tax)) {
+			// 請求額と明細合計が違う時は(分割請求の場合)、明細の個数と金額をクリアする
+			for(var i = 0;i < rows.length;i++) {
+				$("#hinmei_" + (i + 1)).val(rows[i].test_middle_class_name);
+				$("#kosuu_" + (i + 1)).val("");	// 数量
+				$("#tani_" + (i + 1)).val("");		// 単位
+				$("#tanka_" + (i + 1)).val("");		// 単価
+				$("#kingaku_" + (i + 1)).val("");		// 金額
+			}
+			tax = seikyu_gaku * (quoteInfo.currentConsumption_tax / 100);
+			$("#zei_gaku").val(scheduleCommon.numFormatterC(tax,12));
+		} else {
+			$("#zei_gaku").val(scheduleCommon.numFormatterC(tax,12));
 		}
 		billingList.openBillingPrintEditDialog();
 	});
+	// 合計計算用
+	$(".billing_summary_target").bind('input',{}, billingList.calcSummary);
+	$(".billing_calc_price").bind('input',{}, billingList.calcPrice);
 	
 }
 
+// 請求書編集画面の金額再計算
+billingList.calcPrice = function(event) {
+	var unit_price = 0;
+	var quantity = 0;
+	var no = "1";
+	if (event.target.id.indexOf("tanka_") == 0) {
+		no = event.target.id.split("_")[1];
+		unit_price = Number(event.target.value.replace(/,/g,''));
+		quantity = $("#kosuu_" + no).val();
+	} else if (event.target.id.indexOf("kosuu_") == 0) {
+		no = event.target.id.split("_")[1];
+		quantity = event.target.value;
+		unit_price = Number($("#tanka_" + no).val().replace(/,/g,''));
+	}
+	var price = 0;
+	var price = unit_price * quantity;
+	$("#kingaku_" + no).val(scheduleCommon.numFormatterC(price,12));
+	billingList.calcSummary();
+
+};
+
+// 請求書編集画面の請求額再計算
+billingList.calcSummary = function(event) {
+	var sum = 0;
+	for(var i = 1;i <= 5;i++) {
+		if ($("#kingaku_" + i).val() != "") {
+			var price = Number($("#kingaku_" + i).val().replace(/,/g,''));
+			sum = sum + price;
+		}
+	}
+	var tax = sum * (quoteInfo.currentConsumption_tax / 100)
+	$("#seikyu_gaku").val(scheduleCommon.numFormatterC(sum + tax,12));
+	$("#zei_gaku").val(scheduleCommon.numFormatterC(tax,12));
+}
 // 請求書印刷
 billingList.printBillingInfo = function() {
 	// 自社データ取得
@@ -1054,6 +1109,7 @@ billingList.printBilling = function(billing_info) {
  };
 // 請求書印刷、明細データの取得
 billingList.getBillingMeisai = function(data) {
+	/*
 	// 案件情報
 	var entry_no = billingList.currentEntry.currentEntry.entry_no;
 	// 見積情報
@@ -1062,8 +1118,20 @@ billingList.getBillingMeisai = function(data) {
 		// 印刷レイアウト作成
 		billingList.createSVG(data);	
 	});
-		
-	return data;
+	*/
+	var rows = new Array();
+	for(var i = 1;i <= 5;i++) {
+		if ($("#hinmei_" + i).val() != "") {
+			rows.push({'test_middle_class_name': $("#hinmei_" + i).val(),
+			'quantity': $("#kosuu_" + i).val(),
+			'unit': $("#tani_" + i).val(),
+			'unit_price': $("#tanka_" + i).val().replace(/,/g,''),
+			'price': $("#kingaku_" + i).val().replace(/,/g,'')});
+		}
+	}	
+	data.rows = rows;
+	// 印刷レイアウト作成
+	billingList.createSVG(data);	
 };
 // 請求書用データの生成
 billingList.printDataSetup = function (billing_info) {
@@ -1315,6 +1383,7 @@ billingList.updateBillingInfo = function() {
 			,billing_no:billingList.currentBilling.billing_no
 			,pay_result:2
 			,seikyusho_no:billingList.current_seikyusho_no}}).done(function(){
+				$("#seikyusho_no_edit").val(billingList.current_seikyusho_no);
 	});
 
 }

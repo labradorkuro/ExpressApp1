@@ -77,6 +77,7 @@ var billing_check = function (billing) {
 	billing.nyukin_yotei_date = tools.dateCheck(billing.nyukin_yotei_date);
 	billing.pay_planning_date = tools.dateCheck(billing.pay_planning_date);
 	billing.pay_complete_date = tools.dateCheck(billing.pay_complete_date);
+	billing.nouhin_date = tools.dateCheck(billing.nouhin_date);
 	// 数値変換
 	if (billing.billing_delete_check) {
 		billing.billing_delete_check = Number(billing.billing_delete_check);
@@ -140,56 +141,56 @@ var insertBilling = function (connection, billing, req, res) {
 	var updated = null;
 	var updated_id = "";
 	var sql = 'INSERT INTO drc_sch.billing_info('
-			+ "entry_no,"				// 案件番号
-			+ "billing_number,"			// 請求番号（経理用）
-			+ "pay_planning_date,"		// 請求日
-			+ "nyukin_yotei_date,"		// 入金予定日
-			+ "pay_complete_date,"		// 入金日
-			+ "pay_amount,"				// 税抜請求金額
-			+ "pay_amount_tax,"			// 消費税
-			+ "pay_amount_total,"		// 請求金額合計
-			+ "pay_complete,"			// 入金額
-			+ "pay_result,"				// 請求区分
-			+ "client_cd,"				// クライアントCD
-			+ "client_name,"			// クライアント名
-			+ "client_division_cd,"		// クライアント部署CD
-			+ "client_division_name,"	// クライアント部署名
-			+ "client_person_id,"		// クライアント担当者ID
-			+ "client_person_name,"		// クライアント担当者名
-			+ "client_info,"			// 請求先情報（住所、電話、Fax）
-			+ "memo,"					// 備考
-			+ "agent_cd,"				// 代理店CD
-			+ "agent_name,"				// 代理店名
-			+ "agent_division_cd,"		// 代理店部署CD
-			+ "agent_division_name,"	// 代理店部署名
-			+ "agent_person_id,"		// 代理店担当者ID
-			+ "agent_person_name,"		// 代理店担当者名
-			+ "agent_info,"				// 請求先情報（住所、電話、Fax）
-			+ "agent_memo,"				// 備考
-			+ "etc_cd,"					// その他請求先CD
-			+ "etc_name,"				// その他請求先名
-			+ "etc_division_cd,"		// その他請求先部署CD
-			+ "etc_division_name,"		// その他請求先部署名
-			+ "etc_person_id,"			// その他請求先担当者ID
-			+ "etc_person_name,"		// その他請求先担当者名
-			+ "etc_info,"				// 請求先情報（住所、電話、Fax）
-			+ "etc_memo,"				// 備考
-			+ "billing_kind,"			// 請求先種別
-			+ 'furikomi_ryo,'			// 振込手数料
-			+ 'nyukin_total,'			// 合計
-			+ "nyukin_yotei_p,"			// 入金予定日（仮）
-			+ 'delete_check,'			// 削除フラグ
-			+ 'created,'				// 作成日
-			+ 'created_id,'				// 作成者ID
-			+ 'updated,'				// 更新日
-			+ 'updated_id,'				// 更新者ID
-			+ 'nouhin_date,'				// 納品日
-			+ 'seikyusho_no,'			// 請求書No
-			+ 'seikyusho_memo'			// 請求書memo
+			+ "entry_no,"				// 1 案件番号
+			+ "billing_number,"			// 2 請求番号（経理用）
+			+ "pay_planning_date,"		// 3 請求日
+			+ "nyukin_yotei_date,"		// 4 入金予定日
+			+ "pay_complete_date,"		// 5 入金日
+			+ "pay_amount,"				// 6 税抜請求金額
+			+ "pay_amount_tax,"			// 7 消費税
+			+ "pay_amount_total,"		// 8 請求金額合計
+			+ "pay_complete,"			// 9 入金額
+			+ "pay_result,"				// 10 請求区分
+			+ "client_cd,"				// 11 クライアントCD
+			+ "client_name,"			// 12 クライアント名
+			+ "client_division_cd,"		// 13 クライアント部署CD
+			+ "client_division_name,"	// 14 クライアント部署名
+			+ "client_person_id,"		// 15 クライアント担当者ID
+			+ "client_person_name,"		// 16 クライアント担当者名
+			+ "client_info,"			// 17 請求先情報（住所、電話、Fax）
+			+ "memo,"					// 18 備考
+			+ "agent_cd,"				// 19 代理店CD
+			+ "agent_name,"				// 20 代理店名
+			+ "agent_division_cd,"		// 21 代理店部署CD
+			+ "agent_division_name,"	// 22 代理店部署名
+			+ "agent_person_id,"		// 23 代理店担当者ID
+			+ "agent_person_name,"		// 24 代理店担当者名
+			+ "agent_info,"				// 25 請求先情報（住所、電話、Fax）
+			+ "agent_memo,"				// 26 備考
+			+ "etc_cd,"					// 27 その他請求先CD
+			+ "etc_name,"				// 28 その他請求先名
+			+ "etc_division_cd,"		// 29 その他請求先部署CD
+			+ "etc_division_name,"		// 30 その他請求先部署名
+			+ "etc_person_id,"			// 31 その他請求先担当者ID
+			+ "etc_person_name,"		// 32 その他請求先担当者名
+			+ "etc_info,"				// 33 請求先情報（住所、電話、Fax）
+			+ "etc_memo,"				// 34 備考
+			+ "billing_kind,"			// 35 請求先種別
+			+ 'furikomi_ryo,'			// 36 振込手数料
+			+ 'nyukin_total,'			// 37 合計
+			+ "nyukin_yotei_p,"			// 38 入金予定日（仮）
+			+ 'delete_check,'			// 39 削除フラグ
+			+ 'created,'				// 40 作成日
+			+ 'created_id,'				// 41 作成者ID
+			+ 'updated,'				// 42 更新日
+			+ 'updated_id,'				// 43 更新者ID
+			+ 'nouhin_date,'			// 44 納品日
+			+ 'seikyusho_no,'			// 45 請求書No
+			+ 'seikyusho_memo'			// 46 請求書memo
 			+ ') values ('
 			+ '$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'
 			+ '$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,'
-			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43,$44,$45,$46,$47)'
+			+ '$31,$32,$33,$34,$35,$36,$37,$38,$39,$40,$41,$42,$43,$44,$45,$46)'
 			;
 		// SQL実行
 		var query = connection.query(sql, [
