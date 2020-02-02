@@ -199,7 +199,7 @@ billingList.createBillingFormDialog = function () {
 billingList.createBillingPrintEditDialog = function () {
 	$('#billing_print_edit_dialog').dialog({
 		autoOpen: false,
-		width: 1200,
+		width: 960,
 		height: 600,
 		title: '請求書編集',
 		closeOnEscape: false,
@@ -947,6 +947,7 @@ billingList.editPrintBilling = function() {
 		var sum = 0;
 		var rows = quote.rows;
 		for(var i = 0;i < rows.length;i++) {
+			$("#seikyubi_" + (i + 1)).val(billingList.currentBilling.nouhin_date);
 			$("#hinmei_" + (i + 1)).val(rows[i].test_middle_class_name);
 			$("#kosuu_" + (i + 1)).val(rows[i].quantity);	// 数量
 			$("#tani_" + (i + 1)).val(rows[i].unit);		// 単位
@@ -1122,7 +1123,7 @@ billingList.getBillingMeisai = function(data) {
 	var rows = new Array();
 	for(var i = 1;i <= 5;i++) {
 		if ($("#hinmei_" + i).val() != "") {
-			rows.push({'test_middle_class_name': $("#hinmei_" + i).val(),
+			rows.push({'seikyubi':$("#seikyubi_" + i).val(),'test_middle_class_name': $("#hinmei_" + i).val(),
 			'quantity': $("#kosuu_" + i).val(),
 			'unit': $("#tani_" + i).val(),
 			'unit_price': $("#tanka_" + i).val().replace(/,/g,''),
@@ -1159,7 +1160,7 @@ billingList.printDataSetup = function (billing_info) {
 		header_3:'繰 越 金 額',
 		header_4:'御 買 上 額',
 		header_5:'今回御請求額',
-		meisai_1:'伝票日付',
+		meisai_1:'請求日',
 		meisai_2:'伝票No.',
 		meisai_3:'品　　　　　　　　名',
 		meisai_4:'数　　　量',
@@ -1314,7 +1315,7 @@ billingList.createSVG = function (data) {
 	canvas.add(new fabric.Line([790,top,790,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	quoteInfo.setTextColor("#ffffff");
 	quoteInfo.outputText(canvas, data.meisai_1, font_size, 75, top);	// 伝票日付
-	quoteInfo.outputText(canvas, data.meisai_2, font_size, 175, top);	// 伝票No.
+	//quoteInfo.outputText(canvas, data.meisai_2, font_size, 175, top);	// 伝票No.
 	quoteInfo.outputText(canvas, data.meisai_3, font_size, 335, top);	// 品名
 	quoteInfo.outputText(canvas, data.meisai_4, font_size, 555, top);	// 数量
 	quoteInfo.outputText(canvas, data.meisai_5, font_size, 650, top);	// 単位
@@ -1327,6 +1328,7 @@ billingList.createSVG = function (data) {
 		var price_total = 0;
 		var tax_total = 0;
 		for(i = 0;i < data.rows.length;i++) {
+			quoteInfo.outputText(canvas, data.rows[i].seikyubi, font_size, 50, top);		// 単位
 			quoteInfo.multiLines_2(canvas, top, 240, font_size, data.rows[i].test_middle_class_name);	// 品名
 			quoteInfo.outputTextMono(canvas, scheduleCommon.numFormatter(data.rows[i].quantity,12), font_size, 550, top);	// 数量
 			quoteInfo.outputText(canvas, data.rows[i].unit, font_size, 650, top);		// 単位
