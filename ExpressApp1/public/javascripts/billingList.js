@@ -932,7 +932,15 @@ billingList.onloadBillingReqForEntryGridUpdate = function (e) {
 		entryList.updateGrid_BillingInfo(billing);
 	}
 };
-
+billingList.clearMeisaiEdit = function() {
+	for(var i = 0;i < 5;i++) {
+		$("#hinmei_" + (i + 1)).val("");
+		$("#kosuu_" + (i + 1)).val("");	// 数量
+		$("#tani_" + (i + 1)).val("");		// 単位
+		$("#tanka_" + (i + 1)).val("");		// 単価
+		$("#kingaku_" + (i + 1)).val("");		// 金額
+	}
+}
 // 請求書編集画面のデータ作成
 billingList.editPrintBilling = function() {
 	var today = scheduleCommon.getToday("{0}/{1}/{2}");
@@ -942,12 +950,12 @@ billingList.editPrintBilling = function() {
 	var seikyu_gaku = Number($("#pay_amount_total").val());
 	// 
 	var entry_no = billingList.currentEntry.currentEntry.entry_no;
+	billingList.clearMeisaiEdit();
 	// 見積情報
 	$.ajax({type:'get',url:'/quote_specific_get_list_for_entryform/' + entry_no }).done(function(quote){
 		var sum = 0;
 		var rows = quote.rows;
 		for(var i = 0;i < rows.length;i++) {
-			$("#seikyubi_" + (i + 1)).val(billingList.currentBilling.nouhin_date);
 			$("#hinmei_" + (i + 1)).val(rows[i].test_middle_class_name);
 			$("#kosuu_" + (i + 1)).val(rows[i].quantity);	// 数量
 			$("#tani_" + (i + 1)).val(rows[i].unit);		// 単位
@@ -1110,20 +1118,10 @@ billingList.printBilling = function(billing_info) {
  };
 // 請求書印刷、明細データの取得
 billingList.getBillingMeisai = function(data) {
-	/*
-	// 案件情報
-	var entry_no = billingList.currentEntry.currentEntry.entry_no;
-	// 見積情報
-	$.ajax({type:'get',url:'/quote_specific_get_list_for_entryform/' + entry_no }).done(function(quote){
-		data.rows = quote.rows;
-		// 印刷レイアウト作成
-		billingList.createSVG(data);	
-	});
-	*/
 	var rows = new Array();
 	for(var i = 1;i <= 5;i++) {
 		if ($("#hinmei_" + i).val() != "") {
-			rows.push({'seikyubi':$("#seikyubi_" + i).val(),'test_middle_class_name': $("#hinmei_" + i).val(),
+			rows.push({'test_middle_class_name': $("#hinmei_" + i).val(),
 			'quantity': $("#kosuu_" + i).val(),
 			'unit': $("#tani_" + i).val(),
 			'unit_price': $("#tanka_" + i).val().replace(/,/g,''),
@@ -1140,7 +1138,7 @@ billingList.printDataSetup = function (billing_info) {
 	var data = {					
 		title: '請　　求　　書',
 		no: 'No.',
-		date_template: '     年　　　　月　　　　日　締切分',
+		date_template: '　　年　　　　月　　　　日',
 		billing_issue_date: billing_info.nouhin_date,
 		drc_zipcode: quoteInfo.drc_info.zipcode,
 		drc_address1: quoteInfo.drc_info.address1,
@@ -1178,7 +1176,7 @@ billingList.getBillingDateForPrint = function(dateStr) {
 	var y = dateStr.substring(0,4);
 	var m = dateStr.substring(5,7);
 	var d = dateStr.substring(8,10);
-	return(y + "          " + m + "          " + d);
+	return(y + "　　　　" + m + "　　　" + d);
 }
 // 請求書の作成
 billingList.createSVG = function (data) {
@@ -1307,16 +1305,16 @@ billingList.createSVG = function (data) {
 	quoteInfo.outputText(canvas, data.seikyusho_memo, font_size, 140, top + h + 10);
 	quoteInfo.setTextColor(blue_define);
 	// 縦線
-	canvas.add(new fabric.Line([165,top,165,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
-	canvas.add(new fabric.Line([230,top,230,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	//canvas.add(new fabric.Line([165,top,165,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
+	//canvas.add(new fabric.Line([230,top,230,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Line([545,top,545,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Line([640,top,640,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Line([690,top,690,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	canvas.add(new fabric.Line([790,top,790,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	quoteInfo.setTextColor("#ffffff");
-	quoteInfo.outputText(canvas, data.meisai_1, font_size, 75, top);	// 伝票日付
+	//quoteInfo.outputText(canvas, data.meisai_1, font_size, 75, top);	// 伝票日付
 	//quoteInfo.outputText(canvas, data.meisai_2, font_size, 175, top);	// 伝票No.
-	quoteInfo.outputText(canvas, data.meisai_3, font_size, 335, top);	// 品名
+	quoteInfo.outputText(canvas, data.meisai_3, font_size, 240, top);	// 品名
 	quoteInfo.outputText(canvas, data.meisai_4, font_size, 555, top);	// 数量
 	quoteInfo.outputText(canvas, data.meisai_5, font_size, 650, top);	// 単位
 	quoteInfo.outputText(canvas, data.meisai_6, font_size, 710, top);	// 単価
@@ -1328,12 +1326,15 @@ billingList.createSVG = function (data) {
 		var price_total = 0;
 		var tax_total = 0;
 		for(i = 0;i < data.rows.length;i++) {
-			quoteInfo.outputText(canvas, data.rows[i].seikyubi, font_size, 50, top);		// 単位
-			quoteInfo.multiLines_2(canvas, top, 240, font_size, data.rows[i].test_middle_class_name);	// 品名
-			quoteInfo.outputTextMono(canvas, scheduleCommon.numFormatter(data.rows[i].quantity,12), font_size, 550, top);	// 数量
+			//quoteInfo.outputText(canvas, data.rows[i].seikyubi, font_size, 50, top);		// 単位
+			quoteInfo.multiLines_2(canvas, top, 75, font_size, data.rows[i].test_middle_class_name);	// 品名
+			if (data.rows[i].quantity > 0)
+				quoteInfo.outputTextMonoRight(canvas, scheduleCommon.numFormatterN(data.rows[i].quantity), font_size, 630, top);	// 数量
 			quoteInfo.outputText(canvas, data.rows[i].unit, font_size, 650, top);		// 単位
-			quoteInfo.outputTextMono(canvas, scheduleCommon.numFormatter(data.rows[i].unit_price,12), font_size, 700, top);		// 単価
-			quoteInfo.outputTextMono(canvas, scheduleCommon.numFormatter(data.rows[i].price,12), font_size, 830, top);		// 金額
+			if (data.rows[i].quantity > 0)
+				quoteInfo.outputTextMonoRight(canvas, scheduleCommon.numFormatterN(data.rows[i].unit_price), font_size, 780, top);		// 単価
+			if (data.rows[i].quantity > 0)
+				quoteInfo.outputTextMonoRight(canvas, scheduleCommon.numFormatterN(data.rows[i].price), font_size, 910, top);		// 金額
 			top += font_size + 12;
 			var tax = data.rows[i].price * (quoteInfo.currentConsumption_tax / 100);
 //			quoteInfo.outputText(canvas, "  消費税等 " + quoteInfo.currentConsumption_tax + ".0%", font_size, 240, top);
@@ -1344,11 +1345,11 @@ billingList.createSVG = function (data) {
 		top += font_size  + 20;
 		canvas.add(new fabric.Line([815,top,915,top],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 		top += font_size  + 12;
-		quoteInfo.outputText(canvas, "  【合　　　　計】 " , font_size, 240, top);
-		quoteInfo.outputTextMono(canvas,  scheduleCommon.numFormatter(price_total, 12), font_size, 830, top);
+		quoteInfo.outputText(canvas, "  【合　　　　計】 " , font_size, 75, top);
+		quoteInfo.outputTextMonoRight(canvas,  scheduleCommon.numFormatterN(price_total), font_size, 910, top);
 		top += font_size  + 12;
-		quoteInfo.outputText(canvas, "  （内消費税等 " + quoteInfo.currentConsumption_tax + ".0%)"  , font_size, 240, top);
-		quoteInfo.outputTextMono(canvas,  "(" + scheduleCommon.numFormatter(tax_total, 11) +")", font_size, 830, top);
+		quoteInfo.outputText(canvas, "  （内消費税等 " + quoteInfo.currentConsumption_tax + ".0%)"  , font_size, 75, top);
+		quoteInfo.outputTextMonoRight(canvas,  "(" + scheduleCommon.numFormatter(tax_total) +")", font_size, 910, top);
 		var konkai = scheduleCommon.addYenMark($("#seikyu_gaku").val());
 		// 御買上額
 		quoteInfo.outputTextMono(canvas, konkai, font_size, 550, top_wk);
@@ -1357,11 +1358,6 @@ billingList.createSVG = function (data) {
 				
 	}
 	billingList.printCanvas = canvas;
-	//var svg = canvas.toSVG();
-	//var blob = new Blob([svg], {type: "text/plain;charset=utf-8"});
-	//saveAs(blob,"billing.svg");
-	//canvas.setHeight(0);
-	//canvas.setWidth(0);
 	document.body.style.cursor = "default";
 	// プレビュー画面表示
 	billingList.openBillingPrintPreviewDialog();

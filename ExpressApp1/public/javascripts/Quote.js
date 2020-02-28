@@ -1449,14 +1449,21 @@ quoteInfo.createSVG = function (data) {
 // canvasにテキストを出力
 quoteInfo.outputText = function (canvas, text,font_size,left, top) {
 //	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size}));
-	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo',left: left, top: top, fontSize: font_size}).setColor(quoteInfo.textColor));
+	var txt = new fabric.Text(text, { fontFamily: 'Meiryo',left: left, top: top, fontSize: font_size}).setColor(quoteInfo.textColor);
+	txt.set('space','preserve');
+	canvas.add(txt);
 };
 quoteInfo.outputTextBold = function (canvas, text,font_size,left, top) {
 //	canvas.add(new fabric.Text(text, { fontFamily: 'monospace', fill: 'black', left: left, top: top, fontSize: font_size}));
 	canvas.add(new fabric.Text(text, { fontFamily: 'Meiryo', fontWeight:'bold',left: left, top: top, fontSize: font_size}).setColor(quoteInfo.textColor));
 };
 quoteInfo.outputTextMono = function (canvas, text,font_size,left, top) {
-	canvas.add(new fabric.Text(text, { fontFamily: 'MS Gothic', left: left, top: top, fontSize: font_size }).setColor(quoteInfo.textColor));
+	var txt = new fabric.Text(text, { fontFamily: 'MS Gothic', left: left, top: top, fontSize: font_size}).setColor(quoteInfo.textColor);
+	canvas.add(txt);
+};
+quoteInfo.outputTextMonoRight = function (canvas, text,font_size,left, top) {
+	var txt = new fabric.Text(text, { fontFamily: 'MS Gothic', left: left, top: top, fontSize: font_size, textAlign:'right',originX:"right"}).setColor(quoteInfo.textColor);
+	canvas.add(txt);
 };
 
 // 見積明細データの出力

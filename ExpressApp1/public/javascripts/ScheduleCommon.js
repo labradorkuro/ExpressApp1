@@ -430,6 +430,11 @@ scheduleCommon.numFormatter = function(num,keta) {
 	for(var i = 0;i < keta - 1;i++) sp += " ";
 	return (sp + String(num).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,' )).slice(-keta);
 }
+scheduleCommon.numFormatterN = function(num) {
+	var sp = "";
+	num = Math.round(num);
+	return (String(num).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,' ));
+}
 // 数値（数字）チェック
 scheduleCommon.isNumber = function(x) {
 	if( typeof(x) != 'number' && typeof(x) != 'string' )
