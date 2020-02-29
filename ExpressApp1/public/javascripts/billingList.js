@@ -1102,6 +1102,7 @@ billingList.printBilling = function(billing_info) {
 	var data = billingList.printDataSetup(billing_info);
 	data.seikyusho_no = billingList.currentBilling.seikyusho_no;
 	data.seikyusho_memo = billingList.currentBilling.seikyusho_memo;
+	data.kentai = $("#kentai").val();
 	billingList.current_seikyusho_no = billingList.currentBilling.seikyusho_no;
 	if (billingList.currentBilling.seikyusho_no == "") {
 		$.ajax({type:'get',url:'/billing_no_get/' }).done(function(billing_no){
@@ -1166,6 +1167,7 @@ billingList.printDataSetup = function (billing_info) {
 		meisai_6:'単　　価',
 		meisai_7:'金　　　額',
 		memo:'備　考',
+		kentai_title:'検体名',
 		rows: []
 	};
 	// 明細データの生成
@@ -1294,16 +1296,25 @@ billingList.createSVG = function (data) {
 	top += 80;
 	left = 40;
 	w = 882;
-	h = 800;
+	h = 720;
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : h, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
 	canvas.add(new fabric.Rect({ top : top, left : left, width : w, height : font_size + 10, fill:blue_define,stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
-	// 備考枠
+	// 検体名枠
+	font_size = 12;
 	canvas.add(new fabric.Rect({ top : top + h, left : left, width : w, height : 80, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
 	quoteInfo.setTextColor(blue_define);
-	quoteInfo.outputText(canvas, data.memo, font_size, 75, top + h + 10);	// 備考
+	quoteInfo.outputText(canvas, data.kentai_title, font_size, 45, top + h + 5);	// 備考
 	quoteInfo.setTextColor("#000000");
-	quoteInfo.outputText(canvas, data.seikyusho_memo, font_size, 140, top + h + 10);
+	quoteInfo.outputText(canvas, data.kentai, font_size, 45, top + h + 20);
 	quoteInfo.setTextColor(blue_define);
+	// 備考枠
+	canvas.add(new fabric.Rect({ top : top + h + 80, left : left, width : w, height : 80, fill:'none',stroke: blue_define, strokeWidth: 2,opacity: 0.7 }));
+	quoteInfo.setTextColor(blue_define);
+	quoteInfo.outputText(canvas, data.memo, font_size, 45, top + h + 80 + 5);	// 備考
+	quoteInfo.setTextColor("#000000");
+	quoteInfo.outputText(canvas, data.seikyusho_memo, font_size, 45, top + h + 80 + 20);
+	quoteInfo.setTextColor(blue_define);
+	font_size = 14;
 	// 縦線
 	//canvas.add(new fabric.Line([165,top,165,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	//canvas.add(new fabric.Line([230,top,230,top + h],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
