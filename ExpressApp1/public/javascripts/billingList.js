@@ -1211,8 +1211,8 @@ billingList.createSVG = function (data) {
 	quoteInfo.outputText(canvas, billingList.getBillingDateForPrint($("#shimekiri_date").val()), font_size, 480, top);
 	// 請求先情報
 	font_size = 16;
-	var left = 50;
-	top = 85;
+	var left = 80;
+	top = 20;
 	if (data.client_info.zipcode != "") {
 		quoteInfo.outputText(canvas, "〒" + data.client_info.zipcode, font_size, left, top);
 	}
