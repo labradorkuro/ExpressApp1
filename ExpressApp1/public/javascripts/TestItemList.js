@@ -222,8 +222,8 @@ test_itemList.openFormDialog = function (event) {
 
 //	データの保存
 test_itemList.save = function () {
-	if (test_itemList.inputCheck()) {
-		var title = $("#test_item_dialog").dialog("option","title");
+	var title = $("#test_item_dialog").dialog("option","title");
+	if (test_itemList.inputCheck(title)) {
 		// checkboxのチェック状態確認と値設定
 		test_itemList.checkCheckbox();
 		// formデータの取得
@@ -399,7 +399,7 @@ test_itemList.selectLargeClass = function() {
 	$("#test_large_class_name").val(test_itemList.currentTestItemLarge.item_name);
 	return true;
 };
-test_itemList.inputCheck = function () {
+test_itemList.inputCheck = function (title) {
 	var err = "";
 	if ($("#test_itemForm").checkValidity) {
 	} else {
@@ -416,6 +416,9 @@ test_itemList.inputCheck = function () {
 					break;
 				}
 				else if (ctl.id == "period_term") {
+					if (title == "試験大分類") {
+						break;
+					}
 					err = "通常納期が未入力です";
 					break;
 				}
@@ -425,6 +428,9 @@ test_itemList.inputCheck = function () {
 					break;
 				}
 				else if (ctl.id == "period_term") {
+					if (title == "試験大分類") {
+						break;
+					}
 					err = "通常納期の入力値を確認して下さい";
 					break;
 				}
