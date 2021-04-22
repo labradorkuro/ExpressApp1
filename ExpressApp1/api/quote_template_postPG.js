@@ -1,5 +1,27 @@
 var tools = require('../tools/tool');
 //
+// 見積り明細のテンプレート名
+//
+exports.postQuoteTemplateName = function (req, res) {
+	var template = req.body;
+	pg.connect(connectionString, function (err, connection) {
+		template.delete_check = Number(template.delete_check);
+		var sql = "SELECT template_id FROM drc_sch.quote_specific_template WHERE template_id = $1";
+		// SQL実行
+		connection.query(sql,[template.template_id_namedlg],(err,results) => {
+			if (err) {
+				console.log(err);
+			} else {
+				if (results.rows.length == 0) {
+					insertQuoteTemplateName(connection,template,req);
+				} else {
+					updateQuoteTemplateName(connection,template,req);
+				}
+			}
+		});		
+	});
+};
+//
 // 見積り明細のテンプレート
 //
 exports.postQuoteTemplate = function (req, res) {
@@ -93,6 +115,28 @@ var insertQuoteTemplate = function (connection,specific, req) {
 		console.log(sqlInsertQuoteTemplate + ' ' + error);
 	});
 };
+// テンプレートに追加
+var insertQuoteTemplateName = function (connection,specific, req) {
+	var created = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
+	var created_id = req.session.uid;
+	var updated = null;
+	var updated_id = "";
+	// SQL実行
+	var query = connection.query(sqlInsertQuoteTemplate, [
+		specific.new_template_id,			// テンプレートID
+		specific.test_large_class_cd_namedlg,	// 試験大分類CD
+		specific.delete_check,	// 備考
+		created,					// 作成日
+		created_id,					// 作成者ID
+		updated,					// 更新日
+		updated_id					// 更新者ID
+	]);
+	query.on('end', function(result,err) {
+	});
+	query.on('error', function (error) {
+		console.log(sqlInsertQuoteTemplate + ' ' + error);
+	});
+};
 
 // テンプレートの更新
 var updateQuoteTemplate = function (connection,specific, req) {
@@ -113,7 +157,7 @@ var updateQuoteTemplate = function (connection,specific, req) {
 		+ "delete_check = $12,"	// 削除フラグ
 		+ "updated = $13,"				// 更新日
 		+ "updated_id = $14"			// 更新者ID
-		+ " WHERE template_id = $15"
+		+ " WHERE id = $15"
 	// SQL実行
 	var query = connection.query(sql, [
 		specific.test_large_class_cd,	// 試験大分類CD
@@ -122,15 +166,42 @@ var updateQuoteTemplate = function (connection,specific, req) {
 		specific.period_term,					// 
 		specific.period_unit,					// 
 		specific.unit,					// 単位
-		specific.unit_price,			// 単価
-		specific.quantity,				// 数量
-		specific.price,					// 金額
+		specific.unit_price.replace(/,/g, ''),			// 単価
+		specific.quantity.replace(/,/g, ''),				// 数量
+		specific.price.replace(/,/g, ''),					// 金額
 		specific.summary_check,			// 集計対象フラグ
 		specific.memo,			// 備考
 		specific.delete_check,	// 削除フラグ
 		updated,						// 更新日
 		updated_id,						// 更新者ID
-		specific.template_id
+		specific.id
+	]);
+	query.on('end', function(result,err) {
+
+	});
+	query.on('error', function (error) {
+		console.log(sql + ' ' + error);
+	});
+};
+// テンプレートの更新
+var updateQuoteTemplateName = function (connection,specific, req) {
+	var updated = tools.getTimestamp("{0}/{1}/{2} {3}:{4}:{5}");
+	var updated_id = req.session.uid;
+	var sql = 'UPDATE drc_sch.quote_specific_template SET '
+		+ 'test_large_class_cd = $1,'	// 試験大分類CD
+		+ 'template_id = $3,'			// 備考
+		+ "delete_check = $4,"	// 削除フラグ
+		+ "updated = $5,"				// 更新日
+		+ "updated_id = $6"			// 更新者ID
+		+ " WHERE template_id = $2"
+	// SQL実行
+	var query = connection.query(sql, [
+		specific.test_large_class_cd_namedlg,	// 試験大分類CD
+		specific.template_id_namedlg,
+		specific.new_template_id,
+		specific.delete_check,	// 削除フラグ
+		updated,						// 更新日
+		updated_id						// 更新者ID
 	]);
 	query.on('end', function(result,err) {
 

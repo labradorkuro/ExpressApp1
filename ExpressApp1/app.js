@@ -194,6 +194,7 @@ app.get('/quote_specific_get_list_for_entryform/:entry_no', entry_get.quote_spec
 app.get('/quote_specific_get_list_for_calendar/:entry_no', entry_get.quote_specific_get_list_for_calendar);
 // 見積テンプレート
 app.post('/quote_template_post',upload.array(),quote_template_post.postQuoteTemplate);
+app.post('/quote_template_name_post',upload.array(),quote_template_post.postQuoteTemplateName);
 app.get('/quote_template_get', quote_template_get.quote_template_get);
 app.get('/quote_template_meisai_get', quote_template_get.quote_template_meisai_get);
 
