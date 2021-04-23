@@ -1,0 +1,14 @@
+form#quoteTemplateNameForm(method="post",action="javascript:return false;")
+	table.dlg_table
+		tr
+			td(width="50%") 現在の見積テンプレート名
+			td
+				input#test_large_class_cd_namedlg(type="hidden" name="test_large_class_cd_namedlg")
+				input#template_id_namedlg(type="text" name="template_id_namedlg" placeholder="現在の見積テンプレート名" readonly=true)
+		tr
+			td(width="50%") 新しい見積テンプレート名
+			td
+				input#new_template_id(type="text" name="new_template_id" placeholder="新しい見積テンプレート名")
+	div#message_dialog
+		div
+			span#message 
