@@ -1192,7 +1192,7 @@ billingList.createSVG = function (data) {
 	var font_size = 28;
 	quoteInfo.setTextColor(blue_define);
 	// タイトル
-	quoteInfo.outputText(canvas, data.title, font_size, 480, top);
+	quoteInfo.outputText(canvas, data.title, font_size, 380, top);
 	top += font_size;
 	font_size = 14;
 	// Code
@@ -1332,11 +1332,11 @@ billingList.createSVG = function (data) {
 	quoteInfo.setTextColor("#ffffff");
 	//quoteInfo.outputText(canvas, data.meisai_1, font_size, 75, top);	// 伝票日付
 	//quoteInfo.outputText(canvas, data.meisai_2, font_size, 175, top);	// 伝票No.
-	quoteInfo.outputText(canvas, data.meisai_3, font_size, 240, top + 2);	// 品名
-	quoteInfo.outputText(canvas, data.meisai_4, font_size, 555, top + 2);	// 数量
-	quoteInfo.outputText(canvas, data.meisai_5, font_size, 650, top + 2);	// 単位
-	quoteInfo.outputText(canvas, data.meisai_6, font_size, 710, top + 2);	// 単価
-	quoteInfo.outputText(canvas, data.meisai_7, font_size, 810, top + 2);	// 金額
+	quoteInfo.outputText(canvas, data.meisai_3, font_size, 240, top + 4);	// 品名
+	quoteInfo.outputText(canvas, data.meisai_4, font_size, 555, top + 4);	// 数量
+	quoteInfo.outputText(canvas, data.meisai_5, font_size, 650, top + 4);	// 単位
+	quoteInfo.outputText(canvas, data.meisai_6, font_size, 710, top + 4);	// 単価
+	quoteInfo.outputText(canvas, data.meisai_7, font_size, 810, top + 4);	// 金額
 	top += font_size + 12;
 	quoteInfo.setTextColor("#000000");
 	// 明細データ
@@ -1369,6 +1369,7 @@ billingList.createSVG = function (data) {
 		quoteInfo.outputText(canvas, "  （内消費税等 " + quoteInfo.currentConsumption_tax + ".0%)"  , font_size, 75, top);
 		quoteInfo.outputTextMonoRight(canvas,  "(" + scheduleCommon.numFormatter(tax_total) +")", font_size, 918, top);
 		var konkai = scheduleCommon.addYenMark($("#seikyu_gaku").val());
+		font_size = 20;
 		// 御買上額
 		quoteInfo.outputTextMonoRight(canvas, konkai, font_size, 638, top_wk);
 		// 今回請求額
