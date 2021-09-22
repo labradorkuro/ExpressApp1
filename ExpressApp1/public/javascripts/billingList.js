@@ -456,13 +456,14 @@ billingList.getEntryClientInfo = function(client,kind) {
 }
 // 顧客マスタから請求先情報を取得
 billingList.getClientInfo = function(client,division) {
-	var zipcode = billingList.getZipcode_for_client(client,division);
-	var address1 = billingList.getAddress1_for_client(client,division);
-	var address2 = billingList.getAddress2_for_client(client,division);
-	var tel = billingList.getTel_for_client(client,division);
-	var fax = billingList.getFax_for_client(client,division);
-	var client_info = "〒 " + zipcode + "\n住所1 : " + address1 + " \n住所2 : " + address2
-					+ " \ntel : " + tel + " \nfax : " + fax
+	var client_info = {};
+	client_info.zipcode = billingList.getZipcode_for_client(client,division);
+	client_info.address1 = billingList.getAddress1_for_client(client,division);
+	client_info.address2 = billingList.getAddress2_for_client(client,division);
+	client_info.tel = billingList.getTel_for_client(client,division);
+	client_info.fax = billingList.getFax_for_client(client,division);
+	client_info.memo = "〒 " + client_info.zipcode + "\n住所1 : " + client_info.address1 + " \n住所2 : " + client_info.address2
+					+ " \ntel : " + client_info.tel + " \nfax : " + client_info.fax
 	return client_info;
 }
 
@@ -778,7 +779,7 @@ billingList.selectClient = function (kind) {
 		$("#billing_client_person_name").val(clientList.currentClientPerson.name);
 		// 請求先情報ダイアログで請求先を変更した場合に「請求先情報に表示する内容も再取得して再表示する
 		var client_info = billingList.getClientInfo(clientList.currentClient,clientList.currentClientDivision);
-		$("#billing_client_info").val(client_info);
+		$("#billing_client_info").val(client_info.memo);
 	} else {
 		$("#billing_agent_cd").val(clientList.currentClient.client_cd);
 		$("#billing_agent_name").val(clientList.currentClient.name_1);
@@ -788,7 +789,7 @@ billingList.selectClient = function (kind) {
 		$("#billing_agent_person_name").val(clientList.currentClientPerson.name);
 		// 請求先情報ダイアログで請求先を変更した場合に「請求先情報に表示する内容も再取得して再表示する
 		var agent_info = billingList.getClientInfo(clientList.currentClient,clientList.currentClientDivision);
-		$("#billing_agent_info").val(agent_info);
+		$("#billing_agent_info").val(agent_info.memo);
 			
 	}
 	return true;
@@ -1022,79 +1023,79 @@ billingList.calcSummary = function(event) {
 }
 // 請求書印刷
 billingList.printBillingInfo = function() {
-	// 自社データ取得
-	// 請求先の選択状態を取得する
+	var client = {};
 	var c_cd = 0;
+	// 請求先の選択状態を取得する
 	if ($("#billing_kind_1").prop("checked")) {
-		c_cd = $("#billing_client_cd").val();
+		client.client_cd = $("#billing_client_cd").val();
+		client.division_cd = "";
+		client.person_id = "";
+		$.ajax({type:'get',url:'/billing_client_get?client_cd=' + client.client_cd 
+			+ '&division_cd=' + client.division_cd + '&person_id=' + client.person_id}).done(function(cl){
+			// 請求先の支払いサイト情報を取得して振込口座情報を取得する
+			billingList.getSightInfo(cl);
+		});
+
 	}
 	else if ($("#billing_kind_2").prop("checked")) {
-		c_cd = $("#billing_agent_cd").val();
+		client.client_cd = $("#billing_agent_cd").val();
+		client.division_cd = $("#billing_agent_division_cd").val();
+		client.person_id = $("#billing_agent_person_id").val();
+		$.ajax({type:'get',url:'/billing_client_get?client_cd=' + client.client_cd 
+			+ '&division_cd=' + client.division_cd + '&person_id=' + client.person_id}).done(function(cl){
+			// 請求先の支払いサイト情報を取得して振込口座情報を取得する
+			billingList.getSightInfo(cl);
+		});
 	}
-	// 請求先の支払いサイト情報を取得して振込口座情報を取得する
-	billingList.getSightInfo(c_cd);
-	// データ送信
 };
 
 // 支払いサイト情報から振込口座情報を得る
-billingList.getSightInfo = function(cd) {
+billingList.getSightInfo = function(client) {
 	// 請求先情報の取得
-	$.ajax({type:'get',url:'/client_get?client_cd=' + cd }).done(function(client){
-		if (client.client_cd == cd) {
-			// 請求先の支払いサイト情報を取得する
-			var sight_info = {client_cd:"",shimebi:"",sight_id:0,kyujitsu_setting:0,bank_id:0,memo:""};
-			nyukinYotei.getSightInfo(cd).done(function(data){
-				if (data != "") {
-					if ((data.bank_id == 0) || (data.bank_id == null)) {
-						// 振込口座設定がない時は既定の口座を印刷する
-						$.ajax({type:'get',url:'/default_get'}).done(function(bank_info) {
-							client.bank_info = bank_info;
-							billingList.printBilling(client);
-						})
-						.fail(function(){
-							$("#message").text("振込口座情報が取得できません。");
-							$("#message_dialog").dialog("option", { title: "振込口座情報" });
-							$("#message_dialog").dialog("open");
-						});
-					} else {
-						client.sight_info = data;
-						// 振込口座情報の取得
-						$.ajax({type:'get',url:'/bank_find?bank_id=' + data.bank_id}).done(function(bank_info) {
-							client.bank_info = bank_info;
-							billingList.printBilling(client);
-						})
-						.fail(function(){
-							$("#message").text("振込口座情報が取得できません。");
-							$("#message_dialog").dialog("option", { title: "振込口座情報" });
-							$("#message_dialog").dialog("open");
-						});	
-					}
-				} else {
-					// 振込口座設定がない時は既定の口座を印刷する
-					$.ajax({type:'get',url:'/default_get'}).done(function(bank_info) {
-						client.bank_info = bank_info;
-						billingList.printBilling(client);
-					})
-					.fail(function(){
-						$("#message").text("振込口座情報が取得できません。");
-						$("#message_dialog").dialog("option", { title: "振込口座情報" });
-						$("#message_dialog").dialog("open");
-					});
-//					$("#message").text("顧客の支払いサイト情報がありません。");
-//					$("#message_dialog").dialog("option", { title: "支払いサイト情報" });
-//					$("#message_dialog").dialog("open");
-				}
+	// 請求先の支払いサイト情報を取得する
+	var sight_info = {client_cd:"",shimebi:"",sight_id:0,kyujitsu_setting:0,bank_id:0,memo:""};
+	nyukinYotei.getSightInfo(client.cd).done(function(data){
+		if (data != "") {
+			if ((data.bank_id == 0) || (data.bank_id == null)) {
+				// 振込口座設定がない時は既定の口座を印刷する
+				$.ajax({type:'get',url:'/default_get'}).done(function(bank_info) {
+					client.bank_info = bank_info;
+					billingList.printBilling(client);
+				})
+				.fail(function(){
+					$("#message").text("振込口座情報が取得できません。");
+					$("#message_dialog").dialog("option", { title: "振込口座情報" });
+					$("#message_dialog").dialog("open");
+				});
+			} else {
+				client.sight_info = data;
+				// 振込口座情報の取得
+				$.ajax({type:'get',url:'/bank_find?bank_id=' + data.bank_id}).done(function(bank_info) {
+					client.bank_info = bank_info;
+					billingList.printBilling(client);
+				})
+				.fail(function(){
+					$("#message").text("振込口座情報が取得できません。");
+					$("#message_dialog").dialog("option", { title: "振込口座情報" });
+					$("#message_dialog").dialog("open");
+				});	
+			}
+		} else {
+			// 振込口座設定がない時は既定の口座を印刷する
+			$.ajax({type:'get',url:'/default_get'}).done(function(bank_info) {
+				client.bank_info = bank_info;
+				billingList.printBilling(client);
 			})
 			.fail(function(){
-				$("#message").text("支払いサイト情報が取得できません。");
-				$("#message_dialog").dialog("option", { title: "支払いサイト情報" });
+				$("#message").text("振込口座情報が取得できません。");
+				$("#message_dialog").dialog("option", { title: "振込口座情報" });
 				$("#message_dialog").dialog("open");
 			});
-		} 
+		}
 	})
-	.fail(function() {
-		$("#message").text("顧客情報がありません。");
-		$("#message_dialog").dialog("option", { title: "顧客マスタ情報" });
+	.fail(function(){
+		$("#message").text("支払いサイト情報が取得できません。");
+		$("#message_dialog").dialog("option", { title: "支払いサイト情報" });
 		$("#message_dialog").dialog("open");
 	});
 };
@@ -1139,7 +1140,7 @@ billingList.printDataSetup = function (billing_info) {
 	var data = {					
 		title: '請　　求　　書',
 		no: 'No.',
-		date_template: '　　年　　　　月　　　　日',
+		date_template: '　　年　　月　　日',
 		billing_issue_date: billing_info.nouhin_date,
 		drc_zipcode: quoteInfo.drc_info.zipcode,
 		drc_address1: quoteInfo.drc_info.address1,
@@ -1179,7 +1180,7 @@ billingList.getBillingDateForPrint = function(dateStr) {
 	var y = dateStr.substring(0,4);
 	var m = dateStr.substring(5,7);
 	var d = dateStr.substring(8,10);
-	return(y + "　　　　" + m + "　　　" + d);
+	return(y + "     " + m + "     " + d);
 }
 // 請求書の作成
 billingList.createSVG = function (data) {
@@ -1206,39 +1207,87 @@ billingList.createSVG = function (data) {
 	top += font_size;
 	canvas.add(new fabric.Line([750,top + 4,900,top + 4],{fill: blue_define, stroke: blue_define, strokeWidth: 1, opacity: 1 }));
 	// date
+	top = top + font_size;
 	font_size = 14;
-	quoteInfo.outputText(canvas, data.date_template, font_size, 500, top);
+	quoteInfo.outputText(canvas, data.date_template, font_size, 760, top);
 	quoteInfo.setTextColor("#000000");
-	quoteInfo.outputText(canvas, billingList.getBillingDateForPrint($("#shimekiri_date").val()), font_size, 480, top);
+	quoteInfo.outputText(canvas, billingList.getBillingDateForPrint($("#shimekiri_date").val()), font_size, 750, top);
 	// 請求先情報
 	font_size = 16;
 	var left = 80;
 	top = 20;
-	if (data.client_info.zipcode != "") {
-		quoteInfo.outputText(canvas, "〒" + data.client_info.zipcode, font_size, left, top);
+	var zipcode = data.client_info.zipcode;
+	if (data.client_info.division_zipcode != null && data.client_info.division_zipcode != "") {
+		zipcode = data.client_info.division_zipcode;
+	}
+	if (zipcode != "") {
+		quoteInfo.outputText(canvas, "〒" + zipcode, font_size, left, top);
 	}
 	top += font_size + font_size + 6;
-	if (data.client_info.address_1 != "") {
-		quoteInfo.outputText(canvas, data.client_info.address_1, font_size, left, top);
+	var address_1 = data.client_info.address_1;
+	if (data.client_info.division_address_1 != null && data.client_info.division_address_1 != "") {
+		address_1 = data.client_info.division_address_1;
+	} 
+	if (address_1 != "") {
+		quoteInfo.outputText(canvas, address_1, font_size, left, top);
 	}
-	top += font_size + 6;
-	if (data.client_info.name_1 != "") {
-		var nm1 = data.client_info.name_1;
-		if (data.client_info.name_2 == "") {
-			nm1 = nm1  + " " + data.keisho;
+	var address_2 = data.client_info.address_2;
+	if (data.client_info.division_address_2 != null && data.client_info.division_address_2 != "") {
+		address_2 = data.client_info.division_address_2;
+	} 
+	if (address_2 != "") {
+		top += font_size + 6;
+		quoteInfo.outputText(canvas, address_2, font_size, left, top);
+	}
+	top += font_size + font_size + 6;
+	var name_1 = data.client_info.name_1;
+	var name_2 = data.client_info.name_2;
+	var division_name = data.client_info.division_name;
+	var person_name = data.client_info.person_name;
+	// 社名１
+	if (name_1 != null && name_1 != "") {
+		if ((name_2 == null || name_2 == "") && (division_name == null || division_name == "") 
+			&& (person_name == null || person_name == "")) {
+			name_1 = name_1  + " " + data.keisho;
 		}
-		quoteInfo.outputText(canvas, nm1, font_size, left, top);
+		quoteInfo.outputText(canvas, name_1, font_size, left, top);
 	}
 	top += font_size + 6;
-	if (data.client_info.name_2 != "") {
-		quoteInfo.outputText(canvas, data.client_info.name_2 + " " + data.keisho, font_size, left, top);
+	// 社名２
+	if (name_2 != null && name_2 != "") {
+		if ((division_name == null || division_name == "") && (person_name == null || person_name == "")) {
+			name_2 = name_2  + " " + data.keisho;
+		}
+		quoteInfo.outputText(canvas, name_2, font_size, left, top);
+	}
+	top += font_size + 6;
+	// 部署名
+	if (division_name != null && division_name != "") {
+		if (person_name == null || person_name == "") {
+			division_name = division_name  + " " + data.keisho;
+		}
+		quoteInfo.outputText(canvas, division_name, font_size, left, top);
+	}
+	top += font_size + 6;
+	// 担当者名
+	if (person_name != null && person_name != "") {
+		person_name = person_name  + " " + data.keisho;
+		quoteInfo.outputText(canvas, person_name, font_size, left, top);
 	}
 	top += font_size + font_size + 6;
-	if (data.client_info.tel_no != "") {
-		quoteInfo.outputText(canvas, "TEL:" + data.client_info.tel_no, font_size, left, top);
+	var tel_no = data.client_info.tel_no;
+	if (data.client_info.division_tel_no != null && data.client_info.division_tel_no != "") {
+		tel_no = data.client_info.division_tel_no;
 	}
-	if (data.client_info.fax_no != "") {
-		quoteInfo.outputText(canvas, "FAX:" + data.client_info.fax_no, font_size, left + 200, top);
+	if (tel_no != "") {
+		quoteInfo.outputText(canvas, "TEL:" + tel_no, font_size, left, top);
+	}
+	var fax_no = data.client_info.fax_no;
+	if (data.client_info.division_fax_no != null && data.client_info.division_fax_no != "") {
+		fax_no = data.client_info.division_fax_no;
+	}
+	if (fax_no != "") {
+		quoteInfo.outputText(canvas, "FAX:" + fax_no, font_size, left + 200, top);
 	}
 	// 自社情報
 	left = 580;

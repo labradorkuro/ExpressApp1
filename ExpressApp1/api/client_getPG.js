@@ -15,6 +15,11 @@ exports.client_get = function (req, res) {
 	}
 };
 
+// 請求先情報の取得 2021.09.22
+exports.billing_client_get = function(req, res) {
+	billing_client_get(req, res);
+};
+
 // 顧客マスタのキーワード検索
 var client_get_searchKeyword = function (req, res) {
 	var keyword = getClientSearchKeywordParam(req.query.keyword);
@@ -341,6 +346,52 @@ var client_get_detail = function (req, res) {
 		// データを取得するためのクエリーを実行する
 		console.log(sql + " " + req.query.client_cd);
 		connection.query(sql, [req.query.client_cd], function (err, results) {
+			if (err) {
+				console.log(err);
+			} else {
+				var client = null;
+				if (results.rows.length > 0) {
+					client = results.rows[0];
+				}
+				connection.end();
+				res.send(client);
+			}
+		});
+	});
+};
+// 請求先データの取得　2021.09.22
+var billing_client_get = function (req, res) {
+	var sql = 'SELECT '
+		+ 'client_list.client_cd,'
+		+ 'client_division_list.division_cd,'
+		+ 'person_id,'
+		+ 'name_1,'
+		+ 'name_2,'
+		+ 'client_division_list.name AS division_name,'
+		+ 'client_person_list.name AS person_name,'
+		+ "client_list.kana," // カナ
+		+ "client_list.email," // メールアドレス
+		+ "client_list.zipcode," // 郵便番号
+		+ "client_list.address_1," // 住所１
+		+ "client_list.address_2," // 住所２
+		+ "client_list.tel_no," // 電話番号
+		+ "client_list.fax_no," // FAX番号
+		+ "client_division_list.zipcode AS division_zipcode," // 郵便番号
+		+ "client_division_list.address_1 AS division_address_1," // 住所１
+		+ "client_division_list.address_2 AS division_address_2," // 住所２
+		+ "client_division_list.tel_no AS division_tel_no," // 電話番号
+		+ "client_division_list.fax_no AS division_fax_no," // FAX番号
+		+ "client_list.memo,"
+		+ 'client_list.delete_check'
+		+ ' FROM drc_sch.client_list '
+		+ ' LEFT JOIN drc_sch.client_division_list ON (client_list.client_cd = client_division_list.client_cd AND division_cd = $2)'
+		+ ' LEFT JOIN drc_sch.client_person_list ON (client_list.client_cd = client_person_list.client_cd AND client_person_list.division_cd = $2 AND client_person_list.person_id = $3)'
+		+ ' WHERE client_list.client_cd = $1 AND client_list.delete_check = 0'
+		// SQL実行
+	pg.connect(connectionString, function (err, connection) {
+		// データを取得するためのクエリーを実行する
+		console.log(sql + " " + req.query.client_cd);
+		connection.query(sql, [req.query.client_cd,req.query.division_cd,req.query.person_id,], function (err, results) {
 			if (err) {
 				console.log(err);
 			} else {

@@ -215,6 +215,7 @@ app.get('/client_get/:no?', client_get.client_get);
 app.get('/client_division_get', client_get.client_division_get);
 app.get('/client_division_list', client_get.client_division_list);
 app.get('/client_person_get', client_get.client_person_get);
+app.get('/billing_client_get', client_get.billing_client_get);
 app.post('/client_post', upload.array(), client_post.client_post);
 app.post('/client_division_post', upload.array(), client_post.client_division_post);
 app.post('/client_person_post', upload.array(), client_post.client_person_post);
